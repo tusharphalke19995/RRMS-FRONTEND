@@ -1,0 +1,212 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent">
+
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-2 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <!-- Title -->
+
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
+            <div>
+                <div class="hidden sm:flex flex-wrap items-center font-medium">
+                    <ng-container *transloco="let t">
+                        <div>
+                            <a class="whitespace-nowrap text-primary-500 cursor-pointer" [routerLink]="'/dashboard'">
+                                {{t('Home')}} </a>
+                        </div>
+                    </ng-container>
+
+                    <div class="flex items-center ml-1 whitespace-nowrap">
+                        <mat-icon class="icon-size-5 text-secondary"
+                            [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                        <ng-container *transloco="let t">
+                            <span class="ml-1 text-secondary">
+                                {{t('uploadDoc')}}</span>
+                        </ng-container>
+                    </div>
+
+                </div>
+                <div class="flex sm:hidden">
+                    <a class="inline-flex items-center -ml-1.5 text-secondary font-medium">
+                        <mat-icon class="icon-size-5 text-secondary"
+                            [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
+                        <span class="ml-1">Back</span>
+                    </a>
+                </div>
+            </div>
+            <!-- Title -->
+            <div class="mt-2">
+                <ng-container *transloco="let t">
+                    <div class="text-3xl md:text-3xl font-bold tracking-tight leading-7 sm:leading-10 truncate">
+                        {{t('uploadDoc')}}</div>
+                </ng-container>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10 overflow-y-auto" cdkScrollable>
+        <div class="flex flex-auto overflow-hidden">
+            <fuse-alert class="mb-8" *ngIf="alert" [type]="alert.type" [showIcon]="false">
+                {{alert.message}}
+            </fuse-alert>
+            <form class="example-form" [formGroup]="addcitizenfeedbackForm" #addcitizenfeedbackNgForm="ngForm">
+
+                <div class="flex font-semibold text-2xl whitespace-nowrap my-2 ">
+                    <div>Case information</div>
+                </div>
+                <table class="example-full-width" cellspacing="0">
+                    <tr>
+                        <td>
+                            <mat-form-field class="example-full-width">
+                                <mat-label *transloco="let t" class="font-bold">{{t('state')}}</mat-label>
+                                <mat-select [formControlName]="'lName'" (selectionChange)="SelectDataCase($event)">
+                                    <input autocomplete="off" matInput appearance="fill"
+                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
+                                        (input)="filterDropDownData($event)">
+                                    <mat-option value="">Please Select</mat-option>
+                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="example-full-width">
+                                <mat-label *transloco="let t" class="font-bold">{{t('district')}}</mat-label>
+                                <mat-select [formControlName]="'lName'" (selectionChange)="SelectDataCase($event)">
+                                    <input autocomplete="off" matInput appearance="fill"
+                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
+                                        (input)="filterDropDownData($event)">
+                                    <mat-option value="">Please Select</mat-option>
+                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+
+                        <td>
+                            <mat-form-field class="example-full-width">
+                                <mat-label *transloco="let t" class="font-bold">{{t('year')}}</mat-label>
+                                <mat-select [formControlName]="'lName'" (selectionChange)="SelectDataCase($event)">
+                                    <input autocomplete="off" matInput appearance="fill"
+                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
+                                        (input)="filterDropDownData($event)">
+                                    <mat-option value="">Please Select</mat-option>
+                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+
+                        <td>
+                            <mat-form-field class="example-full-width">
+                                <mat-label *transloco="let t" class="font-bold">{{t('caseNo')}}</mat-label>
+                                <mat-select [formControlName]="'lName'" (selectionChange)="SelectDataCase($event)">
+                                    <input autocomplete="off" matInput appearance="fill"
+                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
+                                        (input)="filterDropDownData($event)">
+                                    <mat-option value="">Please Select</mat-option>
+                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+
+                    </tr>
+                </table>
+
+                <table class="example-full-width" cellspacing="0">
+                    <tr>
+                        <td>
+                            <mat-form-field class="example-full-width">
+                                <mat-label *transloco="let t" class="font-bold">{{t('registerDate')}}</mat-label>
+                                <input matInput [matDatepicker]="picker1" [placeholder]="'Choose a date'"
+                                    [formControlName]="'startDate'">
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                            </mat-form-field>
+
+                        </td>
+                        <td><mat-form-field class="example-full-width">
+                                <mat-label *transloco="let t" class="font-bold">{{ t('location')}}</mat-label>
+                                <input matInput matInput [formControlName]="'fName'" [required]="true">
+                                <mat-error *ngIf="addcitizenfeedbackForm.get('fName').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+
+                        </td>
+                        <td><mat-form-field class="example-full-width">
+                            <mat-label *transloco="let t" class="font-bold">{{ t('actSection')}}</mat-label>
+                            <input matInput matInput [formControlName]="'fName'" [required]="true">
+                            <mat-error *ngIf="addcitizenfeedbackForm.get('fName').hasError('required')">
+                                Required
+                            </mat-error>
+                        </mat-form-field>
+
+                    </td>
+                    </tr>
+                </table>
+
+                <table>
+                    
+                </table>
+
+                <div class="flex font-semibold text-2xl  whitespace-nowrap my-5 ">
+                    <div>Files/Documents</div>
+                </div>
+                <div
+                    class="mb-5 mx-10 border-dashed border-2 border-primary-500 dark:bg-slate-700 bg-primary-50/50 rounded-lg h-auto max-h-[640px] min-h-[300px] ">
+
+                    <div class="flex">
+                        <!--------------------------------------Show if no image is selected--------------------------------- -->
+                        <div class="m-auto  text-center font-semibold h-[300px] h-[300px] py-24  text-lg  w-full border-r-2 border-dashed border-primary-500"
+                            (files)="filesDropped($event)">
+                            <div class="flex justify-center">
+                                <img src="../../../../../../../assets/icons/Files.svg" class="w-[100px]"
+                                    alt="Processing Image">
+                            </div>
+                            <div class="text-blue-700 hover:cursor-pointer" (click)="f_input.click()"
+                                matTooltip="Browse files"> Browse
+                                files
+                            </div>
+                            <div class="text-gray-400 text-sm">Maximum allowed file size is 4MB per image </div>
+                            <div class="text-gray-400 text-sm">Only .jpeg,.jpg and .png images are allowed </div>
+
+
+                            <input autocomplete="off" type="file" class="hidden" hidden #f_input
+                                accept="image/png, image/jpeg" multiple (change)="selectImage(f_input.files,$event)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end">
+                    <button *transloco="let t" mat-button [color]="'accent'"
+                        [disabled]="addcitizenfeedbackForm.pristine || addcitizenfeedbackForm.untouched"
+                        (click)="clearForm()">
+                        {{t('clear')}}
+                    </button>
+                    <button *transloco="let t" class="ml-2" mat-flat-button [color]="'primary'"
+                        [disabled]="addcitizenfeedbackForm.pristine || addcitizenfeedbackForm.invalid"
+                        (click)="saveCitizenFeedback()">
+                        {{t('submit')}}
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Buttons -->
+
+</div>
