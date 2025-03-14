@@ -106,7 +106,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     columns: any[] = [
         { labelen: 'ID', labelhi: 'Case No', property: 'wlId' },
         { labelen: 'Name',labelhi:'Document', property: 'wlName' },
-        { labelen: 'Action',  labelhi:'Action',property: 'action' },
+        { labelen: 'Action', labelhi: 'Action', property: 'action', isAction: true },
     
       ];
     

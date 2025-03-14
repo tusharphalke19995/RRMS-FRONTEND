@@ -77,7 +77,9 @@ export const appRoutes: Route[] = [
             {path: 'dashboard', loadChildren: () => import('app/modules/admin/dashbaord/dashboard.routes')},
             {path: 'upload-document', loadChildren: () => import('app/modules/admin/pages/upload-document/uploadDoc.routes')},
             {path: 'search-document', loadChildren: () => import('app/modules/admin/pages/search-document/searchDoc.routes')},
-            
+            {path: 'manage-user', loadChildren: () => import('app/modules/admin/pages/manage-user/search-userlist/searchUser.routes')},
+            {path: 'manage-user-role', loadChildren: () => import('app/modules/admin/pages/manage-user-role/search-user-role/searchUserRole.routes')},
+
         ]
     }
 ];

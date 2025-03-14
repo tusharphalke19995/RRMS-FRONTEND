@@ -1,1 +1,290 @@
-<p>search-user-role works!</p>
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent">
+
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-2 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <!-- Title -->
+
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
+            <div>
+                <div class="hidden sm:flex flex-wrap items-center font-medium">
+                    <ng-container *transloco="let t">
+                        <div>
+                            <a class="whitespace-nowrap text-primary-500 cursor-pointer" [routerLink]="'/dashboard'">
+                                {{t('Home')}} </a>
+                        </div>
+                    </ng-container>
+                   
+                    <div class="flex items-center ml-1 whitespace-nowrap">
+                        <mat-icon class="icon-size-5 text-secondary"
+                            [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                        <ng-container *transloco="let t">
+                            <span class="ml-1 text-secondary">
+                                {{t('roleMng')}}</span>
+                        </ng-container>
+                    </div>
+
+                </div>
+                <div class="flex sm:hidden">
+                    <a class="inline-flex items-center -ml-1.5 text-secondary font-medium">
+                        <mat-icon class="icon-size-5 text-secondary"
+                            [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
+                        <span class="ml-1">Back</span>
+                    </a>
+                </div>
+            </div>
+            <!-- Title -->
+            <div class="mt-2 flex items-center justify-between">
+                <ng-container *transloco="let t">
+                    <div class="text-3xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        {{t('roleMng')}}
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10 overflow-y-auto" cdkScrollable>
+        <div class="flex flex-auto overflow-hidden">
+            <fuse-alert class="mb-8" *ngIf="alert" [type]="alert.type" [showIcon]="false">
+                {{alert.message}}
+            </fuse-alert>
+            <form class="example-form" [formGroup]="addcitizenInformationForm" #addcitizenInformationNgForm="ngForm">
+                <table class="example-full-width" cellspacing="0">
+                    <tr>
+                        <td>
+                            <mat-form-field class="example-full-width">
+                                <mat-label *transloco="let t" class="font-bold">{{t('state')}}</mat-label>
+                                <mat-select [formControlName]="'citizenInfo'"
+                                    (selectionChange)="SelectDataCase($event)">
+                                    <input autocomplete="off" matInput appearance="fill"
+                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
+                                        (input)="filterDropDownData($event)">
+                                    <mat-option value="">Please Select</mat-option>
+                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="example-full-width">
+                                <mat-label *transloco="let t" class="font-bold">{{t('district')}}</mat-label>
+                                <mat-select [formControlName]="'citizenInfo'"
+                                    (selectionChange)="SelectDataCase($event)">
+                                    <input autocomplete="off" matInput appearance="fill"
+                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
+                                        (input)="filterDropDownData($event)">
+                                    <mat-option value="">Please Select</mat-option>
+                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+
+                        <td>
+                            <mat-form-field class="example-full-width">
+                                <mat-label *transloco="let t" class="font-bold">{{t('year')}}</mat-label>
+                                <mat-select [formControlName]="'citizenInfo'"
+                                    (selectionChange)="SelectDataCase($event)">
+                                    <input autocomplete="off" matInput appearance="fill"
+                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
+                                        (input)="filterDropDownData($event)">
+                                    <mat-option value="">Please Select</mat-option>
+                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+
+                        <td>
+                            <mat-form-field class="example-full-width">
+                                <mat-label *transloco="let t" class="font-bold">{{t('caseNo')}}</mat-label>
+                                <mat-select [formControlName]="'citizenInfo'"
+                                    (selectionChange)="SelectDataCase($event)">
+                                    <input autocomplete="off" matInput appearance="fill"
+                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
+                                        (input)="filterDropDownData($event)">
+                                    <mat-option value="">Please Select</mat-option>
+                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+
+                    </tr>
+                </table>
+
+                <table class="example-full-width" cellspacing="0">
+                    <tr>
+                        <td>
+                            <mat-form-field [ngClass]="formFieldHelpers" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-bold">{{t('registerDate')}}</mat-label>
+                                <input matInput [matDatepicker]="picker1" [placeholder]="'Choose a date'"
+                                    [formControlName]="'startDate'">
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                            </mat-form-field>
+
+                        </td>
+
+
+                        <td><mat-form-field class="example-full-width">
+                            <mat-label *transloco="let t" class="font-bold">{{t('location')}}</mat-label>
+                            <input matInput matInput [formControlName]="'location'">
+                            <mat-error *ngIf="addcitizenInformationForm.get('location').hasError('required')">
+                                Required
+                            </mat-error>
+                        </mat-form-field>
+
+                    </td>
+
+                    <td><mat-form-field class="example-full-width">
+                        <mat-label *transloco="let t" class="font-bold">{{t('actSection')}}</mat-label>
+                        <input matInput matInput [formControlName]="'location'">
+                        <mat-error *ngIf="addcitizenInformationForm.get('location').hasError('required')">
+                            Required
+                        </mat-error>
+                    </mat-form-field>
+
+                </td>
+                    </tr>
+
+                    
+                </table>
+
+                <div class="flex items-center justify-center">
+                    <button *transloco="let t" mat-button [color]="'accent'"
+                        [disabled]="addcitizenInformationForm.pristine || addcitizenInformationForm.untouched"
+                        (click)="clearForm()">
+                       {{t('clear')}}
+                    </button>
+                        <!-- [disabled]="addcitizenInformationForm.pristine || addcitizenInformationForm.invalid" -->
+
+                    <button *transloco="let t" class="ml-2" mat-flat-button [color]="'primary'"
+                        (click)="saveCitizenFeedback()">
+                        {{t('search')}}
+                        
+                    </button>
+                </div>
+            </form>
+
+
+           
+
+        </div>
+        <div class="overflow-x-auto">
+            <table bordered multiTemplateDataRows [dataSource]="dataSource"
+            class="w-full mt-[10px]  " mat-table matSort #sort1="matSort">
+
+            <ng-container *ngFor="let column of columns">
+                <ng-container [matColumnDef]="column.property">
+                    <ng-container *ngIf="column.labelen=='Action';else expand">
+                        <th *matHeaderCellDef
+                            class="bg-primary-300 dark:bg-slate-500 text-black "
+                            mat-header-cell>
+                            {{ resLangValue == 'en' }}</th>
+                    </ng-container>
+                    <ng-template #expand>
+                        <ng-container *ngIf="column.labelen=='Expand';else nonActionBlock">
+                            <th *matHeaderCellDef
+                                class="bg-primary-300 dark:bg-slate-500 text-black "
+                                mat-header-cell>
+                            </th>
+                        </ng-container>
+                    </ng-template>
+
+                    <ng-template #nonActionBlock>
+                        <th *matHeaderCellDef
+                            class="bg-primary-300 dark:bg-slate-500 text-black " mat-header-cell
+                            mat-sort-header> {{ resLangValue == 'en' ?
+                            column.labelen : column.labelhi }}</th>
+                    </ng-template>
+
+                    <ng-container *ngIf="column.labelen=='Action';else textBlock">
+                        <td *matCellDef="let row" mat-cell>
+
+                            <div class="flex justify-around border-0">
+                                <button mat-icon-button color="primary"
+                                    (click)="approveWatchlist(row)">
+                                    <img class="w-5"
+                                        src="/assets/images/others/approve_small.svg"
+                                        matTooltip="Approve">
+                                </button>
+                                <button mat-icon-button color="danger"
+                                    (click)="rejectWatchlist(row)">
+                                    <img class="w-4"
+                                        src="/assets/images/others/reject_small.svg"
+                                        matTooltip="Reject">
+                                </button>
+                            </div>
+
+                        </td>
+                    </ng-container>       
+
+                    <ng-template #textBlock>
+                        <td *matCellDef="let row" mat-cell class="">
+                            <div *ngIf="!row[column.property];else elseBlock">
+                                N/A
+                            </div>
+                            <ng-template #elseBlock>
+                                <div [mdePopoverTriggerFor]="mainPopover"
+                                    mdePopoverTriggerOn="hover"
+                                    #popoverTrigger="mdePopoverTrigger"
+                                    class="truncate font-medium">
+                                    {{ row[column.property]}}
+                                </div>
+                                <mde-popover #mainPopover="mdePopover"
+                                    [mdePopoverOverlapTrigger]="false">
+                                    <mat-card style="max-width: 300px">
+                                        <mat-card-content>
+                                            <div class="text-primary font-semibold divide-y ">
+                                                {{ resLangValue == 'en' ?
+                                                column.labelen : column.labelhi }}</div>
+                                            {{ row[column.property]}}
+                                        </mat-card-content>
+                                    </mat-card>
+                                </mde-popover>
+
+                            </ng-template>
+                        </td>
+                    </ng-template>
+
+                </ng-container>
+
+            </ng-container>
+            
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                class="hover:bg-hover trans-ease-out example-element-rowborder  border-primary-500"
+                [ngClass]="{' border-l-4 border-primary-500 ':expandedElement == row}">
+            </tr>
+            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']"
+                class="example-detail-row bg-[#e2ecef] dark:bg-slate-600"
+                [ngClass]="{' border-l-4 border-primary-500 ':expandedElement == row}"></tr>
+
+
+        </table>
+        </div>
+        <div class="flex justify-end w-full dark:bg-gray-800 bg-card">
+            <mat-paginator #paginator1='matPaginator' [pageSizeOptions]="[50, 100, 200,500]"
+                showFirstLastButtons aria-label="Select page of periodic elements">
+            </mat-paginator>
+        </div>
+    </div>
+
+    <!-- Buttons -->
+
+</div>

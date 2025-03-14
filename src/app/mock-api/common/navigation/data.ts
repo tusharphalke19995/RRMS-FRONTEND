@@ -22,6 +22,20 @@ export const defaultNavigation: FuseNavigationItem[] = [
         type : 'basic',
         icon : 'heroicons_outline:chart-pie',
         link : '/search-document'
+    },
+    {
+        id   : 'userMng',
+        title: 'User Management',
+        type : 'basic',
+        icon : 'heroicons_outline:chart-pie',
+        link : '/manage-user'
+    },
+    {
+        id   : 'roleMng',
+        title: 'Role Management',
+        type : 'basic',
+        icon : 'heroicons_outline:chart-pie',
+        link : '/manage-user-role'
     }
 
 ];
