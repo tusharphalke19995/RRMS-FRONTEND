@@ -2,6 +2,7 @@ import { NgFor, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSelectModule } from '@angular/material/select';
 import { FuseNavigationService, FuseVerticalNavigationComponent } from '@fuse/components/navigation';
 import { AvailableLangs, TranslocoService } from '@ngneat/transloco';
 import { take } from 'rxjs';
@@ -13,13 +14,16 @@ import { take } from 'rxjs';
     changeDetection: ChangeDetectionStrategy.OnPush,
     exportAs       : 'languages',
     standalone     : true,
-    imports        : [MatButtonModule, MatMenuModule, NgTemplateOutlet, NgFor],
+    imports        : [MatButtonModule,MatSelectModule, MatMenuModule, NgTemplateOutlet, NgFor],
 })
 export class LanguagesComponent implements OnInit, OnDestroy
 {
-    availableLangs: AvailableLangs;
-    activeLang: string;
     flagCodes: any;
+    availableLangs: AvailableLangs = [
+        { id: 'en', label: 'English' },
+        { id: 'kn', label: 'ಕನ್ನಡ' } // Kannada
+    ];
+    activeLang: string;
 
     /**
      * Constructor
@@ -62,13 +66,16 @@ export class LanguagesComponent implements OnInit, OnDestroy
         };
     }
 
-    /**
+        /**
      * On destroy
      */
-    ngOnDestroy(): void
-    {
-    }
-
+        ngOnDestroy(): void
+        {
+            // this._unsubscribeAll.next(null);
+            // this._unsubscribeAll.complete();
+        }
+ 
+        
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------

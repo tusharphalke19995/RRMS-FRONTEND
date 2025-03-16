@@ -10,4 +10,12 @@
     padding-right: 8px;
   }
 
-  
+  .mat-mdc-dialog-container {
+
+    .mat-mdc-dialog-surface {
+        padding: 0 !important;
+    }
+}
+.text-white{
+    color: white !important;
+}

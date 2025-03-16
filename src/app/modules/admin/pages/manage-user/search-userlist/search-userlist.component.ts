@@ -18,6 +18,7 @@ import { SearchDocService } from '../../search-document/searchDoc.service';
 import { InventoryVendor } from '../../upload-document/uploadDoc.types';
 import { MatDialog } from '@angular/material/dialog';
 import { AddUpdateUserComponent } from '../add-update-user/add-update-user.component';
+import { SearchUserService } from './searchUser.service';
 
 @Component({
   selector: 'app-search-userlist',
@@ -112,21 +113,22 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     @ViewChild('paginator1') paginator1: MatPaginator
     dataSource: MatTableDataSource<any>;
     columns: any[] = [
-        { labelen: 'ID', labelhi: 'ID', property: 'empID' },
-        { labelen: 'Name',labelhi:'Name', property: 'empName' },
-        { labelen: 'Role',labelhi:'Role', property: 'roleName' },
+        { labelen: 'Name',labelhi:'First Name', property: 'first_name' },
+        { labelen: 'Name',labelhi:'Last Name', property: 'last_name' },
+        { labelen: 'Role',labelhi:'Role', property: 'roleId' },
         { labelen: 'KGID',labelhi:'KGID', property: 'kgid' },
-        { labelen: 'Mobile No',labelhi:'Mobile No', property: 'mobileNo' },
-        { labelen: 'Email ID',labelhi:'Email Id', property: 'emailId' },
+        { labelen: 'Mobile No',labelhi:'Mobile No', property: 'mobileno' },
+        { labelen: 'Email ID',labelhi:'Email Id', property: 'email' },
         { labelen: 'Action', labelhi: 'Action', property: 'action', isAction: true },
       ];
     
-      displayedColumns: string[] = ['empID','empName','roleName','kgid','mobileNo','emailId','action'];
+      displayedColumns: string[] = ['first_name','last_name','roleId','kgid','mobileno','email','action'];
     
     /**
      * Constructor
      */
     constructor(
+        private _searchUserService:SearchUserService,
         public dialog: MatDialog,
         private _changeDetectorRef: ChangeDetectorRef,
         private _formBuilder: UntypedFormBuilder,
@@ -144,7 +146,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
      */
     ngOnInit(): void {
         this.initForm();
-        this.dataSource = new MatTableDataSource(this.dataShow);
+        this.getUserInfo();
     }
 
     ngAfterViewInit(): void {
@@ -211,10 +213,9 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
           data: data,
           width: '1000px',
         });
-    
         dialogRef.afterClosed().subscribe(result => {
           this._changeDetectorRef.detectChanges();
-        
+          this.getUserInfo();
         });
     
       }
@@ -236,4 +237,18 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
         // Implement delete logic here
         console.log('Delete user:', row);
     }
+
+    getUserInfo() {
+          this._searchUserService.getUserList().subscribe({
+            next: (response: any) => {
+             console.log("response",response);
+        this.dataSource = new MatTableDataSource(response);
+
+            },
+            error: (error) => {
+              
+            }
+          });
+        
+      }
 }
