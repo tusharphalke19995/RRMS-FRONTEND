@@ -12,7 +12,7 @@
   "mobileNo": "Mobile No",
   "emailID": "Email ID",
   "complaintServiceRequestNo": "Complaint / Service Request No",
-  "district": "District",
+  "district": "District Name",
   "year": "Year",
   "toWhom": "To Whom",
   "searchDoc": "Search Document",
@@ -41,8 +41,8 @@
   "addcitizensTip": "Add Citizen's Tip",
   "caseNo": "Case Number",
   "state": "State",
-  "registerDate": "Registered Date",
-  "location": "Location",
+  "registerDate": "Fir Registered Date",
+  "location": "Crime Location",
   "actSection": "Act/Section",
   "userMng": "User Management",
   "roleMng": "Role Management",
@@ -54,5 +54,14 @@
   "cid":"CID",
   "designation":"Designation",
   "userName":"User Name",
-  "role":"Role"
+  "role":"Role",
+  "division": "Division",
+  "rank":"Rank",
+  "firregisterFromDate": "Fir Registration From Date",
+  "firregisterToDate": "Fir Registration To Date",
+  "caseStatus":"Case Status",
+  "updateRole":"Update Role",
+  "update":"Update",
+  "designations":"Designations Name"
+
 }

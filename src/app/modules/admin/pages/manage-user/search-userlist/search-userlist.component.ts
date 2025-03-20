@@ -57,72 +57,67 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     vendors: InventoryVendor[];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     alert: { type: string; message: string };
-    citizenInfoDropdown = [
-        {
-            id: 0,
-            value: 'test1',
-        },
-        {
-            id: 1,
-            value: 'test2',
-        },
-    ];
-    dataShow = [
-        {
-            empID: 1,
-            empName: 'Rohit',
-            roleName: 'Admin User',
-            kgid: '383323',
-            mobileNo: '893949494',
-            emailId: 'rohit123@gmail.com',
-        },
-        {
-            empID: 2,
-            empName: 'Rajesh',
-            roleName: 'Admin',
-            kgid: '93339933',
-            mobileNo: '949494494',
-            emailId: 'rajesh23@gmail.com',
-        },
-    {
-        empID: 3,
-            empName: 'Lina',
-            roleName: 'Admin User',
-            kgid: '949449',
-            mobileNo: '844494944',
-            emailId: 'lina@gmail.com',
-    },
-    {
-        empID: 4,
-            empName: 'Sham',
-            roleName: 'User',
-            kgid: '494944',
-            mobileNo: '842423244',
-            emailId: 'shamd@gmail.com',
-    },
-    {
-        empID: 5,
-            empName: 'Ram',
-            roleName: 'Admin User',
-            kgid: '339945',
-            mobileNo: '8974747475',
-            emailId: 'ram12@gmail.com',
-    }
-    ];
+    divisionDropdown = [];
+    // dataShow = [
+    //     {
+    //         empID: 1,
+    //         empName: 'Rohit',
+    //         roleName: 'Admin User',
+    //         kgid: '383323',
+    //         mobileNo: '893949494',
+    //         emailId: 'rohit123@gmail.com',
+    //     },
+    //     {
+    //         empID: 2,
+    //         empName: 'Rajesh',
+    //         roleName: 'Admin',
+    //         kgid: '93339933',
+    //         mobileNo: '949494494',
+    //         emailId: 'rajesh23@gmail.com',
+    //     },
+    // {
+    //     empID: 3,
+    //         empName: 'Lina',
+    //         roleName: 'Admin User',
+    //         kgid: '949449',
+    //         mobileNo: '844494944',
+    //         emailId: 'lina@gmail.com',
+    // },
+    // {
+    //     empID: 4,
+    //         empName: 'Sham',
+    //         roleName: 'User',
+    //         kgid: '494944',
+    //         mobileNo: '842423244',
+    //         emailId: 'shamd@gmail.com',
+    // },
+    // {
+    //     empID: 5,
+    //         empName: 'Ram',
+    //         roleName: 'Admin User',
+    //         kgid: '339945',
+    //         mobileNo: '8974747475',
+    //         emailId: 'ram12@gmail.com',
+    // }
+    // ];
     @ViewChild('sort1') sort1: MatSort;
     @ViewChild('paginator1') paginator1: MatPaginator
     dataSource: MatTableDataSource<any>;
     columns: any[] = [
         { labelen: 'Name',labelhi:'First Name', property: 'first_name' },
         { labelen: 'Name',labelhi:'Last Name', property: 'last_name' },
-        { labelen: 'Role',labelhi:'Role', property: 'roleId' },
+        { labelen: 'Role Name',labelhi:'Role Name', property: 'roleName' },
+         { labelen: 'Division Name',labelhi:'Division Name', property: 'divisionName' },
+         { labelen: 'Designation Name',labelhi:'Designation Name', property: 'designationName' },
         { labelen: 'KGID',labelhi:'KGID', property: 'kgid' },
         { labelen: 'Mobile No',labelhi:'Mobile No', property: 'mobileno' },
         { labelen: 'Email ID',labelhi:'Email Id', property: 'email' },
         { labelen: 'Action', labelhi: 'Action', property: 'action', isAction: true },
       ];
     
-      displayedColumns: string[] = ['first_name','last_name','roleId','kgid','mobileno','email','action'];
+      displayedColumns: string[] = ['first_name','last_name','divisionName','designationName','roleName','kgid','mobileno','email','action'];
+    userRoleDropdown: [];
+  designationsDropdown: [];
     
     /**
      * Constructor
@@ -147,6 +142,9 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     ngOnInit(): void {
         this.initForm();
         this.getUserInfo();
+        this.getUserRoleDropdown();
+        this.getDivisionDropdown();
+        this.getDesignationsDropDownData();
     }
 
     ngAfterViewInit(): void {
@@ -167,9 +165,11 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
 
     initForm() {
         this.searchUserListForm = this._formBuilder.group({
-            role: ['', [Validators.required]],
+            roleId: ['', [Validators.required]],
             empName: ['', [Validators.required]],
-            kgid: ['', [Validators.required]]
+            kgid: ['', [Validators.required]],
+            divisionId:['',[Validators.required]],
+            designationId:['']
         });
     }
 
@@ -251,4 +251,37 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
           });
         
       }
+
+      getUserRoleDropdown() {
+        this._searchUserService.getUserRole().subscribe({
+          next: (response: any) => {
+            console.log("response", response);
+            this.userRoleDropdown= response;
+          },
+          error: (error) => {},
+        });
+      }
+
+      getDivisionDropdown() {
+        this._searchUserService.getUserDivision().subscribe({
+          next: (response: any) => {
+            console.log("response", response);
+            this.divisionDropdown= response;
+          },
+          error: (error) => {},
+        });
+      }
+
+      getDesignationsDropDownData() {
+        this._searchUserService.getDesignationsInfo().subscribe({
+          next: (response: any) => {
+            console.log("response", response);
+            this.designationsDropdown= response;
+          },
+          error: (error) => {},
+        });
+      }
+
+
+      
 }

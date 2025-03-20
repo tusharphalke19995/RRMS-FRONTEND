@@ -24,6 +24,7 @@
         "@angular/platform-browser": "17.0.3",
         "@angular/platform-browser-dynamic": "17.0.3",
         "@angular/router": "17.0.3",
+        "@ngneat/cashew": "^4.1.0",
         "@ngneat/transloco": "6.0.0",
         "@types/slick-carousel": "^1.6.40",
         "apexcharts": "3.44.0",

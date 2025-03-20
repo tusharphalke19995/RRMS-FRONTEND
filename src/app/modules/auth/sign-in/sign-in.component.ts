@@ -15,6 +15,7 @@ import { AuthService } from 'app/core/auth/auth.service';
 @Component({
     selector     : 'auth-sign-in',
     templateUrl  : './sign-in.component.html',
+    // styleUrl: './sign-in.component.scss',
     encapsulation: ViewEncapsulation.None,
     animations   : fuseAnimations,
     standalone   : true,
@@ -68,7 +69,8 @@ export class AuthSignInComponent implements OnInit
      * Sign in
      */
     signIn(): void
-    {
+    {   
+        this._router.navigateByUrl('/dashboard');
         // Return if the form is invalid
         if ( this.signInForm.invalid )
         {

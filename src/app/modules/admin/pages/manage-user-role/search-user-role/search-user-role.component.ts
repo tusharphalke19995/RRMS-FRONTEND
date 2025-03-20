@@ -10,12 +10,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import { TranslocoModule } from '@ngneat/transloco';
 import { Subject } from 'rxjs';
 import { SearchDocService } from '../../search-document/searchDoc.service';
 import { InventoryVendor } from '../../upload-document/uploadDoc.types';
+import { SearchUserService } from '../../manage-user/search-userlist/searchUser.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AddUpdateUserComponent } from '../../manage-user/add-update-user/add-update-user.component';
+import { ManageUserRoleDialogComponent } from '../manage-user-role-dialog/manage-user-role-dialog.component';
 
 @Component({
   selector: 'app-search-user-role',
@@ -47,7 +51,7 @@ import { InventoryVendor } from '../../upload-document/uploadDoc.types';
   styleUrl: './search-user-role.component.scss'
 })
 export class SearchUserRoleComponent {
-addcitizenInformationForm: UntypedFormGroup;
+ searchUserListForm: UntypedFormGroup;
     @ViewChild('addcitizenInformationNgForm') addcitizenInformationNgForm: NgForm;
     formFieldHelpers: string[] = [''];
     isLoading: boolean = false;
@@ -66,35 +70,74 @@ addcitizenInformationForm: UntypedFormGroup;
     ];
     dataShow = [
         {
-            id: 0,
-            value: 'Addhar Card',
+            empID: 1,
+            empName: 'Rohit',
+            roleName: 'Admin User',
+            kgid: '383323',
+            mobileNo: '893949494',
+            emailId: 'rohit123@gmail.com',
         },
         {
-            id: 1,
-            value: 'PanCard',
+            empID: 2,
+            empName: 'Rajesh',
+            roleName: 'Admin',
+            kgid: '93339933',
+            mobileNo: '949494494',
+            emailId: 'rajesh23@gmail.com',
         },
+    {
+        empID: 3,
+            empName: 'Lina',
+            roleName: 'Admin User',
+            kgid: '949449',
+            mobileNo: '844494944',
+            emailId: 'lina@gmail.com',
+    },
+    {
+        empID: 4,
+            empName: 'Sham',
+            roleName: 'User',
+            kgid: '494944',
+            mobileNo: '842423244',
+            emailId: 'shamd@gmail.com',
+    },
+    {
+        empID: 5,
+            empName: 'Ram',
+            roleName: 'Admin User',
+            kgid: '339945',
+            mobileNo: '8974747475',
+            emailId: 'ram12@gmail.com',
+    }
     ];
     @ViewChild('sort1') sort1: MatSort;
     @ViewChild('paginator1') paginator1: MatPaginator
-    dataSource: any=[];
+    dataSource: MatTableDataSource<any>;
     columns: any[] = [
-        { labelen: 'ID', labelhi: 'Case No', property: 'wlId' },
-        { labelen: 'Name',labelhi:'Document', property: 'wlName' },
-        { labelen: 'Action',  labelhi:'Action',property: 'action' },
-    
+        { labelen: 'Name',labelhi:'First Name', property: 'first_name' },
+        { labelen: 'Name',labelhi:'Last Name', property: 'last_name' },
+        { labelen: 'Role Name',labelhi:'Role Name', property: 'roleName' },
+        { labelen: 'Division Name',labelhi:'Division Name', property: 'divisionName' },
+        { labelen: 'Designation Name',labelhi:'Designation Name', property: 'designationName' },
+        { labelen: 'KGID',labelhi:'KGID', property: 'kgid' },
+
+        { labelen: 'Action', labelhi: 'Action', property: 'action', isAction: true },
       ];
     
-      displayedColumns: string[] = ['wlId','wlName','action'];
+      displayedColumns: string[] = ['first_name','designationName','last_name','divisionName','roleName','kgid','action'];
+    userRoleDropdown: any;
     
     /**
      * Constructor
      */
     constructor(
+        private _searchUserService:SearchUserService,
+        public dialog: MatDialog,
         private _changeDetectorRef: ChangeDetectorRef,
         private _formBuilder: UntypedFormBuilder,
         private _citizeninfoService: SearchDocService
     ) {
-        // this.dataSource =this.dataShow;
+        
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -106,6 +149,15 @@ addcitizenInformationForm: UntypedFormGroup;
      */
     ngOnInit(): void {
         this.initForm();
+        this.getUserInfo();
+        this.getUserRoleDropdown();
+    }
+
+    ngAfterViewInit(): void {
+        this.dataSource.sort = this.sort1;
+        this.dataSource.paginator = this.paginator1;
+        
+        this._changeDetectorRef.detectChanges();
     }
 
     /**
@@ -118,13 +170,10 @@ addcitizenInformationForm: UntypedFormGroup;
     }
 
     initForm() {
-        this.addcitizenInformationForm = this._formBuilder.group({
-            citizenInfo: ['', [Validators.required]],
-            startDate: ['', [Validators.required]],
-            endDate: ['', [Validators.required]],
-            policStation: ['', [Validators.required]],
-            districtId: ['', [Validators.required]],
-            location:['',[Validators.required]]
+        this.searchUserListForm = this._formBuilder.group({
+            roleId: ['', [Validators.required]],
+            empName: ['', [Validators.required]],
+            kgid: ['', [Validators.required]]
         });
     }
 
@@ -137,7 +186,7 @@ addcitizenInformationForm: UntypedFormGroup;
      * Update the Citizen Feedback
      */
     updateCitizenFeedback(): void {
-        const product = this.addcitizenInformationForm.getRawValue();
+        const product = this.searchUserListForm.getRawValue();
         delete product.currentImageIndex;
     }
 
@@ -162,5 +211,58 @@ addcitizenInformationForm: UntypedFormGroup;
     trackByFn(index: number, item: any): any {
         return item.id || index;
     }
-}
 
+    updateRoleData(data) {
+        const dialogRef = this.dialog.open(ManageUserRoleDialogComponent, {
+          data: data,
+          width: '1000px',
+        });
+        dialogRef.afterClosed().subscribe(result => {
+          this._changeDetectorRef.detectChanges();
+          this.getUserInfo();
+        });
+    
+      }
+
+    applyFilter(event: Event) {
+        const filterValue = (event.target as HTMLInputElement).value;
+        this.dataSource.filter = filterValue.trim().toLowerCase();
+
+        if (this.dataSource.paginator) {
+            this.dataSource.paginator.firstPage();
+        }
+    }
+
+    editUser(row: any): void {
+        this.updateRoleData(row);
+    }
+
+    deleteUser(row: any): void {
+        // Implement delete logic here
+        console.log('Delete user:', row);
+    }
+
+    getUserInfo() {
+          this._searchUserService.getUserList().subscribe({
+            next: (response: any) => {
+             console.log("response",response);
+        this.dataSource = new MatTableDataSource(response);
+
+            },
+            error: (error) => {
+              
+            }
+          });
+        
+      }
+
+      getUserRoleDropdown() {
+        this._searchUserService.getUserRole().subscribe({
+          next: (response: any) => {
+            console.log("response", response);
+            this.userRoleDropdown= response;
+          },
+          error: (error) => {},
+        });
+      }
+}

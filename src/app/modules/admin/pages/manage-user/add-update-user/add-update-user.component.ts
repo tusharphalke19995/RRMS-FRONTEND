@@ -39,21 +39,9 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 export class AddUpdateUserComponent {
   addUpdateUserForm: UntypedFormGroup;
   hidePassword: boolean = true;
-  userRoleDropdown = [
-    // {
-    //   id: 1,
-    //   value: "Admin",
-    // },
-    // {
-    //   id: 2,
-    //   value: "User",
-    // },
-    // {
-    //   id: 3,
-    //   value: "Manager",
-    // },
-  ];
-
+  userRoleDropdown = [];
+  divisionDropdown = [];
+  designationsDropdown = [];
   constructor(
     private _searchUserService: SearchUserService,
     private _formBuilder: UntypedFormBuilder,
@@ -64,16 +52,21 @@ export class AddUpdateUserComponent {
   ngOnInit(): void {
     this.initiateForm();
     this.getUserRoleDropdown();
+    this.getDivisionDropdown();
+    this.getDesignationsData();
+    
   }
 
   initiateForm() {
     this.addUpdateUserForm = this._formBuilder.group({
       firstName: ["", Validators.required],
       lastName: ["", Validators.required],
+      divisionId:["",Validators.required],
       emailID: ["", [Validators.required, Validators.email]],
       kgid: ["", Validators.required],
       mobileNo: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
       roleId: ["", Validators.required],
+      designationId:[""],
       password: [
         "",
         [
@@ -92,7 +85,6 @@ export class AddUpdateUserComponent {
 
   reqRejected() {}
 
-  selectDataRole($event) {}
 
   getUserRoleDropdown() {
     this._searchUserService.getUserRole().subscribe({
@@ -104,6 +96,27 @@ export class AddUpdateUserComponent {
     });
   }
 
+  getDivisionDropdown() {
+    this._searchUserService.getUserDivision().subscribe({
+      next: (response: any) => {
+        console.log("response", response);
+        this.divisionDropdown= response;
+      },
+      error: (error) => {},
+    });
+  }
+
+  getDesignationsData() {
+    this._searchUserService.getDesignationsInfo().subscribe({
+      next: (response: any) => {
+        console.log("response", response);
+        this.designationsDropdown= response;
+      },
+      error: (error) => {},
+    });
+  }
+
+
   userSave() {
     if (this.addUpdateUserForm.valid) {
       const data = {
@@ -114,6 +127,8 @@ export class AddUpdateUserComponent {
         mobileno: this.addUpdateUserForm.value.mobileNo,
         password: this.addUpdateUserForm.value.password,
         roleId: Number(this.addUpdateUserForm.value.roleId),
+        divisionId:this.addUpdateUserForm.value.divisionId,
+        designationId:this.addUpdateUserForm.value.designationId,
       };
 
       this._searchUserService.createUser(data).subscribe({

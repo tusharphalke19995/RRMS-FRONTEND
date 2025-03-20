@@ -40,6 +40,7 @@ import { SearchDocService } from './searchDoc.service';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
+import { UploadDocumentService } from '../upload-document/uploadDoc.service';
 @Component({
     selector: 'app-search-document',
     templateUrl: './search-document.component.html',
@@ -73,7 +74,7 @@ import { MatTableModule } from '@angular/material/table';
     ],
 })
 export class SearchDocumentComponent implements OnInit, OnDestroy {
-    addcitizenInformationForm: UntypedFormGroup;
+    searchDocumentForm: UntypedFormGroup;
     @ViewChild('addcitizenInformationNgForm') addcitizenInformationNgForm: NgForm;
     formFieldHelpers: string[] = [''];
     isLoading: boolean = false;
@@ -90,6 +91,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
             value: 'test2',
         },
     ];
+    stateDropdown: [];
+    districtDropdown: [];
     dataShow = [
         {
             id: 0,
@@ -118,7 +121,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _formBuilder: UntypedFormBuilder,
-        private _citizeninfoService: SearchDocService
+        private _citizeninfoService: SearchDocService,
+        private _uploadDocumentService:UploadDocumentService
     ) {
         // this.dataSource =this.dataShow;
     }
@@ -132,6 +136,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.initForm();
+        this.getUserDistrictDropdown();
+        this.getUserStateDropdown();
     }
 
     /**
@@ -144,13 +150,17 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     }
 
     initForm() {
-        this.addcitizenInformationForm = this._formBuilder.group({
-            citizenInfo: ['', [Validators.required]],
+        this.searchDocumentForm = this._formBuilder.group({
+            firstName:['',[Validators.required]],
+            lastName:['',[Validators.required]],
             startDate: ['', [Validators.required]],
             endDate: ['', [Validators.required]],
             policStation: ['', [Validators.required]],
             districtId: ['', [Validators.required]],
-            location:['',[Validators.required]]
+            caseNo:['',[Validators.required]],
+            caseStatus:['',[Validators.required]],
+            policeStation:[''],
+            stateId:['']
         });
     }
 
@@ -163,7 +173,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
      * Update the Citizen Feedback
      */
     updateCitizenFeedback(): void {
-        const product = this.addcitizenInformationForm.getRawValue();
+        const product = this.searchDocumentForm.getRawValue();
         delete product.currentImageIndex;
     }
 
@@ -188,4 +198,33 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     trackByFn(index: number, item: any): any {
         return item.id || index;
     }
+
+    getUserDistrictDropdown() {
+        this._uploadDocumentService.getUserDistrict().subscribe({
+          next: (response: any) => {
+            console.log("response", response);
+            this.districtDropdown= response;
+          },
+          error: (error) => {},
+        });
+      }
+
+      getUserStateDropdown() {
+        this._uploadDocumentService.getState().subscribe({
+          next: (response: any) => {
+            console.log("response", response);
+            this.stateDropdown= response;
+            this.stateDropdown.forEach((element:any) => {
+                if(element.stateId==16){
+                    this.searchDocumentForm.patchValue({
+                        stateId: element.stateId
+                    });
+                    this.searchDocumentForm.get('stateId').disable();
+                }
+            });
+        
+          },
+          error: (error) => {},
+        });
+      }
 }

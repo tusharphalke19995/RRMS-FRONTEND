@@ -20,7 +20,7 @@
                 <mat-label *transloco="let t" class="font-medium">{{t('firstName')}}</mat-label>
                 <input matInput [formControlName]="'firstName'" placeholder="Enter employee name">
                 <mat-error *ngIf="addUpdateUserForm.get('firstName').hasError('required')">
-                    This field is required
+                    Required
                 </mat-error>
             </mat-form-field>
 
@@ -28,7 +28,7 @@
                 <mat-label *transloco="let t" class="font-medium">{{t('lastName')}}</mat-label>
                 <input matInput [formControlName]="'lastName'" placeholder="Enter employee name">
                 <mat-error *ngIf="addUpdateUserForm.get('lastName').hasError('required')">
-                    This field is required
+                    Required
                 </mat-error>
             </mat-form-field>
 
@@ -37,7 +37,7 @@
                 <mat-label *transloco="let t" class="font-medium">{{t('userEmail')}}</mat-label>
                 <input matInput [formControlName]="'emailID'" placeholder="Enter email">
                 <mat-error *ngIf="addUpdateUserForm.get('emailID').hasError('required')">
-                    This field is required
+                    Required
                 </mat-error>
             </mat-form-field>
 
@@ -45,7 +45,7 @@
                 <mat-label *transloco="let t" class="font-medium">{{t('kgId')}}</mat-label>
                 <input matInput [formControlName]="'kgid'" placeholder="Enter KG ID">
                 <mat-error *ngIf="addUpdateUserForm.get('kgid').hasError('required')">
-                    This field is required
+                    Required
                 </mat-error>
             </mat-form-field>
 
@@ -72,20 +72,46 @@
                 <mat-label *transloco="let t" class="font-medium">{{t('empMobileno')}}</mat-label>
                 <input matInput [formControlName]="'mobileNo'" placeholder="Enter mobile number">
                 <mat-error *ngIf="addUpdateUserForm.get('mobileNo').hasError('required')">
-                    This field is required
+                    Required
                 </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-full">
                 <mat-label *transloco="let t" class="font-medium">{{t('role')}}</mat-label>
-                <mat-select [formControlName]="'roleId'" (selectionChange)="selectDataRole($event)">
+                <mat-select [formControlName]="'roleId'">
                     <mat-option [value]="null">Please Select</mat-option>
                     <ng-container *ngFor="let roleInfo of userRoleDropdown; trackBy: trackByFn">
                         <mat-option [value]="roleInfo.roleId">{{roleInfo.roleName}}</mat-option>
                     </ng-container>
                 </mat-select>
                 <mat-error *ngIf="addUpdateUserForm.get('roleId').hasError('required')">
-                    Role is required
+                      Required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('division')}}</mat-label>
+                <mat-select [formControlName]="'divisionId'">
+                    <mat-option [value]="null">Please Select</mat-option>
+                    <ng-container *ngFor="let roleInfo of divisionDropdown; trackBy: trackByFn">
+                        <mat-option [value]="roleInfo.divisionId">{{roleInfo.divisionName}}</mat-option>
+                    </ng-container>
+                </mat-select>
+                <mat-error *ngIf="addUpdateUserForm.get('divisionId').hasError('required')">
+                      Required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('designations')}}</mat-label>
+                <mat-select [formControlName]="'designationId'">
+                    <mat-option [value]="null">Please Select</mat-option>
+                    <ng-container *ngFor="let designationInfo of designationsDropdown; trackBy: trackByFn">
+                        <mat-option [value]="designationInfo.designationId">{{designationInfo.designationName}}</mat-option>
+                    </ng-container>
+                </mat-select>
+                <mat-error *ngIf="addUpdateUserForm.get('designationId').hasError('required')">
+                      Required
                 </mat-error>
             </mat-form-field>
 
@@ -104,16 +130,6 @@
                     Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character
                 </mat-error>
             </mat-form-field>
-
-            <!-- <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('cid')}}</mat-label>
-                <mat-select [formControlName]="'cidID'" (selectionChange)="selectDataRole($event)">
-                    <mat-option value="">Please Select</mat-option>
-                    <ng-container *ngFor="let case of userRoleDropdown; trackBy: trackByFn">
-                        <mat-option [value]="case.value">{{case.value}}</mat-option>
-                    </ng-container>
-                </mat-select>
-            </mat-form-field> -->
         </div>
 
         <!-- Action Buttons -->

@@ -74,7 +74,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     ],
 })
 export class UploadDocumentComponent implements OnInit, OnDestroy {
-    addcitizenfeedbackForm: UntypedFormGroup;
+    uploadDocumentForm: UntypedFormGroup;
     @ViewChild('addcitizenfeedbackNgForm') addcitizenfeedbackNgForm: NgForm;
 
     isLoading: boolean = false;
@@ -92,13 +92,44 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
             value: 'test2',
         },
     ];
+    yearDropdown = [
+        {
+            id: 0,
+            value: '2025',
+        },
+        {
+            id: 1,
+            value: '2024',
+        },
+        {
+            id: 2,
+            value: '2023',
+        },
+        {
+            id: 3,
+            value: '2022',
+        },
+        {
+            id: 4,
+            value: '2021',
+        },
+        {
+            id: 5,
+            value: '2020',
+        },
+    ];
+    districtDropdown: [];
+    stateDropdown: [];
+    dragging: boolean = false;
+    imgUrls: string[] = []; // Array to hold image preview URLs
+  
     /**
      * Constructor
      */
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _formBuilder: UntypedFormBuilder,
-        private _citizenFeedbackService: UploadDocumentService
+        private _uploadDocumentService: UploadDocumentService
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -110,6 +141,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.initForm();
+        this.getUserDistrictDropdown();
+        this.getUserStateDropdown();
     }
 
     /**
@@ -122,7 +155,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     }
 
     initForm() {
-        this.addcitizenfeedbackForm = this._formBuilder.group({
+        this.uploadDocumentForm = this._formBuilder.group({
             fName: ['', [Validators.required]],
             lName: [''],
             mName: ['', [Validators.required]],
@@ -130,11 +163,18 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
             landLineNo: [''],
             mobileNo: [''],
             complaintServiceNo: [''],
-            districtId: ['', [Validators.required]],
-            year: [''],
+           
+          
             toWhom: ['', [Validators.required]],
             citizenFeedback: ['', [Validators.required]],
             startDate:['', [Validators.required]],
+
+            caseNo:[''],
+            stateId:[''],
+            districtId: ['', [Validators.required]],
+            year: [''],
+            caseStatus:[''],
+            policeStation:['']
         });
     }
 
@@ -142,34 +182,10 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
      * Citizen Feedback Create
      */
     saveCitizenFeedback(): void {
-        // Create the product
-        this._citizenFeedbackService.createProduct().subscribe((newProduct) => {
-            this.alert = {
-                type: 'success',
-                message:
-                    'Your request has been delivered! A member of our support staff will respond as soon as possible.',
-            };
-
-            setTimeout(() => {
-                this.alert = null;
-            }, 7000);
-
-            // Clear the form
-            this.clearForm();
-        });
+      
     }
 
-    /**
-     * Update the Citizen Feedback
-     */
-    updateCitizenFeedback(): void {
-        const product = this.addcitizenfeedbackForm.getRawValue();
-        delete product.currentImageIndex;
-
-        this._citizenFeedbackService
-            .updateProduct(product.id, product)
-            .subscribe(() => {});
-    }
+    
 
     /**
      * Clear the form
@@ -189,20 +205,89 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
             return item.id || index;
         }
 
-
-        openRemarkDialog(sizeType) {
-            
-          }
-
-          filesDropped(event): void {
-          }
-
-          selectImage(files: any, event) {
-           
-          }
-
           SelectDataCase(value) {}
 
           filterDropDownData(event) {}
+
+
+          getUserDistrictDropdown() {
+            this._uploadDocumentService.getUserDistrict().subscribe({
+              next: (response: any) => {
+                console.log("response", response);
+                this.districtDropdown= response;
+              },
+              error: (error) => {},
+            });
+          }
+
+          getUserStateDropdown() {
+            this._uploadDocumentService.getState().subscribe({
+              next: (response: any) => {
+                console.log("response", response);
+                this.stateDropdown= response;
+                this.stateDropdown.forEach((element:any) => {
+                    if(element.stateId==16){
+                        this.uploadDocumentForm.patchValue({
+                            stateId: element.stateId
+                        });
+                        this.uploadDocumentForm.get('stateId').disable();
+                    }
+                });
+            
+              },
+              error: (error) => {},
+            });
+          }
+
+
+  // Method to handle the drop event
+  filesDropped(event: any): void {
+    event.preventDefault(); // Prevent the default browser behavior
+    if (event.dataTransfer && event.dataTransfer.files.length) {
+      this.selectImage(event.dataTransfer.files, event);
+    }
+  }
+
+  // Method to handle file selection
+  selectImage(files: FileList, event: any): void {
+    this.imgUrls = []; // Clear previous images
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (this.isValidImage(file)) {
+        if (file.size > 4194304) {
+          alert("File is too large. Please reduce the size to under 4MB.");
+        } else {
+          const reader = new FileReader();
+          reader.onload = () => {
+            this.imgUrls.push(reader.result as string);  // Add the image preview URL to the array
+          };
+          reader.readAsDataURL(file);
+        }
+      } else {
+        alert("Unsupported file format. Please upload a .jpeg, .jpg, or .png image.");
+      }
+    }
+  }
+
+  // Check if the image file type is valid
+  isValidImage(file: File): boolean {
+    const supportedTypes = ['image/jpeg', 'image/png'];
+    return supportedTypes.includes(file.type);
+  }
+
+  // Handle drag events
+  onDragEnter(): void {
+    this.dragging = true;
+  }
+
+  onDragLeave(): void {
+    this.dragging = false;
+  }
+
+  onDragOver(event: Event): void {
+    event.preventDefault();
+    this.dragging = true;
+  }
+
 }
 

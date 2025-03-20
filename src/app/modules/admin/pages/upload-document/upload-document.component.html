@@ -41,7 +41,7 @@
             <!-- Title -->
             <div class="mt-2">
                 <ng-container *transloco="let t">
-                    <div class="text-3xl md:text-3xl font-bold tracking-tight leading-7 sm:leading-10 truncate">
+                    <div class="text-3xl md:text-3xl font-medium tracking-tight leading-7 sm:leading-10 truncate">
                         {{t('uploadDoc')}}</div>
                 </ng-container>
             </div>
@@ -56,80 +56,98 @@
             <fuse-alert class="mb-8" *ngIf="alert" [type]="alert.type" [showIcon]="false">
                 {{alert.message}}
             </fuse-alert>
-            <form class="example-form" [formGroup]="addcitizenfeedbackForm" #addcitizenfeedbackNgForm="ngForm">
+            <form class="example-form" [formGroup]="uploadDocumentForm" #addcitizenfeedbackNgForm="ngForm">
 
                 <div class="flex font-semibold text-2xl whitespace-nowrap my-2 ">
                     <div>Case information</div>
                 </div>
-                <table class="example-full-width" cellspacing="0">
+                <table class="example-full-width mt-2" cellspacing="0">
                     <tr>
-                        <td>
-                            <mat-form-field class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{t('state')}}</mat-label>
-                                <mat-select [formControlName]="'lName'" (selectionChange)="SelectDataCase($event)">
-                                    <input autocomplete="off" matInput appearance="fill"
-                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
-                                        (input)="filterDropDownData($event)">
-                                    <mat-option value="">Please Select</mat-option>
-                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
-                                    </ng-container>
-                                </mat-select>
-                            </mat-form-field>
-                        </td>
-                        <td>
-                            <mat-form-field class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{t('district')}}</mat-label>
-                                <mat-select [formControlName]="'lName'" (selectionChange)="SelectDataCase($event)">
-                                    <input autocomplete="off" matInput appearance="fill"
-                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
-                                        (input)="filterDropDownData($event)">
-                                    <mat-option value="">Please Select</mat-option>
-                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
-                                    </ng-container>
-                                </mat-select>
-                            </mat-form-field>
-                        </td>
+                
 
                         <td>
-                            <mat-form-field class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{t('year')}}</mat-label>
-                                <mat-select [formControlName]="'lName'" (selectionChange)="SelectDataCase($event)">
-                                    <input autocomplete="off" matInput appearance="fill"
-                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
-                                        (input)="filterDropDownData($event)">
-                                    <mat-option value="">Please Select</mat-option>
-                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('state')}}</mat-label>
+                                <mat-select [formControlName]="'stateId'">
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let stData of stateDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="stData.stateId">{{stData.stateName}}</mat-option>
                                     </ng-container>
                                 </mat-select>
+                                <mat-error *ngIf="uploadDocumentForm.get('stateId').hasError('required')">
+                                     Required
+                                </mat-error>
                             </mat-form-field>
                         </td>
-
                         <td>
-                            <mat-form-field class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{t('caseNo')}}</mat-label>
-                                <mat-select [formControlName]="'lName'" (selectionChange)="SelectDataCase($event)">
-                                    <input autocomplete="off" matInput appearance="fill"
-                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
-                                        (input)="filterDropDownData($event)">
-                                    <mat-option value="">Please Select</mat-option>
-                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('district')}}</mat-label>
+                                <mat-select [formControlName]="'districtId'">
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let districtIData of districtDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="districtIData.districtId">{{districtIData.districtName}}</mat-option>
                                     </ng-container>
                                 </mat-select>
+                                <mat-error *ngIf="uploadDocumentForm.get('districtId').hasError('required')">
+                                    Required
+                                </mat-error>
                             </mat-form-field>
                         </td>
+                        <td>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('policeStation')}}</mat-label>
+                                <mat-select [formControlName]="'districtId'">
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let districtIData of districtDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="districtIData.districtId">{{districtIData.districtName}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                                <mat-error *ngIf="uploadDocumentForm.get('districtId').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                            <mat-label *transloco="let t" class="font-medium">{{ t('caseNo')}}</mat-label>
+                            <input matInput matInput [formControlName]="'caseNo'" maxlength="4" [required]="true">
+                            <mat-error *ngIf="uploadDocumentForm.get('caseNo').hasError('required')">
+                                Required
+                            </mat-error>
+                        </mat-form-field>
 
+                    </td>
+                    <td><mat-form-field appearance="outline"  class="example-full-width">
+                        <mat-label *transloco="let t" class="font-medium">{{t('caseStatus')}}</mat-label>
+                        <input matInput matInput [formControlName]="'caseStatus'">
+                        <mat-error *ngIf="uploadDocumentForm.get('caseStatus').hasError('required')">
+                            Required
+                        </mat-error>
+                    </mat-form-field>
+
+                </td>
                     </tr>
                 </table>
 
                 <table class="example-full-width" cellspacing="0">
                     <tr>
                         <td>
-                            <mat-form-field class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{t('registerDate')}}</mat-label>
+                            <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{t('year')}}</mat-label>
+                                <mat-select [formControlName]="'lName'" (selectionChange)="SelectDataCase($event)">
+                                    <input autocomplete="off" matInput appearance="fill"
+                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
+                                        (input)="filterDropDownData($event)">
+                                    <mat-option value="">Please Select</mat-option>
+                                    <ng-container *ngFor="let case of yearDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{t('registerDate')}}</mat-label>
                                 <input matInput [matDatepicker]="picker1" [placeholder]="'Choose a date'"
                                     [formControlName]="'startDate'">
                                 <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
@@ -137,19 +155,19 @@
                             </mat-form-field>
 
                         </td>
-                        <td><mat-form-field class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{ t('location')}}</mat-label>
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{ t('location')}}</mat-label>
                                 <input matInput matInput [formControlName]="'fName'" [required]="true">
-                                <mat-error *ngIf="addcitizenfeedbackForm.get('fName').hasError('required')">
+                                <mat-error *ngIf="uploadDocumentForm.get('fName').hasError('required')">
                                     Required
                                 </mat-error>
                             </mat-form-field>
 
                         </td>
-                        <td><mat-form-field class="example-full-width">
-                            <mat-label *transloco="let t" class="font-bold">{{ t('actSection')}}</mat-label>
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                            <mat-label *transloco="let t" class="font-medium">{{ t('actSection')}}</mat-label>
                             <input matInput matInput [formControlName]="'fName'" [required]="true">
-                            <mat-error *ngIf="addcitizenfeedbackForm.get('fName').hasError('required')">
+                            <mat-error *ngIf="uploadDocumentForm.get('fName').hasError('required')">
                                 Required
                             </mat-error>
                         </mat-form-field>
@@ -169,35 +187,34 @@
                     class="mb-5 mx-10 border-dashed border-2 border-primary-500 dark:bg-slate-700 bg-primary-50/50 rounded-lg h-auto max-h-[640px] min-h-[300px] ">
 
                     <div class="flex">
-                        <!--------------------------------------Show if no image is selected--------------------------------- -->
-                        <div class="m-auto  text-center font-semibold h-[300px] h-[300px] py-24  text-lg  w-full border-r-2 border-dashed border-primary-500"
-                            (files)="filesDropped($event)">
-                            <div class="flex justify-center">
-                                <img src="../../../../../../../assets/icons/Files.svg" class="w-[100px]"
-                                    alt="Processing Image">
+                        <div
+                            class="m-auto text-center font-semibold h-[300px] py-24 text-lg w-full border-r-2 border-dashed border-primary-500"
+                            [ngClass]="{'bg-primary-50/50': dragging }"
+                            (dragenter)="onDragEnter()"
+                            (dragover)="onDragOver($event)"
+                            (dragleave)="onDragLeave()"
+                            (drop)="filesDropped($event)">
+                            <div class="flex justify-center flex-wrap">
+                                <img *ngFor="let img of imgUrls" [src]="img" class="w-[100px] h-[100px] object-cover m-1" alt="Image Preview">
+                                <img *ngIf="imgUrls.length === 0" src="../../../../../assets/icons/Files.svg" class="w-[100px]" alt="Processing Image">
                             </div>
-                            <div class="text-blue-700 hover:cursor-pointer" (click)="f_input.click()"
-                                matTooltip="Browse files"> Browse
-                                files
-                            </div>
-                            <div class="text-gray-400 text-sm">Maximum allowed file size is 4MB per image </div>
-                            <div class="text-gray-400 text-sm">Only .jpeg,.jpg and .png images are allowed </div>
-
-
-                            <input autocomplete="off" type="file" class="hidden" hidden #f_input
-                                accept="image/png, image/jpeg" multiple (change)="selectImage(f_input.files,$event)">
+                            <div class="text-blue-700 hover:cursor-pointer" (click)="f_input.click()" matTooltip="Browse files">Browse files</div>
+                            <div class="text-gray-400 text-sm">Maximum allowed file size is 4MB per image</div>
+                            <div class="text-gray-400 text-sm">Only .jpeg, .jpg, and .png images are allowed</div>
+                            <input autocomplete="off" type="file" class="hidden" #f_input accept="image/png, image/jpeg" multiple
+                                (change)="selectImage(f_input.files, $event)">
                         </div>
                     </div>
                 </div>
 
                 <div class="flex items-center justify-end">
                     <button *transloco="let t" mat-button [color]="'accent'"
-                        [disabled]="addcitizenfeedbackForm.pristine || addcitizenfeedbackForm.untouched"
+                        [disabled]="uploadDocumentForm.pristine || uploadDocumentForm.untouched"
                         (click)="clearForm()">
                         {{t('clear')}}
                     </button>
                     <button *transloco="let t" class="ml-2" mat-flat-button [color]="'primary'"
-                        [disabled]="addcitizenfeedbackForm.pristine || addcitizenfeedbackForm.invalid"
+                        [disabled]="uploadDocumentForm.pristine || uploadDocumentForm.invalid"
                         (click)="saveCitizenFeedback()">
                         {{t('submit')}}
                     </button>

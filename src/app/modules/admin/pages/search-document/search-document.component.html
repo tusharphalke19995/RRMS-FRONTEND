@@ -56,80 +56,88 @@
             <fuse-alert class="mb-8" *ngIf="alert" [type]="alert.type" [showIcon]="false">
                 {{alert.message}}
             </fuse-alert>
-            <form class="example-form" [formGroup]="addcitizenInformationForm" #addcitizenInformationNgForm="ngForm">
-                <table class="example-full-width" cellspacing="0">
+            <form class="example-form" [formGroup]="searchDocumentForm" #addcitizenInformationNgForm="ngForm">
+                <table class="example-full-width mt-2" cellspacing="0">
                     <tr>
                         <td>
-                            <mat-form-field class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{t('state')}}</mat-label>
-                                <mat-select [formControlName]="'citizenInfo'"
-                                    (selectionChange)="SelectDataCase($event)">
-                                    <input autocomplete="off" matInput appearance="fill"
-                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
-                                        (input)="filterDropDownData($event)">
-                                    <mat-option value="">Please Select</mat-option>
-                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('firstName')}}</mat-label>
+                                <input matInput [formControlName]="'firstName'" placeholder="Enter employee name">
+                                <mat-error *ngIf="searchDocumentForm.get('firstName').hasError('required')">
+                                     Required
+                                </mat-error>
+                            </mat-form-field>
+                
+                          
+                        </td>
+                        <td>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('lastName')}}</mat-label>
+                                <input matInput [formControlName]="'lastName'" placeholder="Enter employee name">
+                                <mat-error *ngIf="searchDocumentForm.get('lastName').hasError('required')">
+                                     Required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+
+                        <td>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('state')}}</mat-label>
+                                <mat-select [formControlName]="'stateId'">
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let stData of stateDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="stData.stateId">{{stData.stateName}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                                <mat-error *ngIf="searchDocumentForm.get('stateId').hasError('required')">
+                                Required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{t('district')}}</mat-label>
+                                <mat-select [formControlName]="'districtId'">
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let districtIData of districtDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="districtIData.districtId">{{districtIData.districtName}}</mat-option>
                                     </ng-container>
                                 </mat-select>
                             </mat-form-field>
                         </td>
                         <td>
-                            <mat-form-field class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{t('district')}}</mat-label>
-                                <mat-select [formControlName]="'citizenInfo'"
-                                    (selectionChange)="SelectDataCase($event)">
-                                    <input autocomplete="off" matInput appearance="fill"
-                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
-                                        (input)="filterDropDownData($event)">
-                                    <mat-option value="">Please Select</mat-option>
-                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('policeStation')}}</mat-label>
+                                <mat-select [formControlName]="'districtId'">
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let districtIData of districtDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="districtIData.districtId">{{districtIData.districtName}}</mat-option>
                                     </ng-container>
                                 </mat-select>
+                                <mat-error *ngIf="searchDocumentForm.get('districtId').hasError('required')">
+                                Required
+                                </mat-error>
                             </mat-form-field>
                         </td>
-
-                        <td>
-                            <mat-form-field class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{t('year')}}</mat-label>
-                                <mat-select [formControlName]="'citizenInfo'"
-                                    (selectionChange)="SelectDataCase($event)">
-                                    <input autocomplete="off" matInput appearance="fill"
-                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
-                                        (input)="filterDropDownData($event)">
-                                    <mat-option value="">Please Select</mat-option>
-                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
-                                    </ng-container>
-                                </mat-select>
-                            </mat-form-field>
-                        </td>
-
-                        <td>
-                            <mat-form-field class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{t('caseNo')}}</mat-label>
-                                <mat-select [formControlName]="'citizenInfo'"
-                                    (selectionChange)="SelectDataCase($event)">
-                                    <input autocomplete="off" matInput appearance="fill"
-                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
-                                        (input)="filterDropDownData($event)">
-                                    <mat-option value="">Please Select</mat-option>
-                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
-                                    </ng-container>
-                                </mat-select>
-                            </mat-form-field>
-                        </td>
-
+                       
                     </tr>
                 </table>
 
                 <table class="example-full-width" cellspacing="0">
                     <tr>
                         <td>
-                            <mat-form-field [ngClass]="formFieldHelpers" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{t('registerDate')}}</mat-label>
+                            <mat-form-field appearance="outline" [ngClass]="formFieldHelpers" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{t('firregisterFromDate')}}</mat-label>
+                                <input matInput [matDatepicker]="picker1" [placeholder]="'Choose a date'"
+                                    [formControlName]="'startDate'">
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                            </mat-form-field>
+
+                        </td>
+                        <td>
+                            <mat-form-field appearance="outline" [ngClass]="formFieldHelpers" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{t('firregisterToDate')}}</mat-label>
                                 <input matInput [matDatepicker]="picker1" [placeholder]="'Choose a date'"
                                     [formControlName]="'startDate'">
                                 <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
@@ -138,21 +146,20 @@
 
                         </td>
 
-
-                        <td><mat-form-field class="example-full-width">
-                            <mat-label *transloco="let t" class="font-bold">{{t('location')}}</mat-label>
-                            <input matInput matInput [formControlName]="'location'">
-                            <mat-error *ngIf="addcitizenInformationForm.get('location').hasError('required')">
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                            <mat-label *transloco="let t" class="font-medium">{{t('caseNo')}}</mat-label>
+                            <input matInput matInput [formControlName]="'caseNo'" maxlength="4">
+                            <mat-error *ngIf="searchDocumentForm.get('caseNo').hasError('required')">
                                 Required
                             </mat-error>
                         </mat-form-field>
 
                     </td>
 
-                    <td><mat-form-field class="example-full-width">
-                        <mat-label *transloco="let t" class="font-bold">{{t('actSection')}}</mat-label>
-                        <input matInput matInput [formControlName]="'location'">
-                        <mat-error *ngIf="addcitizenInformationForm.get('location').hasError('required')">
+                    <td><mat-form-field appearance="outline"  class="example-full-width">
+                        <mat-label *transloco="let t" class="font-medium">{{t('caseStatus')}}</mat-label>
+                        <input matInput matInput [formControlName]="'caseStatus'">
+                        <mat-error *ngIf="searchDocumentForm.get('caseStatus').hasError('required')">
                             Required
                         </mat-error>
                     </mat-form-field>
@@ -165,11 +172,11 @@
 
                 <div class="flex items-center justify-center">
                     <button *transloco="let t" mat-button [color]="'accent'"
-                        [disabled]="addcitizenInformationForm.pristine || addcitizenInformationForm.untouched"
+                        [disabled]="searchDocumentForm.pristine || searchDocumentForm.untouched"
                         (click)="clearForm()">
                        {{t('clear')}}
                     </button>
-                        <!-- [disabled]="addcitizenInformationForm.pristine || addcitizenInformationForm.invalid" -->
+                        <!-- [disabled]="searchDocumentForm.pristine || searchDocumentForm.invalid" -->
 
                     <button *transloco="let t" class="ml-2" mat-flat-button [color]="'primary'"
                         (click)="saveCitizenFeedback()">

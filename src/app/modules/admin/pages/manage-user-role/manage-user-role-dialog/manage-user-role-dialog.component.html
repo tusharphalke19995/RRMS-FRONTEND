@@ -1,1 +1,120 @@
-<p>manage-user-role-dialog works!</p>
+<div class="flex flex-col max-w-340 md:min-w-160 max-h-screen">
+
+    
+    <!-- Header with improved styling -->
+    <div class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md"
+        cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle cdkDrag>
+        <div class="flex items-center">
+            <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('updateRole')}}</span>
+        </div>
+        <button mat-icon-button class=" rounded-full transition-colors duration-200" (click)="onNoClose()" [tabIndex]="-1">
+            <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+        </button>
+    </div>
+
+    <!-- Form Content -->
+    <form [formGroup]="updateRoleForm" class="flex flex-col flex-auto p-6 overflow-y-auto">
+        <!-- First Row -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('firstName')}}</mat-label>
+                <input matInput [formControlName]="'firstName'" placeholder="Enter employee name">
+                <mat-error *ngIf="updateRoleForm.get('firstName').hasError('required')">
+                    This field is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('lastName')}}</mat-label>
+                <input matInput [formControlName]="'lastName'" placeholder="Enter employee name">
+                <mat-error *ngIf="updateRoleForm.get('lastName').hasError('required')">
+                    This field is required
+                </mat-error>
+            </mat-form-field>
+
+
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('userEmail')}}</mat-label>
+                <input matInput [formControlName]="'emailID'" placeholder="Enter email">
+                <mat-error *ngIf="updateRoleForm.get('emailID').hasError('required')">
+                    This field is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('kgId')}}</mat-label>
+                <input matInput [formControlName]="'kgid'" placeholder="Enter KG ID">
+                <mat-error *ngIf="updateRoleForm.get('kgid').hasError('required')">
+                    This field is required
+                </mat-error>
+            </mat-form-field>
+
+            <!-- <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('designation')}}</mat-label>
+                <input matInput [formControlName]="'designation'" placeholder="Enter designation">
+                <mat-error *ngIf="updateRoleForm.get('designation').hasError('required')">
+                    This field is required
+                </mat-error>
+            </mat-form-field> -->
+        </div>
+
+        <!-- Second Row -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('role')}}</mat-label>
+                <mat-select [formControlName]="'roleId'">
+                    <mat-option [value]="null">Please Select</mat-option>
+                    <ng-container *ngFor="let roleInfo of userRoleDropdown; trackBy: trackByFn">
+                        <mat-option [value]="roleInfo.roleId">{{roleInfo.roleName}}</mat-option>
+                    </ng-container>
+                </mat-select>
+                <mat-error *ngIf="updateRoleForm.get('roleId').hasError('required')">
+                    Role is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('division')}}</mat-label>
+                <mat-select [formControlName]="'divisionId'">
+                    <mat-option [value]="null">Please Select</mat-option>
+                    <ng-container *ngFor="let roleInfo of divisionDropdown; trackBy: trackByFn">
+                        <mat-option [value]="roleInfo.divisionId">{{roleInfo.divisionName}}</mat-option>
+                    </ng-container>
+                </mat-select>
+                <mat-error *ngIf="updateRoleForm.get('divisionId').hasError('required')">
+                    Role is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('division')}}</mat-label>
+                <mat-select [formControlName]="'designationId'">
+                    <mat-option [value]="null">Please Select</mat-option>
+                    <ng-container *ngFor="let designData of designationsDropdown; trackBy: trackByFn">
+                        <mat-option [value]="designData.designationId">{{designData.designationName}}</mat-option>
+                    </ng-container>
+                </mat-select>
+                <mat-error *ngIf="updateRoleForm.get('designationId').hasError('required')">
+                    Role is required
+                </mat-error>
+            </mat-form-field>
+          
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
+            <button mat-flat-button
+                    class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
+                    (click)="updateRoleDetailsByRoleID()"
+                    [disabled]="this.updateRoleForm.invalid" *transloco="let t" >
+                   {{t('update')}}
+            </button>
+            <button mat-stroked-button
+                    class="min-w-[90px] px-6 py-2 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                    (click)="onNoClose()" *transloco="let t" >
+                
+                {{t('cancel')}}
+            </button>
+        </div>
+    </form>
+</div>

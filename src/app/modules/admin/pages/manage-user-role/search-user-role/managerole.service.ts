@@ -13,17 +13,28 @@ import { ErrorResponseModel } from "app/shared/models/error-model";
 @Injectable({
   providedIn: "root",
 })
-export class SearchUserService {
+export class ManageroleService {
   constructor(
     private _httpClient: HttpClient,
     private commonApiCallService: CommonApiCallService
   ) {}
 
-  createUser(data) {
-    return this.commonApiCallService
-      .postWithHeader(apiurls.createUser, data, {})
-      .pipe(catchError(this.handleError));
-  }
+  // updateRole(data) {
+  //   return this._httpClient.patch(apiurls.updateRoleByRoleId, data, {})
+  //     .pipe(catchError(this.handleError));
+  // }
+
+  updateRole(userId: number, data: any) {
+    const url = `${apiurls.updateRoleByRoleId}${userId}/`; // Construct the full URL with user ID
+    return this._httpClient.patch(url, data, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
+
+
 
   getUserList() {
     return this.commonApiCallService
@@ -49,7 +60,7 @@ export class SearchUserService {
       .pipe(catchError(this.handleError));
   }
 
-  
+
   /**
    * The error handler.
    * @param err The http error response.

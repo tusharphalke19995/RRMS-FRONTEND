@@ -19,7 +19,7 @@
                                 {{t('Home')}} </a>
                         </div>
                     </ng-container>
-                   
+
                     <div class="flex items-center ml-1 whitespace-nowrap">
                         <mat-icon class="icon-size-5 text-secondary"
                             [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
@@ -39,6 +39,7 @@
                 </div>
             </div>
             <!-- Title -->
+        
             <div class="mt-2 flex items-center justify-between">
                 <ng-container *transloco="let t">
                     <div class="text-3xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
@@ -52,235 +53,88 @@
     </div>
 
     <!-- Main -->
-    <div class="flex-auto p-6 sm:p-10 overflow-y-auto" cdkScrollable>
+    <div class="flex-auto p-2 sm:p-5 overflow-y-auto" cdkScrollable>
         <div class="flex flex-auto overflow-hidden">
             <fuse-alert class="mb-8" *ngIf="alert" [type]="alert.type" [showIcon]="false">
                 {{alert.message}}
             </fuse-alert>
-            <form class="example-form" [formGroup]="addcitizenInformationForm" #addcitizenInformationNgForm="ngForm">
-                <table class="example-full-width" cellspacing="0">
-                    <tr>
-                        <td>
-                            <mat-form-field class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{t('state')}}</mat-label>
-                                <mat-select [formControlName]="'citizenInfo'"
-                                    (selectionChange)="SelectDataCase($event)">
-                                    <input autocomplete="off" matInput appearance="fill"
-                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
-                                        (input)="filterDropDownData($event)">
-                                    <mat-option value="">Please Select</mat-option>
-                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
-                                    </ng-container>
-                                </mat-select>
-                            </mat-form-field>
-                        </td>
-                        <td>
-                            <mat-form-field class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{t('district')}}</mat-label>
-                                <mat-select [formControlName]="'citizenInfo'"
-                                    (selectionChange)="SelectDataCase($event)">
-                                    <input autocomplete="off" matInput appearance="fill"
-                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
-                                        (input)="filterDropDownData($event)">
-                                    <mat-option value="">Please Select</mat-option>
-                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
-                                    </ng-container>
-                                </mat-select>
-                            </mat-form-field>
-                        </td>
-
-                        <td>
-                            <mat-form-field class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{t('year')}}</mat-label>
-                                <mat-select [formControlName]="'citizenInfo'"
-                                    (selectionChange)="SelectDataCase($event)">
-                                    <input autocomplete="off" matInput appearance="fill"
-                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
-                                        (input)="filterDropDownData($event)">
-                                    <mat-option value="">Please Select</mat-option>
-                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
-                                    </ng-container>
-                                </mat-select>
-                            </mat-form-field>
-                        </td>
-
-                        <td>
-                            <mat-form-field class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{t('caseNo')}}</mat-label>
-                                <mat-select [formControlName]="'citizenInfo'"
-                                    (selectionChange)="SelectDataCase($event)">
-                                    <input autocomplete="off" matInput appearance="fill"
-                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
-                                        (input)="filterDropDownData($event)">
-                                    <mat-option value="">Please Select</mat-option>
-                                    <ng-container *ngFor="let case of citizenInfoDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="case.value">{{case.value}}</mat-option>
-                                    </ng-container>
-                                </mat-select>
-                            </mat-form-field>
-                        </td>
-
-                    </tr>
-                </table>
-
-                <table class="example-full-width" cellspacing="0">
-                    <tr>
-                        <td>
-                            <mat-form-field [ngClass]="formFieldHelpers" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-bold">{{t('registerDate')}}</mat-label>
-                                <input matInput [matDatepicker]="picker1" [placeholder]="'Choose a date'"
-                                    [formControlName]="'startDate'">
-                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-                                <mat-datepicker #picker1></mat-datepicker>
-                            </mat-form-field>
-
-                        </td>
-
-
-                        <td><mat-form-field class="example-full-width">
-                            <mat-label *transloco="let t" class="font-bold">{{t('location')}}</mat-label>
-                            <input matInput matInput [formControlName]="'location'">
-                            <mat-error *ngIf="addcitizenInformationForm.get('location').hasError('required')">
-                                Required
-                            </mat-error>
-                        </mat-form-field>
-
-                    </td>
-
-                    <td><mat-form-field class="example-full-width">
-                        <mat-label *transloco="let t" class="font-bold">{{t('actSection')}}</mat-label>
-                        <input matInput matInput [formControlName]="'location'">
-                        <mat-error *ngIf="addcitizenInformationForm.get('location').hasError('required')">
-                            Required
-                        </mat-error>
-                    </mat-form-field>
-
-                </td>
-                    </tr>
-
-                    
-                </table>
-
-                <div class="flex items-center justify-center">
-                    <button *transloco="let t" mat-button [color]="'accent'"
-                        [disabled]="addcitizenInformationForm.pristine || addcitizenInformationForm.untouched"
-                        (click)="clearForm()">
-                       {{t('clear')}}
-                    </button>
-                        <!-- [disabled]="addcitizenInformationForm.pristine || addcitizenInformationForm.invalid" -->
-
-                    <button *transloco="let t" class="ml-2" mat-flat-button [color]="'primary'"
-                        (click)="saveCitizenFeedback()">
-                        {{t('search')}}
-                        
-                    </button>
-                </div>
-            </form>
-
-
-           
-
         </div>
         <div class="overflow-x-auto">
-            <table bordered multiTemplateDataRows [dataSource]="dataSource"
-            class="w-full mt-[10px]  " mat-table matSort #sort1="matSort">
-
-            <ng-container *ngFor="let column of columns">
-                <ng-container [matColumnDef]="column.property">
-                    <ng-container *ngIf="column.labelen=='Action';else expand">
-                        <th *matHeaderCellDef
-                            class="bg-primary-300 dark:bg-slate-500 text-black "
-                            mat-header-cell>
-                            {{ resLangValue == 'en' }}</th>
-                    </ng-container>
-                    <ng-template #expand>
-                        <ng-container *ngIf="column.labelen=='Expand';else nonActionBlock">
-                            <th *matHeaderCellDef
-                                class="bg-primary-300 dark:bg-slate-500 text-black "
-                                mat-header-cell>
-                            </th>
-                        </ng-container>
-                    </ng-template>
-
-                    <ng-template #nonActionBlock>
-                        <th *matHeaderCellDef
-                            class="bg-primary-300 dark:bg-slate-500 text-black " mat-header-cell
-                            mat-sort-header> {{ resLangValue == 'en' ?
-                            column.labelen : column.labelhi }}</th>
-                    </ng-template>
-
-                    <ng-container *ngIf="column.labelen=='Action';else textBlock">
-                        <td *matCellDef="let row" mat-cell>
-
-                            <div class="flex justify-around border-0">
-                                <button mat-icon-button color="primary"
-                                    (click)="approveWatchlist(row)">
-                                    <img class="w-5"
-                                        src="/assets/images/others/approve_small.svg"
-                                        matTooltip="Approve">
-                                </button>
-                                <button mat-icon-button color="danger"
-                                    (click)="rejectWatchlist(row)">
-                                    <img class="w-4"
-                                        src="/assets/images/others/reject_small.svg"
-                                        matTooltip="Reject">
-                                </button>
-                            </div>
-
-                        </td>
-                    </ng-container>       
-
-                    <ng-template #textBlock>
-                        <td *matCellDef="let row" mat-cell class="">
-                            <div *ngIf="!row[column.property];else elseBlock">
-                                N/A
-                            </div>
-                            <ng-template #elseBlock>
-                                <div [mdePopoverTriggerFor]="mainPopover"
-                                    mdePopoverTriggerOn="hover"
-                                    #popoverTrigger="mdePopoverTrigger"
-                                    class="truncate font-medium">
-                                    {{ row[column.property]}}
-                                </div>
-                                <mde-popover #mainPopover="mdePopover"
-                                    [mdePopoverOverlapTrigger]="false">
-                                    <mat-card style="max-width: 300px">
-                                        <mat-card-content>
-                                            <div class="text-primary font-semibold divide-y ">
-                                                {{ resLangValue == 'en' ?
-                                                column.labelen : column.labelhi }}</div>
-                                            {{ row[column.property]}}
-                                        </mat-card-content>
-                                    </mat-card>
-                                </mde-popover>
-
-                            </ng-template>
-                        </td>
-                    </ng-template>
-
+            <table mat-table [dataSource]="dataSource" matSort #sort1="matSort" class="w-full mt-[10px]">
+                <!-- ID Column -->
+               
+                <!--First Name Column -->
+                <ng-container matColumnDef="first_name">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">First Name </th>
+                    <td mat-cell *matCellDef="let row"> {{row.first_name}} </td>
                 </ng-container>
 
-            </ng-container>
+                     <!--Last Name Column -->
+                     <ng-container matColumnDef="last_name">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Last Name </th>
+                        <td mat-cell *matCellDef="let row"> {{row.last_name}} </td>
+                    </ng-container>
+
+                <!-- Division Name Column -->
+                <ng-container matColumnDef="divisionName">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black"> Division Name </th>
+                    <td mat-cell *matCellDef="let row"> {{row.divisionName}} </td>
+                </ng-container>
+
+                  <!-- Role Column -->
+                  <ng-container matColumnDef="roleName">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black"> Role Name </th>
+                    <td mat-cell *matCellDef="let row"> {{row.roleName}} </td>
+                </ng-container>
+                   <!-- Role Column -->
+                   <ng-container matColumnDef="designationName">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black"> Designation Name </th>
+                    <td mat-cell *matCellDef="let row"> {{row.designationName}} </td>
+                </ng-container>
+
+                <!-- KGID Column -->
+                <ng-container matColumnDef="kgid">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black"> KGID </th>
+                    <td mat-cell *matCellDef="let row"> {{row.kgid}} </td>
+                </ng-container>
+
+                <!-- Mobile Column -->
+                <ng-container matColumnDef="rankId">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black"> Rank </th>
+                    <td mat-cell *matCellDef="let row"> {{row.dr}} </td>
+                </ng-container>
+
             
+                <!-- Action Column -->
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black"> Action </th>
+                    <td mat-cell *matCellDef="let row">
+                        <div class="flex justify-center gap-2">
+                            <button mat-icon-button color="primary" (click)="editUser(row)" matTooltip="Edit">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                            <!-- <button mat-icon-button color="warn" (click)="deleteUser(row)" matTooltip="Delete">
+                                <mat-icon>delete</mat-icon>
+                            </button> -->
+                        </div>
+                    </td>
+                </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                class="hover:bg-hover trans-ease-out example-element-rowborder  border-primary-500"
-                [ngClass]="{' border-l-4 border-primary-500 ':expandedElement == row}">
-            </tr>
-            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']"
-                class="example-detail-row bg-[#e2ecef] dark:bg-slate-600"
-                [ngClass]="{' border-l-4 border-primary-500 ':expandedElement == row}"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                    class="hover:bg-hover cursor-pointer"></tr>
+            </table>
 
-
-        </table>
+            <!-- No data message -->
+            <div *ngIf="dataSource?.data?.length === 0" class="p-8 text-center">
+                No records found
+            </div>
         </div>
         <div class="flex justify-end w-full dark:bg-gray-800 bg-card">
-            <mat-paginator #paginator1='matPaginator' [pageSizeOptions]="[50, 100, 200,500]"
-                showFirstLastButtons aria-label="Select page of periodic elements">
+            <mat-paginator #paginator1="matPaginator" 
+                           [pageSizeOptions]="[5, 10, 25, 100]" 
+                           [pageSize]="10"
+                           showFirstLastButtons>
             </mat-paginator>
         </div>
     </div>

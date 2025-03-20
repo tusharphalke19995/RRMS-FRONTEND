@@ -54,5 +54,13 @@
   "role": "ಪಾತ್ರ",
   "cid": "CID",
   "designation": "ಹುದ್ದೆ",
-  "userName": "ಬಳಕೆದಾರ ಹೆಸರು"
+  "userName": "ಬಳಕೆದಾರ ಹೆಸರು",
+  "division": "Division",
+    "rank":"Rank",
+      "firregisterFromDate": "Fir Registration From Date",
+  "firregisterToDate": "Fir Registration To Date",
+    "caseStatus":"Case Status",
+      "updateRole":"Update Role",
+       "update":"Update",
+       "designations":"Designations Name"
 }
