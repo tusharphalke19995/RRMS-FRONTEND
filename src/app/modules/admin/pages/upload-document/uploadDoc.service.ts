@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor } from './uploadDoc.types';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, catchError, filter, map, Observable, of, switchMap, take, tap, throwError } from 'rxjs';
 import { CommonApiCallService } from 'app/shared/services/common-api-call.service';
 import { ErrorResponseModel } from 'app/shared/models/error-model';
@@ -25,6 +25,16 @@ export class UploadDocumentService {
        .pipe(catchError(this.handleError));
    }
 
+
+    geDistrictByStateData(stateId: number) {
+        const url = `${apiurls.getDistrict}${stateId}/`; // Construct the full URL with user ID
+        return this._httpClient.get(url, {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            })
+        }).pipe(catchError(this.handleError));
+      }
    getState() {
     return this.commonApiCallService
       .getWithHeader(apiurls.getState, {})

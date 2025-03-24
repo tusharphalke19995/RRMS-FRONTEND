@@ -7,7 +7,7 @@ export const apiurls = {
   getDivision: `${environment.userApiUrl}mdm/divisions/`,
   getDistrict: `${environment.userApiUrl}mdm/districts/`,
   getState: `${environment.userApiUrl}mdm/states/`,
-  geDistrictByState: `${environment.userApiUrl}api/districts?stateId=`,
+  geDistrictByState: `${environment.userApiUrl}api/districts/`,
   updateRoleByRoleId: `${environment.userApiUrl}users/update-user/`,
   getDesignations: `${environment.userApiUrl}mdm/designations/`,
 }as const;

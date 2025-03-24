@@ -200,7 +200,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     }
 
     getUserDistrictDropdown() {
-        this._uploadDocumentService.getUserDistrict().subscribe({
+        this._uploadDocumentService.geDistrictByStateData(16).subscribe({
           next: (response: any) => {
             console.log("response", response);
             this.districtDropdown= response;
