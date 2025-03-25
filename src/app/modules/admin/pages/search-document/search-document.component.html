@@ -61,29 +61,8 @@
                     <tr>
                         <td>
                             <mat-form-field appearance="outline" class="w-full">
-                                <mat-label *transloco="let t" class="font-medium">{{t('firstName')}}</mat-label>
-                                <input matInput [formControlName]="'firstName'" placeholder="Enter employee name">
-                                <mat-error *ngIf="searchDocumentForm.get('firstName').hasError('required')">
-                                     Required
-                                </mat-error>
-                            </mat-form-field>
-                
-                          
-                        </td>
-                        <td>
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label *transloco="let t" class="font-medium">{{t('lastName')}}</mat-label>
-                                <input matInput [formControlName]="'lastName'" placeholder="Enter employee name">
-                                <mat-error *ngIf="searchDocumentForm.get('lastName').hasError('required')">
-                                     Required
-                                </mat-error>
-                            </mat-form-field>
-                        </td>
-
-                        <td>
-                            <mat-form-field appearance="outline" class="w-full">
                                 <mat-label *transloco="let t" class="font-medium">{{t('state')}}</mat-label>
-                                <mat-select [formControlName]="'stateId'">
+                                <mat-select [formControlName]="'stateId'" (selectionChange)="onStateChange($event.value)">
                                     <mat-option [value]="null">Please Select</mat-option>
                                     <ng-container *ngFor="let stData of stateDropdown; trackBy: trackByFn">
                                         <mat-option [value]="stData.stateId">{{stData.stateName}}</mat-option>
@@ -108,17 +87,39 @@
                         <td>
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-label *transloco="let t" class="font-medium">{{t('policeStation')}}</mat-label>
-                                <mat-select [formControlName]="'districtId'">
+                                <mat-select [formControlName]="'unitsId'">
                                     <mat-option [value]="null">Please Select</mat-option>
-                                    <ng-container *ngFor="let districtIData of districtDropdown; trackBy: trackByFn">
+                                    <ng-container *ngFor="let districtIData of unitsDropdown; trackBy: trackByFn">
                                         <mat-option [value]="districtIData.districtId">{{districtIData.districtName}}</mat-option>
                                     </ng-container>
                                 </mat-select>
-                                <mat-error *ngIf="searchDocumentForm.get('districtId').hasError('required')">
+                                <mat-error *ngIf="searchDocumentForm.get('unitsId').hasError('required')">
                                 Required
                                 </mat-error>
                             </mat-form-field>
                         </td>
+                       
+                        <td>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('firstName')}}</mat-label>
+                                <input matInput [formControlName]="'firstName'" placeholder="Enter employee name">
+                                <mat-error *ngIf="searchDocumentForm.get('firstName').hasError('required')">
+                                     Required
+                                </mat-error>
+                            </mat-form-field>
+                
+                          
+                        </td>
+                        <td>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('lastName')}}</mat-label>
+                                <input matInput [formControlName]="'lastName'" placeholder="Enter employee name">
+                                <mat-error *ngIf="searchDocumentForm.get('lastName').hasError('required')">
+                                     Required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+
                        
                     </tr>
                 </table>

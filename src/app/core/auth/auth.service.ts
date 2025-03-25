@@ -1,15 +1,23 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { AuthUtils } from 'app/core/auth/auth.utils';
 import { UserService } from 'app/core/user/user.service';
+import { apiurls } from 'app/shared/constants/api-urls.constant';
 import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
-
+export interface UserModel {
+    UserID: number | null;
+    UserName: string | null;
+    Email: string | null;
+    RequestIP: string | null;
+   
+  }
 @Injectable({providedIn: 'root'})
 export class AuthService
 {
     private _authenticated: boolean = false;
     private _httpClient = inject(HttpClient);
     private _userService = inject(UserService);
+
+   
 
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
@@ -52,37 +60,18 @@ export class AuthService
         return this._httpClient.post('api/auth/reset-password', password);
     }
 
-    /**
-     * Sign in
-     *
-     * @param credentials
-     */
-    signIn(credentials: { email: string; password: string }): Observable<any>
-    {
-        // Throw error, if the user is already logged in
-        if ( this._authenticated )
-        {
-            return throwError('User is already logged in.');
-        }
 
-        return this._httpClient.post('api/auth/sign-in', credentials).pipe(
-            switchMap((response: any) =>
-            {
-                // Store the access token in the local storage
-                this.accessToken = response.accessToken;
-
-                // Set the authenticated flag to true
-                this._authenticated = true;
-
-                // Store the user on the user service
-                this._userService.user = response.user;
-
-                // Return a new observable with the response
-                return of(response);
-            }),
-        );
+    userLogin(data) {
+        debugger
+        return this._httpClient.post(apiurls.userLogin, data)
+            .pipe(
+                catchError((error) => {
+                    console.error("API Error:", error);
+                    // Return a user-friendly error message
+                    return of({ success: false, message: error.error?.message || 'An error occurred. Please try again.' });
+                })
+            );
     }
-
     /**
      * Sign in using the access token
      */
@@ -158,30 +147,30 @@ export class AuthService
         return this._httpClient.post('api/auth/unlock-session', credentials);
     }
 
-    /**
-     * Check the authentication status
-     */
-    check(): Observable<boolean>
-    {
-        // Check if the user is logged in
-        if ( this._authenticated )
-        {
+    check(): Observable<boolean> {
+        const token = this.accessToken;
+        if (token) {
             return of(true);
         }
+        return of(false);
+    }
 
-        // Check the access token availability
-        if ( !this.accessToken )
-        {
-            return of(false);
-        }
+    getAuthData() {
+        const token = localStorage.getItem('accessToken');
+        const decodeToken = this.decodeToken(token);
+        const employeeDetails = JSON.parse(decodeToken?.employeeDetails);
+        const authData: UserModel = {
+            UserID: Number(decodeToken.UserId),
+            UserName: decodeToken.UserName,
+            Email: decodeToken.Email,
+            RequestIP: ''
+        };
+        return authData;
+      }
 
-        // Check the access token expire date
-        if ( AuthUtils.isTokenExpired(this.accessToken) )
-        {
-            return of(false);
-        }
-
-        // If the access token exists, and it didn't expire, sign in using it
-        return this.signInUsingToken();
+      private decodeToken(token: string): any {
+        const payload = token.split('.')[1]; // Get the payload part of the JWT
+        const decodedPayload = atob(payload); // Decode the Base64 string
+        return JSON.parse(decodedPayload); // Parse the JSON string into an object
     }
 }

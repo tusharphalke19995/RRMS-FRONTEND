@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { take } from "lodash";
-import { catchError, Observable, switchMap, throwError } from "rxjs";
+import { catchError, Observable, of, switchMap, throwError } from "rxjs";
 import {
   HttpClient,
   HttpErrorResponse,
@@ -24,6 +24,20 @@ export class SearchUserService {
       .postWithHeader(apiurls.createUser, data, {})
       .pipe(catchError(this.handleError));
   }
+
+
+  userLogin(data) {
+    debugger
+    return this.commonApiCallService
+        .post('http://127.0.0.1:8000/users/login/', data)
+        .pipe(
+            catchError((error) => {
+                console.error("API Error:", error);
+                // Return a user-friendly error message
+                return of({ success: false, message: error.error?.message || 'An error occurred. Please try again.' });
+            })
+        );
+}
 
   getUserList() {
     return this.commonApiCallService

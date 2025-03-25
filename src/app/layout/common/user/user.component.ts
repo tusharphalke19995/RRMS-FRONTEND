@@ -6,6 +6,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router } from '@angular/router';
+import { AuthService } from 'app/core/auth/auth.service';
 import { UserService } from 'app/core/user/user.service';
 import { User } from 'app/core/user/user.types';
 import { Subject, takeUntil } from 'rxjs';
@@ -24,7 +25,7 @@ export class UserComponent implements OnInit, OnDestroy
     /* eslint-disable @typescript-eslint/naming-convention */
     static ngAcceptInputType_showAvatar: BooleanInput;
     /* eslint-enable @typescript-eslint/naming-convention */
-
+    authData:any;
     @Input() showAvatar: boolean = true;
     user: User;
 
@@ -37,8 +38,11 @@ export class UserComponent implements OnInit, OnDestroy
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router,
         private _userService: UserService,
+        private authenticationService:AuthService,
+        
     )
     {
+        // this.authData = this.authenticationService.getAuthData();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -50,6 +54,7 @@ export class UserComponent implements OnInit, OnDestroy
      */
     ngOnInit(): void
     {
+        console.log(" this.authData", this.authData)
         // Subscribe to user changes
         this._userService.user$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -102,5 +107,6 @@ export class UserComponent implements OnInit, OnDestroy
     signOut(): void
     {
         this._router.navigate(['/sign-out']);
+        localStorage.clear();
     }
 }

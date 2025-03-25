@@ -92,7 +92,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
         },
     ];
     stateDropdown: [];
-    districtDropdown: [];
+    districtDropdown: any;
+    unitsDropdown: any;
     dataShow = [
         {
             id: 0,
@@ -136,8 +137,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.initForm();
-        this.getUserDistrictDropdown();
         this.getUserStateDropdown();
+        this.onStateChange(16);
     }
 
     /**
@@ -159,7 +160,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
             districtId: ['', [Validators.required]],
             caseNo:['',[Validators.required]],
             caseStatus:['',[Validators.required]],
-            policeStation:[''],
+            unitsId:[''],
             stateId:['']
         });
     }
@@ -199,14 +200,21 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
         return item.id || index;
     }
 
-    getUserDistrictDropdown() {
-        this._uploadDocumentService.geDistrictByStateData(16).subscribe({
-          next: (response: any) => {
-            console.log("response", response);
-            this.districtDropdown= response;
-          },
-          error: (error) => {},
-        });
+      onStateChange(stateId: number): void {
+        if (stateId) {
+          this._uploadDocumentService.geDistrictByStateData(stateId).subscribe(
+            (districts) => {
+              this.districtDropdown = districts; 
+              this.searchDocumentForm.get('districtId')?.setValue(443);
+              this.getUnitsByDistictIdInfo()
+            },
+            (error) => {
+              console.error('Error fetching districts:', error);
+            }
+          );
+        } else {
+          this.districtDropdown = [];
+        }
       }
 
       getUserStateDropdown() {
@@ -223,6 +231,16 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
                 }
             });
         
+          },
+          error: (error) => {},
+        });
+      }
+
+      getUnitsByDistictIdInfo() {
+        this._uploadDocumentService.getUnitsByDistictIdData(443).subscribe({
+          next: (response: any) => {
+            console.log("response", response);
+            this.unitsDropdown= response;
           },
           error: (error) => {},
         });

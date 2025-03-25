@@ -25,16 +25,26 @@ export class UploadDocumentService {
        .pipe(catchError(this.handleError));
    }
 
+   geDistrictByStateData(stateId: number) {
+    const url = `${apiurls.getDistrict}${stateId}/`; 
+    return this._httpClient.get(url, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
 
-    geDistrictByStateData(stateId: number) {
-        const url = `${apiurls.getDistrict}${stateId}/`; // Construct the full URL with user ID
-        return this._httpClient.get(url, {
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            })
-        }).pipe(catchError(this.handleError));
-      }
+getUnitsByDistictIdData(districtId: number) {
+  const url = `${apiurls.getUnitsByDistictId}${districtId}/`; 
+  return this._httpClient.get(url, {
+      headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+      })
+  }).pipe(catchError(this.handleError));
+}
+
    getState() {
     return this.commonApiCallService
       .getWithHeader(apiurls.getState, {})

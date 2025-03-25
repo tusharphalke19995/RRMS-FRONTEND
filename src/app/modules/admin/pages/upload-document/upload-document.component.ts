@@ -82,6 +82,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     vendors: InventoryVendor[];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     alert: { type: string; message: string };
+    unitsDropdown:any;
     citizenInfoDropdown = [
         {
             id: 0,
@@ -118,7 +119,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
             value: '2020',
         },
     ];
-    districtDropdown: [];
+    districtDropdown: any;
     stateDropdown: [];
     dragging: boolean = false;
     imgUrls: string[] = []; // Array to hold image preview URLs
@@ -143,6 +144,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         this.initForm();
         this.getUserDistrictDropdown();
         this.getUserStateDropdown();
+        this.onStateChange(16);
     }
 
     /**
@@ -174,7 +176,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
             districtId: ['', [Validators.required]],
             year: [''],
             caseStatus:[''],
-            policeStation:['']
+            unitsId:['']
         });
     }
 
@@ -288,6 +290,31 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.dragging = true;
   }
+  onStateChange(stateId: number): void {
+    if (stateId) {
+      this._uploadDocumentService.geDistrictByStateData(stateId).subscribe(
+        (districts) => {
+          this.districtDropdown = districts; 
+          this.uploadDocumentForm.get('districtId')?.setValue(443);
+          this.getUnitsByDistictIdInfo()
+        },
+        (error) => {
+          console.error('Error fetching districts:', error);
+        }
+      );
+    } else {
+      this.districtDropdown = [];
+    }
+  }
 
+  getUnitsByDistictIdInfo() {
+    this._uploadDocumentService.getUnitsByDistictIdData(443).subscribe({
+      next: (response: any) => {
+        console.log("response", response);
+        this.unitsDropdown= response;
+      },
+      error: (error) => {},
+    });
+  }
 }
 
