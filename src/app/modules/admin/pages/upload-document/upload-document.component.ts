@@ -145,6 +145,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         this.getUserDistrictDropdown();
         this.getUserStateDropdown();
         this.onStateChange(16);
+        this.onDisctrictChange(443);
     }
 
     /**
@@ -213,7 +214,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
 
 
           getUserDistrictDropdown() {
-            this._uploadDocumentService.getUserDistrict().subscribe({
+            this._uploadDocumentService.geDistrictByStateData(16).subscribe({
               next: (response: any) => {
                 console.log("response", response);
                 this.districtDropdown= response;
@@ -296,7 +297,6 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         (districts) => {
           this.districtDropdown = districts; 
           this.uploadDocumentForm.get('districtId')?.setValue(443);
-          this.getUnitsByDistictIdInfo()
         },
         (error) => {
           console.error('Error fetching districts:', error);
@@ -307,8 +307,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     }
   }
 
-  getUnitsByDistictIdInfo() {
-    this._uploadDocumentService.getUnitsByDistictIdData(443).subscribe({
+  onDisctrictChange(stateId: number): void {
+    this._uploadDocumentService.getUnitsByDistictIdData(stateId).subscribe({
       next: (response: any) => {
         console.log("response", response);
         this.unitsDropdown= response;

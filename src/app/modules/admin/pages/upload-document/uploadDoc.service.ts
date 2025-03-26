@@ -18,15 +18,8 @@ export class UploadDocumentService {
  {
  }
 
-
-   getUserDistrict() {
-     return this.commonApiCallService
-       .getWithHeader(apiurls.getDistrict, {})
-       .pipe(catchError(this.handleError));
-   }
-
    geDistrictByStateData(stateId: number) {
-    const url = `${apiurls.getDistrict}${stateId}/`; 
+    const url = `${apiurls.getDistrictByStateId}${stateId}`; 
     return this._httpClient.get(url, {
         headers: new HttpHeaders({
             'Content-Type': 'application/json',
@@ -36,7 +29,7 @@ export class UploadDocumentService {
 }
 
 getUnitsByDistictIdData(districtId: number) {
-  const url = `${apiurls.getUnitsByDistictId}${districtId}/`; 
+  const url = `${apiurls.getUnitsByDistictId}${districtId}`; 
   return this._httpClient.get(url, {
       headers: new HttpHeaders({
           'Content-Type': 'application/json',

@@ -82,7 +82,7 @@
                         <td>
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-label *transloco="let t" class="font-medium">{{t('district')}}</mat-label>
-                                <mat-select [formControlName]="'districtId'">
+                                <mat-select [formControlName]="'districtId'" (selectionChange)="onDisctrictChange($event.value)">
                                     <mat-option [value]="null">Please Select</mat-option>
                                     <ng-container *ngFor="let districtIData of districtDropdown; trackBy: trackByFn">
                                         <mat-option [value]="districtIData.districtId">{{districtIData.districtName}}</mat-option>
@@ -98,8 +98,8 @@
                                 <mat-label *transloco="let t" class="font-medium">{{t('policeStation')}}</mat-label>
                                 <mat-select [formControlName]="'unitsId'">
                                     <mat-option [value]="null">Please Select</mat-option>
-                                    <ng-container *ngFor="let districtIData of unitsDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="districtIData.districtId">{{districtIData.districtName}}</mat-option>
+                                    <ng-container *ngFor="let unitsData of unitsDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="unitsData.unitId">{{unitsData.unitName}}</mat-option>
                                     </ng-container>
                                 </mat-select>
                                 <mat-error *ngIf="uploadDocumentForm.get('unitsId').hasError('required')">

@@ -108,13 +108,17 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     @ViewChild('paginator1') paginator1: MatPaginator
     dataSource: any=[];
     columns: any[] = [
-        { labelen: 'ID', labelhi: 'Case No', property: 'wlId' },
-        { labelen: 'Name',labelhi:'Document', property: 'wlName' },
-        { labelen: 'Action', labelhi: 'Action', property: 'action', isAction: true },
-    
-      ];
-    
-      displayedColumns: string[] = ['wlId','wlName','action'];
+      { labelen: 'State',labelhi:'State', property: 'stateName' },
+      { labelen: 'District',labelhi:'District', property: 'districtName' },
+      { labelen: 'Police Station',labelhi:'Police Station', property: 'psName' },
+      { labelen: 'Name',labelhi:'First Name', property: 'first_name' },
+      { labelen: 'Name',labelhi:'Last Name', property: 'last_name' },
+      { labelen: 'Case No',labelhi:'Case No', property: 'caseNo' },
+      { labelen: 'Case Status',labelhi:'Case Status', property: 'caseStatus' },
+      { labelen: 'Action', labelhi: 'Action', property: 'action', isAction: true },
+    ];
+  
+    displayedColumns: string[] = ['stateName','districtName','psName', 'first_name','last_name','caseStatus','caseNo','action'];
     
     /**
      * Constructor
@@ -139,6 +143,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
         this.initForm();
         this.getUserStateDropdown();
         this.onStateChange(16);
+        this.onDisctrictChange(443);
     }
 
     /**
@@ -206,7 +211,6 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
             (districts) => {
               this.districtDropdown = districts; 
               this.searchDocumentForm.get('districtId')?.setValue(443);
-              this.getUnitsByDistictIdInfo()
             },
             (error) => {
               console.error('Error fetching districts:', error);
@@ -236,8 +240,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
         });
       }
 
-      getUnitsByDistictIdInfo() {
-        this._uploadDocumentService.getUnitsByDistictIdData(443).subscribe({
+      onDisctrictChange(stateId: number): void {
+        this._uploadDocumentService.getUnitsByDistictIdData(stateId).subscribe({
           next: (response: any) => {
             console.log("response", response);
             this.unitsDropdown= response;
@@ -245,4 +249,6 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
           error: (error) => {},
         });
       }
+
+    
 }

@@ -75,8 +75,8 @@
                         </td>
                         <td>
                             <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium">{{t('district')}}</mat-label>
-                                <mat-select [formControlName]="'districtId'">
+                                <mat-label *transloco="let t" class="font-medium" >{{t('district')}}</mat-label>
+                                <mat-select [formControlName]="'districtId'" (selectionChange)="onDisctrictChange($event.value)">
                                     <mat-option [value]="null">Please Select</mat-option>
                                     <ng-container *ngFor="let districtIData of districtDropdown; trackBy: trackByFn">
                                         <mat-option [value]="districtIData.districtId">{{districtIData.districtName}}</mat-option>
@@ -89,8 +89,8 @@
                                 <mat-label *transloco="let t" class="font-medium">{{t('policeStation')}}</mat-label>
                                 <mat-select [formControlName]="'unitsId'">
                                     <mat-option [value]="null">Please Select</mat-option>
-                                    <ng-container *ngFor="let districtIData of unitsDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="districtIData.districtId">{{districtIData.districtName}}</mat-option>
+                                    <ng-container *ngFor="let unitsData of unitsDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="unitsData.unitId">{{unitsData.unitName}}</mat-option>
                                     </ng-container>
                                 </mat-select>
                                 <mat-error *ngIf="searchDocumentForm.get('unitsId').hasError('required')">
@@ -192,102 +192,87 @@
 
         </div>
         <div class="overflow-x-auto">
-            <table bordered multiTemplateDataRows [dataSource]="dataSource"
-            class="w-full mt-[10px]  " mat-table matSort #sort1="matSort">
-
-            <ng-container *ngFor="let column of columns">
-                <ng-container [matColumnDef]="column.property">
-                    <ng-container *ngIf="column.labelen=='Action';else expand">
-                        <th *matHeaderCellDef
-                            class="bg-primary-300 dark:bg-slate-500 text-black "
-                            mat-header-cell>
-                            {{ resLangValue == 'en' }}</th>
+            <table mat-table [dataSource]="dataSource" matSort #sort1="matSort" class="w-full mt-[10px]">
+                <!-- ID Column -->
+               
+                     <!--First Name Column -->
+                     <ng-container matColumnDef="stateName">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">State Name </th>
+                        <td mat-cell *matCellDef="let row"> {{row.stateName}} </td>
                     </ng-container>
-                    <ng-template #expand>
-                        <ng-container *ngIf="column.labelen=='Expand';else nonActionBlock">
-                            <th *matHeaderCellDef
-                                class="bg-primary-300 dark:bg-slate-500 text-black "
-                                mat-header-cell>
-                            </th>
+    
+                         <!--Last Name Column -->
+                         <ng-container matColumnDef="districtName">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">District Name </th>
+                            <td mat-cell *matCellDef="let row"> {{row.districtName}} </td>
                         </ng-container>
-                    </ng-template>
 
-                    <ng-template #nonActionBlock>
-                        <th *matHeaderCellDef
-                            class="bg-primary-300 dark:bg-slate-500 text-black " mat-header-cell
-                            mat-sort-header> {{ resLangValue == 'en' ?
-                            column.labelen : column.labelhi }}</th>
-                    </ng-template>
-
-                    <ng-container *ngIf="column.labelen=='Action';else textBlock">
-                        <td *matCellDef="let row" mat-cell>
-
-                            <div class="flex justify-around border-0">
-                                <button mat-icon-button color="primary"
-                                    (click)="approveWatchlist(row)">
-                                    <img class="w-5"
-                                        src="/assets/images/others/approve_small.svg"
-                                        matTooltip="Approve">
-                                </button>
-                                <button mat-icon-button color="danger"
-                                    (click)="rejectWatchlist(row)">
-                                    <img class="w-4"
-                                        src="/assets/images/others/reject_small.svg"
-                                        matTooltip="Reject">
-                                </button>
-                            </div>
-
-                        </td>
-                    </ng-container>       
-
-                    <ng-template #textBlock>
-                        <td *matCellDef="let row" mat-cell class="">
-                            <div *ngIf="!row[column.property];else elseBlock">
-                                N/A
-                            </div>
-                            <ng-template #elseBlock>
-                                <div [mdePopoverTriggerFor]="mainPopover"
-                                    mdePopoverTriggerOn="hover"
-                                    #popoverTrigger="mdePopoverTrigger"
-                                    class="truncate font-medium">
-                                    {{ row[column.property]}}
-                                </div>
-                                <mde-popover #mainPopover="mdePopover"
-                                    [mdePopoverOverlapTrigger]="false">
-                                    <mat-card style="max-width: 300px">
-                                        <mat-card-content>
-                                            <div class="text-primary font-semibold divide-y ">
-                                                {{ resLangValue == 'en' ?
-                                                column.labelen : column.labelhi }}</div>
-                                            {{ row[column.property]}}
-                                        </mat-card-content>
-                                    </mat-card>
-                                </mde-popover>
-
-                            </ng-template>
-                        </td>
-                    </ng-template>
-
+                          <!-- Division Name Column -->
+                <ng-container matColumnDef="psName">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black"> Police Station </th>
+                    <td mat-cell *matCellDef="let row"> {{row.psName}} </td>
                 </ng-container>
 
-            </ng-container>
+                <!--First Name Column -->
+                <ng-container matColumnDef="first_name">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">First Name </th>
+                    <td mat-cell *matCellDef="let row"> {{row.first_name}} </td>
+                </ng-container>
+
+                     <!--Last Name Column -->
+                     <ng-container matColumnDef="last_name">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Last Name </th>
+                        <td mat-cell *matCellDef="let row"> {{row.last_name}} </td>
+                    </ng-container>
+
+              
+
+                
+
+              
+                <!-- KGID Column -->
+                <ng-container matColumnDef="caseNo">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black"> Case No </th>
+                    <td mat-cell *matCellDef="let row"> {{row.caseNo}} </td>
+                </ng-container>
+
+                 <!-- KGID Column -->
+                 <ng-container matColumnDef="caseStatus">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black"> Case Status </th>
+                    <td mat-cell *matCellDef="let row"> {{row.caseStatus}} </td>
+                </ng-container>
+
             
+                <!-- Action Column -->
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black"> Action </th>
+                    <td mat-cell *matCellDef="let row">
+                        <div class="flex justify-center gap-2">
+                            <button mat-icon-button color="primary" (click)="editUser(row)" matTooltip="Edit">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                            <!-- <button mat-icon-button color="warn" (click)="deleteUser(row)" matTooltip="Delete">
+                                <mat-icon>delete</mat-icon>
+                            </button> -->
+                        </div>
+                    </td>
+                </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                class="hover:bg-hover trans-ease-out example-element-rowborder  border-primary-500"
-                [ngClass]="{' border-l-4 border-primary-500 ':expandedElement == row}">
-            </tr>
-            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']"
-                class="example-detail-row bg-[#e2ecef] dark:bg-slate-600"
-                [ngClass]="{' border-l-4 border-primary-500 ':expandedElement == row}"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                    class="hover:bg-hover cursor-pointer"></tr>
+            </table>
 
-
-        </table>
+            <!-- No data message -->
+            <div *ngIf="dataSource?.data?.length === 0" class="p-8 text-center">
+                No records found
+            </div>
         </div>
         <div class="flex justify-end w-full dark:bg-gray-800 bg-card">
-            <mat-paginator #paginator1='matPaginator' [pageSizeOptions]="[50, 100, 200,500]"
-                showFirstLastButtons aria-label="Select page of periodic elements">
+            <mat-paginator #paginator1="matPaginator" 
+                           [pageSizeOptions]="[5, 10, 25, 100]" 
+                           [pageSize]="10"
+                           showFirstLastButtons>
             </mat-paginator>
         </div>
     </div>
