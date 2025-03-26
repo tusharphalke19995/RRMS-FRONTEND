@@ -1,5 +1,4 @@
 import {
-
     CurrencyPipe,
     NgClass,
     NgFor,
@@ -7,7 +6,6 @@ import {
     NgTemplateOutlet,
 } from '@angular/common';
 import {
-
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
@@ -244,15 +242,15 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
 
 
   // Method to handle the drop event
-  filesDropped(event: any): void {
+  filesDropped(event: DragEvent): void {
     event.preventDefault(); // Prevent the default browser behavior
     if (event.dataTransfer && event.dataTransfer.files.length) {
-      this.selectImage(event.dataTransfer.files, event);
+      this.selectImage(event.dataTransfer.files);
     }
   }
 
   // Method to handle file selection
-  selectImage(files: FileList, event: any): void {
+  selectImage(files: FileList): void {
     this.imgUrls = []; // Clear previous images
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -263,6 +261,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           const reader = new FileReader();
           reader.onload = () => {
             this.imgUrls.push(reader.result as string);  // Add the image preview URL to the array
+            this._changeDetectorRef.markForCheck(); // Notify Angular to check for changes
           };
           reader.readAsDataURL(file);
         }
@@ -287,7 +286,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.dragging = false;
   }
 
-  onDragOver(event: Event): void {
+  onDragOver(event: DragEvent): void {
     event.preventDefault();
     this.dragging = true;
   }

@@ -62,5 +62,7 @@
     "caseStatus":"Case Status",
       "updateRole":"Update Role",
        "update":"Update",
-       "designations":"Designations Name"
+       "designations":"Designations Name",
+"cancel":"Cancel"
+       
 }

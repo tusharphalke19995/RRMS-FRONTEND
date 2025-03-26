@@ -117,7 +117,7 @@
 
             <mat-form-field appearance="outline" class="w-full">
                 <mat-label *transloco="let t" class="font-medium">{{t('password')}}</mat-label>
-                <input matInput [type]="hidePassword ? 'password' : 'text'" 
+                <input matInput [type]="hidePassword ? 'Password' : 'text'" 
                        [formControlName]="'password'" 
                        placeholder="Enter password">
                 <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword" type="button">

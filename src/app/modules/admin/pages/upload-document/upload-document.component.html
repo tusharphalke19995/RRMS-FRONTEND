@@ -202,7 +202,7 @@
                             <div class="text-gray-400 text-sm">Maximum allowed file size is 4MB per image</div>
                             <div class="text-gray-400 text-sm">Only .jpeg, .jpg, and .png images are allowed</div>
                             <input autocomplete="off" type="file" class="hidden" #f_input accept="image/png, image/jpeg" multiple
-                                (change)="selectImage(f_input.files, $event)">
+                                (change)="selectImage(f_input.files)">
                         </div>
                     </div>
                 </div>
