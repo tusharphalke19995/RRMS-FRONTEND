@@ -7,7 +7,7 @@ export interface UserModel {
     UserID: number | null;
     UserName: string | null;
     Email: string | null;
-    RequestIP: string | null;
+    Role: number | null;
    
   }
 @Injectable({providedIn: 'root'})
@@ -155,22 +155,29 @@ export class AuthService
         return of(false);
     }
 
-    getAuthData() {
-        const token = localStorage.getItem('accessToken');
-        const decodeToken = this.decodeToken(token);
-        const employeeDetails = JSON.parse(decodeToken?.employeeDetails);
-        const authData: UserModel = {
-            UserID: Number(decodeToken.UserId),
-            UserName: decodeToken.UserName,
-            Email: decodeToken.Email,
-            RequestIP: ''
-        };
-        return authData;
-      }
+    private decodeToken(token: string): any {
+        if (!token) {
+            return null; 
+        }
+        const payload = token.split('.')[1]; 
+        const decodedPayload = atob(payload); 
+        return JSON.parse(decodedPayload);
+    }
 
-      private decodeToken(token: string): any {
-        const payload = token.split('.')[1]; // Get the payload part of the JWT
-        const decodedPayload = atob(payload); // Decode the Base64 string
-        return JSON.parse(decodedPayload); // Parse the JSON string into an object
+    // Method to get user data from the token
+    getAuthData() {
+        const token = this.accessToken;
+        const decodedToken = this.decodeToken(token);
+        console.log("decodedToken",decodedToken)
+        if (decodedToken) {
+            const authData: UserModel = {
+                UserID: Number(decodedToken.user_id),
+                UserName: decodedToken.full_name,
+                Email: decodedToken.email,
+                Role: decodedToken.role
+            };
+            return authData; 
+        }
+        return null;
     }
 }

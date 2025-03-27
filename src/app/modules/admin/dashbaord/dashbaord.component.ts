@@ -1,6 +1,3 @@
-
-
-
 import { CurrencyPipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,6 +12,8 @@ import { TranslocoModule } from '@ngneat/transloco';
 import { ApexOptions, NgApexchartsModule } from 'ng-apexcharts';
 import { Subject, takeUntil } from 'rxjs';
 import { DashbaordService } from './dashboard.service';
+import { AuthService } from 'app/core/auth/auth.service';
+import { SearchUserService } from '../pages/manage-user/search-userlist/searchUser.service';
 
 @Component({
     selector       : 'app-dashbaord',
@@ -27,6 +26,7 @@ import { DashbaordService } from './dashboard.service';
 })
 export class DashbaordComponent implements OnInit, OnDestroy
 {
+    authData: any;
     chartGithubIssues: ApexOptions = {};
     chartTaskDistribution: ApexOptions = {};
     chartBudgetDistribution: ApexOptions = {};
@@ -36,15 +36,19 @@ export class DashbaordComponent implements OnInit, OnDestroy
     data: any;
     selectedProject: string = 'ACME Corp. Backend App';
     private _unsubscribeAll: Subject<any> = new Subject<any>();
-
+    userTotalCount: number;
+    userRoleCount:number
     /**
      * Constructor
      */
     constructor(
         private _projectService: DashbaordService,
         private _router: Router,
+         private authenticationService: AuthService,
+         private  _searchUserService:SearchUserService
     )
     {
+        this.authData = this.authenticationService.getAuthData();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -56,6 +60,10 @@ export class DashbaordComponent implements OnInit, OnDestroy
      */
     ngOnInit(): void
     {
+        console.log(" this.authData", this.authData);
+        this.getUserInfo();
+        this.getUserRoleDropdown();
+
         // Get the data
         this._projectService.data$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -446,6 +454,43 @@ export class DashbaordComponent implements OnInit, OnDestroy
                     formatter: (val): string => `$${val}`,
                 },
             },
-        };
+        };        
     }
+
+     getUserInfo() {
+              this._searchUserService.getUserList().subscribe({
+                next: (response: any) => {
+                    console.log("User List Response:", response);
+                    if (Array.isArray(response)) {
+                        this.userTotalCount = response.length;
+                    } else {
+                        console.error("Unexpected response format for user list:", response);
+                        this.userTotalCount = 0;
+                    }
+                },
+                error: (error) => {
+                    console.error("Error fetching user list:", error);
+                    this.userTotalCount = 0;
+                }
+              });
+            
+          }
+    
+          getUserRoleDropdown() {
+            this._searchUserService.getUserRole().subscribe({
+              next: (response: any) => {
+                console.log("User Role Response:", response);
+                if (Array.isArray(response)) {
+                    this.userRoleCount = response.length;
+                } else {
+                    console.error("Unexpected response format for user roles:", response);
+                    this.userRoleCount = 0;
+                }
+              },
+              error: (error) => {
+                console.error("Error fetching user roles:", error);
+                this.userRoleCount = 0;
+              },
+            });
+          }
 }

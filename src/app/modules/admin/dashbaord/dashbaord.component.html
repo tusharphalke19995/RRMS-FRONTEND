@@ -2,94 +2,56 @@
     <!-- Main -->
     <div class="flex-auto p-6 sm:p-10">
         <!-- CONTENT GOES HERE -->
-        <div class="bg-card">
+        <div class="bg-card rounded-lg shadow-md">
             <div class="flex flex-col w-full max-w-screen-xl mx-auto px-6 sm:px-8">
                 <div class="flex flex-col sm:flex-row flex-auto sm:items-center min-w-0 my-8 sm:my-12">
                     <!-- Avatar and name -->
                     <div class="flex flex-auto items-center min-w-0">
                         <div class="flex-0 w-16 h-16 rounded-full overflow-hidden">
-                            <img class="w-full h-full object-cover" src="assets/images/KSPPCW-logo.png">
+                            <img class="w-full h-full object-cover" src="assets/images/KSPPCW-logo.png" alt="User Avatar">
                         </div>
                         <div class="flex flex-col min-w-0 ml-4">
                             <ng-container *transloco="let t">
-                                <div
-                                    class="text-2xl md:text-5xl font-semibold tracking-tight leading-7 md:leading-snug truncate">
-                                    {{t('welcome-back')}}, Tushar!</div>
+                                <h1 class="text-2xl md:text-5xl font-semibold tracking-tight leading-7 md:leading-snug truncate">
+                                    {{t('welcome-back')}}, {{authData.UserName}}!
+                                </h1>
                             </ng-container>
-                            <div class="flex items-center">
+                            <!-- <div class="flex items-center">
                                 <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:bell'"></mat-icon>
-                                <div class="ml-1.5 leading-6 truncate text-secondary">You have 2 new messages and 15 new
-                                    tasks</div>
-                            </div>
+                                <span class="ml-1.5 leading-6 truncate text-secondary">You have 2 new messages and 15 new tasks</span>
+                            </div> -->
                         </div>
                     </div>
-
                 </div>
-
             </div>
-
         </div>
+
         <div class="flex-auto border-t -mt-px pt-4 sm:pt-6">
             <div class="w-full max-w-screen-xl mx-auto">
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full min-w-0">
-                    <!-- Summary -->
+                    <!-- User Count Summary -->
                     <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
                         <div class="flex items-start justify-between">
-                            <div class="text-lg font-medium tracking-tight leading-6 truncate">User Count</div>
-                            <div class="ml-2 -mt-2 -mr-3">
-                                <button mat-icon-button [matMenuTriggerFor]="summaryMenu">
-                                    <mat-icon class="icon-size-5"
-                                        [svgIcon]="'heroicons_mini:ellipsis-vertical'"></mat-icon>
-                                </button>
-                                <mat-menu #summaryMenu="matMenu">
-                                    <button mat-menu-item>Yesterday</button>
-                                    <button mat-menu-item>2 days ago</button>
-                                    <button mat-menu-item>3 days ago</button>
-                                </mat-menu>
-                            </div>
+                            <h2 class="text-lg font-medium tracking-tight leading-6 truncate">User Count</h2>
                         </div>
                         <div class="flex flex-col items-center mt-2">
-                            <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-blue-500">21
-                            </div>
-                            <!-- <div class="text-lg font-medium text-blue-600 dark:text-blue-500">Due Tasks</div> -->
-                            <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
-                                <!-- <div class="text-md font-medium truncate">Completed:</div> -->
-                                <!-- <div class="ml-1.5 text-lg font-semibold">13</div> -->
-                            </div>
+                            <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-blue-500">{{userTotalCount}}</div>
                         </div>
                     </div>
-                    <!-- Overdue -->
+
+                    <!-- Role Count Summary -->
                     <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
                         <div class="flex items-start justify-between">
-                            <div class="text-lg font-medium tracking-tight leading-6 truncate">Document Count</div>
-                            <div class="ml-2 -mt-2 -mr-3">
-                                <button mat-icon-button [matMenuTriggerFor]="overdueMenu">
-                                    <mat-icon class="icon-size-5"
-                                        [svgIcon]="'heroicons_mini:ellipsis-vertical'"></mat-icon>
-                                </button>
-                                <mat-menu #overdueMenu="matMenu">
-                                    <button mat-menu-item>Yesterday</button>
-                                    <button mat-menu-item>2 days ago</button>
-                                    <button mat-menu-item>3 days ago</button>
-                                </mat-menu>
-                            </div>
+                            <h2 class="text-lg font-medium tracking-tight leading-6 truncate">Role Count</h2>
                         </div>
                         <div class="flex flex-col items-center mt-2">
-                            <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-red-500">17
-                            </div>
-                            <!-- <div class="text-lg font-medium text-red-600 dark:text-red-500">Tasks</div> -->
-                            <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
-                                <!-- <div class="text-md font-medium truncate">From yesterday:</div> -->
-                                <!-- <div class="ml-1.5 text-lg font-semibold">9</div> -->
-                            </div>
+                            <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-red-500">{{userRoleCount}}</div>
                         </div>
                     </div>
-                    <!-- Issues -->
-                  
+
+                    <!-- Additional Summary Cards can be added here -->
                 </div>
             </div>
         </div>
-
-
-
     </div>
+</div>

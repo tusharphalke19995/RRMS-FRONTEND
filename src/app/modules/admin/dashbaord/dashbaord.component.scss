@@ -1,0 +1,39 @@
+$primary-color: #3b82f6; // Example primary color
+$secondary-color: #6b7280; // Example secondary color
+
+.bg-card {
+    background-color: #ffffff; // Card background color
+    border-radius: 0.5rem; // Rounded corners
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); // Subtle shadow
+}
+
+.flex-auto {
+    flex: 1 1 auto; // Allow flex items to grow and shrink
+}
+
+.text-secondary {
+    color: $secondary-color; // Use secondary color for text
+}
+
+.icon-size-5 {
+    width: 24px; // Set icon size
+    height: 24px;
+}
+
+h1, h2 {
+    margin: 0; // Remove default margin
+}
+
+.text-lg {
+    font-size: 1.125rem; // Adjust font size for large text
+}
+
+.text-7xl {
+    font-size: 4.5rem; // Adjust font size for extra large text
+}
+
+@media (max-width: 640px) {
+    .text-7xl {
+        font-size: 3rem; // Responsive font size for smaller screens
+    }
+}
