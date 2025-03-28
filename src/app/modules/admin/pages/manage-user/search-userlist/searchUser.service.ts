@@ -20,46 +20,32 @@ export class SearchUserService {
   ) {}
 
   createUser(data) {
-    return this.commonApiCallService
-      .postWithHeader(apiurls.createUser, data, {})
+    return this._httpClient
+      .post(apiurls.createUser, data,)
       .pipe(catchError(this.handleError));
   }
 
-
-  userLogin(data) {
-    debugger
-    return this.commonApiCallService
-        .post('http://127.0.0.1:8000/users/login/', data)
-        .pipe(
-            catchError((error) => {
-                console.error("API Error:", error);
-                // Return a user-friendly error message
-                return of({ success: false, message: error.error?.message || 'An error occurred. Please try again.' });
-            })
-        );
-}
-
   getUserList() {
-    return this.commonApiCallService
+    return this._httpClient
       .get(apiurls.getUsers,)
       .pipe(catchError(this.handleError));
   }
 
   getUserRole() {
-    return this.commonApiCallService
-      .getWithHeader(apiurls.getRole, {})
+    return this._httpClient
+      .get(apiurls.getRole,)
       .pipe(catchError(this.handleError));
   }
 
   getUserDivision() {
-    return this.commonApiCallService
-      .getWithHeader(apiurls.getDivision, {})
+    return this._httpClient
+      .get(apiurls.getDivision)
       .pipe(catchError(this.handleError));
   }
 
   getDesignationsInfo() {
-    return this.commonApiCallService
-      .getWithHeader(apiurls.getDesignations, {})
+    return this._httpClient
+      .get(apiurls.getDesignations)
       .pipe(catchError(this.handleError));
   }
 

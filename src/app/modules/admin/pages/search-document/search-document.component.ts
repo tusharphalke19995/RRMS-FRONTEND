@@ -115,10 +115,11 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       { labelen: 'Name',labelhi:'Last Name', property: 'last_name' },
       { labelen: 'Case No',labelhi:'Case No', property: 'caseNo' },
       { labelen: 'Case Status',labelhi:'Case Status', property: 'caseStatus' },
+      { labelen: 'Case Status',labelhi:'Document', property: 'doc' },
       { labelen: 'Action', labelhi: 'Action', property: 'action', isAction: true },
     ];
   
-    displayedColumns: string[] = ['stateName','districtName','psName', 'first_name','last_name','caseStatus','caseNo','action'];
+    displayedColumns: string[] = ['stateName','districtName','psName', 'first_name','last_name','caseStatus','caseNo','doc','action'];
     
     /**
      * Constructor

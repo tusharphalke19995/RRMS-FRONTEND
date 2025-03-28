@@ -13,28 +13,28 @@ export const defaultNavigation: FuseNavigationItem[] = [
         id   : 'uploadDocument',
         title: 'Upload Document',
         type : 'basic',
-        icon : 'heroicons_outline:chart-pie',
+        icon : 'heroicons_outline:document',
         link : '/upload-document'
     },
     {
         id   : 'searchDocument',
         title: 'Search Document',
         type : 'basic',
-        icon : 'heroicons_outline:chart-pie',
+        icon : 'heroicons_outline:magnifying-glass',
         link : '/search-document'
     },
     {
         id   : 'userMng',
         title: 'User Management',
         type : 'basic',
-        icon : 'heroicons_outline:chart-pie',
+        icon : 'heroicons_outline:user-circle',
         link : '/manage-user'
     },
     {
         id   : 'roleMng',
         title: 'Role Management',
         type : 'basic',
-        icon : 'heroicons_outline:chart-pie',
+        icon : 'heroicons_outline:star',
         link : '/manage-user-role'
     }
 

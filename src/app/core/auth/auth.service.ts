@@ -61,14 +61,18 @@ export class AuthService
     }
 
 
-    userLogin(data) {
-        debugger
+    userLogin(data): Observable<any> {
         return this._httpClient.post(apiurls.userLogin, data)
             .pipe(
                 catchError((error) => {
                     console.error("API Error:", error);
-                    // Return a user-friendly error message
                     return of({ success: false, message: error.error?.message || 'An error occurred. Please try again.' });
+                }),
+                switchMap((response: any) => {
+                    if (response.access) {
+                        this.accessToken = response.access; // Set the token
+                    }
+                    return of(response);
                 })
             );
     }
@@ -179,5 +183,16 @@ export class AuthService
             return authData; 
         }
         return null;
+    }
+
+    // Method to check if the token is expired
+    isTokenExpired(): boolean {
+        const token = this.accessToken;
+        if (token) {
+            const decodedToken = this.decodeToken(token);
+            const expirationDate = decodedToken?.exp ? new Date(decodedToken.exp * 1000) : null;
+            return expirationDate ? expirationDate < new Date() : true; // Check if the token is expired
+        }
+        return true; // Token is not present or expired
     }
 }

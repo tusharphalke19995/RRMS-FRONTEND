@@ -61,8 +61,8 @@ export class DashbaordComponent implements OnInit, OnDestroy
     ngOnInit(): void
     {
         console.log(" this.authData", this.authData);
-        this.getUserInfo();
-        this.getUserRoleDropdown();
+        // this.getUserInfo();
+        // this.getUserRoleDropdown();
 
         // Get the data
         this._projectService.data$

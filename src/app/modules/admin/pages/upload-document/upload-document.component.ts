@@ -74,7 +74,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 export class UploadDocumentComponent implements OnInit, OnDestroy {
     uploadDocumentForm: UntypedFormGroup;
     @ViewChild('addcitizenfeedbackNgForm') addcitizenfeedbackNgForm: NgForm;
-
+     maxFileSize = 10737418240;
     isLoading: boolean = false;
     formFieldHelpers: string[] = [''];
     vendors: InventoryVendor[];
@@ -120,8 +120,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     districtDropdown: any;
     stateDropdown: [];
     dragging: boolean = false;
-    imgUrls: string[] = []; // Array to hold image preview URLs
-  
+    imgUrls: { preview: string, name: string }[] = [];  // Array to store image previews with names
+  pdfUrls: { preview: string, name: string }[] = [];  // Array to store PDF file previews (with placeholder i
     /**
      * Constructor
      */
@@ -239,57 +239,68 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
               error: (error) => {},
             });
           }
-
-
-  // Method to handle the drop event
-  filesDropped(event: DragEvent): void {
-    event.preventDefault(); // Prevent the default browser behavior
-    if (event.dataTransfer && event.dataTransfer.files.length) {
-      this.selectImage(event.dataTransfer.files);
-    }
-  }
-
-  // Method to handle file selection
-  selectImage(files: FileList): void {
-    this.imgUrls = []; // Clear previous images
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      if (this.isValidImage(file)) {
-        if (file.size > 4194304) {
-          alert("File is too large. Please reduce the size to under 4MB.");
-        } else {
-          const reader = new FileReader();
-          reader.onload = () => {
-            this.imgUrls.push(reader.result as string);  // Add the image preview URL to the array
-            this._changeDetectorRef.markForCheck(); // Notify Angular to check for changes
-          };
-          reader.readAsDataURL(file);
-        }
-      } else {
-        alert("Unsupported file format. Please upload a .jpeg, .jpg, or .png image.");
-      }
-    }
-  }
-
-  // Check if the image file type is valid
-  isValidImage(file: File): boolean {
-    const supportedTypes = ['image/jpeg', 'image/png'];
-    return supportedTypes.includes(file.type);
-  }
-
-  // Handle drag events
-  onDragEnter(): void {
-    this.dragging = true;
-  }
-
-  onDragLeave(): void {
-    this.dragging = false;
-  }
-
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-    this.dragging = true;
-  }
+          filesDropped(event: DragEvent): void {
+            event.preventDefault(); // Prevent default browser behavior
+            if (event.dataTransfer && event.dataTransfer.files.length) {
+              this.selectFiles(event.dataTransfer.files);
+            }
+          }
+        
+          // Method to handle file selection
+          selectFiles(files: FileList): void {
+            this.imgUrls = []; // Clear previous image previews
+            this.pdfUrls = []; // Clear previous PDF previews
+        
+            for (let i = 0; i < files.length; i++) {
+              const file = files[i];
+              
+              if (file.size > this.maxFileSize) {
+                alert("File is too large. Please reduce the size to under 10GB.");
+                continue;
+              }
+        
+              // Handle image files
+              if (this.isImage(file)) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                  this.imgUrls.push({ preview: reader.result as string, name: file.name });  // Store preview and file name
+                  this._changeDetectorRef.markForCheck(); // Notify Angular to check for changes
+                };
+                reader.readAsDataURL(file);
+              }
+        
+              // Handle PDF files
+              if (this.isPdf(file)) {
+                this.pdfUrls.push({ preview: 'assets/icons/pdf.svg', name: file.name });  // Add PDF preview icon and name
+              }
+            }
+          }
+        
+          // Check if the file is a valid image
+          isImage(file: File): boolean {
+            const supportedTypes = ['image/jpeg', 'image/png'];
+            return supportedTypes.includes(file.type);
+          }
+        
+          // Check if the file is a valid PDF
+          isPdf(file: File): boolean {
+            return file.type === 'application/pdf';
+          }
+        
+          // Handle drag events
+          onDragEnter(): void {
+            this.dragging = true;
+          }
+        
+          onDragLeave(): void {
+            this.dragging = false;
+          }
+        
+          onDragOver(event: DragEvent): void {
+            event.preventDefault();
+            this.dragging = true;
+          }
+                
   onStateChange(stateId: number): void {
     if (stateId) {
       this._uploadDocumentService.geDistrictByStateData(stateId).subscribe(

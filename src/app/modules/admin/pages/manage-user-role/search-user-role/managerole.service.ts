@@ -37,26 +37,26 @@ export class ManageroleService {
 
 
   getUserList() {
-    return this.commonApiCallService
+    return this._httpClient
       .get(apiurls.getUsers,)
       .pipe(catchError(this.handleError));
   }
 
   getUserRole() {
-    return this.commonApiCallService
-      .getWithHeader(apiurls.getRole, {})
+    return this._httpClient
+      .get(apiurls.getRole)
       .pipe(catchError(this.handleError));
   }
 
   getUserDivision() {
-    return this.commonApiCallService
-      .getWithHeader(apiurls.getDivision, {})
+    return this._httpClient
+      .get(apiurls.getDivision)
       .pipe(catchError(this.handleError));
   }
 
   getDesignationsInfo() {
-    return this.commonApiCallService
-      .getWithHeader(apiurls.getDesignations, {})
+    return this._httpClient
+      .get(apiurls.getDesignations)
       .pipe(catchError(this.handleError));
   }
 

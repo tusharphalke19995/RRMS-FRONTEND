@@ -40,7 +40,7 @@ getUnitsByDistictIdData(districtId: number) {
 
    getState() {
     return this.commonApiCallService
-      .getWithHeader(apiurls.getState, {})
+      .get(apiurls.getState)
       .pipe(catchError(this.handleError));
   }
  

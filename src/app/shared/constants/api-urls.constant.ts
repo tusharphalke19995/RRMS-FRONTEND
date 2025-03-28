@@ -11,5 +11,5 @@ export const apiurls = {
   updateRoleByRoleId: `${environment.userApiUrl}users/update-user/`,
   getDesignations: `${environment.userApiUrl}mdm/designations/`,
   userLogin: `${environment.userApiUrl}users/login/`,
-  getUnitsByDistictId :`${environment.userApiUrl}/mdm/units/`
+  getUnitsByDistictId :`${environment.userApiUrl}mdm/units/`
 }as const;
