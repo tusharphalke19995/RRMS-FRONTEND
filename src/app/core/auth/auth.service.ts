@@ -69,10 +69,11 @@ export class AuthService
                     return of({ success: false, message: error.error?.message || 'An error occurred. Please try again.' });
                 }),
                 switchMap((response: any) => {
-                    if (response.access) {
-                        this.accessToken = response.access; // Set the token
+                    debugger;
+                    if (response.responseData.access) {
+                        this.accessToken = response.responseData.access; // Set the token
                     }
-                    return of(response);
+                    return of(response.responseData);
                 })
             );
     }
