@@ -15,6 +15,7 @@ import { FuseVerticalNavigationGroupItemComponent } from '@fuse/components/navig
 import { FuseVerticalNavigationSpacerItemComponent } from '@fuse/components/navigation/vertical/components/spacer/spacer.component';
 import { FuseScrollbarDirective } from '@fuse/directives/scrollbar/scrollbar.directive';
 import { FuseUtilsService } from '@fuse/services/utils/utils.service';
+import { AuthService } from 'app/core/auth/auth.service';
 import { delay, filter, merge, ReplaySubject, Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
@@ -35,7 +36,7 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
     static ngAcceptInputType_opened: BooleanInput;
     static ngAcceptInputType_transparentOverlay: BooleanInput;
     /* eslint-enable @typescript-eslint/naming-convention */
-
+    authData: any;
     @Input() appearance: FuseVerticalNavigationAppearance = 'default';
     @Input() autoCollapse: boolean = true;
     @Input() inner: boolean = false;
@@ -81,6 +82,7 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
         private _scrollStrategyOptions: ScrollStrategyOptions,
         private _fuseNavigationService: FuseNavigationService,
         private _fuseUtilsService: FuseUtilsService,
+        private authenticationService:AuthService
     )
     {
         this._handleAsideOverlayClick = (): void =>
@@ -307,6 +309,8 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
      */
     ngOnInit(): void
     {
+        this.authData = this.authenticationService.getAuthData();
+    this.setNavigation();
         // Make sure the name input is not an empty string
         if ( this.name === '' )
         {
@@ -792,4 +796,20 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
         // Execute the observable
         this.openedChanged.next(open);
     }
+
+    setNavigation(): void {
+        const roleId = this.authData.Role;
+        this.navigation = this.navigation.filter(item => {
+          if (roleId === 1) {
+            return true; // Admin has access to all items
+          } else if (roleId === 2) {
+            return item.id !== 'roleMng'; 
+          } else if (roleId === 3) {
+            return item.id === 'searchDocument' || item.id === 'home';
+          } else if (roleId === 4) {
+            return item.id !== 'userMng'; 
+          }
+          return false;
+        });
+      }
 }
