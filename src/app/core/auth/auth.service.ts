@@ -70,10 +70,10 @@ export class AuthService
                 }),
                 switchMap((response: any) => {
                     debugger;
-                    if (response.responseData.access) {
-                        this.accessToken = response.responseData.access; // Set the token
+                    if (response.access) {
+                        this.accessToken = response.access; // Set the token
                     }
-                    return of(response.responseData);
+                    return of(response);
                 })
             );
     }
