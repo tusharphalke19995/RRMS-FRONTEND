@@ -259,8 +259,9 @@ export class SearchUserRoleComponent {
       getUserRoleDropdown() {
         this._searchUserService.getUserRole().subscribe({
           next: (response: any) => {
-            console.log("response", response);
-            this.userRoleDropdown= response;
+            if(response.statusCode==200){
+                this.userRoleDropdown= response.responseData;
+              }
           },
           error: (error) => {},
         });

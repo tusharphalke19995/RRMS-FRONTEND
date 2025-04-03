@@ -8,7 +8,8 @@ export interface UserModel {
     UserName: string | null;
     Email: string | null;
     Role: number | null;
-   
+    Permission:[],
+    RoleName:string | null
   }
 @Injectable({providedIn: 'root'})
 export class AuthService
@@ -70,8 +71,8 @@ export class AuthService
                 }),
                 switchMap((response: any) => {
                     debugger;
-                    if (response.access) {
-                        this.accessToken = response.access; // Set the token
+                    if (response.responseData.access) {
+                        this.accessToken = response.responseData.access; // Set the token
                     }
                     return of(response);
                 })
@@ -179,7 +180,9 @@ export class AuthService
                 UserID: Number(decodedToken.user_id),
                 UserName: decodedToken.full_name,
                 Email: decodedToken.email,
-                Role: decodedToken.role
+                Role: decodedToken.role,
+                Permission:decodedToken.permissions,
+                RoleName: decodedToken.role_name
             };
             return authData; 
         }

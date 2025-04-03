@@ -98,10 +98,8 @@ export class AuthSignInComponent implements OnInit {
     this._authService.userLogin(payload).subscribe({
         next: (response: any) => {
             console.log("response", response);
-            if (response.access) {
-              // if (response.statusCode ==200) {
-                // this._authService.accessToken = response.responseData.access; 
-                this._authService.accessToken = response.access; 
+              if (response.statusCode ==200) {
+                this._authService.accessToken = response.responseData.access; 
                 this._router.navigateByUrl("/dashboard");
             } else {
           

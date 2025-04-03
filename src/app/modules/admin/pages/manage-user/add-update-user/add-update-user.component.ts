@@ -89,8 +89,9 @@ export class AddUpdateUserComponent {
   getUserRoleDropdown() {
     this._searchUserService.getUserRole().subscribe({
       next: (response: any) => {
-        console.log("response", response);
-        this.userRoleDropdown= response;
+        if(response.statusCode==200){
+          this.userRoleDropdown= response.responseData;
+        }
       },
       error: (error) => {},
     });
@@ -99,8 +100,9 @@ export class AddUpdateUserComponent {
   getDivisionDropdown() {
     this._searchUserService.getUserDivision().subscribe({
       next: (response: any) => {
-        console.log("response", response);
-        this.divisionDropdown= response;
+        if(response.statusCode==200){
+          this.divisionDropdown= response.responseData;
+        }
       },
       error: (error) => {},
     });
@@ -109,8 +111,9 @@ export class AddUpdateUserComponent {
   getDesignationsData() {
     this._searchUserService.getDesignationsInfo().subscribe({
       next: (response: any) => {
-        console.log("response", response);
-        this.designationsDropdown= response;
+        if(response.statusCode==200){
+          this.designationsDropdown= response.responseData;
+        }
       },
       error: (error) => {},
     });

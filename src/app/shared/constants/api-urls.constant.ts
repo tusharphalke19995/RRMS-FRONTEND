@@ -10,6 +10,8 @@ export const apiurls = {
   geDistrictByState: `${environment.userApiUrl}api/districts/`,
   updateRoleByRoleId: `${environment.userApiUrl}users/update-user/`,
   getDesignations: `${environment.userApiUrl}mdm/designations`,
-  userLogin: `${environment.userApiUrl}users/login/`,
-  getUnitsByDistictId :`${environment.userApiUrl}mdm/units/`
+  userLogin: `${environment.userApiUrl}users/login`,
+  getUnitsByDistictId :`${environment.userApiUrl}mdm/units/`,
+   uploadInfo :`${environment.userApiUrl}casedata/save/`
+  
 }as const;

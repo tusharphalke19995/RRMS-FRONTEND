@@ -63,6 +63,11 @@
       "updateRole":"Update Role",
        "update":"Update",
        "designations":"Designations Name",
-"cancel":"Cancel"
-       
+"cancel":"Cancel",
+       "office":"Office",
+       "author":"Author",
+       "caseType":"Case Type",
+       "firNo":"Fir.No",
+        "subject":"Subject",
+         "letterNo":"Letter No"
 }

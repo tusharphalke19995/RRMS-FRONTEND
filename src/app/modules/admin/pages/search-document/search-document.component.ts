@@ -209,8 +209,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       onStateChange(stateId: number): void {
         if (stateId) {
           this._uploadDocumentService.geDistrictByStateData(stateId).subscribe(
-            (districts) => {
-              this.districtDropdown = districts; 
+            (districts:any) => {
+              this.districtDropdown = districts.responseData; 
               this.searchDocumentForm.get('districtId')?.setValue(443);
             },
             (error) => {
@@ -226,7 +226,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
         this._uploadDocumentService.getState().subscribe({
           next: (response: any) => {
             console.log("response", response);
-            this.stateDropdown= response;
+            this.stateDropdown= response.responseData;
             this.stateDropdown.forEach((element:any) => {
                 if(element.stateId==16){
                     this.searchDocumentForm.patchValue({
@@ -244,8 +244,9 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       onDisctrictChange(stateId: number): void {
         this._uploadDocumentService.getUnitsByDistictIdData(stateId).subscribe({
           next: (response: any) => {
-            console.log("response", response);
-            this.unitsDropdown= response;
+            if(response.statusCode==200){
+              this.unitsDropdown= response.responseData;
+            }
           },
           error: (error) => {},
         });

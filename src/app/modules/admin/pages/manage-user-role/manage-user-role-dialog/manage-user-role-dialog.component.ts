@@ -86,8 +86,9 @@ import { ManageroleService } from "../search-user-role/managerole.service";
     getUserRoleDropdown() {
       this._manageroleService.getUserRole().subscribe({
         next: (response: any) => {
-          console.log("response", response);
-          this.userRoleDropdown= response;
+          if(response.statusCode==200){
+            this.userRoleDropdown= response.responseData;
+          }
         },
         error: (error) => {},
       });
@@ -96,8 +97,9 @@ import { ManageroleService } from "../search-user-role/managerole.service";
     getDivisionDropdown() {
       this._manageroleService.getUserDivision().subscribe({
         next: (response: any) => {
-          console.log("response", response);
-          this.divisionDropdown= response;
+          if(response.statusCode==200){
+            this.divisionDropdown= response.responseData;
+          }
         },
         error: (error) => {},
       });
@@ -106,8 +108,9 @@ import { ManageroleService } from "../search-user-role/managerole.service";
     getDesignationsDropDown() {
       this._manageroleService.getDesignationsInfo().subscribe({
         next: (response: any) => {
-          console.log("response", response);
-          this.designationsDropdown= response;
+          if(response.statusCode==200){
+            this.designationsDropdown= response.responseData;
+          }
         },
         error: (error) => {},
       });

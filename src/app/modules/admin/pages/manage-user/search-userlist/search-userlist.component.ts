@@ -255,8 +255,11 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
       getUserRoleDropdown() {
         this._searchUserService.getUserRole().subscribe({
           next: (response: any) => {
-            console.log("response", response);
-            this.userRoleDropdown= response;
+      
+            console.log("response", response.responseData);
+            if(response.statusCode==200){
+              this.userRoleDropdown= response.responseData;
+            }
           },
           error: (error) => {},
         });
@@ -265,8 +268,11 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
       getDivisionDropdown() {
         this._searchUserService.getUserDivision().subscribe({
           next: (response: any) => {
-            console.log("response", response);
-            this.divisionDropdown= response;
+
+            console.log("response", response.responseData);
+            if(response.statusCode==200){
+              this.divisionDropdown= response.responseData;
+            }
           },
           error: (error) => {},
         });
@@ -275,8 +281,10 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
       getDesignationsDropDownData() {
         this._searchUserService.getDesignationsInfo().subscribe({
           next: (response: any) => {
-            console.log("response", response);
-            this.designationsDropdown= response;
+            console.log("response", response.responseData);
+            if(response.statusCode==200){
+              this.designationsDropdown= response.responseData;
+            }
           },
           error: (error) => {},
         });

@@ -798,16 +798,14 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
     }
 
     setNavigation(): void {
-        const roleId = this.authData.Role;
+        const roleName = this.authData.RoleName;
         this.navigation = this.navigation.filter(item => {
-          if (roleId === 1) {
-            return true; // Admin has access to all items
-          } else if (roleId === 2) {
-            return item.id !== 'roleMng'; 
-          } else if (roleId === 3) {
-            return item.id === 'searchDocument' || item.id === 'home';
-          } else if (roleId === 4) {
-            return item.id !== 'userMng'; 
+          if (roleName === "Admin") {
+            return true;
+          } else if (roleName==="User") {
+            return item.id === 'searchDocument' || item.id === 'home' || item.id ==='uploadDocument';
+          } else if (roleName ==="ContentManager") {
+            return item.id === 'searchDocument' || item.id === 'home' || item.id ==='uploadDocument';
           }
           return false;
         });
