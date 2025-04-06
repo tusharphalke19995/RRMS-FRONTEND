@@ -271,7 +271,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     let searchMetaData = {
       stateId: this.searchDocumentForm.value.stateId || 16,
       districtId: this.searchDocumentForm.value.districtId,
-      unitId: this.searchDocumentForm.value.unitsId || 1159,
+      unitId: this.searchDocumentForm.value.unitsId,
       Office: this.searchDocumentForm.value.office,
       caseNo: this.searchDocumentForm.value.caseNo,
       caseDate: this.searchDocumentForm.value.caseDate,
