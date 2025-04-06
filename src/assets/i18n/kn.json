@@ -69,5 +69,6 @@
        "caseType":"Case Type",
        "firNo":"Fir.No",
         "subject":"Subject",
-         "letterNo":"Letter No"
+         "letterNo":"Letter No",
+         "doc":"Document"
 }

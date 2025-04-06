@@ -283,7 +283,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     let uploadMetaData = {
       stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
       districtId: this.uploadDocumentForm.value.districtId,
-      unitId: this.uploadDocumentForm.value.unitsId || 1159,
+      unitId: this.uploadDocumentForm.value.unitsId,
       Office: this.uploadDocumentForm.value.office,
       letterNo: this.uploadDocumentForm.value.letterNo,
       caseNo: this.uploadDocumentForm.value.caseNo,

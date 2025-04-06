@@ -12,6 +12,7 @@ export const apiurls = {
   getDesignations: `${environment.userApiUrl}mdm/designations`,
   userLogin: `${environment.userApiUrl}users/login`,
   getUnitsByDistictId :`${environment.userApiUrl}mdm/units/`,
-   uploadInfo :`${environment.userApiUrl}casedata/save/`
-  
+   uploadInfo :`${environment.userApiUrl}casedata/save`,
+   getUploadInfo :`${environment.userApiUrl}casedata/search`,
+   filePreview :`${environment.userApiUrl}casedata/filePreview`
 }as const;

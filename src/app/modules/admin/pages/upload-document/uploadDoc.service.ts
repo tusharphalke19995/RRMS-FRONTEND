@@ -47,7 +47,8 @@ getUnitsByDistictIdData(districtId: number) {
   uploadDocument(data:FormData) {
     return this.commonApiCallService.post(apiurls.uploadInfo, data).pipe(catchError(this.handleError));
   }
- 
+
+
    /**
     * The error handler.
     * @param err The http error response.
