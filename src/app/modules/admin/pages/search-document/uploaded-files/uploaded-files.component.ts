@@ -54,9 +54,8 @@ export class UploadedFilesComponent {
     this.dialogRef.close({ data: false });
   }
   getUploadMetaDataFiles(): void {
-    this.data.forEach((element) => {
       let payload = {
-        fileHash: element.fileHash,
+        fileHash: this.data.fileHash,
       };
 
       this._searchDocService.filePreviewData(payload).subscribe({
@@ -77,7 +76,6 @@ export class UploadedFilesComponent {
           console.error("Error fetching file preview:", error);
         },
       });
-    });
   }
 
   isImage(fileUrl: string): boolean {

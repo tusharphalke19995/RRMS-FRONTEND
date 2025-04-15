@@ -32,7 +32,7 @@ import { FuseConfirmationService } from "@fuse/services/confirmation";
 import { Subject } from "rxjs";
 import { MatDividerModule } from "@angular/material/divider";
 import { TranslocoModule } from "@ngneat/transloco";
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { InventoryVendor } from "../upload-document/uploadDoc.types";
 import { MatSelectModule } from "@angular/material/select";
 import { MatDatepickerModule } from "@angular/material/datepicker";
@@ -43,6 +43,8 @@ import { MatTableModule } from "@angular/material/table";
 import { UploadDocumentService } from "../upload-document/uploadDoc.service";
 import { MatDialog } from "@angular/material/dialog";
 import { UploadedFilesComponent } from "./uploaded-files/uploaded-files.component";
+import { UploadFilesComponent } from "../upload-files/upload-files/upload-files.component";
+import { SharedService } from "app/shared/shared.service";
 @Component({
   selector: "app-search-document",
   templateUrl: "./search-document.component.html",
@@ -73,6 +75,7 @@ import { UploadedFilesComponent } from "./uploaded-files/uploaded-files.componen
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    UploadFilesComponent
   ],
 })
 export class SearchDocumentComponent implements OnInit, OnDestroy {
@@ -141,15 +144,18 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     "action",
   ];
 
+
   /**
    * Constructor
    */
   constructor(
+    private dataService:SharedService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: UntypedFormBuilder,
     private _searchDocService: SearchDocService,
     public dialog: MatDialog,
-    private _uploadDocumentService: UploadDocumentService
+    private _uploadDocumentService: UploadDocumentService,
+    private _router: Router
   ) {}
 
   // -----------------------------------------------------------------------------------------------------
@@ -277,6 +283,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       caseDate: this.searchDocumentForm.value.caseDate,
       firNo: this.searchDocumentForm.value.firNo,
     };
+
     this._searchDocService.getUploadDocMetaData(searchMetaData).subscribe({
       next: (res: any) => {
         if (res.responseData.response) {
@@ -288,13 +295,13 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     });
   }
 
-  getFilesModal(data: any) {
-    const dialogRef = this.dialog.open(UploadedFilesComponent, {
-      data: data.files,
-      width: "800px",
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      this._changeDetectorRef.detectChanges();
-    });
+  goToDocument(data: any) {
+    console.log("data", data.files);
+    this.dataService.setFilesData(data.files); 
+    this.dataService.setCaseData(data);
+    this.dataService.setFileBoolean(false);
+    this._router.navigateByUrl("/search-document/get-doc"); // Navigate to the GetDocComponent
+    
   }
+
 }

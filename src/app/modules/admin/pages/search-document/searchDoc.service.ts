@@ -17,8 +17,7 @@ export class SearchDocService {
   getUploadDocMetaData(data:any) {
     return this.commonApiCallService.post(apiurls.getUploadInfo, data).pipe(catchError(this.handleError));
   }
-
-
+  
   filePreviewData(data: any) {
     return this._httpClient.post(apiurls.filePreview, data, {
       responseType: 'blob', 
