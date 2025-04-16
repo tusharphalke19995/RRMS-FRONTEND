@@ -105,7 +105,7 @@
   </app-upload-files>
 
 
-  <div class="flex items-center justify-end py-2" >
+  <div class="flex items-center justify-end py-2" *ngIf="canEdit">
     <button *transloco="let t" class="mr-3" mat-flat-button [color]="'primary'"
 (click)="updateUploadedFile()">
         {{t('Update')}}

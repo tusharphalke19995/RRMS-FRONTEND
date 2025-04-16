@@ -173,7 +173,6 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     private _uploadDocumentService:UploadDocumentService
   ) {
     this.authData = this.authenticationService.getAuthData();
-    console.log(" this.authData", this.authData);
     this.checkPermissions();
     this.metadataForm = this.fb.group({
       subject: ["", Validators.required],
@@ -478,8 +477,9 @@ export class UploadFilesComponent implements OnInit, OnChanges {
 
   checkPermissions() {
     const userPermissions = this.authData.Permission; 
+    const roleName =this.authData.role_name; 
     console.log("userPermissions",userPermissions)
-    this.canEdit = userPermissions.includes("change_filedetails")||  userPermissions.includes("view_caseinfodetails");
+    this.canEdit = userPermissions.includes("change_filedetails");
     this.canDelete = userPermissions.includes("delete_filedetails");
   }
 

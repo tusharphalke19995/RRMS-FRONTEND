@@ -18,5 +18,7 @@ export const apiurls = {
    getFavourites :`${environment.userApiUrl}casedata/favourites`,
    getFilesLatest :`${environment.userApiUrl}casedata/files/latest`,
    casedataUpdate :`${environment.userApiUrl}casedata/update/`,
+   favourite :`${environment.userApiUrl}casedata/files/`,
+   unfavourite :`${environment.userApiUrl}casedata/files/`,
 
 }as const;

@@ -27,6 +27,7 @@ import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { UploadDocumentService } from "../../upload-document/uploadDoc.service";
 import { FileWithMetadata } from "../../upload-files/model/upload-files.models";
+import { AuthService } from "app/core/auth/auth.service";
 
 @Component({
   selector: "app-get-doc",
@@ -71,13 +72,21 @@ export class GetDocComponent {
 
   selectedMetadata: any[] = [];
 
-   
+  authData: any;
+
+  canEdit: boolean = false;
+
+
   constructor(
     private dataService: SharedService,
     private _uploadDocumentService: UploadDocumentService,
     private _snackBar: MatSnackBar,
-    private _router: Router
-  ) {}
+    private _router: Router,
+    private authenticationService:AuthService
+  ) {
+    this.authData = this.authenticationService.getAuthData();
+    this.checkPermissions();
+  }
 
   ngOnInit() {
     this.dataService.setFileBoolean(false);
@@ -151,4 +160,13 @@ export class GetDocComponent {
         },
       });
   }
+  
+  checkPermissions() {
+    const userPermissions = this.authData.Permission; 
+    console.log("userPermissions",userPermissions)
+    this.canEdit = userPermissions.includes("change_filedetails");
+    
+  }
+
+
 }
