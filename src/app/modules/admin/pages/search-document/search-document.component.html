@@ -113,7 +113,15 @@
 
 
                         </td>
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{t('caseNo')}}</mat-label>
+                                <input matInput matInput [formControlName]="'caseNo'" maxlength="4">
+                                <mat-error *ngIf="searchDocumentForm.get('caseNo').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
 
+                        </td>
 
 
                     </tr>
@@ -143,11 +151,30 @@
 
                         </td>
 
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{t('caseType')}}</mat-label>
+                                <input matInput matInput [formControlName]="'caseType'" maxlength="4">
+                                <mat-error *ngIf="searchDocumentForm.get('caseType').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+
+                        </td>
 
                         <td><mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium">{{t('caseNo')}}</mat-label>
-                                <input matInput matInput [formControlName]="'caseNo'" maxlength="4">
-                                <mat-error *ngIf="searchDocumentForm.get('caseNo').hasError('required')">
+                                <mat-label *transloco="let t" class="font-medium">{{t('author')}}</mat-label>
+                                <input matInput matInput [formControlName]="'author'" maxlength="4">
+                                <mat-error *ngIf="searchDocumentForm.get('author').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+
+                        </td>
+
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{t('location')}}</mat-label>
+                                <input matInput matInput [formControlName]="'toAddr'" maxlength="4">
+                                <mat-error *ngIf="searchDocumentForm.get('toAddr').hasError('required')">
                                     Required
                                 </mat-error>
                             </mat-form-field>
@@ -228,13 +255,37 @@
                         class="bg-primary-300 dark:bg-slate-500 text-black"> Case No </th>
                     <td mat-cell *matCellDef="let row"> {{row.caseNo}} </td>
                 </ng-container>
-
+                <ng-container matColumnDef="caseType">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header
+                        class="bg-primary-300 dark:bg-slate-500 text-black"> Case Type </th>
+                    <td mat-cell *matCellDef="let row"> {{row.caseType}} </td>
+                </ng-container>
 
 
                 <ng-container matColumnDef="caseDate">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header
                         class="bg-primary-300 dark:bg-slate-500 text-black"> Case Date </th>
                     <td mat-cell *matCellDef="let row"> {{row.caseDate}} </td>
+                </ng-container>
+
+              
+
+                <ng-container matColumnDef="letterNo">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header
+                        class="bg-primary-300 dark:bg-slate-500 text-black"> Letter.No </th>
+                    <td mat-cell *matCellDef="let row"> {{row.letterNo}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="author">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header
+                        class="bg-primary-300 dark:bg-slate-500 text-black"> Author</th>
+                    <td mat-cell *matCellDef="let row"> {{row.author}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="toAddr">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header
+                        class="bg-primary-300 dark:bg-slate-500 text-black">  To Address </th>
+                    <td mat-cell *matCellDef="let row"> {{row.toAddr}} </td>
                 </ng-container>
 
 

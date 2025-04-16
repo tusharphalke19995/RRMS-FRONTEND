@@ -123,8 +123,12 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     { labelen: "Name", labelhi: "First Name", property: "Office" },
     { labelen: "Name", labelhi: "Last Name", property: "firNo" },
     { labelen: "Case No", labelhi: "Case No", property: "caseNo" },
+    { labelen: "Case Type", labelhi: "Case Type", property: "caseType" },
 
-    { labelen: "Case Status", labelhi: "Document", property: "caseDate" },
+    { labelen: "Case Date", labelhi: "Case Date", property: "caseDate" },
+    { labelen: "Letter No", labelhi: "Letter No", property: "letterNo" },
+    { labelen: "To Address", labelhi: "To Address", property: "toAddr" },
+    { labelen: "Author", labelhi: "Author", property: "author" },
     {
       labelen: "Action",
       labelhi: "Action",
@@ -140,7 +144,12 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     "Office",
     "firNo",
     "caseNo",
+    "caseType",
     "caseDate",
+    "letterNo",
+    "toAddr",
+  
+    "author",
     "action",
   ];
 
@@ -191,6 +200,10 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       caseStatus: [""],
       unitsId: [""],
       stateId: [""],
+      letterNo:[""],
+      toAddr:[""],
+      caseType:[""],
+      author:[""]
     });
   }
 

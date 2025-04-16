@@ -56,7 +56,7 @@
     </div>
   </div>
 
-  <div class="flex-auto sm:p-5">
+  <div class="sm:p-5  cdkScrollable">
     <ng-container>
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-4">
         <div class="flex flex-col">
@@ -67,10 +67,15 @@
           <span class="font-semibold">Case Date: <span class="font-light">{{ caseMetaData.caseDate }}</span></span>
 
         </div>
+       
         <div class="flex flex-col">
           <span class="font-semibold">Case No: <span class="font-light">{{ caseMetaData.caseNo }}</span></span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-semibold">Case Type: <span class="font-light">{{ caseMetaData.caseType }}</span></span>
 
         </div>
+
         <div class="flex flex-col">
           <span class="font-semibold">District Name: <span class="font-light">{{ caseMetaData.districtName }}</span></span>
         </div>
@@ -83,11 +88,28 @@
         <div class="flex flex-col">
           <span class="font-semibold">Unit Name:<span class="font-light">{{ caseMetaData.unitName }}</span></span>
         </div>
+        <div class="flex flex-col">
+          <span class="font-semibold">Letter No:<span class="font-light">{{ caseMetaData.letterNo }}</span></span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-semibold">To Address:<span class="font-light">{{ caseMetaData.toAddr }}</span></span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-semibold">Author:<span class="font-light">{{ caseMetaData.author }}</span></span>
+        </div>
       </div>
     </ng-container>
   </div>
 
-  <app-upload-files [getfiles]="files">
+  <app-upload-files [getfiles]="files" (filesWithMetadataSelected)="onFilesWithMetadataSelectedUpdate($event)">
   </app-upload-files>
+
+
+  <div class="flex items-center justify-end py-2" >
+    <button *transloco="let t" class="mr-3" mat-flat-button [color]="'primary'"
+(click)="updateUploadedFile()">
+        {{t('Update')}}
+    </button>
+</div>
 
 </div>
