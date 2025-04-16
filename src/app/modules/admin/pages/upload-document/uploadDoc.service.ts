@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor } from './uploadDoc.types';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, catchError, filter, map, Observable, of, switchMap, take, tap, throwError } from 'rxjs';
-import { CommonApiCallService } from 'app/shared/services/common-api-call.service';
 import { ErrorResponseModel } from 'app/shared/models/error-model';
 import { apiurls } from 'app/shared/constants/api-urls.constant';
+import { CommonApiCallService } from 'app/shared/services/common-api-call.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -48,7 +49,10 @@ getUnitsByDistictIdData(districtId: number) {
     return this.commonApiCallService.post(apiurls.uploadInfo, data).pipe(catchError(this.handleError));
   }
 
-
+  updateUploadedDoc(pk: number, caseData: any) {
+    const url = `${apiurls.casedataUpdate}${pk}`;
+    return this.commonApiCallService.put(url, caseData); // or use .patch if partial update
+  }
    /**
     * The error handler.
     * @param err The http error response.

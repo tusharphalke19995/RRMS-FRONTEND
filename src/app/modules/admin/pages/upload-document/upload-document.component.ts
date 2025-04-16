@@ -33,11 +33,14 @@ import { Subject } from "rxjs";
 import { InventoryVendor } from "./uploadDoc.types";
 import { MatDividerModule } from "@angular/material/divider";
 import { TranslocoModule } from "@ngneat/transloco";
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { MatSelectModule } from "@angular/material/select";
 import { UploadDocumentService } from "./uploadDoc.service";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { UploadFilesComponent } from "../upload-files/upload-files/upload-files.component";
+import { FileWithMetadata } from "../upload-files/model/upload-files.models";
+import { SharedService } from "app/shared/shared.service";
 
 @Component({
   selector: "app-upload-document",
@@ -66,9 +69,12 @@ import { MatSnackBar } from "@angular/material/snack-bar";
     MatButtonModule,
     MatSelectModule,
     MatDatepickerModule,
+    UploadFilesComponent
   ],
 })
 export class UploadDocumentComponent implements OnInit, OnDestroy {
+  selectedFiles: FileWithMetadata[] = []; // Store selected files
+  selectedMetadata: any[] = []; // Store metadata
   uploadDocumentForm: UntypedFormGroup;
   @ViewChild("addcitizenfeedbackNgForm") addcitizenfeedbackNgForm: NgForm;
   maxFileSize = 10737418240;
@@ -81,10 +87,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
 
   districtDropdown: any;
   stateDropdown: [];
-  dragging: boolean = false;
-  imgUrls: { preview: string; name: string }[] = [];
-  pdfUrls: { preview: string; name: string }[] = [];
-  selectedFiles: any;
+
+  // selectedFiles: any;
   /**
    * Constructor
    */
@@ -92,8 +96,12 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: UntypedFormBuilder,
     private _uploadDocumentService: UploadDocumentService,
-    private _snackBar: MatSnackBar
-  ) {}
+    private _snackBar: MatSnackBar,
+    private dataService:SharedService,
+    private _router: Router
+  ) {
+    this.dataService.setFileBoolean(true);
+  }
 
   // -----------------------------------------------------------------------------------------------------
   // @ Lifecycle hooks
@@ -128,7 +136,6 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       letterNo: ["", [Validators.required]],
       caseNo: ["", [Validators.required]],
       caseType: ["", [Validators.required]],
-      subject: ["", [Validators.required]],
       firNo: ["", [Validators.required]],
       author: ["", [Validators.required]],
       toAddr: ["", [Validators.required]],
@@ -148,6 +155,14 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     // Reset the form
     this.addcitizenfeedbackNgForm.resetForm();
   }
+
+  onFilesWithMetadataSelected(data: { files: FileWithMetadata[], metadata: any[] }) {
+    this.selectedFiles = data.files; // Update the selected files
+    this.selectedMetadata = data.metadata; // Update the metadata
+    console.log('Files selected:', this.selectedFiles); // Log for debugging
+    console.log('Metadata selected:', this.selectedMetadata); // Log for debugging
+  }
+
 
   /**
    * Track by function for ngFor loops
@@ -191,66 +206,6 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     });
   }
 
-  filesDropped(event: DragEvent): void {
-    event.preventDefault();
-    if (event.dataTransfer && event.dataTransfer.files.length) {
-      this.selectFiles(event.dataTransfer.files);
-    }
-  }
-
-  // Method to handle file selection
-  selectFiles(files: FileList): void {
-    this.selectedFiles = files;
-    console.log("selectedFiles", this.selectedFiles);
-    this.imgUrls = [];
-    this.pdfUrls = [];
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-
-      if (file.size > this.maxFileSize) {
-        alert("File is too large. Please reduce the size to under 10GB.");
-        continue;
-      }
-
-      // Handle image files
-      if (this.isImage(file)) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.imgUrls.push({
-            preview: reader.result as string,
-            name: file.name,
-          });
-          this._changeDetectorRef.markForCheck();
-        };
-        reader.readAsDataURL(file);
-      }
-      if (this.isPdf(file)) {
-        this.pdfUrls.push({ preview: "assets/icons/pdf.svg", name: file.name });
-      }
-    }
-  }
-
-  isImage(file: File): boolean {
-    const supportedTypes = ["image/jpeg", "image/png"];
-    return supportedTypes.includes(file.type);
-  }
-
-  isPdf(file: File): boolean {
-    return file.type === "application/pdf";
-  }
-
-  onDragEnter(): void {
-    this.dragging = true;
-  }
-
-  onDragLeave(): void {
-    this.dragging = false;
-  }
-
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-    this.dragging = true;
-  }
 
   onStateChange(stateId: number): void {
     if (stateId) {
@@ -289,7 +244,6 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       caseNo: this.uploadDocumentForm.value.caseNo,
       caseDate: this.uploadDocumentForm.value.caseDate,
       caseType: this.uploadDocumentForm.value.caseType,
-      subject: this.uploadDocumentForm.value.subject,
       firNo: this.uploadDocumentForm.value.firNo,
       author: this.uploadDocumentForm.value.author,
       toAddr: this.uploadDocumentForm.value.toAddr,
@@ -297,12 +251,18 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
 
     const formData = new FormData();
     formData.append("caseDetails", JSON.stringify(uploadMetaData));
-    const files = this.selectedFiles;
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      formData.append("Files", file);
-    }
+    const fileDetailsArray = this.selectedFiles.map(file => ({
+      fileId:null,
+      hashTag: file.metadata.hashTag ? file.metadata.hashTag.split(',').map(tag => tag.trim()).join(',') : '', 
+      subject: file.metadata.subject || '', 
+      classification: file.metadata.classification || '', 
+      fileType: file.metadata.fileType || ''
+    }));
+    formData.append("fileDetails", JSON.stringify(fileDetailsArray));
 
+    this.selectedFiles.forEach((file) => {
+    formData.append(`Files`, file); 
+  });
     this._uploadDocumentService.uploadDocument(formData).subscribe({
       next: (response: any) => {
         this._snackBar.open("File Upload successfully", "Close", {
@@ -312,9 +272,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           panelClass: ["success-snackbar"],
         });
         this.addcitizenfeedbackNgForm.resetForm();
+        this._router.navigateByUrl("search-document")
         this.selectedFiles = [];
-        this.imgUrls = [];
-        this.pdfUrls = [];
+       
       },
       error: (error) => {
         this._snackBar.open(error.message || "Error creating user", "Close", {

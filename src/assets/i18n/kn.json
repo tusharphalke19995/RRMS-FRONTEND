@@ -70,5 +70,9 @@
        "firNo":"Fir.No",
         "subject":"Subject",
          "letterNo":"Letter No",
-         "doc":"Document"
+         "doc":"Document",
+  "uploadSupportingFiles":"Upload Supporting Files",
+      "supportingFiles":"Supporting Files",
+      "confirmation":"Confirmation",
+    "getDoc":"Get Document"
 }

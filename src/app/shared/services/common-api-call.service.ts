@@ -16,4 +16,10 @@ export class CommonApiCallService {
     return this._httpClient.post(url, data);
   }
 
+  put(url: string, data: any): Observable<any> {
+    return this._httpClient.put(url, data);
+  }
+
+  
+
 }

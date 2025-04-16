@@ -171,16 +171,6 @@
                             </mat-form-field>
 
                         </td>
-                        <td><mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium">{{ t('subject')}}</mat-label>
-                                <input matInput matInput [formControlName]="'subject'" [required]="true">
-                                <mat-error *ngIf="uploadDocumentForm.get('subject').hasError('required')">
-                                    Required
-                                </mat-error>
-                            </mat-form-field>
-
-                        </td>
-
                     </tr>
                 </table>
 
@@ -214,53 +204,11 @@
                 <div class="flex font-semibold text-2xl  whitespace-nowrap my-5 ">
                     <div>Files/Documents</div>
                 </div>
-                <div
-                    class="mb-5 mx-10 border-dashed border-2 border-primary-500 dark:bg-slate-700 bg-primary-50/50 rounded-lg h-auto max-h-[640px] min-h-[300px]">
-                    <div class="flex">
-                        <div class="m-auto text-center font-semibold h-[300px] py-24 text-lg w-full border-r-2 border-dashed border-primary-500"
-                            [ngClass]="{'bg-primary-50/50': dragging }" (dragenter)="onDragEnter()"
-                            (dragover)="onDragOver($event)" (dragleave)="onDragLeave()" (drop)="filesDropped($event)">
+                
+                <app-upload-files (filesWithMetadataSelected)="onFilesWithMetadataSelected($event)">
+                </app-upload-files>
 
-                            <!-- Files preview section -->
-                            <div class="flex justify-center flex-wrap">
-                                <!-- Preview images -->
-                                <div *ngFor="let img of imgUrls; let i = index" class="m-2 text-center">
-                                    <img [src]="img.preview" class="w-[100px] h-[100px] object-cover m-1"
-                                        alt="Image Preview">
-                                    <p class="text-xs text-gray-500">{{ img.name }}</p>
-                                </div>
-
-                                <!-- Preview PDFs (using a placeholder for PDF files) -->
-                                <div *ngFor="let pdf of pdfUrls; let i = index" class="m-2 text-center">
-                                    <img [src]="'assets/icons/pdf.svg'" class="w-[100px] h-[100px] object-cover m-1"
-                                        alt="PDF Preview">
-                                    <p class="text-xs text-gray-500">{{ pdf.name }}</p>
-                                </div>
-
-                                <!-- Default icon if no files are uploaded -->
-                                <img *ngIf="imgUrls.length === 0 && pdfUrls.length === 0"
-                                    src="../../../../../assets/icons/file.svg" class="w-[100px]" alt="Processing Image">
-                            </div>
-
-                            <!-- Browse files link -->
-                            <div class="text-blue-700 hover:cursor-pointer" (click)="f_input.click()"
-                                matTooltip="Browse files">Browse files</div>
-
-                            <!-- File size and type constraints -->
-                            <div class="text-gray-400 text-sm">Maximum allowed file size is 10GB per file</div>
-                            <div class="text-gray-400 text-sm">Only .jpeg, .jpg, .png, and .pdf files are allowed</div>
-
-                            <!-- Hidden file input -->
-                            <input autocomplete="off" type="file" class="hidden" #f_input
-                                accept="image/png, image/jpeg, application/pdf" multiple
-                                (change)="selectFiles(f_input.files)">
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <div class="flex items-center justify-end">
+                <div class="flex items-center justify-end py-3">
                     <button *transloco="let t" mat-button [color]="'accent'"
                         [disabled]="uploadDocumentForm.pristine || uploadDocumentForm.untouched" (click)="clearForm()">
                         {{t('clear')}}

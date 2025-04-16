@@ -127,7 +127,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
         public dialog: MatDialog,
         private _changeDetectorRef: ChangeDetectorRef,
         private _formBuilder: UntypedFormBuilder,
-        private _citizeninfoService: SearchDocService
+        private _citizeninfoService: SearchDocService,
     ) {
         
     }
@@ -165,10 +165,10 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
 
     initForm() {
         this.searchUserListForm = this._formBuilder.group({
-            roleId: ['', [Validators.required]],
-            empName: ['', [Validators.required]],
-            kgid: ['', [Validators.required]],
-            divisionId:['',[Validators.required]],
+            roleId: [''],
+            empName: [''],
+            kgid: [''],
+            divisionId:[''],
             designationId:['']
         });
     }

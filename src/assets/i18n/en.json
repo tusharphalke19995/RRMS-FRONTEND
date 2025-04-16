@@ -39,10 +39,10 @@
   "citizenServices": "Citizen Services",
   "citizensTip": "Citizen's Tip",
   "addcitizensTip": "Add Citizen's Tip",
-  "caseNo": "Case Number",
+  "caseNo": "(CCMS)Case Number/Enquiry No.",
   "state": "State",
   "registerDate": "Fir Registered Date",
-  "location": "Crime Location",
+  "location": "To Address",
   "actSection": "Act/Section",
   "userMng": "User Management",
   "roleMng": "Role Management",
@@ -70,5 +70,9 @@
  "firNo":"Fir.No",
  "subject":"Subject",
  "letterNo":"Letter No",
-  "doc":"Document"
+  "doc":"Document",
+  "uploadSupportingFiles":"Upload Supporting Files",
+    "supportingFiles":"Supporting Files",
+    "confirmation":"Confirmation",
+    "getDoc":"Get Document"
 }
