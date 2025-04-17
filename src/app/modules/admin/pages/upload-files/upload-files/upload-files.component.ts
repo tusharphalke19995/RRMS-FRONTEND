@@ -483,6 +483,61 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     this.canDelete = userPermissions.includes("delete_filedetails");
   }
 
+  toggleFavourite(file: any) {
+    if (file.fileId) {
+      if (file.isFavourite) {
+        this.markUnFavourite(file);
+      } else {
+        this.markFavourite(file);
+      }
+    }
+  }
 
+  markUnFavourite(data:any){
+    this._uploadDocumentService.markAsUnFavourite(data.fileId).subscribe({
+      next: (response: any) => {
+        this._snackBar.open("Mark As Favourite successfully", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["success-snackbar"],
+        });
+        this._router.navigateByUrl("search-document")
+        this.selectedFiles = [];
+       
+      },
+      error: (error) => {
+        this._snackBar.open(error.message || "Error creating user", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["error-snackbar"],
+        });
+      },
+    });
+  }
+
+  markFavourite(data:any){
+    this._uploadDocumentService.markAsFavourite(data.fileId).subscribe({
+      next: (response: any) => {
+        this._snackBar.open("Mark As Un Favourite successfully", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["success-snackbar"],
+        });
+        this._router.navigateByUrl("search-document")
+        this.selectedFiles = [];
+      },
+      error: (error) => {
+        this._snackBar.open(error.message || "Error creating user", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["error-snackbar"],
+        });
+      },
+    });
+  }
 
 }

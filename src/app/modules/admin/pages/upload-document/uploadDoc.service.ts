@@ -53,6 +53,16 @@ getUnitsByDistictIdData(districtId: number) {
     const url = `${apiurls.casedataUpdate}${pk}`;
     return this.commonApiCallService.put(url, caseData); // or use .patch if partial update
   }
+
+  markAsFavourite(fileId: number) {
+    const url = `${apiurls.favourite}/${fileId}/favourite`;
+    return this.commonApiCallService.post(url, {});
+  }
+
+  markAsUnFavourite(fileId: number) {
+    const url = `${apiurls.favourite}/${fileId}/unfavourite`;
+    return this.commonApiCallService.post(url, {});
+  }
    /**
     * The error handler.
     * @param err The http error response.

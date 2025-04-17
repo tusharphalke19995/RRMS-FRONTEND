@@ -179,6 +179,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     this.getUserStateDropdown();
     this.onStateChange(16);
     this.onDisctrictChange(443);
+    this.getUploadMetaDataFiles();
   }
 
   /**
@@ -302,7 +303,6 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
         if (res.responseData.response) {
           this.dataSource = res.responseData.response;
         }
-        console.log("ksk", res);
       },
       error: (error) => {},
     });
