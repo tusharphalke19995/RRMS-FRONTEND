@@ -36,6 +36,27 @@ export const defaultNavigation: FuseNavigationItem[] = [
         type : 'basic',
         icon : 'heroicons_outline:star',
         link : '/manage-user-role'
+    },
+    {
+        id   : 'roleMng',
+        title: 'Notification',
+        type : 'basic',
+        icon : 'heroicons_outline:bell',
+        link : '/manage-notification'
+    },
+    {
+        id   : 'roleMng',
+        title: 'Content Management',
+        type : 'basic',
+        icon : 'heroicons_outline:user',
+        link : '/content-management'
+    },
+    {
+        id   : 'roleMng',
+        title: 'Organisation Mapping',
+        type : 'basic',
+        icon : 'heroicons_outline:chart-pie',
+        link : '/org-mapping'
     }
 
 ];

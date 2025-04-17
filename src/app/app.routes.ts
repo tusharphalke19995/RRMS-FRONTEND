@@ -79,7 +79,9 @@ export const appRoutes: Route[] = [
             {path: 'search-document', loadChildren: () => import('app/modules/admin/pages/search-document/searchDoc.routes')},
             {path: 'manage-user', loadChildren: () => import('app/modules/admin/pages/manage-user/search-userlist/searchUser.routes')},
             {path: 'manage-user-role', loadChildren: () => import('app/modules/admin/pages/manage-user-role/search-user-role/searchUserRole.routes')},
-
+            {path: 'org-mapping', loadChildren: () => import('app/modules/admin/pages/manage-org-mapping/org-mapping.routes')},
+            {path: 'content-management', loadChildren: () => import('app/modules/admin/pages/content-management/content-management.routes')},
+            {path: 'manage-notification', loadChildren: () => import('app/modules/admin/pages/manage-notification/notification.routes')},
         ]
     }
 ];
