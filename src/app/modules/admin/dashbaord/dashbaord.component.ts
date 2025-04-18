@@ -23,6 +23,7 @@ import { SearchUserService } from "../pages/manage-user/search-userlist/searchUs
 import { MatDialog } from "@angular/material/dialog";
 import { UploadedFilesComponent } from "../pages/search-document/uploaded-files/uploaded-files.component";
 import { fuseAnimations } from '@fuse/animations';
+import { SharedService } from "app/shared/shared.service";
 @Component({
   selector: "app-dashbaord",
   templateUrl: "./dashbaord.component.html",
@@ -55,8 +56,10 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   userTotalCount: number;
   userRoleCount: number;
+  currentUserData: any; 
   favoritesList: []; // To store favorites
   latestFiles: []; // To store latest used files
+  userList: any;
   /**
    * Constructor
    */
@@ -66,7 +69,8 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     private _router: Router,
     private authenticationService: AuthService,
     private _searchUserService: SearchUserService,
-        private dialog: MatDialog
+        private dialog: MatDialog,
+        private sharedService:SharedService
   ) {
     this.authData = this.authenticationService.getAuthData();
   }
@@ -81,6 +85,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getFilesLatest();
     this.getFavouritesInfo();
+    this.getCurrentData();
   }
 
   /**
@@ -145,5 +150,34 @@ export class DashbaordComponent implements OnInit, OnDestroy {
 
     viewAll(){
 
+    }
+
+    getCurrentData() {
+      this._dashbaordService.getCurrentUsers().subscribe({
+        next: (response:any) => {
+          this.currentUserData = response;
+          console.log("currentUserData:", this.currentUserData);
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error("Error fetching latest files:", error);
+        },
+      });
+    }
+  
+    goToActiveUserList(data){
+      this.userList = data.users;
+      this.sharedService.setActiveUserData(this.userList);
+      this._router.navigateByUrl("dashboard/active-user-list")
+    }
+
+    goToPendingApproval(){
+      // this.sharedService.setActiveUserData(this.userList);
+      this._router.navigateByUrl("dashboard/pending-approval-list")
+    }
+
+    goToNotification(){
+      // this.sharedService.setActiveUserData(this.userList);
+      this._router.navigateByUrl("manage-notification")
     }
 }

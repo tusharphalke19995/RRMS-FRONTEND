@@ -83,7 +83,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link : '/manage-master/designations',
             }
         ],
-    }
+    },
+    {
+        id   : 'revokeApproval',
+        title: 'Revoke Approval',
+        type : 'basic',
+        icon : 'heroicons_outline:chart-pie',
+        link : '/revoke-approval'
+    },
 
 ];
 export const compactNavigation: FuseNavigationItem[] = [

@@ -34,42 +34,58 @@
 
                 </div>
                 <div class="flex flex-col items-center mt-2">
-                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-blue-500">21</div>
-                    <div class="text-lg font-medium text-blue-600 dark:text-blue-500">Due Tasks</div>
-                    <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
-                        <div class="text-md font-medium truncate">Completed:</div>
-                        <div class="ml-1.5 text-lg font-semibold">13</div>
+                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-blue-500">
+                        {{currentUserData.count}}</div>
+                    <div class="flex cursor-pointer" (click)="goToActiveUserList(currentUserData)">
+                        <a class="inline-flex items-center -ml-1.5 text-blue-600 font-medium">
+                            <span class="ml-1">Users</span><mat-icon class="icon-size-5 text-blue-600"
+                                [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                        </a>
                     </div>
+
+
                 </div>
+
             </div>
-            <!-- Overdue -->
+      
             <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
                 <div class="flex items-start justify-between">
-                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Pending Approvals</div>
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Pending Approval</div>
+
                 </div>
                 <div class="flex flex-col items-center mt-2">
-                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-red-500">17</div>
-                    <div class="text-lg font-medium text-red-600 dark:text-red-500">Tasks</div>
-                    <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
-                        <div class="text-md font-medium truncate">From yesterday:</div>
-                        <div class="ml-1.5 text-lg font-semibold">9</div>
+                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-red-500">
+                        8</div>
+                    <div class="flex cursor-pointer" (click)="goToPendingApproval()">
+                        <a class="inline-flex items-center -ml-1.5 text-red-500 font-medium">
+                            <span class="ml-1">Approvals</span><mat-icon class="icon-size-5 text-red-500"
+                                [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                        </a>
                     </div>
+
+
                 </div>
+
             </div>
-            <!-- Issues -->
+
             <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
                 <div class="flex items-start justify-between">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Notifications</div>
 
                 </div>
                 <div class="flex flex-col items-center mt-2">
-                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-amber-500">24</div>
-                    <div class="text-lg font-medium text-amber-600 dark:text-amber-500">Open</div>
-                    <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
-                        <div class="text-md font-medium truncate">Closed today:</div>
-                        <div class="ml-1.5 text-lg font-semibold">19</div>
+                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none  text-amber-500">
+                        4</div>
+                    <div class="flex cursor-pointer" (click)="goToNotification()">
+                        <a class="inline-flex items-center -ml-1.5  text-amber-500 font-medium">
+                            <span class="ml-1">Notification</span><mat-icon class="icon-size-5 text-amber-500"
+                                [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                        </a>
                     </div>
+
+
                 </div>
+
             </div>
 
         </div>

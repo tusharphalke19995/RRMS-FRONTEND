@@ -85,5 +85,8 @@
     "addDivision":"Add Division",
     "addDesignation":"Add Designation",
     "roleName":"Role Name",
-    "divisionName": "Division Name"
+    "divisionName": "Division Name",
+    "activeUserList":"Active User List",
+    "approvalList":"Pending Approval List",
+    "revokeApprovalList":"Revoke Approval List"
 }

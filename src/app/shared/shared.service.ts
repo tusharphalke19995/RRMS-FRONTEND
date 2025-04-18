@@ -13,6 +13,10 @@ import { DOCUMENT } from "@angular/common";
       private caseSubject: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
       public caseData$: Observable<any[]> = this.caseSubject.asObservable();
 
+      
+      private activeUserSubject: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
+      activeUserData$: Observable<any[]> = this.activeUserSubject.asObservable();
+
       private filesSubject: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
       public files$: Observable<any[]> = this.filesSubject.asObservable();
 
@@ -59,5 +63,11 @@ import { DOCUMENT } from "@angular/common";
       getCaseData(): Observable<any[]> {
         return this.caseData$; 
       }
+
+      setActiveUserData(data: any[]) {
+        this.activeUserSubject.next(data);
+      }
+ 
+      
 
   }

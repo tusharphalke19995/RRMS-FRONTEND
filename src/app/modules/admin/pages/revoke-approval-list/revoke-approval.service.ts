@@ -6,7 +6,7 @@ import { CommonApiCallService } from 'app/shared/services/common-api-call.servic
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 
 @Injectable({providedIn: 'root'})
-export class DashbaordService
+export class RevokeApprovalService
 {  constructor(
     private _httpClient: HttpClient,
     private commonApiCallService: CommonApiCallService
@@ -24,13 +24,6 @@ export class DashbaordService
       .get(apiurls.getFilesLatest)
       .pipe(catchError(this.handleError));
   }
-
-  getCurrentUsers() {
-    return this._httpClient
-      .get(apiurls.getCurrentUser)
-      .pipe(catchError(this.handleError));
-  }
-
 
 
   

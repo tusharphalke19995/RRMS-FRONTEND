@@ -25,5 +25,5 @@ export const apiurls = {
    saveRole:`${environment.userApiUrl}mdm/roles`,
    saveDesignations:`${environment.userApiUrl}mdm/designations`,
    saveDivision:`${environment.userApiUrl}mdm/divisions`,
-  
+   getCurrentUser:`${environment.userApiUrl}users/currentUsers`,
 }as const;
