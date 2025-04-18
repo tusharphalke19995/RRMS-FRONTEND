@@ -74,5 +74,8 @@
   "uploadSupportingFiles":"Upload Supporting Files",
     "supportingFiles":"Supporting Files",
     "confirmation":"Confirmation",
-    "getDoc":"Get Document"
+    "getDoc":"Get Document",
+    "notification":"Notification",
+    "contentManagement":"Content Management",
+    "manageOrg":"Manage Orgazations"
 }
