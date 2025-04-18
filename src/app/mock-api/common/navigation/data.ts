@@ -38,25 +38,51 @@ export const defaultNavigation: FuseNavigationItem[] = [
         link : '/manage-user-role'
     },
     {
-        id   : 'roleMng',
+        id   : 'notification',
         title: 'Notification',
         type : 'basic',
         icon : 'heroicons_outline:bell',
         link : '/manage-notification'
     },
     {
-        id   : 'roleMng',
+        id   : 'contentManagement',
         title: 'Content Management',
         type : 'basic',
         icon : 'heroicons_outline:user',
         link : '/content-management'
     },
     {
-        id   : 'roleMng',
+        id   : 'orgMapping',
         title: 'Organisation Mapping',
         type : 'basic',
         icon : 'heroicons_outline:chart-pie',
         link : '/org-mapping'
+    },
+    {
+        title   : 'Master',
+        type    : 'collapsable',
+        icon    : 'heroicons_outline:information-circle',
+        children: [
+            {
+                id        : 'roleMng',
+                title     : 'Role Management',
+                type      : 'basic',
+                link      : '/manage-master/role',
+                exactMatch: true,
+            },
+            {
+                id   : 'divisionMng',
+                title: 'Division Management',
+                type : 'basic',
+                link : '/manage-master/division',
+            },
+            {
+                id   : 'designationMng',
+                title: 'Designation Management',
+                type : 'basic',
+                link : '/manage-master/designations',
+            }
+        ],
     }
 
 ];

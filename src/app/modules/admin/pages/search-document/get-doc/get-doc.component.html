@@ -20,15 +20,14 @@
           </ng-container>
 
           <div class="flex items-center ml-1 whitespace-nowrap">
-            <mat-icon class="icon-size-5 text-secondary"
-                [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+            <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
             <ng-container *transloco="let t">
-                <span class="ml-1 text-secondary">
-                  <a [routerLink]="'/search-document'">
-                    {{t('searchDoc')}} </a></span>
-                    
+              <span class="ml-1 text-secondary">
+                <a [routerLink]="'/search-document'">
+                  {{t('searchDoc')}} </a></span>
+
             </ng-container>
-        </div>
+          </div>
 
           <div class="flex items-center ml-1 whitespace-nowrap">
             <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
@@ -56,60 +55,66 @@
     </div>
   </div>
 
-  <div class="sm:p-5  cdkScrollable">
-    <ng-container>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-4">
-        <div class="flex flex-col">
-          <span class="font-semibold">Office Name: <span class="font-light">{{ caseMetaData.Office }}</span></span>
+  <div class="overflow-y-auto" cdkScrollable>
+    <div class="overflow-hidden">
+      <fuse-alert class="mb-8" *ngIf="alert" [type]="alert.type" [showIcon]="false">
+        {{alert.message}}
+      </fuse-alert>
 
-        </div>
-        <div class="flex flex-col">
-          <span class="font-semibold">Case Date: <span class="font-light">{{ caseMetaData.caseDate }}</span></span>
+      <div class="sm:p-5">
+        <ng-container>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-4">
+            <div class="flex flex-col">
+              <span class="font-semibold">Office Name: <span class="font-light">{{ caseMetaData.Office }}</span></span>
 
-        </div>
-       
-        <div class="flex flex-col">
-          <span class="font-semibold">Case No: <span class="font-light">{{ caseMetaData.caseNo }}</span></span>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-semibold">Case Type: <span class="font-light">{{ caseMetaData.caseType }}</span></span>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-semibold">Case Date: <span class="font-light">{{ caseMetaData.caseDate }}</span></span>
 
-        </div>
+            </div>
 
-        <div class="flex flex-col">
-          <span class="font-semibold">District Name: <span class="font-light">{{ caseMetaData.districtName }}</span></span>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-semibold">FIR No:<span class="font-light">{{ caseMetaData.firNo }}</span></span>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-semibold">State Name:<span class="font-light">{{ caseMetaData.stateName }}</span></span>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-semibold">Unit Name:<span class="font-light">{{ caseMetaData.unitName }}</span></span>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-semibold">Letter No:<span class="font-light">{{ caseMetaData.letterNo }}</span></span>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-semibold">To Address:<span class="font-light">{{ caseMetaData.toAddr }}</span></span>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-semibold">Author:<span class="font-light">{{ caseMetaData.author }}</span></span>
-        </div>
+            <div class="flex flex-col">
+              <span class="font-semibold">Case No: <span class="font-light">{{ caseMetaData.caseNo }}</span></span>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-semibold">Case Type: <span class="font-light">{{ caseMetaData.caseType }}</span></span>
+
+            </div>
+
+            <div class="flex flex-col">
+              <span class="font-semibold">District Name: <span class="font-light">{{ caseMetaData.districtName
+                  }}</span></span>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-semibold">FIR No:<span class="font-light">{{ caseMetaData.firNo }}</span></span>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-semibold">State Name:<span class="font-light">{{ caseMetaData.stateName }}</span></span>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-semibold">Unit Name:<span class="font-light">{{ caseMetaData.unitName }}</span></span>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-semibold">Letter No:<span class="font-light">{{ caseMetaData.letterNo }}</span></span>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-semibold">To Address:<span class="font-light">{{ caseMetaData.toAddr }}</span></span>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-semibold">Author:<span class="font-light">{{ caseMetaData.author }}</span></span>
+            </div>
+          </div>
+        </ng-container>
       </div>
-    </ng-container>
+      <app-upload-files [getfiles]="files" (filesWithMetadataSelected)="onFilesWithMetadataSelectedUpdate($event)">
+      </app-upload-files>
+
+
+      <div class="flex items-center justify-end py-2" *ngIf="canEdit">
+        <button *transloco="let t" class="mr-3" mat-flat-button [color]="'primary'" (click)="updateUploadedFile()">
+          {{t('Update')}}
+        </button>
+      </div>
+    </div>
   </div>
-
-  <app-upload-files [getfiles]="files" (filesWithMetadataSelected)="onFilesWithMetadataSelectedUpdate($event)">
-  </app-upload-files>
-
-
-  <div class="flex items-center justify-end py-2" *ngIf="canEdit">
-    <button *transloco="let t" class="mr-3" mat-flat-button [color]="'primary'"
-(click)="updateUploadedFile()">
-        {{t('Update')}}
-    </button>
-</div>
-
 </div>

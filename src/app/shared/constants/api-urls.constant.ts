@@ -19,5 +19,11 @@ export const apiurls = {
    getFilesLatest :`${environment.userApiUrl}casedata/files/latest`,
    casedataUpdate :`${environment.userApiUrl}casedata/update/`,
    favourite :`${environment.userApiUrl}casedata/files`,
-
+   getRolesMatser :`${environment.userApiUrl}mdm/roles`,
+   getDivisionsMaster :`${environment.userApiUrl}mdm/divisions`,
+   getDesignationsMaster:`${environment.userApiUrl}mdm/designations`,
+   saveRole:`${environment.userApiUrl}mdm/roles`,
+   saveDesignations:`${environment.userApiUrl}mdm/designations`,
+   saveDivision:`${environment.userApiUrl}mdm/divisions`,
+  
 }as const;

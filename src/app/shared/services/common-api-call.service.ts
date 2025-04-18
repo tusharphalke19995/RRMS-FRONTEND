@@ -20,6 +20,10 @@ export class CommonApiCallService {
     return this._httpClient.put(url, data);
   }
 
+  delete(url: string, data: any): Observable<any> {
+    return this._httpClient.put(url, data);
+  }
+
   
 
 }

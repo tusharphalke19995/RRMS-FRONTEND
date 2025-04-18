@@ -71,11 +71,19 @@
  "subject":"Subject",
  "letterNo":"Letter No",
   "doc":"Document",
-  "uploadSupportingFiles":"Upload Supporting Files",
+  "uploadSupportingFiles":"Upload Files",
     "supportingFiles":"Supporting Files",
     "confirmation":"Confirmation",
     "getDoc":"Get Document",
     "notification":"Notification",
     "contentManagement":"Content Management",
-    "manageOrg":"Manage Orgazations"
+    "manageOrg":"Manage Orgazations",
+    "roleManagement":"Role Management",
+    "divisionManagement":"Division Management",
+    "designationManagement":"Designation Management",
+    "addRole":"Add Role",
+    "addDivision":"Add Division",
+    "addDesignation":"Add Designation",
+    "roleName":"Role Name",
+    "divisionName": "Division Name"
 }

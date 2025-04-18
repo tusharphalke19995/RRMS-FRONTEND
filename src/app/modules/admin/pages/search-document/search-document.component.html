@@ -229,25 +229,12 @@
                         class="bg-primary-300 dark:bg-slate-500 text-black"> Police Station </th>
                     <td mat-cell *matCellDef="let row"> {{row.unitName}} </td>
                 </ng-container>
-
-                <!--First Name Column -->
-                <ng-container matColumnDef="Office">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black">Office </th>
-                    <td mat-cell *matCellDef="let row"> {{row.Office}} </td>
-                </ng-container>
-
                 <!--Last Name Column -->
                 <ng-container matColumnDef="firNo">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header
                         class="bg-primary-300 dark:bg-slate-500 text-black">Fir No</th>
                     <td mat-cell *matCellDef="let row"> {{row.firNo}} </td>
                 </ng-container>
-
-
-
-
-
 
                 <!-- KGID Column -->
                 <ng-container matColumnDef="caseNo">
@@ -275,19 +262,6 @@
                         class="bg-primary-300 dark:bg-slate-500 text-black"> Letter.No </th>
                     <td mat-cell *matCellDef="let row"> {{row.letterNo}} </td>
                 </ng-container>
-
-                <ng-container matColumnDef="author">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black"> Author</th>
-                    <td mat-cell *matCellDef="let row"> {{row.author}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="toAddr">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black">  To Address </th>
-                    <td mat-cell *matCellDef="let row"> {{row.toAddr}} </td>
-                </ng-container>
-
 
                 <!-- Action Column -->
                 <ng-container matColumnDef="action">

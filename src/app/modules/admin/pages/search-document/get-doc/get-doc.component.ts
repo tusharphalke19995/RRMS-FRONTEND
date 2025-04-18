@@ -67,6 +67,8 @@ export class GetDocComponent {
   files: any[] = [];
 
   caseMetaData: any;
+  
+  alert: { type: string; message: string };
 
   @Input() selectedFiles: FileWithMetadata[] = [];
 

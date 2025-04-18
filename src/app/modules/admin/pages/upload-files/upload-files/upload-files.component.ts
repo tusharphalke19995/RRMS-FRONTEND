@@ -496,13 +496,13 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   markUnFavourite(data:any){
     this._uploadDocumentService.markAsUnFavourite(data.fileId).subscribe({
       next: (response: any) => {
-        this._snackBar.open("Mark As Favourite successfully", "Close", {
+        this._snackBar.open("Mark As Un Favourite successfully", "Close", {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
           panelClass: ["success-snackbar"],
         });
-        this._router.navigateByUrl("search-document")
+        // this._router.navigateByUrl("search-document")
         this.selectedFiles = [];
        
       },
@@ -520,13 +520,13 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   markFavourite(data:any){
     this._uploadDocumentService.markAsFavourite(data.fileId).subscribe({
       next: (response: any) => {
-        this._snackBar.open("Mark As Un Favourite successfully", "Close", {
+        this._snackBar.open("Mark As Favourite successfully", "Close", {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
           panelClass: ["success-snackbar"],
         });
-        this._router.navigateByUrl("search-document")
+        // this._router.navigateByUrl("search-document")
         this.selectedFiles = [];
       },
       error: (error) => {
