@@ -35,7 +35,7 @@
                 </div>
                 <div class="flex flex-col items-center mt-2">
                     <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-blue-500">
-                        {{currentUserData.count}}</div>
+                        {{currentUserData?.count || 0}}</div>
                     <div class="flex cursor-pointer" (click)="goToActiveUserList(currentUserData)">
                         <a class="inline-flex items-center -ml-1.5 text-blue-600 font-medium">
                             <span class="ml-1">Users</span><mat-icon class="icon-size-5 text-blue-600"
@@ -47,7 +47,7 @@
                 </div>
 
             </div>
-      
+
             <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
                 <div class="flex items-start justify-between">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Pending Approval</div>
@@ -143,7 +143,7 @@
                                     </div>
                                 </ng-container>
                                 <div class="view-all-button-container mt-2 flex justify-end">
-                                    <button mat-button color="primary" (click)="viewAll()">
+                                    <button mat-button color="primary" (click)="viewAllFavouritesFiles(favoritesList)">
                                         <mat-icon>visibility</mat-icon>
                                         View All
                                     </button>
@@ -157,18 +157,59 @@
                     </div>
 
                     <!-- Latest Used Files -->
-                    <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
-                        <h2 class="text-lg font-medium tracking-tight leading-6 truncate">Latest Used Files</h2>
-                        <ul *ngFor="let file of latestFiles">
-                            <li>{{ file.fileName }}</li>
-                        </ul>
-                    </div>
+                    <div
+                        class="sm:col-span-2 md:col-span-4 lg:col-span-2 flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+                        <div class="flex flex-col sm:flex-row items-start justify-between">
+                            <div class="text-lg font-bold tracking-tight leading-6 truncate">Latest Files List
+                            </div>
+                        </div>
 
-                    <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
-                        <h2 class="text-lg font-medium tracking-tight leading-6 truncate">Uploaded Documents</h2>
-                        <ul *ngFor="let file of latestFiles">
-                            <li>{{ file.fileName }}</li>
-                        </ul>
+                        <div *ngIf="latestFiles && latestFiles.length > 0; else noData">
+                            <div class="flex flex-col mt-2 divide-y">
+                                <ng-container *ngFor="let latestFileItem of latestFiles; trackBy: trackByFn">
+                                    <div class="favorite-card py-3" [@fadeIn]>
+                                        <div class="favorite-card-header">
+                                            <div class="file-info">
+                                                <div class="file-name"> <mat-icon
+                                                        (click)="viewImage(latestFileItem.file)"
+                                                        class="cursor-pointer">{{ 'insert_drive_file' }}</mat-icon>
+                                                    <span class="ml-1.2">{{
+                                                        latestFileItem.fileName }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="favorite-card-body">
+                                            <div class="file-details">
+                                                <div><strong>File Type:</strong> {{ latestFileItem.subject }}</div>
+                                                <div><strong>Subject:</strong> {{ latestFileItem.fileType }}</div>
+                                                <div><strong>Classification:</strong> {{
+                                                    latestFileItem.classification }}</div>
+                                                <div class="hash-tags my-1">
+                                                    <strong>Hash Tag:</strong>
+                                                    <mat-chip-list>
+                                                        <mat-chip
+                                                            *ngFor="let tag of latestFileItem.hashTag.split(',')"
+                                                            class="py-0.5 bg-blue-400  dark:bg-blue-500 px-3 rounded-full text-sm font-semibold text-white">
+                                                            {{ tag.trim() }}
+                                                        </mat-chip>
+                                                    </mat-chip-list>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                <div class="view-all-button-container mt-2 flex justify-end">
+                                    <button mat-button color="primary" (click)="viewAllRecentFiles(latestFiles)">
+                                        <mat-icon>visibility</mat-icon>
+                                        View All
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                        <ng-template #noData>
+                            <p>No data available</p>
+                        </ng-template>
                     </div>
                 </div>
             </div>

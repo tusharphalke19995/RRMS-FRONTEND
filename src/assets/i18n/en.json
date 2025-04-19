@@ -88,5 +88,7 @@
     "divisionName": "Division Name",
     "activeUserList":"Active User List",
     "approvalList":"Pending Approval List",
-    "revokeApprovalList":"Revoke Approval List"
+    "revokeApprovalList":"Revoke Approval List",
+    "latestFileList":"Latest File List",
+     "favioriesFileList":"Favorites File List"
 }

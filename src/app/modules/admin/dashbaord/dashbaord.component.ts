@@ -180,4 +180,14 @@ export class DashbaordComponent implements OnInit, OnDestroy {
       // this.sharedService.setActiveUserData(this.userList);
       this._router.navigateByUrl("manage-notification")
     }
+
+    viewAllRecentFiles(data){
+      this.sharedService.setLatestFilesData(data);
+      this._router.navigateByUrl("dashboard/latest-files-list")
+    }
+    
+    viewAllFavouritesFiles(favData){
+      this.sharedService.setRecentFavFilesData(favData);
+      this._router.navigateByUrl("dashboard/recent-favorites-files")
+    }
 }
