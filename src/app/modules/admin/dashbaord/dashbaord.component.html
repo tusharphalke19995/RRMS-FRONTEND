@@ -2,7 +2,7 @@
     <!-- Main -->
     <div class="flex-auto p-3 sm:p-5">
         <!-- CONTENT GOES HERE -->
-        <div class="bg-card rounded-lg shadow-md">
+        <div class="bg-white rounded-lg shadow-md">
             <div class="flex flex-col w-full max-w-screen-xl mx-auto px-6 sm:px-8">
                 <div class="flex flex-col sm:flex-row flex-auto sm:items-center min-w-0 my-8 sm:my-12">
                     <!-- Avatar and name -->
@@ -27,78 +27,70 @@
                 </div>
             </div>
         </div>
-        <div class="py-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full min-w-0">
-            <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+        <div class="py-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full min-w-0">
+            <!-- Active Users Card -->
+            <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden">
                 <div class="flex items-start justify-between">
-                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Active users</div>
-
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Active Users</div>
                 </div>
                 <div class="flex flex-col items-center mt-2">
                     <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-blue-500">
-                        {{currentUserData?.count || 0}}</div>
+                        {{ currentUserData?.count || 0 }}
+                    </div>
                     <div class="flex cursor-pointer" (click)="goToActiveUserList(currentUserData)">
                         <a class="inline-flex items-center -ml-1.5 text-blue-600 font-medium">
-                            <span class="ml-1">Users</span><mat-icon class="icon-size-5 text-blue-600"
-                                [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                            <span class="ml-1">Users</span>
+                            <mat-icon class="icon-size-5 text-blue-600" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
                         </a>
                     </div>
-
-
                 </div>
-
             </div>
 
-            <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+            <!-- Pending Approval Card -->
+            <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden">
                 <div class="flex items-start justify-between">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Pending Approval</div>
-
                 </div>
                 <div class="flex flex-col items-center mt-2">
                     <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-red-500">
-                        8</div>
+                        {{ pendingApprovalCount || 0 }} <!-- Replace with actual count -->
+                    </div>
                     <div class="flex cursor-pointer" (click)="goToPendingApproval()">
                         <a class="inline-flex items-center -ml-1.5 text-red-500 font-medium">
-                            <span class="ml-1">Approvals</span><mat-icon class="icon-size-5 text-red-500"
-                                [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                            <span class="ml-1">Approvals</span>
+                            <mat-icon class="icon-size-5 text-red-500" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
                         </a>
                     </div>
-
-
                 </div>
-
             </div>
 
-            <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+            <!-- Notifications Card -->
+            <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden">
                 <div class="flex items-start justify-between">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Notifications</div>
-
                 </div>
                 <div class="flex flex-col items-center mt-2">
-                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none  text-amber-500">
-                        4</div>
+                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-amber-500">
+                        {{ notificationsCount || 0 }} <!-- Replace with actual count -->
+                    </div>
                     <div class="flex cursor-pointer" (click)="goToNotification()">
-                        <a class="inline-flex items-center -ml-1.5  text-amber-500 font-medium">
-                            <span class="ml-1">Notification</span><mat-icon class="icon-size-5 text-amber-500"
-                                [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                        <a class="inline-flex items-center -ml-1.5 text-amber-500 font-medium">
+                            <span class="ml-1">Notifications</span>
+                            <mat-icon class="icon-size-5 text-amber-500" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
                         </a>
                     </div>
-
-
                 </div>
-
             </div>
-
         </div>
+        
         <div class="flex-auto border-t -mt-px pt-4 sm:pt-6">
             <div class="w-full max-w-screen-xl mx-auto">
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full min-w-0">
-                    <!-- Existing cards for User Count and Role Count -->
-
                     <!-- Favorites List -->
                     <div
-                        class="sm:col-span-2 md:col-span-4 lg:col-span-2 flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+                        class="sm:col-span-2 md:col-span-4 lg:col-span-2 flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden">
                         <div class="flex flex-col sm:flex-row items-start justify-between">
-                            <div class="text-lg font-bold tracking-tight leading-6 truncate">Recent Favorites Files
+                            <div class="text-lg font-bold tracking-tight leading-6 truncate">Recent Favorite Files
                             </div>
                         </div>
 
@@ -152,13 +144,14 @@
 
                         </div>
                         <ng-template #noData>
-                            <p>No data available</p>
+                            <!-- <p class="text-center text-gray-500">No data available</p> -->
+                            <img  class="text-center noDataImg" src="../../../../assets/images/others/Nodataavailable.svg" alt="">
                         </ng-template>
                     </div>
 
                     <!-- Latest Used Files -->
                     <div
-                        class="sm:col-span-2 md:col-span-4 lg:col-span-2 flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+                        class="sm:col-span-2 md:col-span-4 lg:col-span-2 flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden">
                         <div class="flex flex-col sm:flex-row items-start justify-between">
                             <div class="text-lg font-bold tracking-tight leading-6 truncate">Latest Files List
                             </div>
@@ -208,7 +201,7 @@
 
                         </div>
                         <ng-template #noData>
-                            <p>No data available</p>
+                            <p class="text-center text-gray-500">No data available</p>
                         </ng-template>
                     </div>
                 </div>

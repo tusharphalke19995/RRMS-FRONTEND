@@ -60,6 +60,8 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   favoritesList: []; // To store favorites
   latestFiles: []; // To store latest used files
   userList: any;
+  pendingApprovalCount: number = 0;
+  notificationsCount: number = 0;
   /**
    * Constructor
    */
@@ -114,27 +116,27 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   
   getFavouritesInfo() {
     this._dashbaordService.getFavouritesData().subscribe({
-      next: (response:any) => {
-        this.favoritesList = response; // Store the favorites list
-        console.log("Favorites fetched:", this.favoritesList);
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error("Error fetching favorites:", error);
-      },
+        next: (response: any) => {
+            this.favoritesList = response; // Store the favorites list
+            console.log("Favorites fetched:", this.favoritesList);
+            this.cdr.detectChanges();
+        },
+        error: (error) => {
+            console.error("Error fetching favorites:", error);
+        },
     });
   }
 
   getFilesLatest() {
     this._dashbaordService.getFilesLatestData().subscribe({
-      next: (response:any) => {
-        this.latestFiles = response;
-        console.log("Latest files fetched:", this.latestFiles);
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error("Error fetching latest files:", error);
-      },
+        next: (response: any) => {
+            this.latestFiles = response; // Store the latest files
+            console.log("Latest files fetched:", this.latestFiles);
+            this.cdr.detectChanges();
+        },
+        error: (error) => {
+            console.error("Error fetching latest files:", error);
+        },
     });
   }
 
@@ -154,13 +156,15 @@ export class DashbaordComponent implements OnInit, OnDestroy {
 
     getCurrentData() {
       this._dashbaordService.getCurrentUsers().subscribe({
-        next: (response:any) => {
+        next: (response: any) => {
           this.currentUserData = response;
+          this.pendingApprovalCount = response.pendingApprovalCount;
+          this.notificationsCount = response.notificationsCount;
           console.log("currentUserData:", this.currentUserData);
           this.cdr.detectChanges();
         },
         error: (error) => {
-          console.error("Error fetching latest files:", error);
+          console.error("Error fetching current users:", error);
         },
       });
     }
