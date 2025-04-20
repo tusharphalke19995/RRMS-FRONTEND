@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, UntypedFormGroup, NgForm, UntypedFormBuilder } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,6 +21,8 @@ import { SearchDocService } from 'app/modules/admin/pages/search-document/search
 import { InventoryVendor } from 'app/modules/admin/pages/upload-document/uploadDoc.types';
 import { SharedService } from 'app/shared/shared.service';
 import { Subject } from 'rxjs';
+import { DashbaordService } from '../../dashboard.service';
+import { UploadedFilesComponent } from 'app/modules/admin/pages/search-document/uploaded-files/uploaded-files.component';
 
 @Component({
   selector: 'app-recent-favorites-files',
@@ -49,7 +51,8 @@ import { Subject } from 'rxjs';
     MatSortModule,
   ],
   templateUrl: './recent-favorites-files.component.html',
-  styleUrl: './recent-favorites-files.component.scss'
+  styleUrl: './recent-favorites-files.component.scss',
+    encapsulation: ViewEncapsulation.None,
 })
 export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
   searchUserListForm: UntypedFormGroup;
@@ -65,37 +68,29 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
   columns: any[] = [
-    { labelen: "Email", labelhi: "Email", property: "email" },
+    { labelen: "File Name", labelhi: "File Name", property: "fileName" },
+    { labelen: "File Path", labelhi: "File Path", property: "filePath" },
+    { labelen: "Hash Tag", labelhi: "Hash Tag", property: "hashTag" },
+    { labelen: "Subject", labelhi: "Subject", property: "subject" },
     {
-      labelen: "First Name",
-      labelhi: "Last Name",
-      property: "first_name",
-    },
-    { labelen: "Last Name", labelhi: "Last Name", property: "last_name" },
-    { labelen: "Mobile No", labelhi: "mobileno", property: "mobileno" },
-    { labelen: "kgid", labelhi: "kgid", property: "kgid" },
-    { labelen: "Role Name", labelhi: "Role Name", property: "roleName" },
-    {
-      labelen: "Division Name",
-      labelhi: "Division Name",
-      property: "divisionNameme",
+      labelen: "File Type",
+      labelhi: "File Type",
+      property: "fileType",
     },
     {
-      labelen: "Designation Name",
-      labelhi: "Designation Name",
-      property: "designationName",
+      labelen: "Classification",
+      labelhi: "Classification",
+      property: "classification",
     },
   ];
 
   displayedColumns: string[] = [
-    "email",
-    "first_name",
-    "last_name",
-    "mobileno",
-    "kgid",
-    "roleName",
-    "divisionName",
-    "designationName",
+    "fileName",
+    "filePath",
+    "hashTag",
+    "subject",
+    "fileType",
+    "classification"
   ];
   userRoleDropdown: [];
   designationsDropdown: [];
@@ -108,11 +103,13 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
     private _snackBar: MatSnackBar,
     private _searchUserService: SearchUserService,
     public dialog: MatDialog,
+    private _dashbaordService:DashbaordService,
     private sharedService: SharedService,
     private _masterService: MasterService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: UntypedFormBuilder,
-    private _citizeninfoService: SearchDocService
+    private _citizeninfoService: SearchDocService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   // -----------------------------------------------------------------------------------------------------
@@ -127,12 +124,16 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
   }
 
   getFavFilesList() {
-    this.sharedService.favFileData$.subscribe((userInfo: any) => {
-      this.favFilesInfo = userInfo;
-      console.log(" this.favFilesInfo ", this.favFilesInfo);
-      this.dataSource = new MatTableDataSource(this.favFilesInfo);
+    this._dashbaordService.getFavouritesData().subscribe({
+        next: (response: any) => {
+          this.dataSource = new MatTableDataSource(response);
+        },
+        error: (error) => {
+            console.error("Error fetching favorites:", error);
+        },
     });
   }
+  
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort1;
@@ -180,5 +181,17 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
       this.dataSource.paginator.firstPage();
     }
   }
+
+
+
+      viewImage(data) {
+        const dialogRef = this.dialog.open(UploadedFilesComponent, {
+          data: data,
+          width: "1000px",
+        });
+        dialogRef.afterClosed().subscribe((result) => {
+          this.cdr.detectChanges();
+        });
+      }
 }
 

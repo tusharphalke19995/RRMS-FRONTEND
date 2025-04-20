@@ -190,8 +190,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
       this._router.navigateByUrl("dashboard/latest-files-list")
     }
     
-    viewAllFavouritesFiles(favData){
-      this.sharedService.setRecentFavFilesData(favData);
+    viewAllFavouritesFiles(){
       this._router.navigateByUrl("dashboard/recent-favorites-files")
     }
 }

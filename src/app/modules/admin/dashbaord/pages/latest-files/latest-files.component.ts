@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, UntypedFormGroup, NgForm, UntypedFormBuilder } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,6 +21,7 @@ import { SearchDocService } from 'app/modules/admin/pages/search-document/search
 import { InventoryVendor } from 'app/modules/admin/pages/upload-document/uploadDoc.types';
 import { SharedService } from 'app/shared/shared.service';
 import { Subject } from 'rxjs';
+import { UploadedFilesComponent } from 'app/modules/admin/pages/search-document/uploaded-files/uploaded-files.component';
 
 @Component({
   selector: 'app-latest-files',
@@ -49,7 +50,8 @@ import { Subject } from 'rxjs';
     MatSortModule,
   ],
   templateUrl: './latest-files.component.html',
-  styleUrl: './latest-files.component.scss'
+  styleUrl: './latest-files.component.scss',
+      encapsulation: ViewEncapsulation.None,
 })
 export class LatestFilesComponent implements OnInit, AfterViewInit {
   searchUserListForm: UntypedFormGroup;
@@ -99,6 +101,7 @@ export class LatestFilesComponent implements OnInit, AfterViewInit {
     private _snackBar: MatSnackBar,
     private _searchUserService: SearchUserService,
     public dialog: MatDialog,
+    private cdr: ChangeDetectorRef,
     private sharedService: SharedService,
     private _masterService: MasterService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -171,4 +174,14 @@ export class LatestFilesComponent implements OnInit, AfterViewInit {
       this.dataSource.paginator.firstPage();
     }
   }
+
+       viewImage(data) {
+          const dialogRef = this.dialog.open(UploadedFilesComponent, {
+            data: data,
+            width: "1000px",
+          });
+          dialogRef.afterClosed().subscribe((result) => {
+            this.cdr.detectChanges();
+          });
+        }
 }

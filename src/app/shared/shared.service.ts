@@ -20,8 +20,8 @@ import { DOCUMENT } from "@angular/common";
       private latesFileSubject: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
       latesFileData$: Observable<any[]> = this.latesFileSubject.asObservable();
 
-      private favFileSubject: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
-      favFileData$: Observable<any[]> = this.favFileSubject.asObservable();
+      private favFileSubject: BehaviorSubject<any> = new BehaviorSubject<any>([]);
+      favFileData$: Observable<any> = this.favFileSubject.asObservable();
 
       private filesSubject: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
       public files$: Observable<any[]> = this.filesSubject.asObservable();
@@ -78,7 +78,7 @@ import { DOCUMENT } from "@angular/common";
         this.latesFileSubject.next(data);
       }
  
-      setRecentFavFilesData(data: any[]) {
+      setRecentFavFilesData(data) {
         this.favFileSubject.next(data);
       }
  
