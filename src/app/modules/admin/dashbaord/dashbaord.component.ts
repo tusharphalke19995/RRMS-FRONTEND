@@ -24,6 +24,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { UploadedFilesComponent } from "../pages/search-document/uploaded-files/uploaded-files.component";
 import { fuseAnimations } from '@fuse/animations';
 import { SharedService } from "app/shared/shared.service";
+import { SplitTagsPipe } from "app/shared/pipes/splitTags";
 @Component({
   selector: "app-dashbaord",
   templateUrl: "./dashbaord.component.html",
@@ -62,6 +63,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   userList: any;
   pendingApprovalCount: number = 0;
   notificationsCount: number = 0;
+  finalDataNotifications :any;
   /**
    * Constructor
    */
@@ -88,6 +90,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     this.getFilesLatest();
     this.getFavouritesInfo();
     this.getCurrentData();
+    this.getNotificationsCount();
   }
 
   /**
@@ -140,6 +143,21 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     });
   }
 
+  getNotificationsCount() {
+    this._dashbaordService.getNotificationsCount().subscribe({
+        next: (response: any) => {
+          console.log("response Noti",response);
+          this.finalDataNotifications = response;
+          this.notificationsCount = response.length;
+          console.log("notificationsCount Noti",this.notificationsCount)
+            this.cdr.detectChanges();
+        },
+        error: (error) => {
+            console.error("Error fetching latest files:", error);
+        },
+    });
+  }
+
     viewImage(data) {
       const dialogRef = this.dialog.open(UploadedFilesComponent, {
         data: data,
@@ -166,7 +184,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
         next: (response: any) => {
           this.currentUserData = response;
           this.pendingApprovalCount = response.pendingApprovalCount;
-          this.notificationsCount = response.notificationsCount;
+          
           console.log("currentUserData:", this.currentUserData);
           this.cdr.detectChanges();
         },
@@ -188,7 +206,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     }
 
     goToNotification(){
-      // this.sharedService.setActiveUserData(this.userList);
+      this.sharedService.setNotificationsInfo(this.finalDataNotifications);
       this._router.navigateByUrl("manage-notification")
     }
 

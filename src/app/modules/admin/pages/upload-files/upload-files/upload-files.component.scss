@@ -144,49 +144,83 @@
 
 // Styles for the tags display
 .tags-container {
-    margin-top: 10px; 
-    padding: 10px; 
-    border: 1px solid #e0e0e0; 
-    border-radius: 8px; 
-    background-color: #f9f9f9; 
-    display: flex; 
-    flex-wrap: wrap;
-    gap: 8px; 
-  
-    strong {
-      font-weight: bold; 
-      color: #333; 
-    }
-  
-    .tag {
-      background-color: #007bff; 
-      color: white; 
-      padding: 5px 10px; 
-      border-radius: 20px; 
-      font-size: 14px; 
-      transition: background-color 0.3s;
-  
-      &:hover {
-        background-color: #0056b3;
-        cursor: pointer; 
-      }
-    }
-  }
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 
-  .text-green-500 {
+    strong {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .custom-tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .custom-tag {
+        background-color: #007bff;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 14px;
+        transition: background-color 0.3s, transform 0.3s;
+
+        &:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+            cursor: pointer;
+        }
+    }
+}
+
+.text-green-500 {
     color: #28a745;
-  }
-  
-  .text-gray-500 {
-    color: #6c757d; 
-  }
-  
-  .backdrop {
+}
+
+.text-gray-500 {
+    color: #6c757d;
+}
+
+.backdrop {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5); 
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 1000;
-  }
+}
+
+::ng-deep .mat-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px; 
+}
+
+::ng-deep .mat-chip {
+    background-color: #e0f7fa; 
+    color: #00796b; 
+    border-radius: 16px; 
+    padding: 0 8px; 
+    height: 24px; 
+    font-size: 12px; 
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2px; 
+}
+
+::ng-deep .mat-chip.mat-standard-chip {
+    border: none; 
+}
+
+::ng-deep .mat-chip.mat-chip-selected {
+    background-color: #b2ebf2; 
+}

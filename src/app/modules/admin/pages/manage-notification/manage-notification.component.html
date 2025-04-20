@@ -61,25 +61,34 @@
       <table mat-table [dataSource]="dataSource" matSort #sort1="matSort" class="w-full mt-[10px]">
         <!-- ID Column -->
 
+        <ng-container matColumnDef="fileName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">File
+            Name </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-icon class="mr-2 align-middle text-primary" matTooltip="View File"
+              (click)="viewImage(row.file)">insert_drive_file</mat-icon>
+            {{ row.file?.fileName || 'No File Name' }}
+          </td>
+        </ng-container>
         <!--First Name Column -->
-        <ng-container matColumnDef="ntContent">
+        <ng-container matColumnDef="message">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">
             Notification Content </th>
-          <td mat-cell *matCellDef="let row"> {{row.ntContent}} </td>
+          <td mat-cell *matCellDef="let row"> {{row.message}} </td>
         </ng-container>
 
         <!--Last Name Column -->
-        <ng-container matColumnDef="createdOn">
+        <ng-container matColumnDef="created_at">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">
             CreatedOn On </th>
-          <td mat-cell *matCellDef="let row"> {{row.createdOn}} </td>
+          <td mat-cell *matCellDef="let row"> {{row.created_at }} </td>
         </ng-container>
 
         <!-- Division Name Column -->
-        <ng-container matColumnDef="isRead">
+        <ng-container matColumnDef="is_read">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Is
             Read </th>
-          <td mat-cell *matCellDef="let row"> {{row.isRead}} </td>
+          <td mat-cell *matCellDef="let row"> {{row.is_read}} </td>
         </ng-container>
 
 
@@ -88,12 +97,10 @@
           <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black"> Action </th>
           <td mat-cell *matCellDef="let row">
             <div class="flex justify-center gap-2">
-              <button mat-icon-button color="primary" (click)="editUser(row)" matTooltip="Edit">
-                <mat-icon>edit</mat-icon>
+              <button mat-icon-button color="primary" (click)="approvedRequest(row)" matTooltip="Action">
+                <mat-icon [svgIcon]="'heroicons_solid:check-circle'"></mat-icon>
               </button>
-              <!-- <button mat-icon-button color="warn" (click)="deleteUser(row)" matTooltip="Delete">
-                              <mat-icon>delete</mat-icon>
-                          </button> -->
+
             </div>
           </td>
         </ng-container>

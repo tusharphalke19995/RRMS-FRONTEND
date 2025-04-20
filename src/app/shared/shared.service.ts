@@ -23,6 +23,10 @@ import { DOCUMENT } from "@angular/common";
       private favFileSubject: BehaviorSubject<any> = new BehaviorSubject<any>([]);
       favFileData$: Observable<any> = this.favFileSubject.asObservable();
 
+      private notificationSubject: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
+      getnotificationData$: Observable<any[]> = this.notificationSubject.asObservable();
+
+
       private filesSubject: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
       public files$: Observable<any[]> = this.filesSubject.asObservable();
 
@@ -82,8 +86,8 @@ import { DOCUMENT } from "@angular/common";
         this.favFileSubject.next(data);
       }
  
- 
- 
-      
+      setNotificationsInfo(data){
+        this.notificationSubject.next(data)
+      }
 
   }

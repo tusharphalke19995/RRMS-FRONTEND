@@ -29,13 +29,15 @@
       <div *ngFor="let file of selectedFiles; let i = index" class="file-item">
         <div class="flex items-center justify-between p-2">
           <div class="flex items-center">
-            <mat-icon (click)="viewImage(file)" class="cursor-pointer" [ngClass]="{'text-green-500': file.metadata, 'text-gray-500': !file.metadata}">{{ file.metadata ? 'check_circle' : 'insert_drive_file' }}</mat-icon>
+            <mat-icon (click)="viewImage(file)" class="cursor-pointer"
+              [ngClass]="{'text-green-500': file.metadata, 'text-gray-500': !file.metadata}">{{ file.metadata ?
+              'check_circle' : 'insert_drive_file' }}</mat-icon>
             <span class="ml-2">{{ file.name || file.fileName}}</span>
             <span class="ml-2 text-sm text-gray-500" *ngIf="checkGetFile">
               ({{ (file.size / 1024).toFixed(1) }} KB)
             </span>
             <!-- Metadata Badge -->
-            <ng-container  *ngIf="file.metadata || file" >
+            <ng-container *ngIf="file.metadata || file">
               <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-md">
                 {{ file.metadata?.classification || file.classification }}
               </span>
@@ -45,13 +47,13 @@
                 </mat-icon>
               </span>
             </ng-container>
-            
+
           </div>
           <div class="flex items-center">
             <button mat-icon-button color="primary" (click)="openSelectedFileModal(file)" type="button">
               <mat-icon>edit</mat-icon>
             </button>
-            <button   mat-icon-button color="warn" (click)="removeFile(i)" type="button">
+            <button mat-icon-button color="warn" (click)="removeFile(i)" type="button">
               <mat-icon>close</mat-icon>
             </button>
           </div>
@@ -61,18 +63,22 @@
         <ng-container *ngIf="file.metadata || file">
           <div class="metadata-preview px-4 py-2 bg-gray-50">
             <div class="grid grid-cols-2 gap-2 text-sm">
-              <div *ngIf="file.metadata?.subject || file.subject"><strong>Subject:</strong> {{ file.metadata?.subject || file.subject }}</div>
-              <div *ngIf="file.metadata?.fileType || file.fileType"> <strong>Type:</strong> {{ file.metadata?.fileType || file.fileType }}</div>
+              <div *ngIf="file.metadata?.subject || file.subject"><strong>Subject:</strong> {{ file.metadata?.subject ||
+                file.subject }}</div>
+              <div *ngIf="file.metadata?.fileType || file.fileType"> <strong>Type:</strong> {{ file.metadata?.fileType
+                || file.fileType }}</div>
               <div *ngIf="file.metadata?.hashTag || file.hashTag" class="tags-container">
                 <strong>Tags:</strong>
-                <span *ngFor="let tag of (file.metadata?.hashTag || file.hashTag)?.split(',')" class="tag">
-                  {{ tag.trim() }}
-                </span>
+                <div class="custom-tag-list">
+                  <span *ngFor="let tag of formatTags(file.metadata?.hashTag || file.hashTag)" class="custom-tag">
+                    {{ tag }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </ng-container>
-        
+
       </div>
     </div>
   </form>
@@ -80,13 +86,13 @@
 
 <!-- Metadata Dialog -->
 <mat-dialog *ngIf="openFileModal" (close)="closeFileModal()"
-  class="flex flex-col max-w-340 md:min-w-160 max-h-screen modal-dialog"     cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle cdkDrag>
+  class="flex flex-col max-w-340 md:min-w-160 max-h-screen modal-dialog" cdkDragRootElement=".cdk-overlay-pane"
+  cdkDragHandle cdkDrag>
 
   <div
-    class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md"
-   >
+    class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md">
     <div class="flex items-center">
-      <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('supportingFiles')}}</span>
+      <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('uploadSupportingFiles')}}</span>
     </div>
     <button mat-icon-button class=" rounded-full transition-colors duration-200" (click)="onNoClose()" [tabIndex]="-1">
       <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
@@ -106,7 +112,7 @@
 
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>hashTag</mat-label>
-        <input matInput formControlName="hashTag" placeholder="Enter hashTag" />
+        <input matInput formControlName="hashTag" (keyup)="onHashTagKeyUp($event)" placeholder="Enter hashTag" />
       </mat-form-field>
 
     </div>
@@ -131,12 +137,12 @@
     </div>
 
     <div class="p-2">
-      <p> File/Document Name: <span class="font-semibold">  {{ fileToEdit?.name  ||  fileToEdit.fileName}}</span></p>
+      <p> File/Document Name: <span class="font-semibold"> {{ fileToEdit?.name || fileToEdit.fileName}}</span></p>
     </div>
   </form>
   <div class="flex justify-end space-x-2 mt-6 pt-4 border-t py-4">
     <button mat-button (click)="closeFileModal()">Cancel</button>
-    <button mat-raised-button color="primary"   [disabled]="!metadataForm.valid" (click)="submitMetadata()">
+    <button mat-raised-button color="primary" [disabled]="!metadataForm.valid" (click)="submitMetadata()">
       Save Metadata
     </button>
   </div>
@@ -146,10 +152,11 @@
 
 
 
-<mat-dialog *ngIf="isConfirmRemoveOpen" (close)="isConfirmRemoveOpen = false" class="modal-dialog"  class="flex flex-col max-w-340 md:min-w-160 max-h-screen modal-dialog"     cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle cdkDrag>
+<mat-dialog *ngIf="isConfirmRemoveOpen" (close)="isConfirmRemoveOpen = false" class="modal-dialog"
+  class="flex flex-col max-w-340 md:min-w-160 max-h-screen modal-dialog" cdkDragRootElement=".cdk-overlay-pane"
+  cdkDragHandle cdkDrag>
   <div
-    class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md"
-   >
+    class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md">
     <div class="flex items-center">
       <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('confirmation')}}</span>
     </div>

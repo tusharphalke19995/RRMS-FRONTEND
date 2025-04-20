@@ -1,4 +1,4 @@
-import { Component, ViewChild } from "@angular/core";
+import { ChangeDetectorRef, Component, ViewChild } from "@angular/core";
 import {
   CommonModule,
   CurrencyPipe,
@@ -20,6 +20,12 @@ import { MatSort, MatSortModule } from "@angular/material/sort";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { RouterLink } from "@angular/router";
 import { TranslocoModule } from "@ngneat/transloco";
+import { SharedService } from "app/shared/shared.service";
+import { MatDialog } from "@angular/material/dialog";
+import { UploadedFilesComponent } from "../search-document/uploaded-files/uploaded-files.component";
+import { NotificationService } from "./notification.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { ConfirmationDialogComponent } from "./confirmation-dialog/confirmation-dialog.component";
 
 @Component({
   selector: "app-manage-notification",
@@ -59,11 +65,66 @@ export class ManageNotificationComponent {
   dataSource: MatTableDataSource<any>;
 
   columns: any[] = [
-    { labelen: "Notification", labelhi: "Notification", property: "ntContent" },
-    { labelen: "Date", labelhi: "Date", property: "createdOn" },
-    { labelen: "Read Status", labelhi: "Read Status", property: "isRead" },
+    {
+      labelen: "File Name",
+      labelhi: "File Name",
+      property: "fileName",
+    },
+    {
+      labelen: "Notification",
+      labelhi: "Notification",
+      property: "created_at",
+    },
+    { labelen: "Date", labelhi: "Date", property: "message" },
+    { labelen: "Read Status", labelhi: "Read Status", property: "is_read" },
     { labelen: "Action", labelhi: "Action", property: "action" },
   ];
 
-  displayedColumns: string[] = ["ntContent", "createdOn", "isRead", "action"];
+  displayedColumns: string[] = ["fileName","created_at", "message", "is_read", "action"];
+  notificationInfo: any;
+  constructor(
+    private _dialog: MatDialog,
+    private notificationService:NotificationService,
+    private sharedService: SharedService,
+
+    private cdr: ChangeDetectorRef,
+        private _snackBar: MatSnackBar
+  ) {}
+
+  /**
+   * On init
+   */
+  ngOnInit(): void {
+    this.getNotificationList();
+  }
+
+  getNotificationList() {
+    this.sharedService.getnotificationData$.subscribe((userInfo: any) => {
+      this.notificationInfo = userInfo;
+      console.log(" this.notificationInfo ", this.notificationInfo);
+      this.dataSource = new MatTableDataSource(this.notificationInfo);
+    });
+  }
+
+  viewImage(data) {
+    const dialogRef = this._dialog.open(UploadedFilesComponent, {
+      data: data,
+      width: "1000px",
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      this.cdr.detectChanges();
+    });
+  }
+
+  approvedRequest(notification: any){
+    const dialogRef = this._dialog.open(ConfirmationDialogComponent, {
+      data: notification,
+      width: "1000px",
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      this.cdr.detectChanges();
+    });
+
+  }
+    
 }

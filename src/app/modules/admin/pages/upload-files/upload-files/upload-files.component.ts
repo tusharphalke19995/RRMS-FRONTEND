@@ -93,6 +93,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     files: FileWithMetadata[];
     metadata: any;
   }>(); // Emit files and metadata
+  sourceFile: any = null;
   fileRestrictions: any;
   isConfirmRemoveOpen: boolean = false; // Control the visibility of the confirmation dialog
   fileToRemoveIndex: number | null = null; // Store the index of the file to be removed
@@ -110,7 +111,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     selectedFiles: [] as IFileUploadModel[],
     removedFiles: [] as IFileUploadModel[],
   };
-
+  filesSlected: any[] = [];
   @Input() formGroup: FormGroup;
   @Input() filesDataSearch: any[] = [];
   isUploadInProgress = false;
@@ -186,7 +187,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     this.getFilesCheck();
     this.initializeFormControls();
     this.updateViewState();
-    
+  
   }
 
   initializeFormControls() {
@@ -540,4 +541,26 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     });
   }
 
+  
+
+  onHashTagKeyUp(event: KeyboardEvent): void {
+    if (event.key === ' ') {
+      const hashTagControl = this.metadataForm.get('hashTag');
+      const hashTagValue = hashTagControl.value;
+      const words = hashTagValue.split(' ').map(word => word.startsWith('#') ? word : `#${word}`);
+      const updatedHashTag = words.join(' ');
+      hashTagControl.setValue(updatedHashTag);
+    }
+  }
+
+  formatTags(tags: string): string[] {
+    if (!tags) {
+      return [];
+    }
+    return tags.split(' ').map(tag => tag.trim()).filter(tag => tag.length > 0);
+  }
+
 }
+
+
+

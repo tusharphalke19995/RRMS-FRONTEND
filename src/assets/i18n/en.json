@@ -90,5 +90,7 @@
     "approvalList":"Pending Approval List",
     "revokeApprovalList":"Revoke Approval List",
     "latestFileList":"Latest File List",
-     "favioriesFileList":"Favorites File List"
+     "favioriesFileList":"Favorites File List",
+     "approve":"Approve",
+     "confirmApprove":"Confirm Approval"
 }

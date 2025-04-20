@@ -31,6 +31,13 @@ export class DashbaordService
       .pipe(catchError(this.handleError));
   }
 
+  
+  getNotificationsCount() {
+    return this._httpClient
+      .get(apiurls.getNotifications)
+      .pipe(catchError(this.handleError));
+  }
+
 
 
   

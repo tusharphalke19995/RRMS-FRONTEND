@@ -25,6 +25,12 @@ export class NotificationService
       .pipe(catchError(this.handleError));
   }
 
+  approveNotification(fileId: number) {
+    const url = `${apiurls.approveFiles}/${fileId}`;
+    return this.commonApiCallService.post(url, {});
+  }
+
+
 
   
   /**
