@@ -150,9 +150,16 @@ export class DashbaordComponent implements OnInit, OnDestroy {
       });
     }
 
-    viewAll(){
-
+    viewImageLatesFilesList(data) {
+      const dialogRef = this.dialog.open(UploadedFilesComponent, {
+        data: data,
+        width: "1000px",
+      });
+      dialogRef.afterClosed().subscribe((result) => {
+        this.cdr.detectChanges();
+      });
     }
+  
 
     getCurrentData() {
       this._dashbaordService.getCurrentUsers().subscribe({
