@@ -44,13 +44,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
         icon : 'heroicons_outline:bell',
         link : '/manage-notification'
     },
-    {
-        id   : 'contentManagement',
-        title: 'Content Management',
-        type : 'basic',
-        icon : 'heroicons_outline:user',
-        link : '/content-management'
-    },
+    // {
+    //     id   : 'contentManagement',
+    //     title: 'Content Management',
+    //     type : 'basic',
+    //     icon : 'heroicons_outline:user',
+    //     link : '/content-management'
+    // },
     {
         id   : 'orgMapping',
         title: 'Organisation Mapping',

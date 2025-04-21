@@ -91,7 +91,7 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
       labelhi: "Designation Name",
       property: "designationName",
     },
-    { labelen: "Status", labelhi: "Status", property: "active" },
+   
     {
       labelen: "Action",
       labelhi: "Action",
@@ -103,7 +103,7 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     "designationId",
     "designationName",
-    "active",
+   
     "action",
   ];
   userRoleDropdown: [];

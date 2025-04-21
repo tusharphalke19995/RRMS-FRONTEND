@@ -178,6 +178,34 @@
 
                     <tr>
 
+                        <td>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('caseStatus')}}</mat-label>
+                                <mat-select [formControlName]="'unitsId'">
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let unitsData of unitsDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="unitsData.unitId">{{unitsData.unitName}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                                <mat-error *ngIf="uploadDocumentForm.get('unitsId').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('year')}}</mat-label>
+                                <mat-select [formControlName]="'unitsId'">
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let unitsData of unitsDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="unitsData.unitId">{{unitsData.unitName}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                                <mat-error *ngIf="uploadDocumentForm.get('unitsId').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
                         <td><mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium">{{ t('firNo')}}</mat-label>
                                 <input matInput matInput [formControlName]="'firNo'" [required]="true">

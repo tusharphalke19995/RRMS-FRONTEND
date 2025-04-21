@@ -40,7 +40,7 @@ export class ConfirmationDialogComponent {
 
   constructor( private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any )
 {
-
+console.log("data",this.data)
 }
 
 
@@ -49,8 +49,8 @@ onCancel(): void {
 }
 
 
-onApprove(data:any){
-  this.notificationService.approveNotification(data.file.fileId).subscribe({
+onApprove(){
+  this.notificationService.approveNotification(this.data.file.fileId).subscribe({
     next: (response: any) => {
       this._snackBar.open("Request Approved successfully", "Close", {
         duration: 3000,

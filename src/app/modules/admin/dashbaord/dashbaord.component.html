@@ -29,7 +29,7 @@
         </div>
         <div class="py-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full min-w-0">
             <!-- Active Users Card -->
-            <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden">
+            <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden" *ngIf="authData.RoleName ==='Admin'">
                 <div class="flex items-start justify-between">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Active Users</div>
                 </div>
