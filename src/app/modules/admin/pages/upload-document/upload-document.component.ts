@@ -93,6 +93,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     {yearId:2024,yearName:2024},
     {yearId:2023,yearName:2023}
   ]
+  fileTypesDropDown: [];
+  fileClassificationDropDown: [];
   // selectedFiles: any;
   /**
    * Constructor
@@ -123,6 +125,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.onStateChange(16);
     this.onDisctrictChange(443);
     this.getCaseStatusInfo();
+    this.getFileClassificationInfo();
+    this.getFileTypesInfo();
   }
 
   /**
@@ -305,4 +309,22 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       });
     }
   
+    getFileClassificationInfo() {
+      this._masterService.getFileClassification().subscribe({
+        next: (response: any) => {
+          this.fileClassificationDropDown= response;
+        },
+        error: (error) => {},
+      });
+    }
+  
+
+      getFileTypesInfo() {
+        this._masterService.getFileTypes().subscribe({
+          next: (response: any) => {
+           this.fileTypesDropDown= response;
+          },
+          error: (error) => {},
+        });
+      }
 }

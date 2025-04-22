@@ -233,7 +233,7 @@
                     <div>Files/Documents</div>
                 </div>
                 
-                <app-upload-files (filesWithMetadataSelected)="onFilesWithMetadataSelected($event)">
+                <app-upload-files (filesWithMetadataSelected)="onFilesWithMetadataSelected($event)" [fileClassificationDropDown]="fileClassificationDropDown" [fileTypesDropDown]="fileTypesDropDown">
                 </app-upload-files>
 
                 <div class="flex items-center justify-end py-3">

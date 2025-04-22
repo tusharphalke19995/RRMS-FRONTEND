@@ -152,7 +152,8 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   @Input() isViewAction: boolean;
   isViewSearchAction: string;
   private subscriptions = new Subscription();
-
+  @Input() fileTypesDropDown = [];
+  @Input() fileClassificationDropDown = [];
   metadataForm: FormGroup;
   openFileModal: boolean;
   fileToEdit: FileWithMetadata | null = null;
@@ -163,8 +164,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   authData: any;
   canEdit: boolean = false;
   canDelete: boolean = false;
-  fileTypesDropDown: any;
-  fileClassificationDropDown: any;
+
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -191,8 +191,6 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     this.getFilesCheck();
     this.initializeFormControls();
     this.updateViewState();
-    this.getFileClassificationInfo();
-    this.getFileTypesInfo();
   }
 
   initializeFormControls() {
@@ -565,26 +563,6 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     return tags.split(' ').map(tag => tag.trim()).filter(tag => tag.length > 0);
   }
 
-
-    getFileClassificationInfo() {
-      this._masterService.getFileClassification().subscribe({
-        next: (response: any) => {
-          this.fileClassificationDropDown= response;
-          
-        },
-        error: (error) => {},
-      });
-    }
-  
-
-      getFileTypesInfo() {
-        this._masterService.getFileTypes().subscribe({
-          next: (response: any) => {
-           this.fileTypesDropDown= response;
-          },
-          error: (error) => {},
-        });
-      }
 }
 
 
