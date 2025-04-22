@@ -119,21 +119,32 @@
 
     <div class="">
       <mat-form-field appearance="outline" class="w-full">
-        <mat-label>File Type</mat-label>
-        <mat-select formControlName="fileType">
-          <mat-option value="document">Document</mat-option>
-          <mat-option value="image">Image</mat-option>
-          <mat-option value="other">Other</mat-option>
+        <mat-label *transloco="let t" class="font-medium">{{t('fileType')}}</mat-label>
+        <mat-select [formControlName]="'fileType'">
+            <mat-option [value]="null">Please Select</mat-option>
+            <ng-container *ngFor="let fileData of fileTypesDropDown; trackBy: trackByFn">
+                <mat-option [value]="fileData.fileTypeId">{{fileData.fileTypeName}}</mat-option>
+            </ng-container>
         </mat-select>
-      </mat-form-field>
+        <mat-error *ngIf="metadataForm.get('fileType').hasError('required')">
+            Required
+        </mat-error>
+    </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Classification/File Access</mat-label>
-        <mat-select formControlName="classification">
-          <mat-option value="confidential">Confidential</mat-option>
-          <mat-option value="public">Public</mat-option>
-        </mat-select>
-      </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label *transloco="let t" class="font-medium">{{t('classificationFileAccess')}}</mat-label>
+      <mat-select [formControlName]="'classification'">
+          <mat-option [value]="null">Please Select</mat-option>
+          <ng-container *ngFor="let fClassification of fileClassificationDropDown; trackBy: trackByFn">
+              <mat-option [value]="fClassification.fileClassificationId">{{fClassification.fileClassificationName}}</mat-option>
+          </ng-container>
+      </mat-select>
+      <mat-error *ngIf="metadataForm.get('classification').hasError('required')">
+          Required
+      </mat-error>
+  </mat-form-field>
+
+    
     </div>
 
     <div class="p-2">

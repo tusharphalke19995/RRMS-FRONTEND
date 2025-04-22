@@ -63,13 +63,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
         type    : 'collapsable',
         icon    : 'heroicons_outline:information-circle',
         children: [
-            {
-                id        : 'roleMng',
-                title     : 'Role Management',
-                type      : 'basic',
-                link      : '/manage-master/role',
-                exactMatch: true,
-            },
+            // {
+            //     id        : 'roleMng',
+            //     title     : 'Role Management',
+            //     type      : 'basic',
+            //     link      : '/manage-master/role',
+            //     exactMatch: true,
+            // },
             {
                 id   : 'divisionMng',
                 title: 'Division Management',
@@ -81,6 +81,24 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 title: 'Designation Management',
                 type : 'basic',
                 link : '/manage-master/designations',
+            },
+            {
+                id   : 'caseStatusMng',
+                title: 'Case Status Management',
+                type : 'basic',
+                link : '/manage-master/case-status',
+            },
+            {
+                id   : 'fileClassificationMng',
+                title: 'File Classification Management',
+                type : 'basic',
+                link : '/manage-master/file-classification',
+            },
+            {
+                id   : 'fileTypeMng',
+                title: 'File Type Management',
+                type : 'basic',
+                link : '/manage-master/file-type',
             }
         ],
     },

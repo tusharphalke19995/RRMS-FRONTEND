@@ -41,6 +41,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { UploadFilesComponent } from "../upload-files/upload-files/upload-files.component";
 import { FileWithMetadata } from "../upload-files/model/upload-files.models";
 import { SharedService } from "app/shared/shared.service";
+import { MasterService } from "../Master/master.service";
 
 @Component({
   selector: "app-upload-document",
@@ -87,7 +88,11 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
 
   districtDropdown: any;
   stateDropdown: [];
-
+  caseStatusDropdown: any;
+  yearDropDown=[{yearId:2025,yearName:2025},
+    {yearId:2024,yearName:2024},
+    {yearId:2023,yearName:2023}
+  ]
   // selectedFiles: any;
   /**
    * Constructor
@@ -98,7 +103,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     private _uploadDocumentService: UploadDocumentService,
     private _snackBar: MatSnackBar,
     private dataService:SharedService,
-    private _router: Router
+    private _router: Router,
+    private _masterService:MasterService
   ) {
     this.dataService.setFileBoolean(true);
   }
@@ -116,6 +122,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.getUserStateDropdown();
     this.onStateChange(16);
     this.onDisctrictChange(443);
+    this.getCaseStatusInfo();
   }
 
   /**
@@ -140,6 +147,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       author: ["", [Validators.required]],
       toAddr: ["", [Validators.required]],
       caseDate: ["", [Validators.required]],
+      statusId:[""],
+      yearId:[""]
     });
   }
 
@@ -286,4 +295,14 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       },
     });
   }
+
+   getCaseStatusInfo() {
+      this._masterService.getCaseStatus().subscribe({
+        next: (response: any) => {
+          this.caseStatusDropdown = response;
+        },
+        error: (error) => {},
+      });
+    }
+  
 }

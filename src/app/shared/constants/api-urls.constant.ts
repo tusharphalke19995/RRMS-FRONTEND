@@ -28,4 +28,9 @@ export const apiurls = {
    getCurrentUser:`${environment.userApiUrl}users/currentUsers`,
    getNotifications :`${environment.userApiUrl}casedata/notifications`,
    approveFiles :`${environment.userApiUrl}casedata/approve-file`,
+
+   getFileTypes:`${environment.userApiUrl}mdm/fileTypes`,
+   getFileClassification:`${environment.userApiUrl}mdm/fileClassification`,
+   getCaseStatus:`${environment.userApiUrl}mdm/caseStatus`,
+
 }as const;

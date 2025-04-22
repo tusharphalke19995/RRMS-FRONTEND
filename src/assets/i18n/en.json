@@ -92,5 +92,16 @@
     "latestFileList":"Latest File List",
      "favioriesFileList":"Favorites File List",
      "approve":"Approve",
-     "confirmApprove":"Confirm Approval"
+     "confirmApprove":"Confirm Approval",
+     "fileTypeName":"File Type Name",
+     "fileClassificationName":"File Classification Name",
+     "statusName":"Status Name",
+     "caseStatusMng":"Case Status Management",
+     "addCaseStatus":"Add Case Status",
+     "fileTypeMng":"File Type Management",
+     "addFile":"Add File Type",
+     "fileClassificationMng":"File Classification Management",
+          "addfileClassification":"Add File Classification",
+          "classificationFileAccess":"Classification/File Access",
+          "fileType":"File Type"
 }

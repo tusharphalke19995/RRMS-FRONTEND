@@ -46,6 +46,7 @@ import { SharedService } from "app/shared/shared.service";
 import { UploadedFilesComponent } from "../../search-document/uploaded-files/uploaded-files.component";
 import { UploadDocumentService } from "../../upload-document/uploadDoc.service";
 import { AuthService } from "app/core/auth/auth.service";
+import { MasterService } from "../../Master/master.service";
 // import { saveAs } from 'file-saver';
 
 interface CustomFile extends File {
@@ -162,6 +163,8 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   authData: any;
   canEdit: boolean = false;
   canDelete: boolean = false;
+  fileTypesDropDown: any;
+  fileClassificationDropDown: any;
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -169,6 +172,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     private dialog: MatDialog,
     private dataService: SharedService,
         private _router: Router,
+       private  _masterService:MasterService,
         private authenticationService: AuthService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _uploadDocumentService:UploadDocumentService
@@ -187,7 +191,8 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     this.getFilesCheck();
     this.initializeFormControls();
     this.updateViewState();
-  
+    this.getFileClassificationInfo();
+    this.getFileTypesInfo();
   }
 
   initializeFormControls() {
@@ -560,6 +565,26 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     return tags.split(' ').map(tag => tag.trim()).filter(tag => tag.length > 0);
   }
 
+
+    getFileClassificationInfo() {
+      this._masterService.getFileClassification().subscribe({
+        next: (response: any) => {
+          this.fileClassificationDropDown= response;
+          
+        },
+        error: (error) => {},
+      });
+    }
+  
+
+      getFileTypesInfo() {
+        this._masterService.getFileTypes().subscribe({
+          next: (response: any) => {
+           this.fileTypesDropDown= response;
+          },
+          error: (error) => {},
+        });
+      }
 }
 
 
