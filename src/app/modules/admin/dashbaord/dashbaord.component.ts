@@ -60,6 +60,8 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   currentUserData: any; 
   favoritesList: []; // To store favorites
   latestFiles: []; // To store latest used files
+  favoritesListViewAll: []; // To store favorites
+  latestFileViewAll: []; // To store latest used files
   userList: any;
   pendingApprovalCount: number = 0;
   notificationsCount: number = 0;
@@ -120,7 +122,8 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   getFavouritesInfo() {
     this._dashbaordService.getFavouritesData().subscribe({
         next: (response: any) => {
-            this.favoritesList = response; // Store the favorites list
+          this.favoritesListViewAll =response;
+           this.favoritesList = response.slice(0, 3);
             console.log("Favorites fetched:", this.favoritesList);
             this.cdr.detectChanges();
         },
@@ -133,7 +136,8 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   getFilesLatest() {
     this._dashbaordService.getFilesLatestData().subscribe({
         next: (response: any) => {
-            this.latestFiles = response; // Store the latest files
+            this.latestFileViewAll =response;
+            this.latestFiles = response.slice(0, 3); // Store the latest files
             console.log("Latest files fetched:", this.latestFiles);
             this.cdr.detectChanges();
         },
@@ -210,8 +214,8 @@ export class DashbaordComponent implements OnInit, OnDestroy {
       this._router.navigateByUrl("manage-notification")
     }
 
-    viewAllRecentFiles(data){
-      this.sharedService.setLatestFilesData(data);
+    viewAllRecentFiles(){
+      this.sharedService.setLatestFilesData(this.latestFileViewAll);
       this._router.navigateByUrl("dashboard/latest-files-list")
     }
     
