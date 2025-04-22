@@ -188,3 +188,12 @@ button.mat-button {
     height: 21rem !important;
     margin-right: 5rem !important;
 }
+
+  
+    .designation {
+      font-size: 1.125rem;
+      color: #3b82f6; // Lighter color for the designation text
+      font-weight: 500;
+      text-transform: capitalize; // capitalize designation name (e.g., Manager -> Manager)
+    }
+  

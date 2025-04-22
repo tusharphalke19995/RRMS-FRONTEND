@@ -9,7 +9,8 @@ export interface UserModel {
     Email: string | null;
     Role: number | null;
     Permission:[],
-    RoleName:string | null
+    RoleName:string | null,
+    DesignationName:string | null
   }
 @Injectable({providedIn: 'root'})
 export class AuthService
@@ -182,7 +183,8 @@ export class AuthService
                 Email: decodedToken.email,
                 Role: decodedToken.role,
                 Permission:decodedToken.permissions,
-                RoleName: decodedToken.role_name
+                RoleName: decodedToken.role_name,
+                DesignationName:decodedToken.designation_name
             };
             return authData; 
         }

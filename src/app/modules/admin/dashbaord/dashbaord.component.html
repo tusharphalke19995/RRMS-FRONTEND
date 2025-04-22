@@ -13,10 +13,10 @@
                         </div>
                         <div class="flex flex-col min-w-0 ml-4">
                             <ng-container *transloco="let t">
-                                <h1
-                                    class="text-2xl md:text-5xl font-semibold tracking-tight leading-7 md:leading-snug truncate">
-                                    {{t('welcome-back')}}, {{authData.UserName}}!
-                                </h1>
+                                <h3
+                                    class="text-xl md:text-2xl font-semibold tracking-tight leading-7 md:leading-snug truncate">
+                                    {{t('welcome-back')}}, {{authData.UserName}}! <span class="designation"> {{authData.DesignationName}}</span>
+                                </h3>
                             </ng-container>
                             <!-- <div class="flex items-center">
                                 <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:bell'"></mat-icon>
