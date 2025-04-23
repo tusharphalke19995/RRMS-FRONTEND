@@ -1,0 +1,121 @@
+// General styles for the landing page
+$primary-color: #1d4ed8; // Example primary color
+$secondary-color: #f3f4f6; // Example secondary color
+$text-color: #111827; // Example text color
+
+.relative {
+    position: relative;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.max-w-7xl {
+    max-width: 80rem; // Tailwind's max-w-7xl
+}
+
+.px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.py-10 {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+}
+
+.bg-white {
+    background-color: white;
+}
+
+.bg-gray-50 {
+    background-color: #f9fafb; // Light gray background
+}
+
+.dark {
+    &.bg-gray-800 {
+        background-color: #1f2937; // Dark gray background
+    }
+}
+
+.text-on-primary-600 {
+    color: white; // Text color on primary background
+}
+
+.text-center {
+    text-align: center;
+}
+
+.pt-12 {
+    padding-top: 3rem;
+}
+
+.pb-8 {
+    padding-bottom: 2rem;
+}
+
+@media (min-width: 640px) {
+    .sm\:pt-18 {
+        padding-top: 4.5rem;
+    }
+
+    .sm\:pb-20 {
+        padding-bottom: 5rem;
+    }
+
+    .sm\:px-16 {
+        padding-left: 4rem;
+        padding-right: 4rem;
+    }
+
+    .sm\:py-12 {
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+    }
+
+    .sm\:pt-20 {
+        padding-top: 5rem;
+    }
+
+    .sm\:pb-24 {
+        padding-bottom: 6rem;
+    }
+}
+
+// Specific styles for components
+app-landing-header {
+    // Add specific styles for the header if needed
+}
+
+app-landing-corosel {
+    // Add specific styles for the carousel if needed
+}
+
+app-landing-morques {
+    // Add specific styles for the morques if needed
+}
+
+app-landing-emergency {
+    // Add specific styles for the emergency section if needed
+}
+
+app-landing-contact-us {
+    // Add specific styles for the contact us section if needed
+}
+
+app-landing-footer {
+    // Add specific styles for the footer if needed
+} 

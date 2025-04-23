@@ -1,0 +1,256 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent">
+
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-2 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <!-- Title -->
+
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
+            <div>
+                <div class="hidden sm:flex flex-wrap items-center font-medium">
+                    <ng-container *transloco="let t">
+                        <div>
+                            <a class="whitespace-nowrap text-primary-500 cursor-pointer" [routerLink]="'/dashboard'">
+                                {{t('Home')}} </a>
+                        </div>
+                    </ng-container>
+
+                    <div class="flex items-center ml-1 whitespace-nowrap">
+                        <mat-icon class="icon-size-5 text-secondary"
+                            [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                        <ng-container *transloco="let t">
+                            <span class="ml-1 text-secondary">
+                                {{t('uploadDoc')}}</span>
+                        </ng-container>
+                    </div>
+
+                </div>
+                <div class="flex sm:hidden">
+                    <a class="inline-flex items-center -ml-1.5 text-secondary font-medium">
+                        <mat-icon class="icon-size-5 text-secondary"
+                            [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
+                        <span class="ml-1">Back</span>
+                    </a>
+                </div>
+            </div>
+            <!-- Title -->
+            <div class="mt-2">
+                <ng-container *transloco="let t">
+                    <div class="text-3xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        {{t('uploadDoc')}}</div>
+                </ng-container>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10 overflow-y-auto" cdkScrollable>
+        <div class="flex flex-auto overflow-hidden">
+            <fuse-alert class="mb-8" *ngIf="alert" [type]="alert.type" [showIcon]="false">
+                {{alert.message}}
+            </fuse-alert>
+            <form class="example-form" [formGroup]="uploadDocumentForm" #addcitizenfeedbackNgForm="ngForm">
+
+                <div class="flex font-semibold text-2xl whitespace-nowrap my-2 ">
+                    <div>Case information</div>
+                </div>
+                <table class="example-full-width mt-2" cellspacing="0">
+                    <tr>
+
+
+                        <td>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('state')}}</mat-label>
+                                <mat-select [formControlName]="'stateIDInfo'"
+                                    (selectionChange)="onStateChange($event.value)">
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let stData of stateDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="stData.stateId">{{stData.stateName}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                                <mat-error *ngIf="uploadDocumentForm.get('stateIDInfo').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('district')}}</mat-label>
+                                <mat-select [formControlName]="'districtId'"
+                                    (selectionChange)="onDisctrictChange($event.value)">
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let districtIData of districtDropdown; trackBy: trackByFn">
+                                        <mat-option
+                                            [value]="districtIData.districtId">{{districtIData.districtName}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                                <mat-error *ngIf="uploadDocumentForm.get('districtId').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('policeStation')}}</mat-label>
+                                <mat-select [formControlName]="'unitsId'">
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let unitsData of unitsDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="unitsData.unitId">{{unitsData.unitName}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                                <mat-error *ngIf="uploadDocumentForm.get('unitsId').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{ t('caseNo')}}</mat-label>
+                                <input matInput matInput [formControlName]="'caseNo'" maxlength="4" [required]="true">
+                                <mat-error *ngIf="uploadDocumentForm.get('caseNo').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+
+                        </td>
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{t('office')}}</mat-label>
+                                <input matInput matInput [formControlName]="'office'">
+                                <mat-error *ngIf="uploadDocumentForm.get('office').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="example-full-width" cellspacing="0">
+                    <tr>
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{ t('caseType')}}</mat-label>
+                                <input matInput matInput [formControlName]="'caseType'" [required]="true">
+                                <mat-error *ngIf="uploadDocumentForm.get('caseType').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+
+                        </td>
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{ t('letterNo')}}</mat-label>
+                                <input matInput matInput [formControlName]="'letterNo'" [required]="true">
+                                <mat-error *ngIf="uploadDocumentForm.get('letterNo').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+
+                        </td>
+
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{ t('location')}}</mat-label>
+                                <input matInput matInput [formControlName]="'toAddr'" [required]="true">
+                                <mat-error *ngIf="uploadDocumentForm.get('toAddr').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+
+                        </td>
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{ t('author')}}</mat-label>
+                                <input matInput matInput [formControlName]="'author'" [required]="true">
+                                <mat-error *ngIf="uploadDocumentForm.get('author').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+
+                        </td>
+                    </tr>
+                </table>
+
+                <table>
+
+                    <tr>
+
+                        <td>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('caseStatus')}}</mat-label>
+                                <mat-select [formControlName]="'statusId'">
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let caseStatus of caseStatusDropdown; trackBy: trackByFn">
+                                        <mat-option [value]="caseStatus.statusId">{{caseStatus.statusName}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                                <mat-error *ngIf="uploadDocumentForm.get('statusId').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label *transloco="let t" class="font-medium">{{t('year')}}</mat-label>
+                                <mat-select [formControlName]="'yearId'">
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let yrData of yearDropDown; trackBy: trackByFn">
+                                        <mat-option [value]="yrData.yearId">{{yrData.yearName}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                                <mat-error *ngIf="uploadDocumentForm.get('yearId').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{ t('firNo')}}</mat-label>
+                                <input matInput matInput [formControlName]="'firNo'" [required]="true">
+                                <mat-error *ngIf="uploadDocumentForm.get('firNo').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+
+                        </td>
+
+
+                        <td>
+                            <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium">{{t('registerDate')}}</mat-label>
+                                <input matInput [matDatepicker]="picker1" [placeholder]="'Choose a date'"
+                                    [formControlName]="'caseDate'">
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="flex font-semibold text-2xl  whitespace-nowrap my-5 ">
+                    <div>Files/Documents</div>
+                </div>
+                
+                <app-upload-files (filesWithMetadataSelected)="onFilesWithMetadataSelected($event)">
+                </app-upload-files>
+
+                <div class="flex items-center justify-end py-3">
+                    <button *transloco="let t" mat-button [color]="'accent'"
+                        [disabled]="uploadDocumentForm.pristine || uploadDocumentForm.untouched" (click)="clearForm()">
+                        {{t('clear')}}
+                    </button>
+                    <button *transloco="let t" class="ml-2" mat-flat-button [color]="'primary'"
+                        [disabled]="uploadDocumentForm.pristine || uploadDocumentForm.invalid" (click)="sumbitUpload()">
+                        {{t('submit')}}
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Buttons -->
+
+</div>

@@ -1,0 +1,47 @@
+$slick-arrow-color: #1d4ed8; // Example color for arrows
+
+.slick-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+
+    .carousel {
+        width: 100%;
+        
+        .slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            a {
+                display: block;
+                width: 100%;
+                height: auto;
+            }
+
+            .carousel-image {
+                width: 100%;
+                height: auto; // Maintain aspect ratio
+                object-fit: cover; // Cover the area without distortion
+                border-radius: 8px; // Optional: rounded corners
+                transition: transform 0.3s ease; // Smooth scaling effect
+
+                &:hover {
+                    transform: scale(1.05); // Scale effect on hover
+                }
+            }
+        }
+    }
+
+    .cus-slick-arrow {
+        background-color: white; // Background for arrows
+        border-radius: 50%; // Rounded arrows
+        padding: 10px; // Padding around arrows
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); // Shadow for depth
+        transition: background-color 0.3s ease; // Smooth transition
+
+        &:hover {
+            background-color: $slick-arrow-color; // Change color on hover
+        }
+    }
+}

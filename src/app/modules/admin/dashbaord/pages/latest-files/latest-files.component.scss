@@ -1,0 +1,20 @@
+
+  
+.custom-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px; // Adjust the spacing between tags
+}
+
+.custom-tag {
+  background-color: #e0f7fa; // Light cyan background
+  color: #3b82f6; // Dark cyan text
+  border-radius: 16px; // Rounded corners
+  padding: 0 8px; // Horizontal padding
+  height: 24px; // Height of the tag
+  font-size: 12px; // Font size
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+  

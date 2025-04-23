@@ -1,0 +1,185 @@
+<div *ngIf="openFileModal" class="backdrop" (click)="closeFileModal()"></div>
+<div class="file-upload-container">
+  <form [formGroup]="formGroup">
+    <!-- Loading Spinner -->
+    <div *ngIf="loadingVisible" class="loading-overlay">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    <!-- Upload Button Section -->
+    <div class="upload-button-wrapper" *ngIf="checkGetFile">
+      <button mat-raised-button color="primary" class="compact-button" (click)="fileInput.click()" type="button">
+        <mat-icon>cloud_upload</mat-icon>
+        <span *transloco="let t">{{t('uploadSupportingFiles')}}</span>
+      </button>
+      <input #fileInput type="file" class="hidden-input" (change)="onFileChange($event)" [multiple]="true"
+        accept=".pdf,.jpg,.jpeg,.png" />
+      <span class="selected-file-name" *ngIf="selectedFiles.length > 0">
+        {{ selectedFiles.length }} file(s) selected
+      </span>
+    </div>
+
+    <!-- File Size Info -->
+    <div class="file-size-info" *ngIf="checkGetFile">
+      Allowed file types: PDF, JPG, PNG (100KB - 2MB)
+    </div>
+
+    <!-- Selected Files List with Metadata -->
+    <div *ngIf="selectedFiles.length > 0" class="selected-files-list">
+      <div *ngFor="let file of selectedFiles; let i = index" class="file-item">
+        <div class="flex items-center justify-between p-2">
+          <div class="flex items-center">
+            <mat-icon (click)="viewImage(file)" class="cursor-pointer"
+              [ngClass]="{'text-green-500': file.metadata, 'text-gray-500': !file.metadata}">{{ file.metadata ?
+              'check_circle' : 'insert_drive_file' }}</mat-icon>
+            <span class="ml-2">{{ file.name || file.fileName}}</span>
+            <span class="ml-2 text-sm text-gray-500" *ngIf="checkGetFile">
+              ({{ (file.size / 1024).toFixed(1) }} KB)
+            </span>
+            <!-- Metadata Badge -->
+            <ng-container *ngIf="file.metadata || file">
+              <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-md">
+                {{ file.metadata?.classification || file.classification }}
+              </span>
+              <span (click)="toggleFavourite(file)" class="py-1 cursor-pointer">
+                <mat-icon [ngClass]="{'text-yellow-500': file.isFavourite, 'text-gray-500': !file.isFavourite}">
+                  {{ file.isFavourite ? 'star' : 'star_border' }}
+                </mat-icon>
+              </span>
+            </ng-container>
+
+          </div>
+          <div class="flex items-center">
+            <button mat-icon-button color="primary" (click)="openSelectedFileModal(file)" type="button">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="removeFile(i)" type="button">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+        <!-- Metadata Preview -->
+
+        <ng-container *ngIf="file.metadata || file">
+          <div class="metadata-preview px-4 py-2 bg-gray-50">
+            <div class="grid grid-cols-2 gap-2 text-sm">
+              <div *ngIf="file.metadata?.subject || file.subject"><strong>Subject:</strong> {{ file.metadata?.subject ||
+                file.subject }}</div>
+              <div *ngIf="file.metadata?.fileType || file.fileType"> <strong>Type:</strong> {{ file.metadata?.fileType
+                || file.fileType }}</div>
+              <div *ngIf="file.metadata?.hashTag || file.hashTag" class="tags-container">
+                <strong>Tags:</strong>
+                <div class="custom-tag-list">
+                  <span *ngFor="let tag of formatTags(file.metadata?.hashTag || file.hashTag)" class="custom-tag">
+                    {{ tag }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Metadata Dialog -->
+<mat-dialog *ngIf="openFileModal" (close)="closeFileModal()"
+  class="flex flex-col max-w-340 md:min-w-160 max-h-screen modal-dialog" cdkDragRootElement=".cdk-overlay-pane"
+  cdkDragHandle cdkDrag>
+
+  <div
+    class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md">
+    <div class="flex items-center">
+      <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('uploadSupportingFiles')}}</span>
+    </div>
+    <button mat-icon-button class=" rounded-full transition-colors duration-200" (click)="onNoClose()" [tabIndex]="-1">
+      <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+    </button>
+  </div>
+
+
+  <form [formGroup]="metadataForm" class="flex flex-col flex-auto p-6 overflow-y-auto">
+    <div class="">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Subject</mat-label>
+        <input matInput formControlName="subject" placeholder="Enter subject" />
+        <mat-error *ngIf="metadataForm.get('subject')?.hasError('required')">
+          Subject/content is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>hashTag</mat-label>
+        <input matInput formControlName="hashTag" (keyup)="onHashTagKeyUp($event)" placeholder="Enter hashTag" />
+      </mat-form-field>
+
+    </div>
+
+    <div class="">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label *transloco="let t" class="font-medium">{{t('fileType')}}</mat-label>
+        <mat-select [formControlName]="'fileType'">
+            <mat-option [value]="null">Please Select</mat-option>
+            <ng-container *ngFor="let fileData of fileTypesDropDown; trackBy: trackByFn">
+                <mat-option [value]="fileData.fileTypeId">{{fileData.fileTypeName}}</mat-option>
+            </ng-container>
+        </mat-select>
+        <mat-error *ngIf="metadataForm.get('fileType').hasError('required')">
+            Required
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label *transloco="let t" class="font-medium">{{t('classificationFileAccess')}}</mat-label>
+      <mat-select [formControlName]="'classification'">
+          <mat-option [value]="null">Please Select</mat-option>
+          <ng-container *ngFor="let fClassification of fileClassificationDropDown; trackBy: trackByFn">
+              <mat-option [value]="fClassification.fileClassificationId">{{fClassification.fileClassificationName}}</mat-option>
+          </ng-container>
+      </mat-select>
+      <mat-error *ngIf="metadataForm.get('classification').hasError('required')">
+          Required
+      </mat-error>
+  </mat-form-field>
+
+    
+    </div>
+
+    <div class="p-2">
+      <p> File/Document Name: <span class="font-semibold"> {{ fileToEdit?.name || fileToEdit.fileName}}</span></p>
+    </div>
+  </form>
+  <div class="flex justify-end space-x-2 mt-6 pt-4 border-t py-4">
+    <button mat-button (click)="closeFileModal()">Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="!metadataForm.valid" (click)="submitMetadata()">
+      Save Metadata
+    </button>
+  </div>
+
+</mat-dialog>
+
+
+
+
+<mat-dialog *ngIf="isConfirmRemoveOpen" (close)="isConfirmRemoveOpen = false" class="modal-dialog"
+  class="flex flex-col max-w-340 md:min-w-160 max-h-screen modal-dialog" cdkDragRootElement=".cdk-overlay-pane"
+  cdkDragHandle cdkDrag>
+  <div
+    class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md">
+    <div class="flex items-center">
+      <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('confirmation')}}</span>
+    </div>
+    <button mat-icon-button class=" rounded-full transition-colors duration-200" (click)="onNoClose()" [tabIndex]="-1">
+      <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+    </button>
+  </div>
+  <div class="p-5">
+    <h5>Are you sure you want to remove this file?</h5>
+  </div>
+  <div class="flex justify-end space-x-2 mt-6 pt-4 border-t py-4">
+    <button mat-button (click)="confirmRemoveFile()">Yes</button>
+    <button mat-button (click)="isConfirmRemoveOpen = false" color="warn">No</button>
+  </div>
+</mat-dialog>
