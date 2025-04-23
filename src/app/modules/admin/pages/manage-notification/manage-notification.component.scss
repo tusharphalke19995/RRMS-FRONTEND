@@ -1,0 +1,179 @@
+::ng-deep .mat-simple-snackbar-action {
+    color: #de4436 !important;
+  }
+  
+  .disable-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #BBCFF3;
+    opacity: 0.4;
+    z-index: 998;
+    height: 100%;
+    width: 100%;
+  }
+  
+  .spinnerclass {
+    display: block;
+    position: fixed;
+    z-index: 1031;
+    /* High z-index so it is on top of the page */
+    top: 50%;
+    right: 45%;
+    /* or: left: 50%; */
+  
+  }
+  
+  :host ::ng-deep th.mat-header-cell:first-of-type,
+  td.mat-cell:first-of-type,
+  th.mat-header-cell:last-of-type,
+  td.mat-cell:last-of-type,
+  td.mat-footer-cell:last-of-type {
+    padding: 0 !important;
+  }
+  
+  :host ::ng-deep .mat-header-cell {
+    // text-align: center !important;
+    white-space: break-spaces !important;
+  }
+  
+  .table-responsive {
+    display: block;
+    overflow-x: auto;
+    width: inherit;
+  }
+  
+  tr.example-detail-row {
+    height: 0;
+  }
+  
+  /* tr.example-element-row:not(.example-expanded-row):hover {
+    background: rgb(231, 173, 173);
+  }
+  
+  tr.example-element-row:not(.example-expanded-row):active {
+    background: #efefef;
+  } */
+  
+  /* .example-element-row td {
+    border-bottom-width: 0;
+  } */
+  
+  .example-element-detail {
+    overflow: hidden;
+    display: flex;
+  }
+  
+  :host ::ng-deep .mat-sort-header-arrow {
+    height: 12px;
+    width: 12px;
+    min-width: 12px;
+    position: relative;
+    display: flex;
+    opacity: 0.5 !important;
+    margin-bottom: 7px !important;
+    margin-left: 4px !important;
+  }
+  
+  .mat-cell,
+  .mat-header-cell {
+    // text-align-last: center !important;
+    // text-align: center;
+    white-space: nowrap;
+    min-width: 160px;
+    width: 160px !important;
+    max-width: 160px !important;
+    padding: 1px;
+    text-align: center !important;
+    /* overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: justify; */
+  }
+  
+  :host ::ng-deep .mat-sort-header-container {
+    justify-content: center !important;
+  }
+  
+  
+  .cdk-column-recordMask {
+    min-width: 50px;
+    max-width: 50px;
+  }
+  
+  .mat-column-ntContent {
+    min-width: 250px;
+    max-width: 250px;
+    padding-left: 10px !important;
+    text-align: start !important;
+  }
+  
+  ::-webkit-scrollbar {
+    display: scroll;
+    height: 6px;
+    width: 3px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    border-radius: 8px;
+    background: #ffffff;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgb(172, 170, 170);
+    border-radius: 0px;
+  }
+  
+  .text-align-left {
+    text-align-last: left;
+  }
+  
+  .align-self-center {
+    align-self: left !important;
+  }
+  
+  .enableBtn {
+    cursor: pointer;
+    text-align: center;
+    color: black;
+    font-size: 25px;
+  
+  }
+  
+  .disabledBtn {
+    text-align: center;
+    opacity: 0.5;
+    font-size: 25px;
+    pointer-events: none;
+  }
+  
+  .unclickable {
+    pointer-events: none;
+    cursor: not-allowed !important;
+  
+  }
+  
+  .mat-menu-panel .mat-menu-content {
+    max-width: 371px;
+    width: 371px;
+  }
+  
+  pdf-viewer {
+    display: block;
+    height: 100vh;
+  }
+  
+  :host ::ng-deep .mat-accordion {
+  
+    .mat-expansion-panel {
+      margin-top: 2px !important;
+      border-radius: 0px !important;
+    }
+  }
+  
+  .ng2-pdf-viewer-container {
+    overflow-x: auto;
+    position: absolute;
+    height: 100%;
+    /* width: 100%; */
+    -webkit-overflow-scrolling: touch;
+  }

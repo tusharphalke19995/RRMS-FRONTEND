@@ -1,0 +1,55 @@
+<div class="flex flex-col max-w-340 md:min-w-160 max-h-screen">
+
+
+    <!-- Header with improved styling -->
+    <div
+      class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md"
+      cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle cdkDrag>
+      <div class="flex items-center">
+        <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('reqAccess')}}</span>
+      </div>
+      <button mat-icon-button class=" rounded-full transition-colors duration-200" (click)="onCancel()" [tabIndex]="-1">
+        <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+      </button>
+    </div>
+  
+    <!-- Form Content -->
+       <!-- Form Content -->
+    <form [formGroup]="contentMangerListForm" class="flex flex-col flex-auto p-6 overflow-y-auto">
+        <!-- First Row -->
+        <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mb-4">
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Content Manager</mat-label>
+                <mat-select formControlName="contentMangId">
+                  <mat-option [value]="null">Please Select</mat-option>
+                  <ng-container *ngFor="let dropDownData of contentManagerDropdown">
+                    <mat-option [value]="dropDownData.kgid">{{ dropDownData.first_name }}</mat-option>
+                  </ng-container>
+                </mat-select>
+                <mat-error *ngIf="contentMangerListForm.get('contentMangId').hasError('required')">
+                  Required
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Remarks</mat-label>
+                <input matInput formControlName="remarks" placeholder="Enter Remarks" />
+               
+              </mat-form-field>
+            </div>
+      <!-- Action Buttons -->
+      <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
+        <button mat-flat-button
+          class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
+          (click)="onApprove()" *transloco="let t">
+          {{t('approve')}}
+        </button>
+        <button mat-stroked-button
+          class="min-w-[90px] px-6 py-2 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+          (click)="onCancel()" *transloco="let t">
+  
+          {{t('cancel')}}
+        </button>
+      </div>
+      </form>
+  </div>

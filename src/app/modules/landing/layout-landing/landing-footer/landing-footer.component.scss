@@ -1,0 +1,36 @@
+.footer {
+    background-color: #2d3748; // Dark gray background
+    color: white; // White text color
+    padding: 1.5rem 0; // Vertical padding
+
+    .container {
+        @apply mx-auto text-center; // Center the content
+    }
+
+    h2 {
+        @apply text-lg font-semibold mb-4; // Font size and weight with margin
+    }
+
+    p {
+        @apply text-sm; // Smaller text for copyright
+        margin-top: 0.5rem; // Space above the paragraph
+    }
+}
+
+.contact-us {
+    background-color: #4a5568; // Slightly lighter gray for contrast
+    padding: 1rem 0; // Vertical padding for the contact section
+
+    h3 {
+        @apply text-md font-bold; // Font size and weight for the heading
+    }
+
+    a {
+        @apply text-blue-400; // Link color
+        transition: color 0.3s ease; // Smooth transition for hover effect
+
+        &:hover {
+            @apply text-blue-500; // Darker blue on hover
+        }
+    }
+}

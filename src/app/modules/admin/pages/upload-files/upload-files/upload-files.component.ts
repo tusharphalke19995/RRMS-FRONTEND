@@ -1,0 +1,578 @@
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  ViewChildren,
+  QueryList,
+  ChangeDetectorRef,
+} from "@angular/core";
+import {
+  CommonModule,
+  CurrencyPipe,
+  NgClass,
+  NgFor,
+  NgIf,
+  NgTemplateOutlet,
+} from "@angular/common";
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
+import { BehaviorSubject, of, Subscription } from "rxjs";
+import { catchError, finalize } from "rxjs/operators";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import {
+  IFileUploadModel,
+  IVerificationFileUploadModel,
+} from "../model/upload-files.models";
+import { MatButtonModule } from "@angular/material/button";
+import { MatRippleModule } from "@angular/material/core";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatIconModule } from "@angular/material/icon";
+import { MatInputModule } from "@angular/material/input";
+import { MatSelectModule } from "@angular/material/select";
+import { Router, RouterLink } from "@angular/router";
+import { TranslocoModule } from "@ngneat/transloco";
+import { MatCardModule } from "@angular/material/card";
+import { MatDialog, MatDialogModule } from "@angular/material/dialog";
+import { SharedService } from "app/shared/shared.service";
+import { UploadedFilesComponent } from "../../search-document/uploaded-files/uploaded-files.component";
+import { UploadDocumentService } from "../../upload-document/uploadDoc.service";
+import { AuthService } from "app/core/auth/auth.service";
+import { MasterService } from "../../Master/master.service";
+import { ContentManagerDialogComponent } from "../component/content-manager-dialog/content-manager-dialog.component";
+// import { saveAs } from 'file-saver';
+
+interface CustomFile extends File {
+  validationErrors?: string[];
+}
+
+interface FileWithMetadata extends CustomFile {
+  metadata?: {
+    subject: string;
+    fileType: string;
+    classification: string;
+    hashTag: string;
+  };
+}
+
+@Component({
+  selector: "app-upload-files",
+  standalone: true,
+  imports: [
+    NgIf,
+    RouterLink,
+    TranslocoModule,
+    MatFormFieldModule,
+    MatIconModule,
+    ReactiveFormsModule,
+    NgFor,
+    NgTemplateOutlet,
+    NgClass,
+    MatRippleModule,
+    CurrencyPipe,
+    MatIconModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatCardModule,
+    MatDialogModule,
+  ],
+  templateUrl: "./upload-files.component.html",
+  styleUrls: ["./upload-files.component.scss"],
+})
+export class UploadFilesComponent implements OnInit, OnChanges {
+  @Output() filesWithMetadataSelected = new EventEmitter<{
+    files: FileWithMetadata[];
+    metadata: any;
+  }>(); // Emit files and metadata
+  sourceFile: any = null;
+  fileRestrictions: any;
+  isConfirmRemoveOpen: boolean = false; // Control the visibility of the confirmation dialog
+  fileToRemoveIndex: number | null = null; // Store the index of the file to be removed
+
+  @Input() filesData: any[] = [];
+  @Input() getfiles: any[] = [];
+
+  @Output() formReady = new EventEmitter<FormGroup>();
+  @Output() filesSelected = new EventEmitter<IVerificationFileUploadModel[]>();
+  // @ViewChildren(UploadDocsComponent) childGames!: QueryList<UploadDocsComponent>;
+  @Input() loadingVisible: boolean;
+  @Input() isCheckModalConfirmaion: boolean;
+  loading$ = new BehaviorSubject<boolean>(false);
+  files = {
+    selectedFiles: [] as IFileUploadModel[],
+    removedFiles: [] as IFileUploadModel[],
+  };
+  filesSlected: any[] = [];
+  @Input() formGroup: FormGroup;
+  @Input() filesDataSearch: any[] = [];
+  isUploadInProgress = false;
+  isSaveDraftInProgress = false;
+  openUploadDialog = false;
+  openUploadDialogHistory = false;
+  isViewUploadedFlow = false;
+  isFileUploadFailedFromAPI = false;
+  isViewUploadedFlowHistory = false;
+  isSubmitInProgress = false;
+  isView: boolean;
+  isViewSearch: string;
+  showTextNoData: boolean;
+  textNoDocument = "No Document Found";
+  errorMessage: string;
+
+  @Input() uploadButtonText = "verification.uploadTitle";
+  @Input() selectedFiles: FileWithMetadata[] = [];
+  @Input() isFileUploadVisible = true;
+  @Output() save = new EventEmitter<object>();
+  @Output() cancel = new EventEmitter();
+  @Output() delete = new EventEmitter<object>();
+  allFiles: Array<File> = null;
+  openFileDialog = false;
+  showLoader = false;
+  controlId: number = 0;
+  removedFiles: IVerificationFileUploadModel[] = [];
+  selectedFilesTemp: IVerificationFileUploadModel[] = [];
+  @Input() selectedFilesIndex = [];
+  public totalFileByIndex = [];
+  public currentIndex = 0;
+  isDisableCheck: boolean;
+  disabled = false;
+  showLoaderShow = false;
+  fileToRemove: IVerificationFileUploadModel | null = null;
+  isFileModalOpen = false;
+  @Input() isViewAction: boolean;
+  isViewSearchAction: string;
+  private subscriptions = new Subscription();
+  @Input() fileTypesDropDown = [];
+  @Input() fileClassificationDropDown = [];
+  @Input() contentManagerDropdown = [];
+
+  metadataForm: FormGroup;
+  openFileModal: boolean;
+  fileToEdit: FileWithMetadata | null = null;
+  maxFileSize = 2 * 1024 * 1024; // 2MB
+  minFileSize = 100 * 1024; // 100KB
+  checkGetFile: boolean;
+  caseDetails: any[];
+  authData: any;
+  canEdit: boolean = false;
+  canDelete: boolean = false;
+
+  constructor(
+    private _snackBar: MatSnackBar,
+    private fb: FormBuilder,
+    private dialog: MatDialog,
+    private dataService: SharedService,
+    private _router: Router,
+    private _masterService: MasterService,
+    private authenticationService: AuthService,
+    private _changeDetectorRef: ChangeDetectorRef,
+    private _uploadDocumentService: UploadDocumentService
+  ) {
+    this.authData = this.authenticationService.getAuthData();
+    this.checkPermissions();
+    this.metadataForm = this.fb.group({
+      subject: ["", Validators.required],
+      fileType: ["", Validators.required],
+      classification: ["", Validators.required],
+      hashTag: [""],
+    });
+  }
+
+  ngOnInit() {
+    this.getFilesCheck();
+    this.initializeFormControls();
+    this.updateViewState();
+  }
+
+  initializeFormControls() {
+    if (!this?.formGroup.get("file")) {
+      this.formGroup.addControl(
+        "file",
+        this.fb.control("", Validators.required)
+      );
+    }
+  }
+
+  private updateViewState() {}
+
+  public toggleFilesPopUp(isUploadedViewFlow: boolean = false): void {
+    if (this.isUploadInProgress || this.isSaveDraftInProgress) {
+      this._snackBar.open("File upload is in progress", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["success-snackbar"],
+      });
+      return;
+    }
+    this.openUploadDialog = !this.openUploadDialog;
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes["formGroup"] && this.formGroup) {
+      this.patchData(this.formGroup.value);
+    }
+    this.showTextNoData = !this.filesData?.length;
+
+    console.log("filesDataSearch", this.filesDataSearch);
+
+    console.log("getfiles", this.getfiles);
+
+    this.selectedFiles = this.getfiles;
+  }
+
+  patchData(formData: any) {
+    if (!this.formGroup) return;
+    this.formGroup.patchValue({});
+  }
+
+  downloadFile(file: any) {}
+
+  public onSelectFile(fileList: FileList): void {
+    // this.selectedFilesTemp = [...this.selectedFiles];
+    const validFiles: CustomFile[] = [];
+    const invalidFiles: { file: File; error: string }[] = [];
+
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      const validationError = this.getFileValidationError(file);
+      if (!validationError) {
+        validFiles.push(file as CustomFile);
+      } else {
+        invalidFiles.push({ file, error: validationError });
+      }
+    }
+
+    this.handleFileSelection(validFiles, invalidFiles);
+  }
+
+  private handleFileSelection(
+    validFiles: CustomFile[],
+    invalidFiles: { file: any; error: string }[]
+  ): void {
+    if (invalidFiles.length > 0) {
+      this.errorMessage =
+        "Some files do not meet the restrictions:\n" +
+        invalidFiles
+          .map(
+            (invalidFile) => `${invalidFile.file.name}: ${invalidFile.error}`
+          )
+          .join("\n");
+      this._snackBar.open(this.errorMessage, "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["success-snackbar"],
+      });
+    }
+
+    // if (validFiles.length > 0) {
+    //   this.selectedFiles = [...this.selectedFiles, ...validFiles];
+    //   this.selectedFilesIndex[this.currentIndex] = this.selectedFiles;
+    //   this.totalFileByIndex = this.selectedFilesIndex[this.currentIndex];
+    //   this.openUploadDialog = true;
+    // } else {
+    //   this.openUploadDialog = false;
+    //   this.selectedFiles = this.selectedFilesTemp;
+    // }
+    // this.filesSelected.emit(this.selectedFiles);
+  }
+
+  private getFileValidationError(file: any): string | null {
+    const { allowedExtensions, maxFileSize, minFileSize } =
+      this.fileRestrictions;
+    const extension = file.extension.toLowerCase();
+    const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+
+    if (!allowedExtensions.includes(extension)) {
+      return "Invalid file type.";
+    }
+    if (file.size < minFileSize) {
+      return `File size is too small. Minimum size is ${
+        minFileSize / (1024 * 1024)
+      } MB. Current file size is ${fileSizeMB} MB.`;
+    }
+    if (file.size > maxFileSize) {
+      return `File size is too large. Maximum size is ${
+        maxFileSize / (1024 * 1024)
+      } MB. Current file size is ${fileSizeMB} MB.`;
+    }
+    return null;
+  }
+
+  get disableSaveButton() {
+    return !this.selectedFiles;
+  }
+
+  public onSaveClick(): void {
+    if (!this.selectedFiles.every((f) => !f.validationErrors?.length)) {
+      this._snackBar.open("csi.fileValidationErrorMessage", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["success-snackbar"],
+      });
+      return;
+    }
+    this.totalFileByIndex = this.selectedFilesIndex[this.currentIndex];
+    this.openUploadDialog = false;
+  }
+
+  public onCancelClick(): void {
+    this.removedFiles = [];
+    this.openUploadDialog = false;
+  }
+
+  public onRemoveFile(file: IVerificationFileUploadModel, index: number): void {
+    if (file) {
+      this.totalFileByIndex.splice(index, 1);
+      this.removedFiles.push(file);
+      this.selectedFiles = this.selectedFiles.filter(
+        (f) => f.name !== file.name
+      );
+      if (this.selectedFiles.length < 1) {
+        this.openUploadDialog = false;
+      }
+    }
+  }
+
+  openSelectedFileModal(file: FileWithMetadata): void {
+    this.fileToEdit = file;
+    this.metadataForm.reset();
+
+    // If file has existing metadata, populate the form
+    if (file.metadata) {
+      this.metadataForm.patchValue(file.metadata);
+    }
+    if (file) {
+      this.metadataForm.patchValue(file);
+    }
+
+    this.openFileModal = true;
+  }
+
+  closeFileModal(): void {
+    this.openFileModal = false;
+    this.fileToEdit = null;
+  }
+
+  submitMetadata(): void {
+    if (this.metadataForm.valid && this.fileToEdit) {
+      (this.fileToEdit as FileWithMetadata).metadata = this.metadataForm.value;
+      const index = this.selectedFiles.findIndex((f) => f === this.fileToEdit);
+      if (index !== -1) {
+        this.selectedFiles[index] = this.fileToEdit as FileWithMetadata;
+      }
+
+      this.closeFileModal();
+      this._snackBar.open("Metadata added successfully", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["success-snackbar"],
+      });
+    }
+  }
+
+  onFileChange(event: any) {
+    const files: FileList = event.target.files;
+
+    if (files.length > 0) {
+      const newFiles = Array.from(files)
+        .map((file) => this.validateFile(file as FileWithMetadata))
+        .filter((file) => file.validationErrors?.length === 0);
+      this.selectedFiles = [...this.selectedFiles, ...newFiles];
+
+      // Emit the selected files and their metadata to the parent
+      this.filesWithMetadataSelected.emit({
+        files: this.selectedFiles,
+        metadata: this.selectedFiles.map((file) => file.metadata),
+      });
+
+      this.formGroup.patchValue({
+        file: this.selectedFiles,
+      });
+    }
+  }
+
+  validateFile(file: FileWithMetadata): FileWithMetadata {
+    file.validationErrors = [];
+
+    if (file.size > this.maxFileSize) {
+      file.validationErrors.push("File size exceeds 2MB limit");
+    }
+
+    if (file.size < this.minFileSize) {
+      file.validationErrors.push("File size is less than 100KB minimum");
+    }
+
+    // Add additional validation if needed
+    // Example: file type validation
+    const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+    if (!allowedTypes.includes(file.type)) {
+      file.validationErrors.push("Invalid file type");
+    }
+
+    return file;
+  }
+
+  removeFile(index: number) {
+    this.fileToRemoveIndex = index;
+    this.isConfirmRemoveOpen = true;
+  }
+
+  confirmRemoveFile() {
+    if (this.fileToRemoveIndex !== null) {
+      this.selectedFiles.splice(this.fileToRemoveIndex, 1);
+      this.fileToRemoveIndex = null;
+      this.isConfirmRemoveOpen = false;
+    }
+  }
+
+  uploadFiles() {
+    if (this.formGroup.valid && this.selectedFiles.length > 0) {
+      this.loadingVisible = true;
+
+      setTimeout(() => {
+        console.log("Files uploaded:", this.selectedFiles);
+        this.loadingVisible = false;
+        this.selectedFiles = [];
+        this.formGroup.reset();
+      }, 2000);
+    }
+  }
+
+  getFilesCheck() {
+    this.dataService.getFileBoolean().subscribe((res) => {
+      this.checkGetFile = res;
+      console.log("checkGetFile", this.checkGetFile);
+    });
+  }
+
+  patchDataGetCall(formData: any) {
+    debugger;
+    if (!this.formGroup) return;
+    this.formGroup.patchValue({
+      subject: formData.subject || "",
+      hashTag: formData.hashTag || "",
+      fileType: formData.fileType || "",
+      classification: formData.classification || "",
+    });
+  }
+
+  viewImage(data) {
+    const dialogRef = this.dialog.open(UploadedFilesComponent, {
+      data: data,
+      width: "1000px",
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      this._changeDetectorRef.detectChanges();
+    });
+  }
+
+  checkPermissions() {
+    const userPermissions = this.authData.Permission;
+    const roleName = this.authData.role_name;
+    console.log("userPermissions", userPermissions);
+    this.canEdit = userPermissions.includes("change_filedetails");
+    this.canDelete = userPermissions.includes("delete_filedetails");
+  }
+
+  toggleFavourite(file: any) {
+    console.log("is_favourited",file.is_favourited)
+      if (file.is_favourited) {
+        this.markUnFavourite(file);
+      } else {
+        this.markFavourite(file);
+      }
+  
+  }
+
+  markUnFavourite(data: any) {
+    this._uploadDocumentService.markAsUnFavourite(data.fileId).subscribe({
+      next: (response: any) => {
+        this._snackBar.open("Mark As Un Favourite successfully", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["success-snackbar"],
+        });
+        // this._router.navigateByUrl("search-document")
+        this.selectedFiles = [];
+      },
+      error: (error) => {
+        this._snackBar.open(error.message || "Error creating user", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["error-snackbar"],
+        });
+      },
+    });
+  }
+
+  markFavourite(data: any) {
+    this._uploadDocumentService.markAsFavourite(data.fileId).subscribe({
+      next: (response: any) => {
+        this._snackBar.open("Mark As Favourite successfully", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["success-snackbar"],
+        });
+        // this._router.navigateByUrl("search-document")
+        this.selectedFiles = [];
+      },
+      error: (error) => {
+        this._snackBar.open(error.message || "Error creating user", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["error-snackbar"],
+        });
+      },
+    });
+  }
+
+  onHashTagKeyUp(event: KeyboardEvent): void {
+    if (event.key === " ") {
+      const hashTagControl = this.metadataForm.get("hashTag");
+      const hashTagValue = hashTagControl.value;
+      const words = hashTagValue
+        .split(" ")
+        .map((word) => (word.startsWith("#") ? word : `#${word}`));
+      const updatedHashTag = words.join(" ");
+      hashTagControl.setValue(updatedHashTag);
+    }
+  }
+
+  formatTags(tags: string): string[] {
+    if (!tags) {
+      return [];
+    }
+    return tags
+      .split(" ")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0);
+  }
+
+  getAccessModalUser() {
+    const dialogRef = this.dialog.open(ContentManagerDialogComponent, {
+      width: "799px",
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      this._changeDetectorRef.detectChanges();
+    });
+  }
+}

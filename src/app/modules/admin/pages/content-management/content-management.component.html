@@ -1,0 +1,64 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent">
+
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-2 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <!-- Title -->
+
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
+            <div>
+                <div class="hidden sm:flex flex-wrap items-center font-medium">
+                    <ng-container *transloco="let t">
+                        <div>
+                            <a class="whitespace-nowrap text-primary-500 cursor-pointer" [routerLink]="'/dashboard'">
+                                {{t('Home')}} </a>
+                        </div>
+                    </ng-container>
+
+                    <div class="flex items-center ml-1 whitespace-nowrap">
+                        <mat-icon class="icon-size-5 text-secondary"
+                            [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                        <ng-container *transloco="let t">
+                            <span class="ml-1 text-secondary">
+                                {{t('contentManagement')}}</span>
+                        </ng-container>
+                    </div>
+
+                </div>
+                <div class="flex sm:hidden">
+                    <a class="inline-flex items-center -ml-1.5 text-secondary font-medium">
+                        <mat-icon class="icon-size-5 text-secondary"
+                            [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
+                        <span class="ml-1">Back</span>
+                    </a>
+                </div>
+            </div>
+            <!-- Title -->
+        
+            <div class="mt-2 flex items-center justify-between">
+                <ng-container *transloco="let t">
+                    <div class="text-3xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        {{t('contentManagement')}}
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10 overflow-y-auto" cdkScrollable>
+        <div class="flex flex-auto overflow-hidden">
+            <fuse-alert class="mb-8" *ngIf="alert" [type]="alert.type" [showIcon]="false">
+                {{alert.message}}
+            </fuse-alert>
+            
+        </div>
+    </div>
+</div>
