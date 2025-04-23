@@ -99,9 +99,10 @@
      "caseStatusMng":"Case Status Management",
      "addCaseStatus":"Add Case Status",
      "fileTypeMng":"File Type Management",
-     "addFile":"Add File Type",
+     "addFile":"Add File Type", 
      "fileClassificationMng":"File Classification Management",
           "addfileClassification":"Add File Classification",
           "classificationFileAccess":"Classification/File Access",
-          "fileType":"File Type"
+          "fileType":"File Type",
+          "reqAccess":"Request Access"
 }

@@ -42,14 +42,19 @@
                 {{ file.metadata?.classification || file.classification }}
               </span>
               <span (click)="toggleFavourite(file)" class="py-1 cursor-pointer">
-                <mat-icon [ngClass]="{'text-yellow-500': file.isFavourite, 'text-gray-500': !file.isFavourite}">
-                  {{ file.isFavourite ? 'star' : 'star_border' }}
+                <mat-icon [ngClass]="{'text-yellow-500': file.is_favourited, 'text-gray-500': !file.is_favourited}">
+                  {{ file.is_favourited ? 'star' : 'star_border' }}
                 </mat-icon>
               </span>
             </ng-container>
 
           </div>
           <div class="flex items-center">
+            <div *ngIf="(file.metadata?.classification || file.classification) === 'confidential'" class=" text-center">
+              <button (click)="getAccessModalUser()" mat-icon-button color="primary" type="button">
+                <mat-icon>check</mat-icon>
+              </button>
+            </div>
             <button mat-icon-button color="primary" (click)="openSelectedFileModal(file)" type="button">
               <mat-icon>edit</mat-icon>
             </button>
@@ -76,6 +81,7 @@
                 </div>
               </div>
             </div>
+            
           </div>
         </ng-container>
 

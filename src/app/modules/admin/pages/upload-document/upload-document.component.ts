@@ -42,6 +42,7 @@ import { UploadFilesComponent } from "../upload-files/upload-files/upload-files.
 import { FileWithMetadata } from "../upload-files/model/upload-files.models";
 import { SharedService } from "app/shared/shared.service";
 import { MasterService } from "../Master/master.service";
+import { AuthService } from "app/core/auth/auth.service";
 
 @Component({
   selector: "app-upload-document",
@@ -95,6 +96,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   ]
   fileTypesDropDown: [];
   fileClassificationDropDown: [];
+  authData:any;
   // selectedFiles: any;
   /**
    * Constructor
@@ -106,8 +108,11 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     private _snackBar: MatSnackBar,
     private dataService:SharedService,
     private _router: Router,
-    private _masterService:MasterService
+    private _masterService:MasterService,
+    private authenticationService:AuthService
+
   ) {
+    this.authData = this.authenticationService.getAuthData();
     this.dataService.setFileBoolean(true);
   }
 
@@ -326,5 +331,5 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           },
           error: (error) => {},
         });
-      }
+      }    
 }

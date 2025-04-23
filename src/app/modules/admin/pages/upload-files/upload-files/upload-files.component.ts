@@ -47,6 +47,7 @@ import { UploadedFilesComponent } from "../../search-document/uploaded-files/upl
 import { UploadDocumentService } from "../../upload-document/uploadDoc.service";
 import { AuthService } from "app/core/auth/auth.service";
 import { MasterService } from "../../Master/master.service";
+import { ContentManagerDialogComponent } from "../component/content-manager-dialog/content-manager-dialog.component";
 // import { saveAs } from 'file-saver';
 
 interface CustomFile extends File {
@@ -154,6 +155,8 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   private subscriptions = new Subscription();
   @Input() fileTypesDropDown = [];
   @Input() fileClassificationDropDown = [];
+  @Input() contentManagerDropdown = [];
+
   metadataForm: FormGroup;
   openFileModal: boolean;
   fileToEdit: FileWithMetadata | null = null;
@@ -165,17 +168,16 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   canEdit: boolean = false;
   canDelete: boolean = false;
 
-
   constructor(
     private _snackBar: MatSnackBar,
     private fb: FormBuilder,
     private dialog: MatDialog,
     private dataService: SharedService,
-        private _router: Router,
-       private  _masterService:MasterService,
-        private authenticationService: AuthService,
+    private _router: Router,
+    private _masterService: MasterService,
+    private authenticationService: AuthService,
     private _changeDetectorRef: ChangeDetectorRef,
-    private _uploadDocumentService:UploadDocumentService
+    private _uploadDocumentService: UploadDocumentService
   ) {
     this.authData = this.authenticationService.getAuthData();
     this.checkPermissions();
@@ -186,7 +188,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       hashTag: [""],
     });
   }
-     
+
   ngOnInit() {
     this.getFilesCheck();
     this.initializeFormControls();
@@ -459,7 +461,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   patchDataGetCall(formData: any) {
-    debugger
+    debugger;
     if (!this.formGroup) return;
     this.formGroup.patchValue({
       subject: formData.subject || "",
@@ -480,24 +482,24 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   checkPermissions() {
-    const userPermissions = this.authData.Permission; 
-    const roleName =this.authData.role_name; 
-    console.log("userPermissions",userPermissions)
+    const userPermissions = this.authData.Permission;
+    const roleName = this.authData.role_name;
+    console.log("userPermissions", userPermissions);
     this.canEdit = userPermissions.includes("change_filedetails");
     this.canDelete = userPermissions.includes("delete_filedetails");
   }
 
   toggleFavourite(file: any) {
-    if (file.fileId) {
-      if (file.isFavourite) {
+    console.log("is_favourited",file.is_favourited)
+      if (file.is_favourited) {
         this.markUnFavourite(file);
       } else {
         this.markFavourite(file);
       }
-    }
+  
   }
 
-  markUnFavourite(data:any){
+  markUnFavourite(data: any) {
     this._uploadDocumentService.markAsUnFavourite(data.fileId).subscribe({
       next: (response: any) => {
         this._snackBar.open("Mark As Un Favourite successfully", "Close", {
@@ -508,7 +510,6 @@ export class UploadFilesComponent implements OnInit, OnChanges {
         });
         // this._router.navigateByUrl("search-document")
         this.selectedFiles = [];
-       
       },
       error: (error) => {
         this._snackBar.open(error.message || "Error creating user", "Close", {
@@ -521,7 +522,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     });
   }
 
-  markFavourite(data:any){
+  markFavourite(data: any) {
     this._uploadDocumentService.markAsFavourite(data.fileId).subscribe({
       next: (response: any) => {
         this._snackBar.open("Mark As Favourite successfully", "Close", {
@@ -544,14 +545,14 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     });
   }
 
-  
-
   onHashTagKeyUp(event: KeyboardEvent): void {
-    if (event.key === ' ') {
-      const hashTagControl = this.metadataForm.get('hashTag');
+    if (event.key === " ") {
+      const hashTagControl = this.metadataForm.get("hashTag");
       const hashTagValue = hashTagControl.value;
-      const words = hashTagValue.split(' ').map(word => word.startsWith('#') ? word : `#${word}`);
-      const updatedHashTag = words.join(' ');
+      const words = hashTagValue
+        .split(" ")
+        .map((word) => (word.startsWith("#") ? word : `#${word}`));
+      const updatedHashTag = words.join(" ");
       hashTagControl.setValue(updatedHashTag);
     }
   }
@@ -560,10 +561,18 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     if (!tags) {
       return [];
     }
-    return tags.split(' ').map(tag => tag.trim()).filter(tag => tag.length > 0);
+    return tags
+      .split(" ")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0);
   }
 
+  getAccessModalUser() {
+    const dialogRef = this.dialog.open(ContentManagerDialogComponent, {
+      width: "799px",
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      this._changeDetectorRef.detectChanges();
+    });
+  }
 }
-
-
-

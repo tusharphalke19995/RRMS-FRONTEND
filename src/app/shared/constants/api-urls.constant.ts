@@ -32,5 +32,5 @@ export const apiurls = {
    getFileTypes:`${environment.userApiUrl}mdm/fileTypes`,
    getFileClassification:`${environment.userApiUrl}mdm/fileClassification`,
    getCaseStatus:`${environment.userApiUrl}mdm/caseStatus`,
-
+   getCmoradmins:`${environment.userApiUrl}users/getcmoradmins`
 }as const;

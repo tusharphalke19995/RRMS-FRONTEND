@@ -63,6 +63,17 @@ getUnitsByDistictIdData(districtId: number) {
     const url = `${apiurls.favourite}/${fileId}/unfavourite`;
     return this.commonApiCallService.post(url, {});
   }
+
+  getCmoradmins(id: number) {
+    const url = `${apiurls.getCmoradmins}/${id}`; 
+    return this._httpClient.get(url, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+  }
+
    /**
     * The error handler.
     * @param err The http error response.
