@@ -13,7 +13,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import { TranslocoModule } from '@ngneat/transloco';
-
+import { MatExpansionModule } from '@angular/material/expansion'
 @Component({
   selector: 'app-manage-org-mapping',
   standalone: true,
@@ -38,7 +38,8 @@ import { TranslocoModule } from '@ngneat/transloco';
     MatButtonModule,
     MatTableModule,
     MatPaginatorModule,
-    MatSortModule
+    MatSortModule,
+    MatExpansionModule
 ],
   templateUrl: './manage-org-mapping.component.html',
   styleUrl: './manage-org-mapping.component.scss'

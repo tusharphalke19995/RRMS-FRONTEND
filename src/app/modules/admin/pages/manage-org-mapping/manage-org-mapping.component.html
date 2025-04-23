@@ -53,12 +53,162 @@
     </div>
 
     <!-- Main -->
-    <div class="flex-auto p-6 sm:p-10 overflow-y-auto" cdkScrollable>
-        <div class="flex flex-auto overflow-hidden">
+    <div class="p-6 sm:p-10 " cdkScrollable>
+        <div class="overflow-hidden">
             <fuse-alert class="mb-8" *ngIf="alert" [type]="alert.type" [showIcon]="false">
                 {{alert.message}}
             </fuse-alert>
-            
+            <mat-accordion class="space-y-5">
+
+                <!-- Main CID Organization -->
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <h2 class="text-xl font-semibold text-blue-800">Criminal Investigation Department (CID)</h2>
+                  </mat-expansion-panel-header>
+              
+                  <div class="pl-4 space-y-3">
+                    <!-- Departments -->
+                    <div>
+                      <h3 class="text-lg font-bold text-gray-700">Branches:</h3>
+                      <ul class="list-disc list-inside text-gray-600">
+                        <li>Criminal Investigation Department</li>
+                        <li>Economic Offences Wing</li>
+                        <li>Cyber Crimes and Narcotics</li>
+                        <li>CID-Forest Cell</li>
+                      </ul>
+                    </div>
+              
+                    <!-- Hierarchy -->
+                    <div>
+                      <h3 class="text-lg font-bold text-gray-700">Hierarchy:</h3>
+                      <p class="text-gray-600">Headed by Director General of Police, assisted by ADGP/IGP, DIGP and others.</p>
+                    </div>
+              
+                    <!-- Promotion & Range Allotment -->
+                    <div>
+                      <h3 class="text-lg font-bold text-gray-700">Administrative Responsibilities:</h3>
+                      <ul class="list-disc list-inside text-gray-600">
+                        <li>Promotion of SDA/Typist</li>
+                        <li>Preparation of Gradation List</li>
+                        <li>Allotting Range/Unit for FDA/Stenographers</li>
+                      </ul>
+                    </div>
+                  </div>
+                </mat-expansion-panel>
+              
+                <!-- Wings -->
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <h2 class="text-xl font-semibold text-green-700">CID Wings & Divisions</h2>
+                  </mat-expansion-panel-header>
+              
+                  <!-- Nested Wings -->
+                  <div class="pl-4 space-y-5">
+                    <mat-accordion>
+              
+                      <!-- Interpol -->
+                      <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                          <h3 class="text-lg font-medium text-gray-800">INTERPOL Division</h3>
+                        </mat-expansion-panel-header>
+                        <p class="text-gray-600 pl-2">Supervised by ADGP/IGP, designated as INTERPOL Liaison Officer.</p>
+                      </mat-expansion-panel>
+              
+                      <!-- Technical Support -->
+                      <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                          <h3 class="text-lg font-medium text-gray-800">Technical Support Division</h3>
+                        </mat-expansion-panel-header>
+                        <p class="text-gray-600 pl-2">Supervised by ADGP/IGP, provides technical support to CID operations.</p>
+                      </mat-expansion-panel>
+              
+                      <!-- Administration Division -->
+                      <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                          <h3 class="text-lg font-medium text-gray-800">Administration Division</h3>
+                        </mat-expansion-panel-header>
+                        <ul class="text-gray-600 list-disc list-inside pl-2">
+                          <li>Motor Transport, Building & Estates</li>
+                          <li>Petitions, NHRC/SHRC matters</li>
+                          <li>Estate Officer & PR Coordination</li>
+                        </ul>
+                      </mat-expansion-panel>
+              
+                      <!-- Other Units: CIU, Homicide, Special Enquiries -->
+                      <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                          <h3 class="text-lg font-medium text-gray-800">Criminal Intelligence Units</h3>
+                        </mat-expansion-panel-header>
+                        <p class="text-gray-600 pl-2">Located across Karnataka - gather actionable intel and assist local police.</p>
+                      </mat-expansion-panel>
+              
+                      <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                          <h3 class="text-lg font-medium text-gray-800">Homicide and Burglary Division</h3>
+                        </mat-expansion-panel-header>
+                        <p class="text-gray-600 pl-2">Investigates serious violent and property crimes, including custodial deaths.</p>
+                      </mat-expansion-panel>
+              
+                      <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                          <h3 class="text-lg font-medium text-gray-800">Special Enquiries Division</h3>
+                        </mat-expansion-panel-header>
+                        <p class="text-gray-600 pl-2">Handles confidential inquiries and non-homicide IPC cases.</p>
+                      </mat-expansion-panel>
+              
+                    </mat-accordion>
+                  </div>
+                </mat-expansion-panel>
+              
+                <!-- Economic Offences Wing -->
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <h2 class="text-xl font-semibold text-purple-700">Economic Offences Wing</h2>
+                  </mat-expansion-panel-header>
+              
+                  <div class="pl-4">
+                    <ul class="text-gray-600 list-disc list-inside">
+                      <li><strong>Economic Offences Division</strong>: Fraud, cheating, criminal breach of trust</li>
+                      <li><strong>Financial Intelligence Division</strong>: Coordinates with RBI, ED, DRI on banking/NBFC frauds</li>
+                      <li><strong>Deposit Fraud Investigation Division</strong>: KPIDFE & BUDS Act cases</li>
+                      <li><strong>Anti-Human Trafficking Unit</strong>: Human trafficking and crimes against women & children</li>
+                    </ul>
+                  </div>
+                </mat-expansion-panel>
+              
+                <!-- Cyber Crime & Narcotics -->
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <h2 class="text-xl font-semibold text-red-700">Cyber Crime & Narcotics Wing</h2>
+                  </mat-expansion-panel-header>
+              
+                  <div class="pl-4">
+                    <ul class="text-gray-600 list-disc list-inside">
+                      <li><strong>Cyber Crime Division</strong>: CCPS, cyber forensics, cyber awareness</li>
+                      <li><strong>Cyber Training & Research</strong>: I4C, JMIS, CCPWC, SIM blocking</li>
+                      <li><strong>Narcotic & Organized Crime Division</strong>: FICN, illicit arms, narcotics, piracy</li>
+                    </ul>
+                  </div>
+                </mat-expansion-panel>
+              
+                <!-- Forest Cell -->
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <h2 class="text-xl font-semibold text-green-800">CID Forest Cell</h2>
+                  </mat-expansion-panel-header>
+              
+                  <div class="pl-4 text-gray-600">
+                    <p>Supervised by IGP, this division investigates wildlife and forest offences.</p>
+                    <ul class="list-disc list-inside mt-2">
+                      <li>18 Forest Mobile Squads statewide</li>
+                      <li>Coordinates with Forest Officers & Check Posts</li>
+                      <li>Implements Forest Acts and Wildlife Protection Act</li>
+                    </ul>
+                  </div>
+                </mat-expansion-panel>
+              
+              </mat-accordion>
+              
         </div>
     </div>
 </div>
