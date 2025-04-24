@@ -587,4 +587,14 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       this._changeDetectorRef.detectChanges();
     });
   }
+
+  getFileTypeNameById(fileTypeId: number): string {
+    const type = this.fileTypesDropDown.find(t => t.fileTypeId === fileTypeId);
+    return type ? type.fileTypeName : 'Unknown';
+  }
+  
+  getFileClassificationNameById(classificationId: number): string {
+    const classification = this.fileClassificationDropDown.find(c => c.fileClassificationId === classificationId);
+    return classification ? classification.fileClassificationName : 'Unknown';
+  }
 }
