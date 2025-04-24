@@ -28,6 +28,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { UploadDocumentService } from "../../upload-document/uploadDoc.service";
 import { FileWithMetadata } from "../../upload-files/model/upload-files.models";
 import { AuthService } from "app/core/auth/auth.service";
+import { MasterService } from "../../Master/master.service";
 
 @Component({
   selector: "app-get-doc",
@@ -77,6 +78,8 @@ export class GetDocComponent {
   authData: any;
 
   canEdit: boolean = false;
+  fileClassificationDropDown: [];
+  fileTypesDropDown: [];
 
 
   constructor(
@@ -84,6 +87,7 @@ export class GetDocComponent {
     private _uploadDocumentService: UploadDocumentService,
     private _snackBar: MatSnackBar,
     private _router: Router,
+    private _masterService:MasterService,
     private authenticationService:AuthService
   ) {
     this.authData = this.authenticationService.getAuthData();
@@ -94,6 +98,8 @@ export class GetDocComponent {
     this.dataService.setFileBoolean(false);
     this.getFilesWithMetadataSelected();
     this.getCasedataSelected();
+    this.getFileClassificationInfo();
+    this.getFileTypesInfo();
   }
 
   getFilesWithMetadataSelected() {
@@ -170,5 +176,21 @@ export class GetDocComponent {
     
   }
 
+  getFileClassificationInfo() {
+    this._masterService.getFileClassification().subscribe({
+      next: (response: any) => {
+        this.fileClassificationDropDown= response;
+      },
+      error: (error) => {},
+    });
+  }
 
+    getFileTypesInfo() {
+      this._masterService.getFileTypes().subscribe({
+        next: (response: any) => {
+         this.fileTypesDropDown= response;
+        },
+        error: (error) => {},
+      });
+    } 
 }

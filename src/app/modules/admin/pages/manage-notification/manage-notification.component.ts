@@ -26,6 +26,7 @@ import { UploadedFilesComponent } from "../search-document/uploaded-files/upload
 import { NotificationService } from "./notification.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfirmationDialogComponent } from "./confirmation-dialog/confirmation-dialog.component";
+import { DashbaordService } from "../../dashbaord/dashboard.service";
 
 @Component({
   selector: "app-manage-notification",
@@ -52,6 +53,7 @@ import { ConfirmationDialogComponent } from "./confirmation-dialog/confirmation-
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    CommonModule
   ],
   templateUrl: "./manage-notification.component.html",
   styleUrl: "./manage-notification.component.scss",
@@ -88,6 +90,7 @@ export class ManageNotificationComponent {
     private sharedService: SharedService,
 
     private cdr: ChangeDetectorRef,
+    private _dashbaordService:DashbaordService,
         private _snackBar: MatSnackBar
   ) {}
 
@@ -96,6 +99,21 @@ export class ManageNotificationComponent {
    */
   ngOnInit(): void {
     this.getNotificationList();
+    this.getNotificationsCount();
+  }
+
+  
+  getNotificationsCount() {
+    this._dashbaordService.getNotificationsCount().subscribe({
+        next: (response: any) => {
+          console.log("response Noti",response);
+          this.dataSource = new MatTableDataSource(response);
+            this.cdr.detectChanges();
+        },
+        error: (error) => {
+            console.error("Error fetching latest files:", error);
+        },
+    });
   }
 
   getNotificationList() {
@@ -119,7 +137,7 @@ export class ManageNotificationComponent {
   approvedRequest(notification: any){
     const dialogRef = this._dialog.open(ConfirmationDialogComponent, {
       data: notification,
-      width: "1000px",
+      width: "677px",
     });
     dialogRef.afterClosed().subscribe((result) => {
       this.cdr.detectChanges();

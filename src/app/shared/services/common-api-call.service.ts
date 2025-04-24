@@ -21,7 +21,7 @@ export class CommonApiCallService {
   }
 
   delete(url: string, data: any): Observable<any> {
-    return this._httpClient.put(url, data);
+    return this._httpClient.delete(url, data);
   }
 
   

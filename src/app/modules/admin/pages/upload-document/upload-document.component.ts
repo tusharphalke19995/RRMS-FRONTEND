@@ -80,6 +80,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   uploadDocumentForm: UntypedFormGroup;
   @ViewChild("addcitizenfeedbackNgForm") addcitizenfeedbackNgForm: NgForm;
   maxFileSize = 10737418240;
+  crimeNo: string = '';
   isLoading: boolean = false;
   formFieldHelpers: string[] = [""];
   vendors: InventoryVendor[];
@@ -150,7 +151,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       unitsId: [""],
       office: ["", [Validators.required]],
       letterNo: ["", [Validators.required]],
-      caseNo: ["", [Validators.required]],
+      caseNo: [""],
       caseType: ["", [Validators.required]],
       firNo: ["", [Validators.required]],
       author: ["", [Validators.required]],
@@ -226,6 +227,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
 
 
   onStateChange(stateId: number): void {
+    this.generateCrimeNo();
     if (stateId) {
       this._uploadDocumentService.geDistrictByStateData(stateId).subscribe(
         (districts: any) => {
@@ -265,6 +267,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       firNo: this.uploadDocumentForm.value.firNo,
       author: this.uploadDocumentForm.value.author,
       toAddr: this.uploadDocumentForm.value.toAddr,
+      caseStatus:this.uploadDocumentForm.value.statusId,
+      year:this.uploadDocumentForm.value.yearId
     };
    debugger
     const formData = new FormData();
@@ -331,5 +335,31 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           },
           error: (error) => {},
         });
-      }    
+      } 
+      
+     
+  generateCrimeNo(): void {
+    // const stateId = this.uploadDocumentForm.get('stateIDInfo')?.value;
+    const districtId = this.uploadDocumentForm.get('districtId')?.value;
+    const unitId = this.uploadDocumentForm.get('unitsId')?.value;
+    const yearId = this.uploadDocumentForm.get('yearId')?.value;
+    const firNo = this.uploadDocumentForm.get('firNo')?.value;
+    if (districtId && unitId != null && yearId && firNo) {
+      const paddedUnitId = String(unitId).padStart(4, '0');
+      this.crimeNo = `10${districtId}${paddedUnitId}${yearId}${firNo}`;
+      this.uploadDocumentForm.get('caseNo')?.setValue(this.crimeNo);
+    }
+  }
+
+  onDistrictChange(districtId: number): void {
+    this.generateCrimeNo();
+  }
+
+  onUnitChange(unitId: number): void {
+    this.generateCrimeNo();
+  }
+
+  onYearChange(yearId: number): void {
+    this.generateCrimeNo();
+  }
 }

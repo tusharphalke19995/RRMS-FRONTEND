@@ -61,7 +61,7 @@ getUnitsByDistictIdData(districtId: number) {
 
   markAsUnFavourite(fileId: number) {
     const url = `${apiurls.favourite}/${fileId}/unfavourite`;
-    return this.commonApiCallService.post(url, {});
+    return this.commonApiCallService.delete(url, {});
   }
 
   getCmoradmins(id: number) {

@@ -1,7 +1,7 @@
 import { Component, Inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -36,11 +36,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       encapsulation: ViewEncapsulation.None
 })
 export class ConfirmationDialogComponent {
+  manageNotificationConfirmation:FormGroup;
 
-
-  constructor( private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any )
+  constructor( private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any , private _formBuilder:FormBuilder)
 {
-console.log("data",this.data)
+
 }
 
 
@@ -48,8 +48,51 @@ onCancel(): void {
   this.dialogRef.close(false);
 }
 
+ngOnInit(): void {
+  this.initiateForm();
+}
 
-onApprove(){
+initiateForm() {
+  this.manageNotificationConfirmation = this._formBuilder.group({
+    remarks: [""],
+  });
+}
+
+
+onDenied(): void {
+  const remarksControl = this.manageNotificationConfirmation.get('remarks');
+  remarksControl?.setValidators([Validators.required]);
+  remarksControl?.updateValueAndValidity();
+  if (this.manageNotificationConfirmation.valid) {
+   this.notificationService.approveNotification(this.data.file.fileId).subscribe({
+    next: (response: any) => {
+      this._snackBar.open("Request Approved successfully", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["success-snackbar"],
+      });
+      this.dialogRef.close(true);
+     
+    },
+    error: (error) => {
+      this._snackBar.open(error.message || "Error creating user", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["error-snackbar"],
+      });
+    },
+  });
+  } else {
+    remarksControl?.markAsTouched();
+  }
+}
+
+onApprove(): void {
+  const remarksControl = this.manageNotificationConfirmation.get('remarks');
+  remarksControl?.clearValidators();
+  remarksControl?.updateValueAndValidity();
   this.notificationService.approveNotification(this.data.file.fileId).subscribe({
     next: (response: any) => {
       this._snackBar.open("Request Approved successfully", "Close", {

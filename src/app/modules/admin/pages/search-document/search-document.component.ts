@@ -236,7 +236,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       this._uploadDocumentService.geDistrictByStateData(stateId).subscribe(
         (districts: any) => {
           this.districtDropdown = districts.responseData;
-          this.searchDocumentForm.get("districtId")?.setValue(443);
+          // this.searchDocumentForm.get("districtId")?.setValue(443);
         },
         (error) => {
           console.error("Error fetching districts:", error);
@@ -252,14 +252,14 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       next: (response: any) => {
         console.log("response", response);
         this.stateDropdown = response.responseData;
-        this.stateDropdown.forEach((element: any) => {
-          if (element.stateId == 16) {
-            this.searchDocumentForm.patchValue({
-              stateId: element.stateId,
-            });
-            this.searchDocumentForm.get("stateId").disable();
-          }
-        });
+        // this.stateDropdown.forEach((element: any) => {
+        //   if (element.stateId == 16) {
+        //     this.searchDocumentForm.patchValue({
+        //       stateId: element.stateId,
+        //     });
+        //     this.searchDocumentForm.get("stateId").disable();
+        //   }
+        // });
       },
       error: (error) => {},
     });
@@ -282,7 +282,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
 
   getUploadMetaDataFiles(): void {
     let searchMetaData = {
-      stateId: this.searchDocumentForm.value.stateId || 16,
+      stateId: this.searchDocumentForm.value.stateId,
       districtId: this.searchDocumentForm.value.districtId,
       unitId: this.searchDocumentForm.value.unitsId,
       Office: this.searchDocumentForm.value.office,

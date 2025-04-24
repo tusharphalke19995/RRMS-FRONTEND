@@ -508,7 +508,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
           verticalPosition: "top",
           panelClass: ["success-snackbar"],
         });
-        // this._router.navigateByUrl("search-document")
+        this._router.navigateByUrl("search-document");
         this.selectedFiles = [];
       },
       error: (error) => {
@@ -531,7 +531,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
           verticalPosition: "top",
           panelClass: ["success-snackbar"],
         });
-        // this._router.navigateByUrl("search-document")
+        this._router.navigateByUrl("search-document");
         this.selectedFiles = [];
       },
       error: (error) => {

@@ -99,7 +99,8 @@
                         <td>
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-label *transloco="let t" class="font-medium">{{t('policeStation')}}</mat-label>
-                                <mat-select [formControlName]="'unitsId'">
+                                <mat-select [formControlName]="'unitsId'"
+                                    (selectionChange)="onUnitChange($event.value)">
                                     <mat-option [value]="null">Please Select</mat-option>
                                     <ng-container *ngFor="let unitsData of unitsDropdown; trackBy: trackByFn">
                                         <mat-option [value]="unitsData.unitId">{{unitsData.unitName}}</mat-option>
@@ -111,15 +112,7 @@
                             </mat-form-field>
                         </td>
 
-                        <td><mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium">{{ t('caseNo')}}</mat-label>
-                                <input matInput matInput [formControlName]="'caseNo'" maxlength="4" [required]="true">
-                                <mat-error *ngIf="uploadDocumentForm.get('caseNo').hasError('required')">
-                                    Required
-                                </mat-error>
-                            </mat-form-field>
-
-                        </td>
+                       
                         <td><mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium">{{t('office')}}</mat-label>
                                 <input matInput matInput [formControlName]="'office'">
@@ -195,7 +188,7 @@
                         <td>
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-label *transloco="let t" class="font-medium">{{t('year')}}</mat-label>
-                                <mat-select [formControlName]="'yearId'">
+                                <mat-select [formControlName]="'yearId'" (selectionChange)="onYearChange($event.value)">
                                     <mat-option [value]="null">Please Select</mat-option>
                                     <ng-container *ngFor="let yrData of yearDropDown; trackBy: trackByFn">
                                         <mat-option [value]="yrData.yearId">{{yrData.yearName}}</mat-option>
@@ -208,7 +201,8 @@
                         </td>
                         <td><mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium">{{ t('firNo')}}</mat-label>
-                                <input matInput matInput [formControlName]="'firNo'" [required]="true">
+                                <input (input)="generateCrimeNo()" matInput matInput [formControlName]="'firNo'"
+                                    [required]="true">
                                 <mat-error *ngIf="uploadDocumentForm.get('firNo').hasError('required')">
                                     Required
                                 </mat-error>
@@ -216,24 +210,44 @@
 
                         </td>
 
+                        <!-- <td>
+                    <tr>
 
-                        <td>
-                            <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium">{{t('registerDate')}}</mat-label>
-                                <input matInput [matDatepicker]="picker1" [placeholder]="'Choose a date'"
-                                    [formControlName]="'caseDate'">
-                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-                                <mat-datepicker #picker1></mat-datepicker>
-                            </mat-form-field>
-                        </td>
+                        <mat-form-field appearance="outline" class="w-full">
+                            <mat-label>Crime Number (FIR No)</mat-label>
+                            <input matInput formControlName="crimeNo" [value]="crimeNo" disabled>
+                        </mat-form-field>
+                    </tr>
+                    </td> -->
+
+                    <td><mat-form-field appearance="outline" class="example-full-width">
+                        <mat-label *transloco="let t" class="font-medium">{{ t('caseNo')}}</mat-label>
+                        <input matInput matInput [formControlName]="'caseNo'">
+                        <mat-error *ngIf="uploadDocumentForm.get('caseNo').hasError('required')">
+                            Required
+                        </mat-error>
+                    </mat-form-field>
+
+                </td>
+
+                    <td>
+                        <mat-form-field appearance="outline" class="example-full-width">
+                            <mat-label *transloco="let t" class="font-medium">{{t('registerDate')}}</mat-label>
+                            <input matInput [matDatepicker]="picker1" [placeholder]="'Choose a date'"
+                                [formControlName]="'caseDate'">
+                            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                            <mat-datepicker #picker1></mat-datepicker>
+                        </mat-form-field>
+                    </td>
                     </tr>
                 </table>
 
                 <div class="flex font-semibold text-2xl  whitespace-nowrap my-5 ">
                     <div>Files/Documents</div>
                 </div>
-                
-                <app-upload-files (filesWithMetadataSelected)="onFilesWithMetadataSelected($event)" [fileClassificationDropDown]="fileClassificationDropDown" [fileTypesDropDown]="fileTypesDropDown">
+
+                <app-upload-files (filesWithMetadataSelected)="onFilesWithMetadataSelected($event)"
+                    [fileClassificationDropDown]="fileClassificationDropDown" [fileTypesDropDown]="fileTypesDropDown">
                 </app-upload-files>
 
                 <div class="flex items-center justify-end py-3">

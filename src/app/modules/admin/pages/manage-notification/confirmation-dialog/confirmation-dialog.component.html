@@ -8,29 +8,40 @@
     <div class="flex items-center">
       <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('confirmApprove')}}</span>
     </div>
-    <button mat-icon-button class=" rounded-full transition-colors duration-200" (click)="onCancel()" [tabIndex]="-1">
-      <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+    <button mat-icon-button class="rounded-full transition-colors duration-200" (click)="onCancel()" [tabIndex]="-1">
+      <mat-icon  [svgIcon]="'heroicons_outline:x'"></mat-icon>
     </button>
   </div>
 
   <!-- Form Content -->
   <div class="flex flex-col flex-auto p-6 overflow-y-auto">
     <!-- First Row -->
-    <h5 class="text-center font-semibold text-xl"> Are you sure you want to approve this request?</h5>
+    <h5 class="text-center font-semibold text-xl" *transloco="let t">{{t('reqText')}}</h5>
+    <form [formGroup]="manageNotificationConfirmation" class="flex flex-col flex-auto p-6 overflow-y-auto">
+      <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mb-4">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Remarks</mat-label>
+          <input matInput formControlName="remarks" placeholder="Enter Remarks" />
+          <mat-error *ngIf="manageNotificationConfirmation.get('remarks')?.hasError('required')">
+            Remarks are required when denying.
+          </mat-error>
+        </mat-form-field>
+       
+      </div>
+      <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
+        <button mat-flat-button
+          class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
+          (click)="onApprove()" *transloco="let t">
+          {{t('approve')}}
+        </button>
+        <button mat-stroked-button
+          class="min-w-[90px] px-6 py-2 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+          (click)="onDenied()" *transloco="let t">
 
-    <!-- Action Buttons -->
-    <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
-      <button mat-flat-button
-        class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
-        (click)="onApprove()" *transloco="let t">
-        {{t('approve')}}
-      </button>
-      <button mat-stroked-button
-        class="min-w-[90px] px-6 py-2 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
-        (click)="onCancel()" *transloco="let t">
+          {{t('onDenied')}}
+        </button>
+      </div>
+    </form>
 
-        {{t('cancel')}}
-      </button>
-    </div>
   </div>
 </div>
