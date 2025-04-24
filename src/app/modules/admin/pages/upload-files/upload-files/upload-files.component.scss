@@ -224,3 +224,13 @@
 ::ng-deep .mat-chip.mat-chip-selected {
     background-color: #b2ebf2; 
 }
+
+.error-snackbar {
+    background-color: #f44336 !important; 
+    color: white !important;             
+}
+
+.success-snackbar{
+    background-color: #0056b3 !important; 
+    color: white !important;      
+}

@@ -156,11 +156,11 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   @Input() fileTypesDropDown = [];
   @Input() fileClassificationDropDown = [];
   @Input() contentManagerDropdown = [];
-
+  @Input() crimeNo: string;
   metadataForm: FormGroup;
   openFileModal: boolean;
   fileToEdit: FileWithMetadata | null = null;
-  maxFileSize = 2 * 1024 * 1024; // 2MB
+  maxFileSize = 50 * 1024 * 1024 * 1024;; // 50GB
   minFileSize = 100 * 1024; // 100KB
   checkGetFile: boolean;
   caseDetails: any[];
@@ -224,11 +224,6 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       this.patchData(this.formGroup.value);
     }
     this.showTextNoData = !this.filesData?.length;
-
-    console.log("filesDataSearch", this.filesDataSearch);
-
-    console.log("getfiles", this.getfiles);
-
     this.selectedFiles = this.getfiles;
   }
 
@@ -276,40 +271,36 @@ export class UploadFilesComponent implements OnInit, OnChanges {
         panelClass: ["success-snackbar"],
       });
     }
-
-    // if (validFiles.length > 0) {
-    //   this.selectedFiles = [...this.selectedFiles, ...validFiles];
-    //   this.selectedFilesIndex[this.currentIndex] = this.selectedFiles;
-    //   this.totalFileByIndex = this.selectedFilesIndex[this.currentIndex];
-    //   this.openUploadDialog = true;
-    // } else {
-    //   this.openUploadDialog = false;
-    //   this.selectedFiles = this.selectedFilesTemp;
-    // }
-    // this.filesSelected.emit(this.selectedFiles);
   }
 
   private getFileValidationError(file: any): string | null {
-    const { allowedExtensions, maxFileSize, minFileSize } =
-      this.fileRestrictions;
+    const { allowedExtensions, maxFileSize, minFileSize } = this.fileRestrictions;
     const extension = file.extension.toLowerCase();
-    const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
-
+    const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2); // Size in MB
+    const fileSizeGB = (file.size / (1024 * 1024 * 1024)).toFixed(2); // Size in GB
+  
+    // Check if file type is allowed
     if (!allowedExtensions.includes(extension)) {
       return "Invalid file type.";
     }
+  
+    // Check if file size is too small
     if (file.size < minFileSize) {
       return `File size is too small. Minimum size is ${
         minFileSize / (1024 * 1024)
       } MB. Current file size is ${fileSizeMB} MB.`;
     }
+  
+    // Check if file size exceeds max allowed size
     if (file.size > maxFileSize) {
       return `File size is too large. Maximum size is ${
-        maxFileSize / (1024 * 1024)
-      } MB. Current file size is ${fileSizeMB} MB.`;
+        maxFileSize / (1024 * 1024 * 1024)
+      } GB. Current file size is ${fileSizeGB} GB.`;
     }
-    return null;
+  
+    return null; 
   }
+  
 
   get disableSaveButton() {
     return !this.selectedFiles;
@@ -358,7 +349,11 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     if (file) {
       this.metadataForm.patchValue(file);
     }
-
+    if(this.checkGetFile){
+      this.metadataForm.patchValue({
+        subject: this.fileToEdit.name,
+      });
+    }
     this.openFileModal = true;
   }
 
@@ -411,10 +406,22 @@ export class UploadFilesComponent implements OnInit, OnChanges {
 
     if (file.size > this.maxFileSize) {
       file.validationErrors.push("File size exceeds 2MB limit");
+      this._snackBar.open("File size exceeds 2MB limit", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["error-snackbar"],
+      });
     }
 
     if (file.size < this.minFileSize) {
       file.validationErrors.push("File size is less than 100KB minimum");
+      this._snackBar.open("File size is less than 100KB minimum", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["error-snackbar"],
+      });
     }
 
     // Add additional validation if needed
@@ -422,6 +429,12 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
     if (!allowedTypes.includes(file.type)) {
       file.validationErrors.push("Invalid file type");
+      this._snackBar.open("Invalid file type", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["error-snackbar"],
+      });
     }
 
     return file;
@@ -490,13 +503,12 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   toggleFavourite(file: any) {
-    console.log("is_favourited",file.is_favourited)
-      if (file.is_favourited) {
-        this.markUnFavourite(file);
-      } else {
-        this.markFavourite(file);
-      }
-  
+    console.log("is_favourited", file.is_favourited);
+    if (file.is_favourited) {
+      this.markUnFavourite(file);
+    } else {
+      this.markFavourite(file);
+    }
   }
 
   markUnFavourite(data: any) {
