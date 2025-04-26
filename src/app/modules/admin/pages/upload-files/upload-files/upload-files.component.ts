@@ -579,9 +579,10 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       .filter((tag) => tag.length > 0);
   }
 
-  getAccessModalUser() {
+  getAccessModalUser(data) {
     const dialogRef = this.dialog.open(ContentManagerDialogComponent, {
       width: "799px",
+      data: data,
     });
     dialogRef.afterClosed().subscribe((result) => {
       this._changeDetectorRef.detectChanges();

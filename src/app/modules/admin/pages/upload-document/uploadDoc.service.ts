@@ -74,6 +74,18 @@ getUnitsByDistictIdData(districtId: number) {
     }).pipe(catchError(this.handleError));
   }
 
+  filePrevieAccessReqByUser(data: any) {
+    return this._httpClient.post(apiurls.caseDataFilePreview, data, {
+      responseType: 'blob', 
+    }).pipe(
+      catchError((error) => {
+        console.error('Error in filePreviewData API:', error);
+        return of(null); 
+      })
+    );
+  }
+
+  
    /**
     * The error handler.
     * @param err The http error response.

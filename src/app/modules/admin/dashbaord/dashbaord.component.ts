@@ -66,6 +66,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   pendingApprovalCount: number = 0;
   notificationsCount: number = 0;
   finalDataNotifications :any;
+  finalDataCaseReqPending: any;
   /**
    * Constructor
    */
@@ -93,6 +94,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     this.getFavouritesInfo();
     this.getCurrentData();
     this.getNotificationsCount();
+    this.getContentManagerReqForWkFlow();
   }
 
   /**
@@ -198,6 +200,20 @@ export class DashbaordComponent implements OnInit, OnDestroy {
       });
     }
   
+
+    getContentManagerReqForWkFlow() {
+      this._dashbaordService.getContentManagerReqData().subscribe({
+        next: (response: any) => {
+          this.finalDataCaseReqPending = response;
+          this.pendingApprovalCount = response.length;
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error("Error fetching current users:", error);
+        },
+      });
+    }
+
     goToActiveUserList(data){
       this.userList = data.users;
       this.sharedService.setActiveUserData(this.userList);
@@ -205,7 +221,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     }
 
     goToPendingApproval(){
-      // this.sharedService.setActiveUserData(this.userList);
+     this.sharedService.setActiveUserData(this.finalDataCaseReqPending);
       this._router.navigateByUrl("dashboard/pending-approval-list")
     }
 

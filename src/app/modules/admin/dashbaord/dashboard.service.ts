@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiurls } from 'app/shared/constants/api-urls.constant';
 import { ErrorResponseModel } from 'app/shared/models/error-model';
@@ -39,8 +39,21 @@ export class DashbaordService
   }
 
 
-
+  fileAccessByRequestid(fileAccessRequestid: number,data:any) {
+    const url = `${apiurls.caseDataFileApproveReq}/${fileAccessRequestid}/action`; 
+    return this._httpClient.post(url,data, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
   
+getContentManagerReqData() {
+  return this._httpClient
+    .get(apiurls.getContentManagerReq)
+    .pipe(catchError(this.handleError));
+}
   /**
    * The error handler.
    * @param err The http error response.

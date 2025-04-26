@@ -35,6 +35,7 @@ export class ContentManagerDialogComponent {
   contentManagerDropdown: any;
   constructor(private _formBuilder:FormBuilder,private _uploadDocumentService:UploadDocumentService ,private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ContentManagerDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any )
 {
+  console.log("datadata",data)
   this.initiateForm();
 this.getFileAccess();
 
@@ -60,17 +61,21 @@ getFileAccess() {
   });
 }
 
-onApprove(){
-  this.notificationService.approveNotification(this.data.file.fileId).subscribe({
+
+onApprove(): void {
+  let payload = {
+    fileHash:this.data.fileHash,
+    requested_to:this.contentMangerListForm.value.contentMangId
+  };
+  this._uploadDocumentService.filePrevieAccessReqByUser(payload).subscribe({
     next: (response: any) => {
-      this._snackBar.open("Request Approved successfully", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["success-snackbar"],
-      });
-      this.dialogRef.close(true);
-     
+        this._snackBar.open('Access request sent. Waiting for approval.', "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["success-snackbar"],
+        });
+        this.dialogRef.close(true);
     },
     error: (error) => {
       this._snackBar.open(error.message || "Error creating user", "Close", {
@@ -82,4 +87,5 @@ onApprove(){
     },
   });
 }
+
 }

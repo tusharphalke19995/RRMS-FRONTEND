@@ -17,6 +17,9 @@ import { DOCUMENT } from "@angular/common";
       private activeUserSubject: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
       activeUserData$: Observable<any[]> = this.activeUserSubject.asObservable();
 
+      private pendingReqSubject: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
+      pendingReqData$: Observable<any[]> = this.activeUserSubject.asObservable();
+
       private latesFileSubject: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
       latesFileData$: Observable<any[]> = this.latesFileSubject.asObservable();
 
@@ -88,6 +91,10 @@ import { DOCUMENT } from "@angular/common";
  
       setNotificationsInfo(data){
         this.notificationSubject.next(data)
+      }
+
+      setPendingApprovalData(data: any[]) {
+        this.pendingReqSubject.next(data);
       }
 
   }

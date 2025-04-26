@@ -50,9 +50,9 @@
 
           </div>
           <div class="flex items-center">
-            <div *ngIf="(file.metadata?.classification || file.classification) === 'confidential'" class=" text-center">
+            <div *ngIf="(file.metadata?.classification_name || file.classification_name) === 'Confidential'" class=" text-center">
               <button *transloco="let t" mat-flat-button [color]="'primary'" class="min-w-[90px]"
-                (click)="getAccessModalUser()">
+                (click)="getAccessModalUser(file)">
                 <mat-icon class="icon-size-5 mr-2" [svgIcon]="'heroicons_solid:plus'"></mat-icon>
                 {{t('reqAccess')}}
               </button>

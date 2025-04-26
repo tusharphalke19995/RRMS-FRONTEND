@@ -23,7 +23,7 @@
                 <mat-select formControlName="contentMangId">
                   <mat-option [value]="null">Please Select</mat-option>
                   <ng-container *ngFor="let dropDownData of contentManagerDropdown">
-                    <mat-option [value]="dropDownData.kgid">{{ dropDownData.first_name }}</mat-option>
+                    <mat-option [value]="dropDownData.id">{{ dropDownData.first_name }}</mat-option>
                   </ng-container>
                 </mat-select>
                 <mat-error *ngIf="contentMangerListForm.get('contentMangId').hasError('required')">

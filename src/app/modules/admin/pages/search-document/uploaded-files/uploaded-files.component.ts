@@ -53,6 +53,7 @@ export class UploadedFilesComponent {
   onNoClose(): void {
     this.dialogRef.close({ data: false });
   }
+  
   getUploadMetaDataFiles(): void {
       let payload = {
         fileHash: this.data.fileHash,
