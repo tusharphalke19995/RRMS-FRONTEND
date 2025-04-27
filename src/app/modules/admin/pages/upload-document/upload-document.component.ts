@@ -198,7 +198,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   filterDropDownData(event) {}
 
   getUserDistrictDropdown() {
-    this._uploadDocumentService.geDistrictByStateData(16).subscribe({
+    const divisionId =JSON.parse(sessionStorage.getItem("designationRoleId"));
+    this._uploadDocumentService.geDistrictByStateData(16,divisionId).subscribe({
       next: (response: any) => {
         console.log("response", response);
         this.districtDropdown = response.responseData;
@@ -208,7 +209,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }
 
   getUserStateDropdown() {
-    this._uploadDocumentService.getState().subscribe({
+    const divisionId =JSON.parse(sessionStorage.getItem('designationRoleId'));
+
+    this._uploadDocumentService.getState(divisionId).subscribe({
       next: (response: any) => {
         console.log("response", response);
         this.stateDropdown = response.responseData;
@@ -229,7 +232,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   onStateChange(stateId: number): void {
     this.generateCrimeNo();
     if (stateId) {
-      this._uploadDocumentService.geDistrictByStateData(stateId).subscribe(
+      const divisionId =JSON.parse(sessionStorage.getItem("designationRoleId"));
+      this._uploadDocumentService.geDistrictByStateData(stateId,divisionId).subscribe(
         (districts: any) => {
           this.districtDropdown = districts.responseData;
           this.uploadDocumentForm.get("districtId")?.setValue(443);
@@ -244,7 +248,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }
 
   onDisctrictChange(stateId: number): void {
-    this._uploadDocumentService.getUnitsByDistictIdData(stateId).subscribe({
+    const divisionId =JSON.parse(sessionStorage.getItem('designationRoleId'));
+    this._uploadDocumentService.getUnitsByDistictIdData(stateId,divisionId).subscribe({
       next: (response: any) => {
         if (response.statusCode == 200) {
           this.unitsDropdown = response.responseData;
@@ -284,6 +289,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
 
     this.selectedFiles.forEach((file) => {
     formData.append(`Files`, file); 
+    formData.append(`division_id`, sessionStorage.getItem('designationRoleId')); 
   });
     this._uploadDocumentService.uploadDocument(formData).subscribe({
       next: (response: any) => {

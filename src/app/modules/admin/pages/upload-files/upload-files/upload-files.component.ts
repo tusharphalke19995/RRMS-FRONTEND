@@ -165,8 +165,8 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   checkGetFile: boolean;
   caseDetails: any[];
   authData: any;
-  canEdit: boolean = false;
-  canDelete: boolean = false;
+  // canEdit: boolean = false;
+  // canDelete: boolean = false;
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -180,7 +180,8 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     private _uploadDocumentService: UploadDocumentService
   ) {
     this.authData = this.authenticationService.getAuthData();
-    this.checkPermissions();
+    // this.checkPermissions();
+    console.log(" this.authData",  this.authData)
     this.metadataForm = this.fb.group({
       subject: ["", Validators.required],
       fileType: ["", Validators.required],
@@ -494,13 +495,13 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     });
   }
 
-  checkPermissions() {
-    const userPermissions = this.authData.Permission;
-    const roleName = this.authData.role_name;
-    console.log("userPermissions", userPermissions);
-    this.canEdit = userPermissions.includes("change_filedetails");
-    this.canDelete = userPermissions.includes("delete_filedetails");
-  }
+  // checkPermissions() {
+  //   const userPermissions = this.authData.Permission;
+  //   const roleName = this.authData.role_name;
+  //   console.log("userPermissions", userPermissions);
+  //   this.canEdit = userPermissions.includes("change_filedetails");
+  //   this.canDelete = userPermissions.includes("delete_filedetails");
+  // }
 
   toggleFavourite(file: any) {
     console.log("is_favourited", file.is_favourited);

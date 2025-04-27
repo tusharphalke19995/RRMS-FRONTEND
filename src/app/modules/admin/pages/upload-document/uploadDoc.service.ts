@@ -19,30 +19,44 @@ export class UploadDocumentService {
  {
  }
 
-   geDistrictByStateData(stateId: number) {
-    const url = `${apiurls.getDistrictByStateId}${stateId}`; 
+geDistrictByStateData(
+  stateId: number,
+  divisionId: number
+) {
+  const url = `${apiurls.getDistrictByStateId}${stateId}?division_id=${divisionId}`;
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  });
+
+  return this.commonApiCallService.get(url)
+    .pipe(catchError(this.handleError));
+}
+
+
+getUnitsByDistictIdData(
+  districtId: number,
+  divisionId: number
+) {
+  const url = `${apiurls.getUnitsByDistictId}${districtId}?division_id=${divisionId}`;
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  });
+
+  return this.commonApiCallService.get(url)
+    .pipe(catchError(this.handleError));
+}
+
+
+  getState(id: number) {
+    const url = `${apiurls.getState}=${id}`; 
     return this._httpClient.get(url, {
         headers: new HttpHeaders({
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         })
     }).pipe(catchError(this.handleError));
-}
-
-getUnitsByDistictIdData(districtId: number) {
-  const url = `${apiurls.getUnitsByDistictId}${districtId}`; 
-  return this._httpClient.get(url, {
-      headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-      })
-  }).pipe(catchError(this.handleError));
-}
-
-   getState() {
-    return this.commonApiCallService
-      .get(apiurls.getState)
-      .pipe(catchError(this.handleError));
   }
 
   uploadDocument(data:FormData) {
@@ -64,9 +78,9 @@ getUnitsByDistictIdData(districtId: number) {
     return this.commonApiCallService.delete(url, {});
   }
 
-  getCmoradmins(id: number) {
-    const url = `${apiurls.getCmoradmins}/${id}`; 
-    return this._httpClient.get(url, {
+  getCmoradmins(data:any) {
+    const url = `${apiurls.getCmoradmins}`; 
+    return this._httpClient.post(url,data, {
         headers: new HttpHeaders({
             'Content-Type': 'application/json',
             'Accept': 'application/json'

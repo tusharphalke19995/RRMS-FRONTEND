@@ -29,8 +29,9 @@
       <div *ngFor="let file of selectedFiles; let i = index" class="file-item">
         <div class="flex items-center justify-between p-2">
           <div class="flex items-center">
-            <mat-icon (click)="viewImage(file)" class="cursor-pointer"
-              [ngClass]="{'text-green-500': file.metadata, 'text-gray-500': !file.metadata}">{{ file.metadata ?
+            <mat-icon (click)="viewImage(file)" [disabled]="(file.metadata?.classification_name || file.classification_name) === 'Confidential' 
+            && (file.is_access_request_approved && authData.RoleName === 'User')" class="cursor-pointer" 
+              [ngClass]="{'text-green-500': file.metadata, 'text-gray-500': !file.metadata}" >{{ file.metadata ?
               'check_circle' : 'insert_drive_file' }}</mat-icon>
             <span class="ml-2">{{crimeNo}}_{{ file.name || file.fileName}}</span>
             <span class="ml-2 text-sm text-gray-500" *ngIf="checkGetFile">
@@ -50,7 +51,8 @@
 
           </div>
           <div class="flex items-center">
-            <div *ngIf="(file.metadata?.classification_name || file.classification_name) === 'Confidential'" class=" text-center">
+            <div *ngIf="(file.metadata?.classification_name || file.classification_name) === 'Confidential' 
+            && (!file.is_request_raised && !file.is_access_request_approved && authData.RoleName === 'User')" class=" text-center">
               <button *transloco="let t" mat-flat-button [color]="'primary'" class="min-w-[90px]"
                 (click)="getAccessModalUser(file)">
                 <mat-icon class="icon-size-5 mr-2" [svgIcon]="'heroicons_solid:plus'"></mat-icon>

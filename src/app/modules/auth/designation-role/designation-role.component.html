@@ -1,0 +1,61 @@
+<div class="flex flex-col flex-auto items-center sm:justify-center min-w-0 bg-cover bg-center" style="background-image: url('../../../../assets/images/rrms.jpg');">
+
+        <div class="w-full sm:w-auto py-3 px-2 sm:p-10 sm:rounded-2xl sm:shadow sm:bg-card">
+            <div class="w-full max-w-80 sm:w-80 mx-auto sm:mx-0">
+                <div class="w-12">
+                    <img src="assets/images/KSPPCW-logo.png">
+                </div>
+                <div class="mt-2 text-4xl font-extrabold tracking-tight leading-tight"  *transloco="let t">{{t('selectRole')}}</div>
+                <!-- Alert -->
+                <fuse-alert
+                    class="mt-2"
+                    *ngIf="showAlert"
+                    [appearance]="'outline'"
+                    [showIcon]="false"
+                    [type]="alert.type"
+                    [@shake]="alert.type === 'error'">
+                    {{alert.message}}
+                </fuse-alert>
+    
+                <!-- Sign in form -->
+                <form
+                    class="mt-3"
+                    [formGroup]="designationRoleForm"
+                  >
+    
+                    <!-- Email field -->
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label *transloco="let t" class="font-medium">{{t('role')}}</mat-label>
+                        <mat-select [formControlName]="'designationRoleId'"
+                            (selectionChange)="onStateChange($event.value)">
+                            <mat-option [value]="null">Please Select</mat-option>
+                            <ng-container *ngFor="let data of divisionsRoles.DivisionsRoles; trackBy: trackByFn">
+                                <mat-option [value]="data.division_id">{{data.division_name}}</mat-option>
+                            </ng-container>
+                        </mat-select>
+                        <mat-error *ngIf="designationRoleForm.get('designationRoleId').hasError('required')">
+                            Required
+                        </mat-error>
+                    </mat-form-field>
+
+    
+                    <!-- Submit button -->
+                    <button
+                        class="fuse-mat-button-large w-full mt-6"
+                        mat-flat-button
+                        [color]="'primary'"
+                        [disabled]="designationRoleForm.disabled"
+                        (click)="goToDashbaord()" >
+                        <span  *ngIf="!designationRoleForm.disabled">
+                          <span *transloco="let t"> {{t('submit')}}</span>
+                        </span>
+                        <mat-progress-spinner
+                            *ngIf="designationRoleForm.disabled"
+                            [diameter]="24"
+                            [mode]="'indeterminate'"></mat-progress-spinner>
+                    </button>
+                </form>
+            </div>
+        </div>
+    
+</div>

@@ -53,7 +53,11 @@ onCancel(): void {
 }
 
 getFileAccess() {
-  this._uploadDocumentService.getCmoradmins(4).subscribe({
+ const payload= {
+	division_id:sessionStorage.getItem("designationRoleId"),
+	role_id:4 
+}
+  this._uploadDocumentService.getCmoradmins(payload,).subscribe({
     next: (response: any) => {
       this.contentManagerDropdown = response.users;
     },

@@ -798,16 +798,19 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
     }
 
     setNavigation(): void {
-        const roleName = this.authData.RoleName;
+        const roles = this.authData.DivisionsRoles
+            .filter(a => a.role_name) // Filter out the roles that have a truthy `role_name`
+            .map(a => a.role_name);    // Map to an array of role names
+        const isAdmin = roles.length === 0 || roles.includes("Admin");
         this.navigation = this.navigation.filter(item => {
-          if (roleName === "Admin") {
-            return true;
-          } else if (roleName==="User") {
-            return item.id === 'searchDocument' || item.id === 'home' || item.id ==='uploadDocument';
-          } else if (roleName ==="ContentManager") {
-            return item.id === 'searchDocument' || item.id === 'home' || item.id ==='uploadDocument';
-          }
-          return false;
+            if (isAdmin) {
+                // empty OR Admin → see everything
+                return true;
+              } else if (roles.includes("User") || roles.includes("ContentManager")) {
+                // If the user is a User or ContentManager, include specific items
+                return item.id === 'searchDocument' || item.id === 'home' || item.id === 'uploadDocument';
+            }
+            return false; // If no roles match, exclude the item
         });
-      }
+    }
 }

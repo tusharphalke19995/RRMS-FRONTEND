@@ -49,7 +49,7 @@ export class AuthSignInComponent implements OnInit {
   };
   signInForm: UntypedFormGroup;
   showAlert: boolean = false;
-
+  divisionsRoles:any;
   /**
    * Constructor
    */
@@ -100,7 +100,10 @@ export class AuthSignInComponent implements OnInit {
             console.log("response", response);
               if (response.statusCode ==200) {
                 this._authService.accessToken = response.responseData.access; 
-                this._router.navigateByUrl("/dashboard");
+                setTimeout(() => {
+                  this.checkDesignationObj();
+                }, 2000);
+
             } else {
           
                 this.showAlert = true;
@@ -115,5 +118,16 @@ export class AuthSignInComponent implements OnInit {
             this.signInForm.enable(); 
         },
     });
+  }
+
+  checkDesignationObj() {
+    this.divisionsRoles = this._authService.getAuthData();
+  
+    if (this.divisionsRoles.DivisionsRoles.length > 0) {
+      this._router.navigateByUrl("/designation-role");
+      return;
+    }
+    
+    this._router.navigateByUrl("/dashboard");
   }
 }

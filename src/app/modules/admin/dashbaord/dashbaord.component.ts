@@ -67,6 +67,8 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   notificationsCount: number = 0;
   finalDataNotifications :any;
   finalDataCaseReqPending: any;
+  divisionsRoles: any;
+  showAdminBool:boolean
   /**
    * Constructor
    */
@@ -80,6 +82,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
         private sharedService:SharedService
   ) {
     this.authData = this.authenticationService.getAuthData();
+    this.checkDesignationObj();
   }
 
   // -----------------------------------------------------------------------------------------------------
@@ -237,5 +240,14 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     
     viewAllFavouritesFiles(){
       this._router.navigateByUrl("dashboard/recent-favorites-files")
+    }
+
+    checkDesignationObj() {
+      this.divisionsRoles = this.authenticationService.getAuthData();
+      if (this.divisionsRoles.DivisionsRoles.length > 0) {
+         this.showAdminBool = false;
+        return;
+      }
+      this.showAdminBool = true;
     }
 }
