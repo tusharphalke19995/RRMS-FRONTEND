@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, ViewEncapsulation } from "@angular/core";
+import { Component, ViewChild, ViewEncapsulation } from "@angular/core";
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -8,7 +8,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
-import { MatDialogModule, MatDialogRef } from "@angular/material/dialog";
+import { MatDialog, MatDialogModule, MatDialogRef } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
@@ -16,6 +16,10 @@ import { MatSelectModule } from "@angular/material/select";
 import { TranslocoModule } from "@ngneat/transloco";
 import { SearchUserService } from "../search-userlist/searchUser.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatTableModule, MatTableDataSource } from "@angular/material/table";
+import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
+import { MatSort, MatSortModule } from "@angular/material/sort";
+import { AddMultiplesDivisionComponent } from "../add-multiples-division/add-multiples-division.component";
 
 @Component({
   selector: "app-add-update-user",
@@ -31,6 +35,9 @@ import { MatSnackBar } from "@angular/material/snack-bar";
     MatSelectModule,
     MatButtonModule,
     TranslocoModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatTableModule
   ],
   templateUrl: "./add-update-user.component.html",
   styleUrl: "./add-update-user.component.scss",
@@ -42,31 +49,56 @@ export class AddUpdateUserComponent {
   userRoleDropdown = [];
   divisionDropdown = [];
   designationsDropdown = [];
+  isLoading: boolean = false;
+  alert: { type: string; message: string };
+  @ViewChild("sort1") sort1: MatSort;
+  @ViewChild("paginator1") paginator1: MatPaginator;
+  dataSource: MatTableDataSource<any>;
+  columns: any[] = [
+    { labelen: "Role Name", labelhi: "Role Name", property: "roleId" },
+    {
+      labelen: "Division Name",
+      labelhi: "Division Name",
+      property: "divisionId",
+    },
+    {
+      labelen: "Designation Name",
+      labelhi: "Designation Name",
+      property: "designationId",
+    },
+
+  ];
+
+  displayedColumns: string[] = [
+    "divisionId",
+    "roleId",
+    "designationId",
+  ];
+  divisionInfo: any;
   constructor(
     private _searchUserService: SearchUserService,
     private _formBuilder: UntypedFormBuilder,
-    public dialogRef: MatDialogRef<AddUpdateUserComponent>,
-    private _snackBar: MatSnackBar
-  ) {}
+    private _snackBar: MatSnackBar,
+    public dialog: MatDialog
+  ) { }
 
   ngOnInit(): void {
     this.initiateForm();
     this.getUserRoleDropdown();
     this.getDivisionDropdown();
     this.getDesignationsData();
-    
+
   }
 
   initiateForm() {
     this.addUpdateUserForm = this._formBuilder.group({
       firstName: ["", Validators.required],
       lastName: ["", Validators.required],
-      divisionId:["",Validators.required],
+
       emailID: ["", [Validators.required, Validators.email]],
       kgid: ["", Validators.required],
       mobileNo: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
-      roleId: ["", Validators.required],
-      designationId:[""],
+
       password: [
         "",
         [
@@ -79,43 +111,37 @@ export class AddUpdateUserComponent {
     });
   }
 
-  onNoClose(): void {
-    this.dialogRef.close({ data: false });
-  }
-
-  reqRejected() {}
-
 
   getUserRoleDropdown() {
     this._searchUserService.getUserRole().subscribe({
       next: (response: any) => {
-        if(response){
-          this.userRoleDropdown= response;
+        if (response) {
+          this.userRoleDropdown = response;
         }
       },
-      error: (error) => {},
+      error: (error) => { },
     });
   }
 
   getDivisionDropdown() {
     this._searchUserService.getUserDivision().subscribe({
       next: (response: any) => {
-        if(response){
-          this.divisionDropdown= response;
+        if (response) {
+          this.divisionDropdown = response;
         }
       },
-      error: (error) => {},
+      error: (error) => { },
     });
   }
 
   getDesignationsData() {
     this._searchUserService.getDesignationsInfo().subscribe({
       next: (response: any) => {
-        if(response){
-          this.designationsDropdown= response;
+        if (response) {
+          this.designationsDropdown = response;
         }
       },
-      error: (error) => {},
+      error: (error) => { },
     });
   }
 
@@ -129,9 +155,12 @@ export class AddUpdateUserComponent {
         kgid: this.addUpdateUserForm.value.kgid,
         mobileno: this.addUpdateUserForm.value.mobileNo,
         password: this.addUpdateUserForm.value.password,
-        roleId: Number(this.addUpdateUserForm.value.roleId),
-        divisionId:this.addUpdateUserForm.value.divisionId,
-        designationId:this.addUpdateUserForm.value.designationId,
+        divisions_role: [{
+          roleId: this.divisionInfo.roleId,
+          divisionId: this.divisionInfo.divisionId,
+          designationId: this.divisionInfo.designationId
+        }]
+
       };
 
       this._searchUserService.createUser(data).subscribe({
@@ -142,7 +171,7 @@ export class AddUpdateUserComponent {
             verticalPosition: "top",
             panelClass: ["success-snackbar"],
           });
-          this.onNoClose();
+
         },
         error: (error) => {
           this._snackBar.open(error.message || "Error creating user", "Close", {
@@ -164,5 +193,29 @@ export class AddUpdateUserComponent {
    */
   trackByFn(index: number, item: any): any {
     return item.id || index;
+  }
+
+  addMultiplesDivision() {
+    const dialogRef = this.dialog.open(AddMultiplesDivisionComponent, {
+      // data: data,
+      width: "750px",
+    });
+    dialogRef.afterClosed().subscribe((result: any) => {
+
+      this.divisionInfo = result;
+      this.dataSource = new MatTableDataSource(this.divisionInfo);
+
+    });
+  }
+
+
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 }

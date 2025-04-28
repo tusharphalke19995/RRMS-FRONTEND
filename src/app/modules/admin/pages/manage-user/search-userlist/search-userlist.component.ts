@@ -30,7 +30,7 @@ import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSort, MatSortModule } from "@angular/material/sort";
 import { MatTableModule, MatTableDataSource } from "@angular/material/table";
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { TranslocoModule } from "@ngneat/transloco";
 import { Subject } from "rxjs";
 import { SearchDocService } from "../../search-document/searchDoc.service";
@@ -63,7 +63,7 @@ import { SearchUserService } from "./searchUser.service";
     MatButtonModule,
     MatTableModule,
     MatPaginatorModule,
-    MatSortModule,
+    MatSortModule
   ],
   templateUrl: "./search-userlist.component.html",
   styleUrl: "./search-userlist.component.scss",
@@ -169,7 +169,8 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     public dialog: MatDialog,
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: UntypedFormBuilder,
-    private _citizeninfoService: SearchDocService
+    private _citizeninfoService: SearchDocService,
+    private router:Router
   ) {}
 
   // -----------------------------------------------------------------------------------------------------
@@ -249,14 +250,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   }
 
   addNewUser(data) {
-    const dialogRef = this.dialog.open(AddUpdateUserComponent, {
-      data: data,
-      width: "1000px",
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      this._changeDetectorRef.detectChanges();
-      this.getUserInfo();
-    });
+    this.router.navigateByUrl('/manage-user/user-addUpdate')
   }
 
   applyFilter(event: Event) {
