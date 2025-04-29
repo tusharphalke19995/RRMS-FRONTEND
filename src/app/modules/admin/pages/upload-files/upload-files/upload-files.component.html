@@ -30,9 +30,10 @@
         <div class="flex items-center justify-between p-2">
           <div class="flex items-center">
             <mat-icon (click)="viewImage(file)" [disabled]="(file.metadata?.classification_name || file.classification_name) === 'Confidential' 
-            && (file.is_access_request_approved && authData.RoleName === 'User')" class="cursor-pointer" 
-              [ngClass]="{'text-green-500': file.metadata, 'text-gray-500': !file.metadata}" >{{ file.metadata ?
-              'check_circle' : 'insert_drive_file' }}</mat-icon>
+                        && (file.is_access_request_approved && getUserRoleName() === 'User')" class="cursor-pointer"
+              [ngClass]="{'text-green-500': file.metadata, 'text-gray-500': !file.metadata}">
+              {{ file.metadata ? 'check_circle' : 'insert_drive_file' }}
+            </mat-icon>
             <span class="ml-2">{{crimeNo}}_{{ file.name || file.fileName}}</span>
             <span class="ml-2 text-sm text-gray-500" *ngIf="checkGetFile">
               ({{ (file.size / 1024).toFixed(1) }} KB)
@@ -51,8 +52,7 @@
 
           </div>
           <div class="flex items-center">
-            <div *ngIf="(file.metadata?.classification_name || file.classification_name) === 'Confidential' 
-            && (!file.is_request_raised && !file.is_access_request_approved && authData.RoleName === 'User')" class=" text-center">
+            <div *ngIf="canRequestAccess(file)" class=" text-center">
               <button *transloco="let t" mat-flat-button [color]="'primary'" class="min-w-[90px]"
                 (click)="getAccessModalUser(file)">
                 <mat-icon class="icon-size-5 mr-2" [svgIcon]="'heroicons_solid:plus'"></mat-icon>
@@ -74,7 +74,8 @@
             <div class="grid grid-cols-2 gap-2 text-sm">
               <div *ngIf="file.metadata?.subject || file.subject"><strong>Subject:</strong> {{ file.metadata?.subject ||
                 file.subject }}</div>
-              <div *ngIf="file.metadata?.fileType || file.fileType"> <strong>Type:</strong>  {{ getFileTypeNameById(file.metadata?.fileType || file.fileType) }}</div>
+              <div *ngIf="file.metadata?.fileType || file.fileType"> <strong>Type:</strong> {{
+                getFileTypeNameById(file.metadata?.fileType || file.fileType) }}</div>
               <div *ngIf="file.metadata?.hashTag || file.hashTag" class="tags-container">
                 <strong>Tags:</strong>
                 <div class="custom-tag-list">
@@ -157,7 +158,8 @@
     </div>
 
     <div class="p-2">
-      <p> File/Document Name: <span class="font-semibold"> {{crimeNo}}_{{ fileToEdit?.name || fileToEdit.fileName}}</span></p>
+      <p> File/Document Name: <span class="font-semibold"> {{crimeNo}}_{{ fileToEdit?.name ||
+          fileToEdit.fileName}}</span></p>
     </div>
   </form>
   <div class="flex justify-end space-x-2 mt-6 pt-4 border-t py-4">
@@ -167,7 +169,7 @@
       Save Metadata
     </button>
     <button mat-raised-button color="primary" [disabled]="!metadataForm.valid" (click)="submitMetadata()"
-      *ngIf="(!checkGetFile && authData.RoleName != 'User')">
+      *ngIf="!checkGetFile && getUserRoleName() !== 'User'">
       Update Metadata
     </button>
 

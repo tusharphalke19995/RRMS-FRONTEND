@@ -34,7 +34,20 @@ import { SearchUserService } from '../search-userlist/searchUser.service';
 export class AddMultiplesDivisionComponent {
   addDivisionForm: UntypedFormGroup;
   hidePassword: boolean = true;
-  userRoleDropdown = [];
+  userRoleDropdown = [
+    {
+        roleId: 1,
+        roleName: "Admin"
+    },
+    {
+        roleId: 4,
+        roleName: "ContentManager"
+    },
+    {
+        roleId: 2,
+        roleName: "User"
+    }
+];
   divisionDropdown = [];
   designationsDropdown = [];
   constructor(
@@ -68,7 +81,8 @@ export class AddMultiplesDivisionComponent {
 
 
   getUserRoleDropdown() {
-    this._searchUserService.getUserRole().subscribe({
+    const divisionID = JSON.parse(sessionStorage.getItem('designationRoleId'));
+    this._searchUserService.getUserRole(divisionID).subscribe({
       next: (response: any) => {
         if(response){
           this.userRoleDropdown= response;
@@ -101,7 +115,7 @@ export class AddMultiplesDivisionComponent {
   }
 
 
-  userSave() {
+  addDivision() {
     if (this.addDivisionForm.valid) {
       const data = {
         roleId: Number(this.addDivisionForm.value.roleId),

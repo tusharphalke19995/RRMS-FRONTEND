@@ -293,7 +293,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       caseNo: this.searchDocumentForm.value.caseNo,
       caseDate: this.searchDocumentForm.value.caseDate,
       firNo: this.searchDocumentForm.value.firNo,
-      // division_id :JSON.parse(sessionStorage.getItem('divisionID'))
+      division_id :JSON.parse(sessionStorage.getItem('designationRoleId'))
     };
 
     this._searchDocService.getUploadDocMetaData(searchMetaData).subscribe({

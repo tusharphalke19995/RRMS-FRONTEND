@@ -257,7 +257,8 @@ export class SearchUserRoleComponent {
       }
 
       getUserRoleDropdown() {
-        this._searchUserService.getUserRole().subscribe({
+       const divisionID = JSON.parse(sessionStorage.getItem('designationRoleId'));
+        this._searchUserService.getUserRole(divisionID).subscribe({
           next: (response: any) => {
             if(response.statusCode==200){
                 this.userRoleDropdown= response.responseData;

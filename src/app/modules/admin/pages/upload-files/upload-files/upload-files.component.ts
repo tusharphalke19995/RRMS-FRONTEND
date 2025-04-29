@@ -160,11 +160,12 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   metadataForm: FormGroup;
   openFileModal: boolean;
   fileToEdit: FileWithMetadata | null = null;
-  maxFileSize = 50 * 1024 * 1024 * 1024;; // 50GB
+  maxFileSize = 50 * 1024 * 1024 * 1024;
   minFileSize = 100 * 1024; // 100KB
   checkGetFile: boolean;
   caseDetails: any[];
   authData: any;
+  divisions_roles: any;
   // canEdit: boolean = false;
   // canDelete: boolean = false;
 
@@ -181,7 +182,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   ) {
     this.authData = this.authenticationService.getAuthData();
     // this.checkPermissions();
-    console.log(" this.authData",  this.authData)
+    console.log(" this.authData", this.authData);
     this.metadataForm = this.fb.group({
       subject: ["", Validators.required],
       fileType: ["", Validators.required],
@@ -275,33 +276,33 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   private getFileValidationError(file: any): string | null {
-    const { allowedExtensions, maxFileSize, minFileSize } = this.fileRestrictions;
+    const { allowedExtensions, maxFileSize, minFileSize } =
+      this.fileRestrictions;
     const extension = file.extension.toLowerCase();
     const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2); // Size in MB
     const fileSizeGB = (file.size / (1024 * 1024 * 1024)).toFixed(2); // Size in GB
-  
+
     // Check if file type is allowed
     if (!allowedExtensions.includes(extension)) {
       return "Invalid file type.";
     }
-  
+
     // Check if file size is too small
     if (file.size < minFileSize) {
       return `File size is too small. Minimum size is ${
         minFileSize / (1024 * 1024)
       } MB. Current file size is ${fileSizeMB} MB.`;
     }
-  
+
     // Check if file size exceeds max allowed size
     if (file.size > maxFileSize) {
       return `File size is too large. Maximum size is ${
         maxFileSize / (1024 * 1024 * 1024)
       } GB. Current file size is ${fileSizeGB} GB.`;
     }
-  
-    return null; 
+
+    return null;
   }
-  
 
   get disableSaveButton() {
     return !this.selectedFiles;
@@ -350,7 +351,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     if (file) {
       this.metadataForm.patchValue(file);
     }
-    if(this.checkGetFile){
+    if (this.checkGetFile) {
       this.metadataForm.patchValue({
         subject: this.fileToEdit.name,
       });
@@ -591,12 +592,34 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   getFileTypeNameById(fileTypeId: number): string {
-    const type = this.fileTypesDropDown.find(t => t.fileTypeId === fileTypeId);
-    return type ? type.fileTypeName : 'Unknown';
+    const type = this.fileTypesDropDown.find(
+      (t) => t.fileTypeId === fileTypeId
+    );
+    return type ? type.fileTypeName : "Unknown";
   }
-  
+
   getFileClassificationNameById(classificationId: number): string {
-    const classification = this.fileClassificationDropDown.find(c => c.fileClassificationId === classificationId);
-    return classification ? classification.fileClassificationName : 'Unknown';
+    const classification = this.fileClassificationDropDown.find(
+      (c) => c.fileClassificationId === classificationId
+    );
+    return classification ? classification.fileClassificationName : "Unknown";
+  }
+
+  getUserRoleName(): string | null {
+    // this.divisions_roles = this.authData.divisions_roles;
+    const userRole = this.authData.divisions_roles.find(
+      (role) => role.role_name === "User"
+    );
+    return userRole ? userRole.role_name : null;
+  }
+
+  canRequestAccess(file: any): boolean {
+    return (
+      (file.metadata?.classification_name || file.classification_name) ===
+        "Confidential" &&
+      !file.is_request_raised &&
+      !file.is_access_request_approved &&
+      this.authData.RoleName === "User"
+    );
   }
 }

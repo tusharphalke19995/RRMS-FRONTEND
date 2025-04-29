@@ -281,7 +281,8 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   }
 
   getUserRoleDropdown() {
-    this._searchUserService.getUserRole().subscribe({
+    const divisionID = JSON.parse(sessionStorage.getItem('designationRoleId'));
+    this._searchUserService.getUserRole(divisionID).subscribe({
       next: (response: any) => {
         if (response) {
           this.userRoleDropdown = response;

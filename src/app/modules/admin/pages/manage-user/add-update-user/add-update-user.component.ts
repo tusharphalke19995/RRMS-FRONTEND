@@ -8,7 +8,11 @@ import {
   Validators,
 } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
-import { MatDialog, MatDialogModule, MatDialogRef } from "@angular/material/dialog";
+import {
+  MatDialog,
+  MatDialogModule,
+  MatDialogRef,
+} from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
@@ -20,6 +24,7 @@ import { MatTableModule, MatTableDataSource } from "@angular/material/table";
 import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { MatSort, MatSortModule } from "@angular/material/sort";
 import { AddMultiplesDivisionComponent } from "../add-multiples-division/add-multiples-division.component";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-add-update-user",
@@ -37,16 +42,29 @@ import { AddMultiplesDivisionComponent } from "../add-multiples-division/add-mul
     TranslocoModule,
     MatPaginatorModule,
     MatSortModule,
-    MatTableModule
+    MatTableModule,
   ],
   templateUrl: "./add-update-user.component.html",
   styleUrl: "./add-update-user.component.scss",
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class AddUpdateUserComponent {
   addUpdateUserForm: UntypedFormGroup;
   hidePassword: boolean = true;
-  userRoleDropdown = [];
+  userRoleDropdown = [
+    {
+        roleId: 1,
+        roleName: "Admin"
+    },
+    {
+        roleId: 4,
+        roleName: "ContentManager"
+    },
+    {
+        roleId: 2,
+        roleName: "User"
+    }
+];
   divisionDropdown = [];
   designationsDropdown = [];
   isLoading: boolean = false;
@@ -66,28 +84,23 @@ export class AddUpdateUserComponent {
       labelhi: "Designation Name",
       property: "designationId",
     },
-
   ];
 
-  displayedColumns: string[] = [
-    "divisionId",
-    "roleId",
-    "designationId",
-  ];
+  displayedColumns: string[] = ["divisionId", "roleId", "designationId"];
   divisionInfo: any;
   constructor(
+    private router:Router,
     private _searchUserService: SearchUserService,
     private _formBuilder: UntypedFormBuilder,
     private _snackBar: MatSnackBar,
     public dialog: MatDialog
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.initiateForm();
     this.getUserRoleDropdown();
     this.getDivisionDropdown();
     this.getDesignationsData();
-
   }
 
   initiateForm() {
@@ -111,15 +124,15 @@ export class AddUpdateUserComponent {
     });
   }
 
-
   getUserRoleDropdown() {
-    this._searchUserService.getUserRole().subscribe({
+    const divisionID = JSON.parse(sessionStorage.getItem("designationRoleId"));
+    this._searchUserService.getUserRole(divisionID).subscribe({
       next: (response: any) => {
         if (response) {
           this.userRoleDropdown = response;
         }
       },
-      error: (error) => { },
+      error: (error) => {},
     });
   }
 
@@ -130,7 +143,7 @@ export class AddUpdateUserComponent {
           this.divisionDropdown = response;
         }
       },
-      error: (error) => { },
+      error: (error) => {},
     });
   }
 
@@ -141,10 +154,9 @@ export class AddUpdateUserComponent {
           this.designationsDropdown = response;
         }
       },
-      error: (error) => { },
+      error: (error) => {},
     });
   }
-
 
   userSave() {
     if (this.addUpdateUserForm.valid) {
@@ -155,14 +167,12 @@ export class AddUpdateUserComponent {
         kgid: this.addUpdateUserForm.value.kgid,
         mobileno: this.addUpdateUserForm.value.mobileNo,
         password: this.addUpdateUserForm.value.password,
-        divisions_role: [{
-          roleId: this.divisionInfo.roleId,
-          divisionId: this.divisionInfo.divisionId,
-          designationId: this.divisionInfo.designationId
-        }]
-
+        divisions_roles: this.divisionInfo.map((entry) => ({
+          roleId: entry.roleId,
+          divisionId: entry.divisionId,
+          designationId: entry.designationId,
+        })),
       };
-
       this._searchUserService.createUser(data).subscribe({
         next: (response: any) => {
           this._snackBar.open("User created successfully", "Close", {
@@ -171,7 +181,7 @@ export class AddUpdateUserComponent {
             verticalPosition: "top",
             panelClass: ["success-snackbar"],
           });
-
+          this.router.navigateByUrl('manage-user');
         },
         error: (error) => {
           this._snackBar.open(error.message || "Error creating user", "Close", {
@@ -183,6 +193,25 @@ export class AddUpdateUserComponent {
         },
       });
     }
+  }
+
+  getRoleName(roleId: number): string {
+    const role = this.userRoleDropdown.find((role) => role.roleId === roleId);
+    return role ? role.roleName : "Unknown Role";
+  }
+
+  getDivisionName(divisionId: number): string {
+    const division = this.divisionDropdown.find(
+      (div) => div.divisionId === divisionId
+    );
+    return division ? division.divisionName : "Unknown Division";
+  }
+
+  getDesignationName(designationId: number): string {
+    const designation = this.designationsDropdown.find(
+      (des) => des.designationId === designationId
+    );
+    return designation ? designation.designationName : "Unknown Designation";
   }
 
   /**
@@ -197,19 +226,20 @@ export class AddUpdateUserComponent {
 
   addMultiplesDivision() {
     const dialogRef = this.dialog.open(AddMultiplesDivisionComponent, {
-      // data: data,
       width: "750px",
     });
-    dialogRef.afterClosed().subscribe((result: any[] | undefined) => {
-
-      this.divisionInfo = result;
-      console.log("  this.divisionInfo ",  this.divisionInfo )
-      this.dataSource = new MatTableDataSource(this.divisionInfo);
-
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result) {
+        // Check if result is an array of entries
+        if (Array.isArray(result)) {
+          this.divisionInfo = [...(this.divisionInfo || []), ...result]; // Append new entries
+        } else {
+          this.divisionInfo = [...(this.divisionInfo || []), result]; // Append single entry
+        }
+        this.dataSource = new MatTableDataSource(this.divisionInfo);
+      }
     });
   }
-
-
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;

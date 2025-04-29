@@ -91,7 +91,7 @@ export class GetDocComponent {
     private authenticationService:AuthService
   ) {
     this.authData = this.authenticationService.getAuthData();
-    this.checkPermissions();
+  
   }
 
   ngOnInit() {
@@ -169,13 +169,6 @@ export class GetDocComponent {
       });
   }
   
-  checkPermissions() {
-    const userPermissions = this.authData.Permission; 
-    console.log("userPermissions",userPermissions)
-    this.canEdit = userPermissions.includes("change_filedetails");
-    
-  }
-
   getFileClassificationInfo() {
     this._masterService.getFileClassification().subscribe({
       next: (response: any) => {

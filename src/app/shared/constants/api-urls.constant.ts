@@ -1,9 +1,9 @@
 import { environment } from "environments/environment";
 
 export const apiurls = {
-  createUser: `${environment.userApiUrl}users/create/`,  
+  createUser: `${environment.userApiUrl}users/create`,  
   getUsers: `${environment.userApiUrl}users/`,  
-  getRole: `${environment.userApiUrl}mdm/roles`,  
+  getRole: `${environment.userApiUrl}mdm/roles?division_id`,  
   getDivision: `${environment.userApiUrl}mdm/divisions`,
   getDistrictByStateId: `${environment.userApiUrl}mdm/districts/`,
   getState: `${environment.userApiUrl}mdm/states?division_id`,
@@ -19,7 +19,7 @@ export const apiurls = {
    getFilesLatest :`${environment.userApiUrl}casedata/files/latest`,
    casedataUpdate :`${environment.userApiUrl}casedata/update/`,
    favourite :`${environment.userApiUrl}casedata/files`,
-   getRolesMatser :`${environment.userApiUrl}mdm/roles`,
+   getRolesMatser :`${environment.userApiUrl}mdm/roles?division_id`,
    getDivisionsMaster :`${environment.userApiUrl}mdm/divisions`,
    getDesignationsMaster:`${environment.userApiUrl}mdm/designations`,
    saveRole:`${environment.userApiUrl}mdm/roles`,
