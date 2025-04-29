@@ -49,7 +49,7 @@ export const appRoutes: Route[] = [
             layout: 'empty'
         },
         children: [
-            {path: 'designation-role', loadChildren: () => import('app/modules/auth/designation-role/designation-role.routes')},
+            {path: 'division-selection', loadChildren: () => import('app/modules/auth/division-info/division-info.routes')},
             {path: 'sign-out', loadChildren: () => import('app/modules/auth/sign-out/sign-out.routes')},
             {path: 'unlock-session', loadChildren: () => import('app/modules/auth/unlock-session/unlock-session.routes')}
         ]

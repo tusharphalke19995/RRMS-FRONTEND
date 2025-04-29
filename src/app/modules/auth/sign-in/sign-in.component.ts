@@ -124,7 +124,7 @@ export class AuthSignInComponent implements OnInit {
     this.divisionsRoles = this._authService.getAuthData();
   
     if (this.divisionsRoles.DivisionsRoles.length > 0) {
-      this._router.navigateByUrl("/designation-role");
+      this._router.navigateByUrl("/division-selection");
       return;
     }
     

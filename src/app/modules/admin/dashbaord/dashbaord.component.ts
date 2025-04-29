@@ -250,4 +250,8 @@ export class DashbaordComponent implements OnInit, OnDestroy {
       }
       this.showAdminBool = true;
     }
+
+    goToDivision(){
+      this._router.navigateByUrl("division-selection");
+    }
 }

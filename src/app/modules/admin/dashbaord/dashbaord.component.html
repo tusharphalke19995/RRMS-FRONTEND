@@ -13,16 +13,30 @@
                         </div>
                         <div class="flex flex-col min-w-0 ml-4">
                             <ng-container *transloco="let t">
-                                <h3
-                                    class="text-xl md:text-2xl font-semibold tracking-tight leading-7 md:leading-snug truncate">
-                                    {{t('welcome-back')}}, {{authData.UserName}}! <span class="designation"> {{authData.DesignationName}}</span>
-                                </h3>
+                                <div class="space-y-1 md:space-y-2">
+                                    <h3 class="text-xl md:text-2xl font-semibold tracking-tight leading-7 md:leading-snug">
+                                      {{ t('welcome-back') }}, {{ authData.UserName }}!
+                                    </h3>
+                                
+                                    <p class="text-md md:text-lg text-gray-600">
+                                      <strong>Designation:</strong> {{ authData.DesignationName }}
+                                    </p>
+                                
+                                    <p class="text-md md:text-lg text-gray-600">
+                                      <strong>Role:</strong> {{ authData.RoleName }}
+                                    </p>
+
+                                    <p class="text-md md:text-lg text-gray-600">
+                                        <strong>Division:</strong> {{ authData.RoleName }}
+                                      </p>
+                                  </div>
                             </ng-container>
-                            <!-- <div class="flex items-center">
-                                <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:bell'"></mat-icon>
-                                <span class="ml-1.5 leading-6 truncate text-secondary">You have 2 new messages and 15 new tasks</span>
-                            </div> -->
+                          
                         </div>
+                    </div>
+                    <div class="flex items-center cursor-pointer" (click)="goToDivision()">
+                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
+                        <span class="ml-1.1 leading-6 truncate text-primary">Click Here to Change Division</span>
                     </div>
                 </div>
             </div>

@@ -25,15 +25,15 @@
     
                     <!-- Email field -->
                     <mat-form-field appearance="outline" class="w-full">
-                        <mat-label *transloco="let t" class="font-medium">{{t('role')}}</mat-label>
-                        <mat-select [formControlName]="'designationRoleId'"
+                        <mat-label *transloco="let t" class="font-medium">{{t('division')}}</mat-label>
+                        <mat-select [formControlName]="'divisionId'"
                             (selectionChange)="onStateChange($event.value)">
                             <mat-option [value]="null">Please Select</mat-option>
                             <ng-container *ngFor="let data of divisionsRoles.DivisionsRoles; trackBy: trackByFn">
                                 <mat-option [value]="data.division_id">{{data.division_name}}</mat-option>
                             </ng-container>
                         </mat-select>
-                        <mat-error *ngIf="designationRoleForm.get('designationRoleId').hasError('required')">
+                        <mat-error *ngIf="designationRoleForm.get('divisionId').hasError('required')">
                             Required
                         </mat-error>
                     </mat-form-field>

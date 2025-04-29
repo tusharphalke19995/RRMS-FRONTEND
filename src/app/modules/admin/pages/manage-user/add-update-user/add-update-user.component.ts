@@ -200,9 +200,10 @@ export class AddUpdateUserComponent {
       // data: data,
       width: "750px",
     });
-    dialogRef.afterClosed().subscribe((result: any) => {
+    dialogRef.afterClosed().subscribe((result: any[] | undefined) => {
 
       this.divisionInfo = result;
+      console.log("  this.divisionInfo ",  this.divisionInfo )
       this.dataSource = new MatTableDataSource(this.divisionInfo);
 
     });

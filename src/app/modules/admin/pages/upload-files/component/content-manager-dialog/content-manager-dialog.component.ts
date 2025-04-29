@@ -54,7 +54,7 @@ onCancel(): void {
 
 getFileAccess() {
  const payload= {
-	division_id:sessionStorage.getItem("designationRoleId"),
+	division_id:sessionStorage.getItem("divisionID"),
 	role_id:4 
 }
   this._uploadDocumentService.getCmoradmins(payload,).subscribe({

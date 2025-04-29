@@ -8,192 +8,209 @@ $shadow-color: rgba(0, 0, 0, 0.1); // Shadow color
 $border-radius: 12px; // Common border radius
 
 @keyframes backgroundAnimation {
-    0% {
-        background-color: $card-background; // Initial background color
-    }
-    50% {
-        background-color: lighten($card-background, 5%); // Lighten the background color
-    }
-    100% {
-        background-color: $card-background; // Return to original color
-    }
+  0% {
+    background-color: $card-background; // Initial background color
+  }
+  50% {
+    background-color: lighten(
+      $card-background,
+      5%
+    ); // Lighten the background color
+  }
+  100% {
+    background-color: $card-background; // Return to original color
+  }
 }
 
 .bg-card {
-    background-color: $card-background; // Card background color
-    border-radius: $border-radius; // Rounded corners
-    box-shadow: 0 4px 8px $shadow-color; // Subtle shadow
-    padding: 1.5rem; // General padding for card content
-    transition: box-shadow 0.3s ease, transform 0.3s ease; // Smooth transition for shadow and scale
-    animation: backgroundAnimation 1s ease-in-out; // Apply background animation
-    &:hover {
-        box-shadow: 0 6px 12px $shadow-color; // Darker shadow on hover
-        transform: translateY(-2px); // Lift effect on hover
-        animation: backgroundAnimation 1s ease-in-out; // Reapply animation on hover
-    }
+  background-color: $card-background; // Card background color
+  border-radius: $border-radius; // Rounded corners
+  box-shadow: 0 4px 8px $shadow-color; // Subtle shadow
+  padding: 1.5rem; // General padding for card content
+  transition: box-shadow 0.3s ease, transform 0.3s ease; // Smooth transition for shadow and scale
+  animation: backgroundAnimation 1s ease-in-out; // Apply background animation
+  &:hover {
+    box-shadow: 0 6px 12px $shadow-color; // Darker shadow on hover
+    transform: translateY(-2px); // Lift effect on hover
+    animation: backgroundAnimation 1s ease-in-out; // Reapply animation on hover
+  }
 }
 
 .flex-auto {
-    flex: 1 1 auto; // Allow flex items to grow and shrink
+  flex: 1 1 auto; // Allow flex items to grow and shrink
 }
 
 .text-secondary {
-    color: $secondary-color; // Use secondary color for text
+  color: $secondary-color; // Use secondary color for text
 }
 
 .icon-size-5 {
-    width: 24px; // Set icon size
-    height: 24px;
+  width: 24px; // Set icon size
+  height: 24px;
 }
 
-h1, h2 {
-    margin: 0; // Remove default margin
+h1,
+h2 {
+  margin: 0; // Remove default margin
 }
 
 .text-lg {
-    font-size: 1.125rem; // Adjust font size for large text
+  font-size: 1.125rem; // Adjust font size for large text
 }
 
 .text-7xl {
-    font-size: 4.5rem; // Adjust font size for extra large text
+  font-size: 4.5rem; // Adjust font size for extra large text
 }
 
 @media (max-width: 640px) {
-    .text-7xl {
-        font-size: 3rem; // Responsive font size for smaller screens
-    }
+  .text-7xl {
+    font-size: 3rem; // Responsive font size for smaller screens
+  }
 }
 
 .favorite-card {
-    background-color: $favorite-card-background; // Initial background for favorite cards
-    transition: background-color 0.3s ease; // Smooth transition for hover effects
-    padding: 1rem; // Padding for favorite cards
-    margin-bottom: 1rem; // Space between favorite cards
-    animation: backgroundAnimation 1s ease-in-out; // Apply background animation
-    &:hover {
-        background-color: $hover-color; // Light blue background on hover
-        animation: backgroundAnimation 1s ease-in-out; // Reapply animation on hover
-    }
+  background-color: $favorite-card-background; // Initial background for favorite cards
+  transition: background-color 0.3s ease; // Smooth transition for hover effects
+  padding: 1rem; // Padding for favorite cards
+  margin-bottom: 1rem; // Space between favorite cards
+  animation: backgroundAnimation 1s ease-in-out; // Apply background animation
+  &:hover {
+    background-color: $hover-color; // Light blue background on hover
+    animation: backgroundAnimation 1s ease-in-out; // Reapply animation on hover
+  }
 }
 
 .latest-file-card {
-    background-color: $latest-file-card-background; // Initial background for latest files
-    transition: background-color 0.3s ease; // Smooth transition for hover effects
-    padding: 1rem; // Padding for latest file cards
-    margin-bottom: 1rem; // Space between latest file cards
-    &:hover {
-        background-color: $hover-color; // Light blue background on hover
-        animation: backgroundAnimation 1s ease-in-out; // Reapply animation on hover
-    }
+  background-color: $latest-file-card-background; // Initial background for latest files
+  transition: background-color 0.3s ease; // Smooth transition for hover effects
+  padding: 1rem; // Padding for latest file cards
+  margin-bottom: 1rem; // Space between latest file cards
+  &:hover {
+    background-color: $hover-color; // Light blue background on hover
+    animation: backgroundAnimation 1s ease-in-out; // Reapply animation on hover
+  }
 }
 
 .file-info {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.5rem 0; // Padding for file info section
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0; // Padding for file info section
 }
 
 .file-name {
-    display: flex;
-    align-items: center;
-    font-weight: 500;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
 }
 
 .hash-tags {
-    margin-top: 0.5rem; // Space above hash tags
+  margin-top: 0.5rem; // Space above hash tags
 }
 
 .view-all-button-container {
-    margin-top: 1rem; // Space above the view all button
-    display: flex;
-    justify-content: flex-end;
+  margin-top: 1rem; // Space above the view all button
+  display: flex;
+  justify-content: flex-end;
 }
 
 .mat-icon {
-    cursor: pointer;
-    transition: color 0.3s ease; // Smooth transition for icon color
+  cursor: pointer;
+  transition: color 0.3s ease; // Smooth transition for icon color
 }
 
 .text-yellow-500 {
-    color: #fbbf24; // Yellow color for favorite icon
+  color: #fbbf24; // Yellow color for favorite icon
 }
 
 .text-gray-500 {
-    color: #6b7280; // Gray color for non-favorite icon
+  color: #6b7280; // Gray color for non-favorite icon
 }
 
 .text-blue-600 {
-    color: #2563eb; // Blue color for links
+  color: #2563eb; // Blue color for links
 }
 
 .text-red-500 {
-    color: #ef4444; // Red color for notifications
+  color: #ef4444; // Red color for notifications
 }
 
 .text-amber-500 {
-    color: #f59e0b; // Amber color for alerts
+  color: #f59e0b; // Amber color for alerts
 }
 
 // Responsive adjustments
 @media (min-width: 640px) {
-    .bg-card {
-        padding: 2rem; // Increased padding on larger screens
-    }
+  .bg-card {
+    padding: 2rem; // Increased padding on larger screens
+  }
 
-    .favorite-card {
-        padding: 1rem; // Padding for favorite cards
-    }
+  .favorite-card {
+    padding: 1rem; // Padding for favorite cards
+  }
 }
 
 // Additional styles for buttons
 button.mat-button {
-    padding: 0.5rem 1rem; // Padding for buttons
-    border-radius: $border-radius; // Rounded corners for buttons
-    transition: background-color 0.3s ease; // Smooth transition for button background
-    &:hover {
-        background-color: rgba(59, 130, 246, 0.1); // Light blue background on button hover
-    }
+  padding: 0.5rem 1rem; // Padding for buttons
+  border-radius: $border-radius; // Rounded corners for buttons
+  transition: background-color 0.3s ease; // Smooth transition for button background
+  &:hover {
+    background-color: rgba(
+      59,
+      130,
+      246,
+      0.1
+    ); // Light blue background on button hover
+  }
 }
 
 // Styles for loading indicators
 .loading-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
 // Styles for notifications and messages
-.notification-card, .message-card {
-    padding: 1rem;
-    border-radius: $border-radius;
-    background-color: $card-background;
-    box-shadow: 0 2px 4px $shadow-color;
-    margin-bottom: 1rem;
-    transition: transform 0.2s ease;
-    &:hover {
-        transform: scale(1.02); // Slightly enlarge on hover
-    }
+.notification-card,
+.message-card {
+  padding: 1rem;
+  border-radius: $border-radius;
+  background-color: $card-background;
+  box-shadow: 0 2px 4px $shadow-color;
+  margin-bottom: 1rem;
+  transition: transform 0.2s ease;
+  &:hover {
+    transform: scale(1.02); // Slightly enlarge on hover
+  }
 }
 
-.noDataImg{
-    width: 25rem !important;
-    height: 21rem !important;
-    margin-right: 5rem !important;
+.noDataImg {
+  width: 25rem !important;
+  height: 21rem !important;
+  margin-right: 5rem !important;
 }
 
-  
-    .designation {
-      font-size: 1.125rem;
-      color: #3b82f6; // Lighter color for the designation text
-      font-weight: 500;
-      text-transform: capitalize; // capitalize designation name (e.g., Manager -> Manager)
-    }
-  
+.designation {
+  font-size: 1.125rem;
+  color: #3b82f6; // Lighter color for the designation text
+  color: #3b82f6;
+  font-weight: 500;
+  text-transform: capitalize; // capitalize designation name (e.g., Manager -> Manager)
+  text-transform: capitalize;
+}
+
+.roleName {
+  font-size: 0.899rem;
+  color: #0c4eb7;
+  font-weight: 500;
+  text-transform: capitalize;
+}

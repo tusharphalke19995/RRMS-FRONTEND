@@ -108,7 +108,7 @@ export class AddMultiplesDivisionComponent {
         divisionId:this.addDivisionForm.value.divisionId,
         designationId:this.addDivisionForm.value.designationId,
       };
-      this.dialogRef.close(data);
+      this.dialogRef.close(this.addDivisionForm.value);
     }
   }
 

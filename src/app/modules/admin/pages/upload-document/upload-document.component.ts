@@ -198,7 +198,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   filterDropDownData(event) {}
 
   getUserDistrictDropdown() {
-    const divisionId =JSON.parse(sessionStorage.getItem("designationRoleId"));
+    const divisionId =JSON.parse(sessionStorage.getItem("divisionID"));
     this._uploadDocumentService.geDistrictByStateData(16,divisionId).subscribe({
       next: (response: any) => {
         console.log("response", response);
@@ -209,7 +209,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }
 
   getUserStateDropdown() {
-    const divisionId =JSON.parse(sessionStorage.getItem('designationRoleId'));
+    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
 
     this._uploadDocumentService.getState(divisionId).subscribe({
       next: (response: any) => {
@@ -232,7 +232,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   onStateChange(stateId: number): void {
     this.generateCrimeNo();
     if (stateId) {
-      const divisionId =JSON.parse(sessionStorage.getItem("designationRoleId"));
+      const divisionId =JSON.parse(sessionStorage.getItem("divisionID"));
       this._uploadDocumentService.geDistrictByStateData(stateId,divisionId).subscribe(
         (districts: any) => {
           this.districtDropdown = districts.responseData;
@@ -248,7 +248,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }
 
   onDisctrictChange(stateId: number): void {
-    const divisionId =JSON.parse(sessionStorage.getItem('designationRoleId'));
+    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
     this._uploadDocumentService.getUnitsByDistictIdData(stateId,divisionId).subscribe({
       next: (response: any) => {
         if (response.statusCode == 200) {
@@ -289,7 +289,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
 
     this.selectedFiles.forEach((file) => {
     formData.append(`Files`, file); 
-    formData.append(`division_id`, sessionStorage.getItem('designationRoleId')); 
+    formData.append(`division_id`, sessionStorage.getItem('divisionID')); 
   });
     this._uploadDocumentService.uploadDocument(formData).subscribe({
       next: (response: any) => {

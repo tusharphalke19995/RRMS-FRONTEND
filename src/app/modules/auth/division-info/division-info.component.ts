@@ -22,8 +22,8 @@ import { TranslocoModule } from "@ngneat/transloco";
 import { AuthService } from "app/core/auth/auth.service";
 
 @Component({
-  selector: "auth-designation-role",
-  templateUrl: "./designation-role.component.html",
+  selector: "auth-division-info",
+  templateUrl: "./division-info.component.html",
   encapsulation: ViewEncapsulation.None,
   animations: fuseAnimations,
   standalone: true,
@@ -45,7 +45,7 @@ import { AuthService } from "app/core/auth/auth.service";
     CommonModule
   ],
 })
-export class DesignationRoleComponent implements OnInit {
+export class DivisionInfoComponent implements OnInit {
   alert: { type: FuseAlertType; message: string } = {
     type: "success",
     message: "",
@@ -73,16 +73,15 @@ export class DesignationRoleComponent implements OnInit {
   ngOnInit(): void {
     // Create the form
     this.designationRoleForm = this._formBuilder.group({
-      designationRoleId: ["", [Validators.required]]
+      divisionId: ["", [Validators.required]]
     });
     this.divisionsRoles = this._authService.getAuthData();
-    console.log("finalDesignationRoleInfo",this.divisionsRoles.DivisionsRoles)
   }
 
 
 onStateChange(data:any)
 {
- sessionStorage.setItem('designationRoleId', data)
+ sessionStorage.setItem('divisionID', data)
 }
 
 goToDashbaord(){
