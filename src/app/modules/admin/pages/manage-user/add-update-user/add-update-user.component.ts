@@ -125,7 +125,7 @@ export class AddUpdateUserComponent {
   }
 
   getUserRoleDropdown() {
-    const divisionID = JSON.parse(sessionStorage.getItem("designationRoleId"));
+    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
     this._searchUserService.getUserRole(divisionID).subscribe({
       next: (response: any) => {
         if (response) {

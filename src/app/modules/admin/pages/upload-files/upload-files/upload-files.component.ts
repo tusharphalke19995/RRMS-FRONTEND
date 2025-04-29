@@ -165,7 +165,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   checkGetFile: boolean;
   caseDetails: any[];
   authData: any;
-  divisions_roles: any;
+  DivisionsRoles: any;
   // canEdit: boolean = false;
   // canDelete: boolean = false;
 
@@ -181,8 +181,6 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     private _uploadDocumentService: UploadDocumentService
   ) {
     this.authData = this.authenticationService.getAuthData();
-    // this.checkPermissions();
-    console.log(" this.authData", this.authData);
     this.metadataForm = this.fb.group({
       subject: ["", Validators.required],
       fileType: ["", Validators.required],
@@ -460,7 +458,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       this.loadingVisible = true;
 
       setTimeout(() => {
-        console.log("Files uploaded:", this.selectedFiles);
+        // console.log("Files uploaded:", this.selectedFiles);
         this.loadingVisible = false;
         this.selectedFiles = [];
         this.formGroup.reset();
@@ -471,7 +469,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   getFilesCheck() {
     this.dataService.getFileBoolean().subscribe((res) => {
       this.checkGetFile = res;
-      console.log("checkGetFile", this.checkGetFile);
+      // console.log("checkGetFile", this.checkGetFile);
     });
   }
 
@@ -505,7 +503,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   // }
 
   toggleFavourite(file: any) {
-    console.log("is_favourited", file.is_favourited);
+    // console.log("is_favourited", file.is_favourited);
     if (file.is_favourited) {
       this.markUnFavourite(file);
     } else {
@@ -592,34 +590,50 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   getFileTypeNameById(fileTypeId: number): string {
-    const type = this.fileTypesDropDown.find(
+    const type = this.fileTypesDropDown?.find(
       (t) => t.fileTypeId === fileTypeId
     );
     return type ? type.fileTypeName : "Unknown";
   }
 
   getFileClassificationNameById(classificationId: number): string {
-    const classification = this.fileClassificationDropDown.find(
+    const classification = this.fileClassificationDropDown?.find(
       (c) => c.fileClassificationId === classificationId
     );
     return classification ? classification.fileClassificationName : "Unknown";
   }
 
   getUserRoleName(): string | null {
-    // this.divisions_roles = this.authData.divisions_roles;
-    const userRole = this.authData.divisions_roles.find(
+    const userRole = this.authData.DivisionsRoles.find(
       (role) => role.role_name === "User"
     );
+    console.log("userRole",userRole)
     return userRole ? userRole.role_name : null;
   }
 
   canRequestAccess(file: any): boolean {
+    console.log("canRequestAccess",file)
+    const userRole = this.authData.DivisionsRoles.find(
+      (role) => role.role_name === "User"
+    );
     return (
       (file.metadata?.classification_name || file.classification_name) ===
         "Confidential" &&
       !file.is_request_raised &&
       !file.is_access_request_approved &&
-      this.authData.RoleName === "User"
+      userRole.role_name === "User"
     );
+  }
+
+  hasRole(...roles: string[]): boolean {
+    return this.authData.DivisionsRoles.some(role =>
+      roles.includes(role.role_name)
+    );
+  }
+
+  isRestrictedToView(file: any): boolean {
+    const classification = file.metadata?.classification_name || file.classification_name;
+    const role = this.getUserRoleName();
+    return classification === 'Confidential' && role === 'User' && !file.is_access_request_approved;
   }
 }

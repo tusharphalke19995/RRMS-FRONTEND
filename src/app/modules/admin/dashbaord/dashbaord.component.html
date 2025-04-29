@@ -13,24 +13,25 @@
                         </div>
                         <div class="flex flex-col min-w-0 ml-4">
                             <ng-container *transloco="let t">
-                                <div class="space-y-1 md:space-y-2">
-                                    <h3 class="text-xl md:text-2xl font-semibold tracking-tight leading-7 md:leading-snug">
-                                      {{ t('welcome-back') }}, {{ authData.UserName }}!
-                                    </h3>
-                                
-                                    <p class="text-md md:text-lg text-gray-600">
-                                      <strong>Designation:</strong> {{ authData.DesignationName }}
-                                    </p>
-                                
-                                    <p class="text-md md:text-lg text-gray-600">
-                                      <strong>Role:</strong> {{ authData.RoleName }}
-                                    </p>
-
-                                    <p class="text-md md:text-lg text-gray-600">
-                                        <strong>Division:</strong> {{ authData.RoleName }}
-                                      </p>
-                                  </div>
-                            </ng-container>
+                                <div class="space-y-1 md:space-y-2" *ngIf="getDivisionRoleData() as roleData">
+                                  <h3 class="text-xl md:text-2xl font-semibold tracking-tight leading-7 md:leading-snug">
+                                    {{ t('welcome-back') }}, {{ authData.UserName }}!
+                                  </h3>
+                              
+                                  <p class="text-md md:text-lg text-gray-600">
+                                    <strong>Designation:</strong> {{ roleData.designation_name }}
+                                  </p>
+                              
+                                  <p class="text-md md:text-lg text-gray-600">
+                                    <strong>Role:</strong> {{ roleData.role_name }}
+                                  </p>
+                              
+                                  <p class="text-md md:text-lg text-gray-600">
+                                    <strong>Division:</strong> {{ roleData.division_name }}
+                                  </p>
+                                </div>
+                              </ng-container>
+                              
                           
                         </div>
                     </div>

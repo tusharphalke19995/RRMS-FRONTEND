@@ -29,11 +29,14 @@
       <div *ngFor="let file of selectedFiles; let i = index" class="file-item">
         <div class="flex items-center justify-between p-2">
           <div class="flex items-center">
-            <mat-icon (click)="viewImage(file)" [disabled]="(file.metadata?.classification_name || file.classification_name) === 'Confidential' 
-                        && (file.is_access_request_approved && getUserRoleName() === 'User')" class="cursor-pointer"
-              [ngClass]="{'text-green-500': file.metadata, 'text-gray-500': !file.metadata}">
-              {{ file.metadata ? 'check_circle' : 'insert_drive_file' }}
-            </mat-icon>
+            <mat-icon
+            (click)="!isRestrictedToView(file) && viewImage(file)"
+            [ngClass]="{
+              'cursor-pointer text-green-500': file.metadata && !isRestrictedToView(file),
+              'cursor-not-allowed text-gray-500': isRestrictedToView(file)
+            }">
+            {{ file.metadata ? 'check_circle' : 'insert_drive_file' }}
+          </mat-icon>
             <span class="ml-2">{{crimeNo}}_{{ file.name || file.fileName}}</span>
             <span class="ml-2 text-sm text-gray-500" *ngIf="checkGetFile">
               ({{ (file.size / 1024).toFixed(1) }} KB)
@@ -169,7 +172,7 @@
       Save Metadata
     </button>
     <button mat-raised-button color="primary" [disabled]="!metadataForm.valid" (click)="submitMetadata()"
-      *ngIf="!checkGetFile && getUserRoleName() !== 'User'">
+    *ngIf="!checkGetFile && hasRole('ContentManager', 'admin')">
       Update Metadata
     </button>
 

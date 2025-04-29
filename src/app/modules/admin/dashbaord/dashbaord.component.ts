@@ -69,6 +69,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   finalDataCaseReqPending: any;
   divisionsRoles: any;
   showAdminBool:boolean
+  divisionID: string;
   /**
    * Constructor
    */
@@ -82,6 +83,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
         private sharedService:SharedService
   ) {
     this.authData = this.authenticationService.getAuthData();
+    this.divisionID = sessionStorage.getItem("divisionID")
     this.checkDesignationObj();
   }
 
@@ -98,6 +100,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     this.getCurrentData();
     this.getNotificationsCount();
     this.getContentManagerReqForWkFlow();
+    this.getDivisionRoleData();
   }
 
   /**
@@ -253,5 +256,10 @@ export class DashbaordComponent implements OnInit, OnDestroy {
 
     goToDivision(){
       this._router.navigateByUrl("division-selection");
+    }
+
+    getDivisionRoleData(): any | null {
+      const divisionId = Number(sessionStorage.getItem('divisionID'));
+      return this.authData?.DivisionsRoles?.find(role => role.division_id === divisionId) || null;
     }
 }
