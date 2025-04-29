@@ -105,16 +105,25 @@ createRole(data) {
       .pipe(catchError(this.handleError));
   }
 
-  getDivision() {
-    return this._httpClient
-      .get(apiurls.getDivisionsMaster)
-      .pipe(catchError(this.handleError));
+  getDivision(id:number) {
+   
+      const url = `${apiurls.getDivisionsMaster}=${id}`; 
+      return this._httpClient.get(url, {
+          headers: new HttpHeaders({
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+          })
+      }).pipe(catchError(this.handleError));
   }
 
-  getDesignationsInfo() {
-    return this._httpClient
-      .get(apiurls.getDesignationsMaster)
-      .pipe(catchError(this.handleError));
+  getDesignationsInfo(id:number) {
+      const url = `${apiurls.getDesignationsMaster}=${id}`; 
+      return this._httpClient.get(url, {
+          headers: new HttpHeaders({
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+          })
+      }).pipe(catchError(this.handleError));
   }
 
 

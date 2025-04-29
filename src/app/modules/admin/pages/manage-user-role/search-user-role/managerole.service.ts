@@ -48,18 +48,27 @@ export class ManageroleService {
       .pipe(catchError(this.handleError));
   }
 
-  getUserDivision() {
-    return this._httpClient
-      .get(apiurls.getDivision)
-      .pipe(catchError(this.handleError));
-  }
+ 
+  getDivision(id:number) {
+   
+    const url = `${apiurls.getDivisionsMaster}=${id}`; 
+    return this._httpClient.get(url, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
 
-  getDesignationsInfo() {
-    return this._httpClient
-      .get(apiurls.getDesignations)
-      .pipe(catchError(this.handleError));
-  }
-
+getDesignationsInfo(id:number) {
+    const url = `${apiurls.getDesignationsMaster}=${id}`; 
+    return this._httpClient.get(url, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
 
   /**
    * The error handler.

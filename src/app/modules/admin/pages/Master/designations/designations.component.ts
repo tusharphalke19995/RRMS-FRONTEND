@@ -196,7 +196,8 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
   }
 
   getDesignationInfo() {
-    this._searchUserService.getDesignationsInfo().subscribe({
+    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
+    this._searchUserService.getDesignationsInfo(divisionId).subscribe({
       next: (response: any) => {
         console.log("response", response);
         this.dataSource = new MatTableDataSource(response);

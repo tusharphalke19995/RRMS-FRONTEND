@@ -293,7 +293,8 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   }
 
   getDivisionDropdown() {
-    this._searchUserService.getUserDivision().subscribe({
+    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
+    this._searchUserService.getDivision(divisionId).subscribe({
       next: (response: any) => {
         if (response) {
           this.divisionDropdown = response;
@@ -304,7 +305,8 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   }
 
   getDesignationsDropDownData() {
-    this._searchUserService.getDesignationsInfo().subscribe({
+    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
+    this._searchUserService.getDesignationsInfo(divisionId).subscribe({
       next: (response: any) => {
         if (response) {
           this.designationsDropdown = response;

@@ -96,7 +96,8 @@ import { ManageroleService } from "../search-user-role/managerole.service";
     }
 
     getDivisionDropdown() {
-      this._manageroleService.getUserDivision().subscribe({
+    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
+      this._manageroleService.getDivision(divisionId).subscribe({
         next: (response: any) => {
           if(response.statusCode==200){
             this.divisionDropdown= response.responseData;
@@ -107,7 +108,8 @@ import { ManageroleService } from "../search-user-role/managerole.service";
     }
 
     getDesignationsDropDown() {
-      this._manageroleService.getDesignationsInfo().subscribe({
+    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
+      this._manageroleService.getDesignationsInfo(divisionId).subscribe({
         next: (response: any) => {
           if(response.statusCode==200){
             this.designationsDropdown= response.responseData;

@@ -171,7 +171,8 @@ export class DivisionComponent implements OnInit, AfterViewInit {
   }
 
   getDivisionInfo() {
-    this._masterService.getDivision().subscribe({
+    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
+    this._masterService.getDivision(divisionId).subscribe({
       next: (response: any) => {
         console.log("response", response);
         this.dataSource = new MatTableDataSource(response);
