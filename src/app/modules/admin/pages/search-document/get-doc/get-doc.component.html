@@ -115,6 +115,24 @@
           {{t('Update')}}
         </button>
       </div>
+
+      <div class="flex justify-center mt-4" *ngIf="fileToView">
+        <a [href]="fileToView.url" download class="text-blue-600 hover:underline" target="_blank">
+          <mat-icon>download</mat-icon> Download
+        </a>
+      </div>
+
+      <div class="document-viewer-container" *ngIf="fileToView">
+        <img *ngIf="isImage(fileToView)" [src]="fileToView.url" class="document-image" alt="Document Image" />
+        <ng-container *ngIf="isPdf(fileToView)">
+          <iframe
+            class="document-pdf"
+            [src]="fileToView.url | safeUrl"
+            frameborder="0"
+            allowfullscreen>
+          </iframe>
+        </ng-container>
+      </div>
     </div>
   </div>
 </div>

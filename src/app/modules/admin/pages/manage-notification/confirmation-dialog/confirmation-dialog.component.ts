@@ -63,8 +63,9 @@ onDenied(): void {
   const remarksControl = this.manageNotificationConfirmation.get('remarks');
   remarksControl?.setValidators([Validators.required]);
   remarksControl?.updateValueAndValidity();
+  const divisionID = JSON.parse(sessionStorage.getItem('divisionID'));
   if (this.manageNotificationConfirmation.valid) {
-   this.notificationService.approveNotification(this.data.file.fileId).subscribe({
+   this.notificationService.approveNotification(this.data.file.fileId,divisionID).subscribe({
     next: (response: any) => {
       this._snackBar.open("Request Approved successfully", "Close", {
         duration: 3000,
@@ -93,7 +94,8 @@ onApprove(): void {
   const remarksControl = this.manageNotificationConfirmation.get('remarks');
   remarksControl?.clearValidators();
   remarksControl?.updateValueAndValidity();
-  this.notificationService.approveNotification(this.data.file.fileId).subscribe({
+  const divisionID = JSON.parse(sessionStorage.getItem('divisionID'));
+  this.notificationService.approveNotification(this.data.file.fileId,divisionID).subscribe({
     next: (response: any) => {
       this._snackBar.open("Request Approved successfully", "Close", {
         duration: 3000,

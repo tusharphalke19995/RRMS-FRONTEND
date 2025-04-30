@@ -287,10 +287,16 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     }));
     formData.append("fileDetails", JSON.stringify(fileDetailsArray));
 
+    // this.selectedFiles.forEach((file) => {
+    // formData.append(`Files`, file); 
+    // formData.append(`division_id`, sessionStorage.getItem('divisionID')); 
+
     this.selectedFiles.forEach((file) => {
-    formData.append(`Files`, file); 
-    formData.append(`division_id`, sessionStorage.getItem('divisionID')); 
-  });
+      const newFileName = this.uploadDocumentForm.value.caseNo + '_' + (file.name);
+      const newFile = new File([file], newFileName, { type: file.type });
+      formData.append('Files', newFile);
+      formData.append('division_id', sessionStorage.getItem('divisionID'));
+    });
     this._uploadDocumentService.uploadDocument(formData).subscribe({
       next: (response: any) => {
         this._snackBar.open("File Upload successfully", "Close", {

@@ -81,6 +81,7 @@ export class GetDocComponent {
   fileClassificationDropDown: [];
   fileTypesDropDown: [];
 
+  fileToView: any = null;
 
   constructor(
     private dataService: SharedService,
@@ -186,4 +187,16 @@ export class GetDocComponent {
         error: (error) => {},
       });
     } 
+
+  isImage(file: any): boolean {
+    return file && file.type && file.type.startsWith('image/');
+  }
+
+  isPdf(file: any): boolean {
+    return file && file.type === 'application/pdf';
+  }
+
+  viewFile(file: any) {
+    this.fileToView = file;
+  }
 }

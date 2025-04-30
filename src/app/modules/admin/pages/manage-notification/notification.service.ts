@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiurls } from 'app/shared/constants/api-urls.constant';
 import { ErrorResponseModel } from 'app/shared/models/error-model';
@@ -25,14 +25,19 @@ export class NotificationService
       .pipe(catchError(this.handleError));
   }
 
-  approveNotification(fileId: number) {
-    const url = `${apiurls.approveFiles}/${fileId}`;
-    return this.commonApiCallService.post(url, {});
-  }
-
-
-
+  approveNotification(
+    fileId: number,
+    divisionId:number
+  ) {
+    const url = `${apiurls.approveFiles}/${fileId}?division_id=${divisionId}`;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    });
   
+    return this.commonApiCallService.get(url)
+      .pipe(catchError(this.handleError));
+  }
   /**
    * The error handler.
    * @param err The http error response.
