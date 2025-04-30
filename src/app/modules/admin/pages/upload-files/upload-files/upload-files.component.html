@@ -92,6 +92,11 @@
           </div>
         </ng-container>
 
+        <mat-checkbox
+          [checked]="selectedIndexes.has(i)"
+          (change)="onFileCheckboxChange(i, $event.checked)">
+        </mat-checkbox>
+
       </div>
     </div>
   </form>

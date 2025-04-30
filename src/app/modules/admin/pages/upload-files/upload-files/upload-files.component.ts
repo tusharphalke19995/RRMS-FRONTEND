@@ -48,6 +48,7 @@ import { UploadDocumentService } from "../../upload-document/uploadDoc.service";
 import { AuthService } from "app/core/auth/auth.service";
 import { MasterService } from "../../Master/master.service";
 import { ContentManagerDialogComponent } from "../component/content-manager-dialog/content-manager-dialog.component";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 // import { saveAs } from 'file-saver';
 
 interface CustomFile extends File {
@@ -86,6 +87,7 @@ interface FileWithMetadata extends CustomFile {
     MatSelectModule,
     MatCardModule,
     MatDialogModule,
+    MatCheckboxModule
   ],
   templateUrl: "./upload-files.component.html",
   styleUrls: ["./upload-files.component.scss"],
@@ -168,6 +170,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   DivisionsRoles: any;
   // canEdit: boolean = false;
   // canDelete: boolean = false;
+  selectedIndexes = new Set<number>();
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -363,20 +366,33 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   submitMetadata(): void {
-    if (this.metadataForm.valid && this.fileToEdit) {
-      (this.fileToEdit as FileWithMetadata).metadata = this.metadataForm.value;
-      const index = this.selectedFiles.findIndex((f) => f === this.fileToEdit);
-      if (index !== -1) {
-        this.selectedFiles[index] = this.fileToEdit as FileWithMetadata;
-      }
-
-      this.closeFileModal();
-      this._snackBar.open("Metadata added successfully", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["success-snackbar"],
+    if (this.metadataForm.valid) {
+      const metadata = this.metadataForm.value;
+      let anySelected = false;
+      this.selectedIndexes.forEach(index => {
+        const file = this.selectedFiles[index];
+        if (file) {
+          file.metadata = { ...file.metadata, ...metadata };
+          anySelected = true;
+        }
       });
+      if (anySelected) {
+        this._snackBar.open("Metadata added to selected files", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["success-snackbar"],
+        });
+        this.openFileModal = false;
+        this.selectedIndexes.clear();
+      } else {
+        this._snackBar.open("Please select at least one file", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["error-snackbar"],
+        });
+      }
     }
   }
 
@@ -635,5 +651,25 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     const classification = file.metadata?.classification_name || file.classification_name;
     const role = this.getUserRoleName();
     return classification === 'Confidential' && role === 'User' && !file.is_access_request_approved;
+  }
+
+  selectAllFiles() {
+    this.selectedFiles.forEach((_, i) => this.selectedIndexes.add(i));
+  }
+
+  deselectAllFiles() {
+    this.selectedIndexes.clear();
+  }
+
+  onFileCheckboxChange(index: number, checked: boolean) {
+    if (checked) {
+      this.selectedIndexes.add(index);
+    } else {
+      this.selectedIndexes.delete(index);
+    }
+  }
+
+  get hasSelectedFiles(): boolean {
+    return this.selectedIndexes.size > 0;
   }
 }
