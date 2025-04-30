@@ -243,7 +243,8 @@ export class SearchUserRoleComponent {
     }
 
     getUserInfo() {
-          this._searchUserService.getUserList().subscribe({
+    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+          this._searchUserService.getUserList(divisionID).subscribe({
             next: (response: any) => {
              console.log("response",response);
         this.dataSource = new MatTableDataSource(response);

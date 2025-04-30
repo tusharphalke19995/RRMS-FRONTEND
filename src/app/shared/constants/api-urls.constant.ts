@@ -2,7 +2,7 @@ import { environment } from "environments/environment";
 
 export const apiurls = {
   createUser: `${environment.userApiUrl}users/create`,  
-  getUsers: `${environment.userApiUrl}users/`,  
+  getUsers: `${environment.userApiUrl}users?division_id`,  
   getRole: `${environment.userApiUrl}mdm/roles?division_id`,  
   getDivision: `${environment.userApiUrl}mdm/divisions`,
   getDistrictByStateId: `${environment.userApiUrl}mdm/districts/`,

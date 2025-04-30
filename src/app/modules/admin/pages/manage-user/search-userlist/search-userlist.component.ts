@@ -125,20 +125,10 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   columns: any[] = [
     { labelen: "Name", labelhi: "First Name", property: "first_name" },
     { labelen: "Name", labelhi: "Last Name", property: "last_name" },
-    { labelen: "Role Name", labelhi: "Role Name", property: "roleName" },
-    {
-      labelen: "Division Name",
-      labelhi: "Division Name",
-      property: "divisionName",
-    },
-    {
-      labelen: "Designation Name",
-      labelhi: "Designation Name",
-      property: "designationName",
-    },
     { labelen: "KGID", labelhi: "KGID", property: "kgid" },
     { labelen: "Mobile No", labelhi: "Mobile No", property: "mobileno" },
     { labelen: "Email ID", labelhi: "Email Id", property: "email" },
+    { labelen: "Roles", labelhi: "Roles", property: "roles" },
     {
       labelen: "Action",
       labelhi: "Action",
@@ -150,17 +140,15 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     "first_name",
     "last_name",
-    "divisionName",
-    "designationName",
-    "roleName",
     "kgid",
     "mobileno",
     "email",
+    "roles",
     "action",
   ];
   userRoleDropdown: [];
   designationsDropdown: [];
-
+  users:any;
   /**
    * Constructor
    */
@@ -272,8 +260,13 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   }
 
   getUserInfo() {
-    this._searchUserService.getUserList().subscribe({
+    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+    this._searchUserService.getUserList(divisionID).subscribe({
       next: (response: any) => {
+        this.users = response.map(user => ({
+          ...user,
+          isExpanded: false
+      }));
         this.dataSource = new MatTableDataSource(response);
       },
       error: (error) => {},
