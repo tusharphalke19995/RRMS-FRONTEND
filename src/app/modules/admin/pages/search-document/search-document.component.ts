@@ -42,7 +42,6 @@ import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { MatTableModule } from "@angular/material/table";
 import { UploadDocumentService } from "../upload-document/uploadDoc.service";
 import { MatDialog } from "@angular/material/dialog";
-import { UploadedFilesComponent } from "./uploaded-files/uploaded-files.component";
 import { UploadFilesComponent } from "../upload-files/upload-files/upload-files.component";
 import { SharedService } from "app/shared/shared.service";
 import { join } from "lodash";

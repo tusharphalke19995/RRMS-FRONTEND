@@ -156,7 +156,8 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   }
 
   getNotificationsCount() {
-    this._dashbaordService.getNotificationsCount().subscribe({
+    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+    this._dashbaordService.getNotificationsCount(divisionID).subscribe({
         next: (response: any) => {
           console.log("response Noti",response);
           this.finalDataNotifications = response;

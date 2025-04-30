@@ -104,7 +104,8 @@ export class ManageNotificationComponent {
 
   
   getNotificationsCount() {
-    this._dashbaordService.getNotificationsCount().subscribe({
+    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+    this._dashbaordService.getNotificationsCount(divisionID).subscribe({
         next: (response: any) => {
           console.log("response Noti",response);
           this.dataSource = new MatTableDataSource(response);

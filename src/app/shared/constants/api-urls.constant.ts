@@ -26,7 +26,7 @@ export const apiurls = {
    saveDesignations:`${environment.userApiUrl}mdm/designations`,
    saveDivision:`${environment.userApiUrl}mdm/divisions`,
    getCurrentUser:`${environment.userApiUrl}users/currentUsers`,
-   getNotifications :`${environment.userApiUrl}casedata/notifications`,
+   getNotifications :`${environment.userApiUrl}casedata/notifications?division_id`,
    approveFiles :`${environment.userApiUrl}casedata/approve-file`,
    getContentManagerReq :`${environment.userApiUrl}casedata/requests`,
    getFileTypes:`${environment.userApiUrl}mdm/fileTypes`,

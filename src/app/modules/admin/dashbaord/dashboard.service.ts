@@ -31,12 +31,16 @@ export class DashbaordService
       .pipe(catchError(this.handleError));
   }
 
-  
-  getNotificationsCount() {
-    return this._httpClient
-      .get(apiurls.getNotifications)
-      .pipe(catchError(this.handleError));
-  }
+
+  getNotificationsCount(id:number) {
+    const url = `${apiurls.getNotifications}=${id}`; 
+    return this._httpClient.get(url, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
 
 
   fileAccessByRequestid(fileAccessRequestid: number,data:any) {

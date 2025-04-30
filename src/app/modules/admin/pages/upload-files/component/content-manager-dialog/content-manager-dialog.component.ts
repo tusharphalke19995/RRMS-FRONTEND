@@ -11,6 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslocoModule } from '@ngneat/transloco';
 import { NotificationService } from '../../../manage-notification/notification.service';
 import { UploadDocumentService } from '../../../upload-document/uploadDoc.service';
+import { SharedService } from 'app/shared/shared.service';
 
 @Component({
   selector: 'app-content-manager-dialog',
@@ -33,11 +34,13 @@ import { UploadDocumentService } from '../../../upload-document/uploadDoc.servic
 export class ContentManagerDialogComponent {
   contentMangerListForm:FormGroup;
   contentManagerDropdown: any;
-  constructor(private _formBuilder:FormBuilder,private _uploadDocumentService:UploadDocumentService ,private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ContentManagerDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any )
+  caseMetaData: any;
+  constructor(private _formBuilder:FormBuilder,private _uploadDocumentService:UploadDocumentService ,private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ContentManagerDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any,private dataService:SharedService )
 {
   console.log("datadata",data)
   this.initiateForm();
 this.getFileAccess();
+this.getCasedataSelected();
 
 }
 
@@ -65,11 +68,19 @@ getFileAccess() {
   });
 }
 
+getCasedataSelected() {
+  this.dataService.getCaseData().subscribe((caseData) => {
+    this.caseMetaData = caseData;
+  });
+}
 
 onApprove(): void {
   let payload = {
     fileHash:this.data.fileHash,
-    requested_to:this.contentMangerListForm.value.contentMangId
+    requested_to:this.contentMangerListForm.value.contentMangId,
+      comments: this.contentMangerListForm.value.remarks,
+      division_id: sessionStorage.getItem('divisionID'),
+      case_id: this.caseMetaData.CaseInfoDetailsId,
   };
   this._uploadDocumentService.filePrevieAccessReqByUser(payload).subscribe({
     next: (response: any) => {

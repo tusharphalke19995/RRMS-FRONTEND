@@ -14,6 +14,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { TranslocoModule } from "@ngneat/transloco";
 import { SearchDocService } from "../searchDoc.service";
 import { DomSanitizer } from "@angular/platform-browser";
+import { SharedService } from "app/shared/shared.service";
 
 @Component({
   selector: "app-uploaded-files",
@@ -39,44 +40,56 @@ export class UploadedFilesComponent {
   fileInfo: string[] = [];
   imageFiles: string[] = [];
   pdfFiles: string[] = [];
-
+  caseMetaData: any;
   constructor(
     private sanitizer: DomSanitizer,
+        private dataService: SharedService,
     private _searchDocService: SearchDocService,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<UploadedFilesComponent>
   ) {
-    console.log(this.data);
+    console.log("data",data)
+    this.getCasedataSelected();
     this.getUploadMetaDataFiles();
+   
   }
 
   onNoClose(): void {
     this.dialogRef.close({ data: false });
   }
+
+  getCasedataSelected() {
+    this.dataService.getCaseData().subscribe((caseData) => {
+      this.caseMetaData = caseData;
+    });
+  }
   
   getUploadMetaDataFiles(): void {
-      let payload = {
-        fileHash: this.data.fileHash,
-      };
-
-      this._searchDocService.filePreviewData(payload).subscribe({
-        next: (res: Blob | null) => {
-          if (res) {
-            const fileUrl = URL.createObjectURL(res);
-            const fileType = res.type;
-            if (fileType.startsWith("image")) {
-              this.imageFiles.push(fileUrl);
-            } else if (fileType === "application/pdf") {
-              this.pdfFiles.push(fileUrl);
-            }
-          } else {
-            console.error("No file data received");
+    let payload = {
+      fileHash: this.data.fileHash || this.data,
+      requested_to: 0,
+      comments: "",
+      division_id: sessionStorage.getItem('divisionID'),
+      case_id: this.caseMetaData.CaseInfoDetailsId,
+    };
+    this._searchDocService.filePreviewData(payload).subscribe({
+      next: (res: Blob | null) => {
+        if (res) {
+          const fileUrl = URL.createObjectURL(res);
+          const fileType = res.type;
+          if (fileType.startsWith("image")) {
+            this.imageFiles.push(fileUrl);
+          } else if (fileType === "application/pdf") {
+            this.pdfFiles.push(fileUrl);
           }
-        },
-        error: (error) => {
-          console.error("Error fetching file preview:", error);
-        },
-      });
+        } else {
+          console.error("No file data received");
+        }
+      },
+      error: (error) => {
+        console.error("Error fetching file preview:", error);
+      },
+    });
   }
 
   isImage(fileUrl: string): boolean {

@@ -607,12 +607,12 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     const userRole = this.authData.DivisionsRoles.find(
       (role) => role.role_name === "User"
     );
-    console.log("userRole",userRole)
+    // console.log("userRole",userRole)
     return userRole ? userRole.role_name : null;
   }
 
   canRequestAccess(file: any): boolean {
-    console.log("canRequestAccess",file)
+    // console.log("canRequestAccess",file)
     const userRole = this.authData.DivisionsRoles.find(
       (role) => role.role_name === "User"
     );
