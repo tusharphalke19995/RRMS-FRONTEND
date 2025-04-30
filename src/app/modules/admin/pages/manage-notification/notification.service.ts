@@ -27,15 +27,13 @@ export class NotificationService
 
   approveNotification(
     fileId: number,
-    divisionId:number
+    divisionId: number
   ) {
-    const url = `${apiurls.approveFiles}/${fileId}?division_id=${divisionId}`;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    });
-  
-    return this.commonApiCallService.get(url)
+    const url = `${apiurls.approveFiles}/${fileId}`;
+    const body = {
+      division_id: divisionId
+    };
+    return this.commonApiCallService.post(url, body)
       .pipe(catchError(this.handleError));
   }
   /**

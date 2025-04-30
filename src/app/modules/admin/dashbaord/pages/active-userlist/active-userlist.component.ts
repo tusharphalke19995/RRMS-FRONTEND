@@ -94,28 +94,17 @@ export class ActiveUserlistComponent implements OnInit, AfterViewInit {
     { labelen: "Last Name", labelhi: "Last Name", property: "last_name" },
     { labelen: "Mobile No", labelhi: "mobileno", property: "mobileno" },
     { labelen: "kgid", labelhi: "kgid", property: "kgid" },
-    { labelen: "Role Name", labelhi: "Role Name", property: "roleName" },
-    {
-      labelen: "Division Name",
-      labelhi: "Division Name",
-      property: "divisionNameme",
-    },
-    {
-      labelen: "Designation Name",
-      labelhi: "Designation Name",
-      property: "designationName",
-    },
+    { labelen: "Roles", labelhi: "Roles", property: "roles" },
+    
   ];
 
   displayedColumns: string[] = [
-    "email",
     "first_name",
     "last_name",
+    "email",
     "mobileno",
     "kgid",
-    "roleName",
-    "divisionName",
-    "designationName",
+   "roles",
   ];
   userRoleDropdown: [];
   designationsDropdown: [];
@@ -149,6 +138,10 @@ export class ActiveUserlistComponent implements OnInit, AfterViewInit {
     this.sharedService.activeUserData$.subscribe((userInfo: any) => {
       this.activeUserData = userInfo;
       console.log(" this.activeUserData ", this.activeUserData);
+      this.activeUserData = userInfo.map(user => ({
+        ...user,
+        isExpanded: false
+    }));
       this.dataSource = new MatTableDataSource(this.activeUserData);
     });
   }
