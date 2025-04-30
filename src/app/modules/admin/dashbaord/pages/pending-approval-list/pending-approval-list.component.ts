@@ -169,7 +169,8 @@ export class PendingApprovalListComponent implements OnInit, AfterViewInit {
   }
 
   getContentManagerReqForWkFlow() {
-    this.dashbaordService.getContentManagerReqData().subscribe({
+    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+    this.dashbaordService.getContentManagerReqData(divisionID).subscribe({
       next: (response: any) => {
         this.pendingReqData = response;
       this.dataSource = new MatTableDataSource(this.pendingReqData);

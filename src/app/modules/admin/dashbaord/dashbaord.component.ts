@@ -209,7 +209,8 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   
 
     getContentManagerReqForWkFlow() {
-      this._dashbaordService.getContentManagerReqData().subscribe({
+    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+      this._dashbaordService.getContentManagerReqData(divisionID).subscribe({
         next: (response: any) => {
           this.finalDataCaseReqPending = response;
           this.pendingApprovalCount = response.length;
