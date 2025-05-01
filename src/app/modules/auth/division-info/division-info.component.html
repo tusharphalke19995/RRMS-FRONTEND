@@ -1,11 +1,13 @@
 <div class="flex flex-col flex-auto items-center sm:justify-center min-w-0 bg-cover bg-center" style="background-image: url('../../../../assets/images/rrms.jpg');">
 
-        <div class="w-full sm:w-auto py-3 px-2 sm:p-10 sm:rounded-2xl sm:shadow sm:bg-card">
-            <div class="w-full max-w-80 sm:w-80 mx-auto sm:mx-0">
-                <div class="w-12">
-                    <img src="assets/images/KSPPCW-logo.png">
-                </div>
-                <div class="mt-2 text-4xl font-extrabold tracking-tight leading-tight"  *transloco="let t">{{t('selectRole')}}</div>
+    <div class="flex flex-col flex-auto items-start sm:justify-center min-w-0 bg-cover bg-center pl-6 sm:pl-16 ">
+        <div class="w-full bg-white/0.1 backdrop-blur-md  border-2 border-solid border-primary-900 p-6 sm:mx-0 rounded-2xl attractive-shadow animate-fade-in">
+            <!-- Logo -->
+            <div class="w-20 h-20 flex items-center justify-center rounded-full bg-white mx-auto">
+                <img src="assets/images/KSPPCW-logo.png" class="object-contain w-20 h-20 " />
+            </div>
+            <div class="mt-2 text-4xl  font-extrabold tracking-tight bg-gradient-to-r  text-center bg-clip-text drop-shadow-lg tracking-wider text-blue-800"   *transloco="let t">{{t('selectRole')}}</div>
+              
                 <!-- Alert -->
                 <fuse-alert
                     class="mt-2"
@@ -24,8 +26,8 @@
                   >
     
                     <!-- Email field -->
-                    <mat-form-field appearance="outline" class="w-full">
-                        <mat-label *transloco="let t" class="font-medium">{{t('division')}}</mat-label>
+                    <mat-form-field  class="w-full">
+                        <mat-label *transloco="let t" class="font-medium text-white">{{t('division')}}</mat-label>
                         <mat-select [formControlName]="'divisionId'"
                             (selectionChange)="onStateChange($event.value)">
                             <mat-option [value]="null">Please Select</mat-option>

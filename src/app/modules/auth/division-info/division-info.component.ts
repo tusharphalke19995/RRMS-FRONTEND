@@ -23,6 +23,7 @@ import { AuthService } from "app/core/auth/auth.service";
 
 @Component({
   selector: "auth-division-info",
+  styleUrl: './division-ino.component.scss',
   templateUrl: "./division-info.component.html",
   encapsulation: ViewEncapsulation.None,
   animations: fuseAnimations,
