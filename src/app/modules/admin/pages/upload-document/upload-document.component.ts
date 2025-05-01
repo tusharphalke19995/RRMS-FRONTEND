@@ -16,6 +16,7 @@ import {
 } from "@angular/core";
 import {
   FormsModule,
+  MaxLengthValidator,
   NgForm,
   ReactiveFormsModule,
   UntypedFormBuilder,
@@ -91,10 +92,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   districtDropdown: any;
   stateDropdown: [];
   caseStatusDropdown: any;
-  yearDropDown=[{yearId:2025,yearName:2025},
-    {yearId:2024,yearName:2024},
-    {yearId:2023,yearName:2023}
-  ]
+  yearDropDown: { yearId: number; yearName: number }[] = [];
   fileTypesDropDown: [];
   fileClassificationDropDown: [];
   authData:any;
@@ -115,6 +113,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   ) {
     this.authData = this.authenticationService.getAuthData();
     this.dataService.setFileBoolean(true);
+    for (let year = 2025; year >= 1980; year--) {
+      this.yearDropDown.push({ yearId: year, yearName: year });
+    }
   }
 
   // -----------------------------------------------------------------------------------------------------

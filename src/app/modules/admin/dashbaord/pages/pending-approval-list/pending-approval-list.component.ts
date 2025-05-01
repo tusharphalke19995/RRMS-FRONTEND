@@ -65,8 +65,11 @@ export class PendingApprovalListComponent implements OnInit, AfterViewInit {
   alert: { type: string; message: string };
   divisionDropdown = [];
 
-  @ViewChild("sort1") sort1: MatSort;
-  @ViewChild("paginator1") paginator1: MatPaginator;
+  @ViewChild('pendingSort') pendingSort: MatSort;
+  @ViewChild('pendingPaginator') pendingPaginator: MatPaginator;
+  @ViewChild('approvedSort') approvedSort: MatSort;
+  @ViewChild('approvedPaginator') approvedPaginator: MatPaginator;
+
   dataSource: MatTableDataSource<any>;
   selectedTab = 0;
   pendingDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
@@ -165,11 +168,13 @@ export class PendingApprovalListComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort1;
-    this.dataSource.paginator = this.paginator1;
-
+    this.pendingDataSource.sort = this.pendingSort;
+    this.pendingDataSource.paginator = this.pendingPaginator;
+    this.approvedDataSource.sort = this.approvedSort;
+    this.approvedDataSource.paginator = this.approvedPaginator;
     this._changeDetectorRef.detectChanges();
   }
+
 
   /**
    * On destroy

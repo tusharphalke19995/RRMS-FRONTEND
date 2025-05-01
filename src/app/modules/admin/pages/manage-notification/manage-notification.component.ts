@@ -64,6 +64,7 @@ export class ManageNotificationComponent {
 
   @ViewChild("sort1") sort1: MatSort;
   @ViewChild("paginator1") paginator1: MatPaginator;
+  
   dataSource: MatTableDataSource<any>;
 
   columns: any[] = [
@@ -141,31 +142,12 @@ export class ManageNotificationComponent {
       width: "677px",
     });
     dialogRef.afterClosed().subscribe((result) => {
+      this.getNotificationList();
+      this.getNotificationsCount();
       this.cdr.detectChanges();
     });
 
   }
 
-   
-  markAsRead(data:any) {
-   let paloadData={
-    notification_id:data.id
-   }
-    this.notificationService.markasreadNotificationInfo(paloadData).subscribe({
-        next: (response: any) => {
-          this._snackBar.open("Mark As Read successfully", "Close", {
-            duration: 3000,
-            horizontalPosition: "right",
-            verticalPosition: "top",
-            panelClass: ["success-snackbar"],
-          });
-          this.getNotificationList();
-          this.getNotificationsCount();
-        },
-        error: (error) => {
-            console.error("Error fetching latest files:", error);
-        },
-    });
-  }
-    
+  
 }

@@ -63,7 +63,7 @@
         <div class="overflow-x-auto">
             <mat-tab-group mat-stretch-tabs="false"  [(selectedIndex)]="selectedTab">
                 <mat-tab label="Pending">
-                    <table mat-table [dataSource]="pendingDataSource" matSort #sort1="matSort" class="w-full mt-[10px]">
+                    <table mat-table [dataSource]="pendingDataSource" matSort #pendingSort="matSort" class="w-full mt-[10px]">
                         <!-- File Name -->
                         <ng-container matColumnDef="file_name">
                             <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">File Name</th>
@@ -105,14 +105,14 @@
                         No pending requests found
                     </div>
                     <div class="flex justify-end w-full dark:bg-gray-800 bg-card">
-                        <mat-paginator #paginator1="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10"
+                        <mat-paginator #pendingPaginator="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10"
                             showFirstLastButtons>
                         </mat-paginator>
                     </div>
                 </mat-tab>
 
                 <mat-tab label="Approved">
-                    <table mat-table [dataSource]="approvedDataSource" matSort #sort2="matSort" class="w-full mt-[10px]">
+                    <table mat-table [dataSource]="approvedDataSource" matSort #approvedSort="matSort" class="w-full mt-[10px]">
                         <!-- File Name -->
                         <ng-container matColumnDef="file_name">
                             <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">File Name</th>
@@ -140,7 +140,7 @@
                         No approved requests found
                     </div>
                     <div class="flex justify-end w-full dark:bg-gray-800 bg-card">
-                        <mat-paginator #paginator2="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10"
+                        <mat-paginator #approvedPaginator="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10"
                             showFirstLastButtons>
                         </mat-paginator>
                     </div>

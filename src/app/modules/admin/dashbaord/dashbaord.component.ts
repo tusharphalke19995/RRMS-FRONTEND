@@ -1,4 +1,10 @@
-import { CommonModule, CurrencyPipe, NgClass, NgFor, NgIf } from "@angular/common";
+import {
+  CommonModule,
+  CurrencyPipe,
+  NgClass,
+  NgFor,
+  NgIf,
+} from "@angular/common";
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -22,7 +28,7 @@ import { AuthService } from "app/core/auth/auth.service";
 import { SearchUserService } from "../pages/manage-user/search-userlist/searchUser.service";
 import { MatDialog } from "@angular/material/dialog";
 import { UploadedFilesComponent } from "../pages/search-document/uploaded-files/uploaded-files.component";
-import { fuseAnimations } from '@fuse/animations';
+import { fuseAnimations } from "@fuse/animations";
 import { SharedService } from "app/shared/shared.service";
 import { SplitTagsPipe } from "app/shared/pipes/splitTags";
 @Component({
@@ -30,7 +36,7 @@ import { SplitTagsPipe } from "app/shared/pipes/splitTags";
   templateUrl: "./dashbaord.component.html",
   styleUrl: "./dashbaord.component.scss",
   encapsulation: ViewEncapsulation.None,
-  animations     : fuseAnimations,
+  animations: fuseAnimations,
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
@@ -47,7 +53,7 @@ import { SplitTagsPipe } from "app/shared/pipes/splitTags";
     NgClass,
     CurrencyPipe,
     CommonModule,
-    UploadedFilesComponent
+    UploadedFilesComponent,
   ],
 })
 export class DashbaordComponent implements OnInit, OnDestroy {
@@ -57,7 +63,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   userTotalCount: number;
   userRoleCount: number;
-  currentUserData: any; 
+  currentUserData: any;
   favoritesList: []; // To store favorites
   latestFiles: []; // To store latest used files
   favoritesListViewAll: []; // To store favorites
@@ -65,10 +71,10 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   userList: any;
   pendingApprovalCount: number = 0;
   notificationsCount: number = 0;
-  finalDataNotifications :any;
+  finalDataNotifications: any;
   finalDataCaseReqPending: any;
   divisionsRoles: any;
-  showAdminBool:boolean
+  showAdminBool: boolean;
   divisionID: string;
   showChangeDivision: boolean;
   /**
@@ -80,11 +86,11 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     private _router: Router,
     private authenticationService: AuthService,
     private _searchUserService: SearchUserService,
-        private dialog: MatDialog,
-        private sharedService:SharedService
+    private dialog: MatDialog,
+    private sharedService: SharedService
   ) {
     this.authData = this.authenticationService.getAuthData();
-    this.divisionID = sessionStorage.getItem("divisionID")
+    this.divisionID = sessionStorage.getItem("divisionID");
     this.checkDesignationObj();
   }
 
@@ -127,150 +133,159 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     return item.id || index;
   }
 
-  
   getFavouritesInfo() {
     const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
     this._dashbaordService.getFavouritesData(divisionID).subscribe({
-        next: (response: any) => {
-          this.favoritesListViewAll =response;
-           this.favoritesList = response.slice(0, 3);
-            console.log("Favorites fetched:", this.favoritesList);
-            this.cdr.detectChanges();
-        },
-        error: (error) => {
-            console.error("Error fetching favorites:", error);
-        },
+      next: (response: any) => {
+        this.favoritesListViewAll = response;
+        this.favoritesList = response.slice(0, 3);
+        console.log("Favorites fetched:", this.favoritesList);
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error("Error fetching favorites:", error);
+      },
     });
   }
 
   getFilesLatest() {
     this._dashbaordService.getFilesLatestData().subscribe({
-        next: (response: any) => {
-            this.latestFileViewAll =response;
-            this.latestFiles = response.slice(0, 3); // Store the latest files
-            console.log("Latest files fetched:", this.latestFiles);
-            this.cdr.detectChanges();
-        },
-        error: (error) => {
-            console.error("Error fetching latest files:", error);
-        },
+      next: (response: any) => {
+        this.latestFileViewAll = response;
+        this.latestFiles = response.slice(0, 3); // Store the latest files
+        console.log("Latest files fetched:", this.latestFiles);
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error("Error fetching latest files:", error);
+      },
     });
   }
 
   getNotificationsCount() {
     const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
     this._dashbaordService.getNotificationsCount(divisionID).subscribe({
-        next: (response: any) => {
-          console.log("response Noti",response);
-          this.finalDataNotifications = response;
-          this.notificationsCount = response.length;
-          console.log("notificationsCount Noti",this.notificationsCount)
-            this.cdr.detectChanges();
-        },
-        error: (error) => {
-            console.error("Error fetching latest files:", error);
-        },
+      next: (response: any) => {
+        console.log("response Noti", response);
+        this.finalDataNotifications = response;
+        this.notificationsCount = response.length;
+        console.log("notificationsCount Noti", this.notificationsCount);
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error("Error fetching latest files:", error);
+      },
     });
   }
 
-    viewImage(data) {
-      const dialogRef = this.dialog.open(UploadedFilesComponent, {
-        data: data,
-        width: "1000px",
-      });
-      dialogRef.afterClosed().subscribe((result) => {
+  viewImage(data) {
+    const dialogRef = this.dialog.open(UploadedFilesComponent, {
+      data: data,
+      width: "1000px",
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      this.cdr.detectChanges();
+    });
+  }
+
+  viewImageLatesFilesList(data) {
+    const dialogRef = this.dialog.open(UploadedFilesComponent, {
+      data: data,
+      width: "1000px",
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      this.cdr.detectChanges();
+    });
+  }
+
+  getCurrentData() {
+    this._dashbaordService.getCurrentUsers().subscribe({
+      next: (response: any) => {
+        this.currentUserData = response;
+        this.pendingApprovalCount = response.pendingApprovalCount;
+
+        console.log("currentUserData:", this.currentUserData);
         this.cdr.detectChanges();
-      });
-    }
+      },
+      error: (error) => {
+        console.error("Error fetching current users:", error);
+      },
+    });
+  }
 
-    viewImageLatesFilesList(data) {
-      const dialogRef = this.dialog.open(UploadedFilesComponent, {
-        data: data,
-        width: "1000px",
-      });
-      dialogRef.afterClosed().subscribe((result) => {
-        this.cdr.detectChanges();
-      });
-    }
-  
-
-    getCurrentData() {
-      this._dashbaordService.getCurrentUsers().subscribe({
-        next: (response: any) => {
-          this.currentUserData = response;
-          this.pendingApprovalCount = response.pendingApprovalCount;
-          
-          console.log("currentUserData:", this.currentUserData);
-          this.cdr.detectChanges();
-        },
-        error: (error) => {
-          console.error("Error fetching current users:", error);
-        },
-      });
-    }
-  
-
-    getContentManagerReqForWkFlow() {
+  getContentManagerReqForWkFlow() {
     const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
-      this._dashbaordService.getContentManagerReqData(divisionID).subscribe({
-        next: (response: any) => {
-          this.finalDataCaseReqPending = response;
-          this.pendingApprovalCount = response.length;
-          this.cdr.detectChanges();
-        },
-        error: (error) => {
-          console.error("Error fetching current users:", error);
-        },
-      });
-    }
+    this._dashbaordService.getContentManagerReqData(divisionID).subscribe({
+      next: (response: any) => {
+        this.finalDataCaseReqPending = response;
+        this.pendingApprovalCount = response.length;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error("Error fetching current users:", error);
+      },
+    });
+  }
 
-    goToActiveUserList(data){
-      this.userList = data.users;
-      this.sharedService.setActiveUserData(this.userList);
-      this._router.navigateByUrl("dashboard/active-user-list")
-    }
+  goToActiveUserList(data) {
+    this.userList = data.users;
+    this.sharedService.setActiveUserData(this.userList);
+    this._router.navigateByUrl("dashboard/active-user-list");
+  }
 
-    goToPendingApproval(){
-     this.sharedService.setActiveUserData(this.finalDataCaseReqPending);
-      this._router.navigateByUrl("dashboard/pending-approval-list")
-    }
+  goToPendingApproval() {
+    this.sharedService.setActiveUserData(this.finalDataCaseReqPending);
+    this._router.navigateByUrl("dashboard/pending-approval-list");
+  }
 
-    goToNotification(){
-      this.sharedService.setNotificationsInfo(this.finalDataNotifications);
-      this._router.navigateByUrl("manage-notification")
-    }
+  goToNotification() {
+    this.sharedService.setNotificationsInfo(this.finalDataNotifications);
+    this._router.navigateByUrl("manage-notification");
+  }
 
-    viewAllRecentFiles(){
-      this.sharedService.setLatestFilesData(this.latestFileViewAll);
-      this._router.navigateByUrl("dashboard/latest-files-list")
-    }
-    
-    viewAllFavouritesFiles(){
-      this._router.navigateByUrl("dashboard/recent-favorites-files")
-    }
+  viewAllRecentFiles() {
+    this.sharedService.setLatestFilesData(this.latestFileViewAll);
+    this._router.navigateByUrl("dashboard/latest-files-list");
+  }
 
-    goToDivision(){
-      this._router.navigateByUrl("division-selection");
-    }
+  viewAllFavouritesFiles() {
+    this._router.navigateByUrl("dashboard/recent-favorites-files");
+  }
 
-    getDivisionRoleData(): any | null {
-      const divisionId = Number(sessionStorage.getItem('divisionID'));
-      return this.authData?.DivisionsRoles?.find(role => role.division_id === divisionId) || null;
-    }
+  goToDivision() {
+    this._router.navigateByUrl("division-selection");
+  }
 
-    checkDesignationObj() {
-      this.divisionsRoles = this.authenticationService.getAuthData();
-      const rolesLength = this.divisionsRoles.DivisionsRoles.length;
-      if (rolesLength > 1) {
+  getDivisionRoleData(): any | null {
+    const divisionId = Number(sessionStorage.getItem("divisionID"));
+    return (
+      this.authData?.DivisionsRoles?.find(
+        (role) => role.division_id === divisionId
+      ) || null
+    );
+  }
+
+  checkDesignationObj() {
+    if (this.authData.UserID == "1") {
+      this.showAdminBool = true;
+    }
+    this.divisionsRoles = this.authenticationService.getAuthData();
+    this.divisionsRoles.DivisionsRoles.forEach((element) => {
+      if (element.role_name === "Admin") {
         this.showAdminBool = true;
-        this.showChangeDivision= true;
       } else {
         this.showAdminBool = false;
-        this.showChangeDivision = false
       }
+    });
+    const rolesLength = this.divisionsRoles.DivisionsRoles.length;
+    if (rolesLength > 1) {
+      this.showChangeDivision = true;
+    } else {
+      this.showChangeDivision = false;
     }
-    getHashTags(hashTagString: string): string[] {
-      if (!hashTagString) return [];
-      return hashTagString.split(' ').filter(tag => tag.trim() !== '');
-    }
+  }
+  getHashTags(hashTagString: string): string[] {
+    if (!hashTagString) return [];
+    return hashTagString.split(" ").filter((tag) => tag.trim() !== "");
+  }
 }

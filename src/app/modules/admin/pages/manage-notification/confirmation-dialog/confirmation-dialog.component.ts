@@ -104,6 +104,7 @@ onApprove(): void {
         panelClass: ["success-snackbar"],
       });
       this.dialogRef.close(true);
+      this.markAsRead();
      
     },
     error: (error) => {
@@ -116,4 +117,19 @@ onApprove(): void {
     },
   });
 }
+
+markAsRead() {
+  let paloadData={
+   notification_id:this.data.id
+  }
+   this.notificationService.markasreadNotificationInfo(paloadData).subscribe({
+       next: (response: any) => {
+  
+       },
+       error: (error) => {
+           console.error("Error fetching latest files:", error);
+       },
+   });
+ }
+   
 }

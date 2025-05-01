@@ -5,9 +5,10 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { NotificationsService } from 'app/layout/common/notifications/notifications.service';
 import { Notification } from 'app/layout/common/notifications/notifications.types';
+import { DashbaordService } from 'app/modules/admin/dashbaord/dashboard.service';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -24,7 +25,7 @@ export class NotificationsComponent implements OnInit, OnDestroy
     @ViewChild('notificationsOrigin') private _notificationsOrigin: MatButton;
     @ViewChild('notificationsPanel') private _notificationsPanel: TemplateRef<any>;
 
-    notifications: Notification[];
+    notifications: any[];
     unreadCount: number = 0;
     private _overlayRef: OverlayRef;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -37,6 +38,8 @@ export class NotificationsComponent implements OnInit, OnDestroy
         private _notificationsService: NotificationsService,
         private _overlay: Overlay,
         private _viewContainerRef: ViewContainerRef,
+        private _dashbaordService:DashbaordService,
+        private router:Router
     )
     {
     }
@@ -50,6 +53,7 @@ export class NotificationsComponent implements OnInit, OnDestroy
      */
     ngOnInit(): void
     {
+        this.getNotificationsCount();
         // Subscribe to notification changes
         this._notificationsService.notifications$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -59,7 +63,7 @@ export class NotificationsComponent implements OnInit, OnDestroy
                 this.notifications = notifications;
 
                 // Calculate the unread count
-                this._calculateUnreadCount();
+              
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -220,9 +224,28 @@ export class NotificationsComponent implements OnInit, OnDestroy
 
         if ( this.notifications && this.notifications.length )
         {
-            count = this.notifications.filter(notification => !notification.read).length;
+            count = this.notifications.filter(notification => !notification.is_read).length;
         }
 
         this.unreadCount = count;
     }
+
+    getNotificationsCount() {
+        const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+        this._dashbaordService.getNotificationsCount(divisionID).subscribe({
+            next: (response: any) => {
+                this.notifications = response;
+                this._calculateUnreadCount();
+                this._changeDetectorRef.detectChanges();
+            },
+            error: (error) => {
+                console.error("Error fetching latest files:", error);
+            },
+        });
+      }
+
+      goToAllNotifications(){
+        this.router.navigateByUrl("manage-notification")
+      }
+    
 }
