@@ -112,5 +112,6 @@
    "selectRole":"Select Division",
    "revoke":"Revoke",
    "fileStage":"File Stage",
-   "action":"Action"
+   "action":"Action",
+   "close":"Close"
 }

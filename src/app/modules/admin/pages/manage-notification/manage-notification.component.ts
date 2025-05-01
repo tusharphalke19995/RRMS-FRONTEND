@@ -145,5 +145,27 @@ export class ManageNotificationComponent {
     });
 
   }
+
+   
+  markAsRead(data:any) {
+   let paloadData={
+    notification_id:data.id
+   }
+    this.notificationService.markasreadNotificationInfo(paloadData).subscribe({
+        next: (response: any) => {
+          this._snackBar.open("Mark As Read successfully", "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["success-snackbar"],
+          });
+          this.getNotificationList();
+          this.getNotificationsCount();
+        },
+        error: (error) => {
+            console.error("Error fetching latest files:", error);
+        },
+    });
+  }
     
 }

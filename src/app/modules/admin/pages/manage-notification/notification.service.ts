@@ -13,6 +13,12 @@ export class NotificationService
   ) {}
 
 
+  markasreadNotificationInfo(data:any) {
+    return this._httpClient
+      .post(apiurls.markasreadNotification,data)
+      .pipe(catchError(this.handleError));
+  }
+
   getFavouritesData() {
     return this._httpClient
       .get(apiurls.getFavourites,)

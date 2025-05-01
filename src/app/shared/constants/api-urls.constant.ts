@@ -36,6 +36,6 @@ export const apiurls = {
    caseDataFilePreview :`${environment.userApiUrl}casedata/filePreview`,
    caseDataFileApproveReq :`${environment.userApiUrl}casedata/access`,
    casedataRevoke :`${environment.userApiUrl}casedata/revoke`,
-   
+   markasreadNotification :`${environment.userApiUrl}casedata/markasread`,
    
 }as const;

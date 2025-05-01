@@ -8,8 +8,8 @@
     <div class="flex items-center">
       <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('confirmApprove')}}</span>
     </div>
-    <button mat-icon-button class="rounded-full transition-colors duration-200" (click)="onCancel()" [tabIndex]="-1">
-      <mat-icon  [svgIcon]="'heroicons_outline:x'"></mat-icon>
+    <button mat-icon-button  (click)="onCancel()" [tabIndex]="-1">
+      <mat-icon class="icon-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
     </button>
   </div>
 
@@ -40,6 +40,13 @@
 
           {{t('onDenied')}}
         </button>
+
+        <button mat-flat-button
+        class="min-w-[90px] px-6 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
+        (click)="onCancel()" *transloco="let t">
+        {{ t('close') }}
+      </button>
+
       </div>
     </form>
 
