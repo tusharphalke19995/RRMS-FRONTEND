@@ -62,7 +62,7 @@
         </div>
         <div class="overflow-x-auto">
             <mat-tab-group mat-stretch-tabs="false"  [(selectedIndex)]="selectedTab">
-                <mat-tab label="Pending Request">
+                <mat-tab label="Pending">
                     <table mat-table [dataSource]="pendingDataSource" matSort #sort1="matSort" class="w-full mt-[10px]">
                         <!-- File Name -->
                         <ng-container matColumnDef="file_name">
@@ -112,7 +112,7 @@
                     </div>
                 </mat-tab>
 
-                <mat-tab label="After Approval">
+                <mat-tab label="Approved">
                     <table mat-table [dataSource]="approvedDataSource" matSort #sort2="matSort" class="w-full mt-[10px]">
                         <!-- File Name -->
                         <ng-container matColumnDef="file_name">

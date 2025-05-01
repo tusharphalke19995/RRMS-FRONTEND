@@ -135,16 +135,16 @@
                                         </div>
                                         <div class="favorite-card-body">
                                             <div class="file-details">
-                                                <div><strong>File Type:</strong> {{ favoritesItem.file.subject }}</div>
-                                                <div><strong>Subject:</strong> {{ favoritesItem.file.fileType }}</div>
+                                                <div><strong>File Type:</strong> {{ favoritesItem.file.filetype_name }}</div>
+                                                <div><strong>Subject:</strong> {{ favoritesItem.file.subject }}</div>
                                                 <div><strong>Classification:</strong> {{
-                                                    favoritesItem.file.classification }}</div>
+                                                    favoritesItem.file.classification_name }}</div>
                                                 <div class="hash-tags my-1">
                                                     <strong>Hash Tag:</strong>
                                                     <mat-chip-list>
                                                         <mat-chip
                                                             *ngFor="let tag of getHashTags(favoritesItem.file.hashTag)"
-                                                            class="py-0.5 bg-blue-400 dark:bg-blue-500 px-3 rounded-full text-sm font-semibold text-white">
+                                                            class="py-0.5 bg-blue-400 dark:bg-blue-500 px-3 rounded-full text-sm font-semibold text-white mr-2 mb-2">
                                                             {{ tag.trim() }}
                                                         </mat-chip>
                                                     </mat-chip-list>
@@ -193,16 +193,16 @@
                                         </div>
                                         <div class="favorite-card-body">
                                             <div class="file-details">
-                                                <div><strong>File Type:</strong> {{ latestFileItem.subject }}</div>
-                                                <div><strong>Subject:</strong> {{ latestFileItem.fileType }}</div>
+                                                <div><strong>File Type:</strong> {{ latestFileItem.filetype_name }}</div>
+                                                <div><strong>Subject:</strong> {{ latestFileItem.subject }}</div>
                                                 <div><strong>Classification:</strong> {{
-                                                    latestFileItem.classification }}</div>
+                                                    latestFileItem.classification_name }}</div>
                                                 <div class="hash-tags my-1">
                                                     <strong>Hash Tag:</strong>
                                                     <mat-chip-list>
                                                         <mat-chip
                                                             *ngFor="let tag of getHashTags(latestFileItem.hashTag)"
-                                                            class="py-0.5 bg-blue-400 dark:bg-blue-500 px-3 rounded-full text-sm font-semibold text-white">
+                                                            class="py-0.5 bg-blue-400 dark:bg-blue-500 px-3 rounded-full text-sm font-semibold text-white mr-2 mb-2">
                                                             {{ tag.trim() }}
                                                         </mat-chip>
                                                     </mat-chip-list>
