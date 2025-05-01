@@ -22,7 +22,7 @@ import { AuthService } from "app/core/auth/auth.service";
 @Component({
   selector: "auth-sign-in",
   templateUrl: "./sign-in.component.html",
-  // styleUrl: './sign-in.component.scss',
+  styleUrl: './sign-in.component.scss',
   encapsulation: ViewEncapsulation.None,
   animations: fuseAnimations,
   standalone: true,
@@ -122,12 +122,11 @@ export class AuthSignInComponent implements OnInit {
 
   checkDesignationObj() {
     this.divisionsRoles = this._authService.getAuthData();
-  
-    if (this.divisionsRoles.DivisionsRoles.length > 0) {
+    const rolesLength = this.divisionsRoles.DivisionsRoles.length;
+    if (rolesLength > 1) {
       this._router.navigateByUrl("/division-selection");
-      return;
+    } else {
+      this._router.navigateByUrl("/dashboard");
     }
-    
-    this._router.navigateByUrl("/dashboard");
   }
 }

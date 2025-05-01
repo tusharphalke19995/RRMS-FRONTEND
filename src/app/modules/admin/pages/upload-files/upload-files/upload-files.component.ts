@@ -171,7 +171,10 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   // canEdit: boolean = false;
   // canDelete: boolean = false;
   selectedIndexes = new Set<number>();
-
+  fileStageDropDown=[{value:"Enquiry",fileStageName:"Enquiry"},
+    {value:"I/O",fileStageName:"I/O"},
+    {value:"Crime",fileStageName:"Crime"}
+  ]
   constructor(
     private _snackBar: MatSnackBar,
     private fb: FormBuilder,
@@ -189,6 +192,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       fileType: ["", Validators.required],
       classification: ["", Validators.required],
       hashTag: [""],
+      fileStage:[""]
     });
   }
 
@@ -528,7 +532,8 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   markUnFavourite(data: any) {
-    this._uploadDocumentService.markAsUnFavourite(data.fileId).subscribe({
+    const divisionID = JSON.parse(sessionStorage.getItem('divisionID'))
+    this._uploadDocumentService.markAsUnFavourite(data.fileId,divisionID).subscribe({
       next: (response: any) => {
         this._snackBar.open("Mark As Un Favourite successfully", "Close", {
           duration: 3000,
@@ -551,7 +556,8 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   markFavourite(data: any) {
-    this._uploadDocumentService.markAsFavourite(data.fileId).subscribe({
+    const divisionID = JSON.parse(sessionStorage.getItem('divisionID'))
+    this._uploadDocumentService.markAsFavourite(data.fileId,divisionID).subscribe({
       next: (response: any) => {
         this._snackBar.open("Mark As Favourite successfully", "Close", {
           duration: 3000,

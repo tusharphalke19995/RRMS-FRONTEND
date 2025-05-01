@@ -35,7 +35,7 @@
                           
                         </div>
                     </div>
-                    <div class="flex items-center cursor-pointer" (click)="goToDivision()">
+                    <div class="flex items-center cursor-pointer" (click)="goToDivision()" *ngIf="showChangeDivision">
                         <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
                         <span class="ml-1.1 leading-6 truncate text-primary">Click Here to Change Division</span>
                     </div>

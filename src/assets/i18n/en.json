@@ -110,5 +110,7 @@
    "reqTextApprove":"Would you like to approve this request? Please confirm your decision",
    "reqRevokeApprove":"Would you like to Revoke this request? Please confirm your decision",
    "selectRole":"Select Division",
-   "revoke":"Revoke"
+   "revoke":"Revoke",
+   "fileStage":"File Stage",
+   "action":"Action"
 }

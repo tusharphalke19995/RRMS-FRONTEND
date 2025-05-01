@@ -13,11 +13,14 @@ export class DashbaordService
   ) {}
 
 
-  getFavouritesData() {
-    return this._httpClient
-      .get(apiurls.getFavourites,)
-      .pipe(catchError(this.handleError));
-  }
+
+  getFavouritesData(id:number) {
+    const url = `${apiurls.getFavourites}=${id}`; 
+    return this._httpClient.get(url, {
+    }).pipe(catchError(this.handleError));
+}
+
+
 
   getFilesLatestData() {
     return this._httpClient

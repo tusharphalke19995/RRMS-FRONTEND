@@ -29,6 +29,10 @@
       <div *ngFor="let file of selectedFiles; let i = index" class="file-item">
         <div class="flex items-center justify-between p-2">
           <div class="flex items-center">
+            <mat-checkbox
+            [checked]="selectedIndexes.has(i)"
+            (change)="onFileCheckboxChange(i, $event.checked)">
+          </mat-checkbox>
             <mat-icon
             (click)="!isRestrictedToView(file) && viewImage(file)"
             [ngClass]="{
@@ -91,12 +95,6 @@
 
           </div>
         </ng-container>
-
-        <mat-checkbox
-          [checked]="selectedIndexes.has(i)"
-          (change)="onFileCheckboxChange(i, $event.checked)">
-        </mat-checkbox>
-
       </div>
     </div>
   </form>
@@ -163,6 +161,18 @@
         </mat-error>
       </mat-form-field>
 
+        <mat-form-field appearance="outline" class="w-full">
+            <mat-label *transloco="let t" class="font-medium">{{t('fileStage')}}</mat-label>
+            <mat-select [formControlName]="'fileStage'">
+                <mat-option [value]="null">Please Select</mat-option>
+                <ng-container *ngFor="let fileStageData of fileStageDropDown; trackBy: trackByFn">
+                    <mat-option [value]="fileStageData.value">{{fileStageData.fileStageName}}</mat-option>
+                </ng-container>
+            </mat-select>
+            <mat-error *ngIf="metadataForm.get('fileStage').hasError('required')">
+                Required
+            </mat-error>
+        </mat-form-field>
     </div>
 
     <div class="p-2">

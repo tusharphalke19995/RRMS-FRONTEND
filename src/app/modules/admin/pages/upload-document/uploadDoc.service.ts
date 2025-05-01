@@ -68,13 +68,13 @@ getUnitsByDistictIdData(
     return this.commonApiCallService.put(url, caseData); // or use .patch if partial update
   }
 
-  markAsFavourite(fileId: number) {
-    const url = `${apiurls.favourite}/${fileId}/favourite`;
-    return this.commonApiCallService.post(url, {});
+  markAsFavourite(fileId: number,divisionID:number) {
+    const url = `${apiurls.favourite}/${fileId}/favourite?division_id=${divisionID}`;
+    return this.commonApiCallService.post(url,{});
   }
 
-  markAsUnFavourite(fileId: number) {
-    const url = `${apiurls.favourite}/${fileId}/unfavourite`;
+  markAsUnFavourite(fileId: number,divisionID) {
+    const url = `${apiurls.favourite}/${fileId}/unfavourite?division_id=${divisionID}`;
     return this.commonApiCallService.delete(url, {});
   }
 

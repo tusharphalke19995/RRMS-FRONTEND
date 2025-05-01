@@ -70,6 +70,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   divisionsRoles: any;
   showAdminBool:boolean
   divisionID: string;
+  showChangeDivision: boolean;
   /**
    * Constructor
    */
@@ -128,7 +129,8 @@ export class DashbaordComponent implements OnInit, OnDestroy {
 
   
   getFavouritesInfo() {
-    this._dashbaordService.getFavouritesData().subscribe({
+    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+    this._dashbaordService.getFavouritesData(divisionID).subscribe({
         next: (response: any) => {
           this.favoritesListViewAll =response;
            this.favoritesList = response.slice(0, 3);
@@ -247,15 +249,6 @@ export class DashbaordComponent implements OnInit, OnDestroy {
       this._router.navigateByUrl("dashboard/recent-favorites-files")
     }
 
-    checkDesignationObj() {
-      this.divisionsRoles = this.authenticationService.getAuthData();
-      if (this.divisionsRoles.DivisionsRoles.length > 0) {
-         this.showAdminBool = false;
-        return;
-      }
-      this.showAdminBool = true;
-    }
-
     goToDivision(){
       this._router.navigateByUrl("division-selection");
     }
@@ -263,5 +256,17 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     getDivisionRoleData(): any | null {
       const divisionId = Number(sessionStorage.getItem('divisionID'));
       return this.authData?.DivisionsRoles?.find(role => role.division_id === divisionId) || null;
+    }
+
+    checkDesignationObj() {
+      this.divisionsRoles = this.authenticationService.getAuthData();
+      const rolesLength = this.divisionsRoles.DivisionsRoles.length;
+      if (rolesLength > 1) {
+        this.showAdminBool = true;
+        this.showChangeDivision= true;
+      } else {
+        this.showAdminBool = false;
+        this.showChangeDivision = false
+      }
     }
 }

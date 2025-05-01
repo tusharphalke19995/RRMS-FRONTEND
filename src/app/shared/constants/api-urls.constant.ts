@@ -15,7 +15,7 @@ export const apiurls = {
    uploadInfo :`${environment.userApiUrl}casedata/save`,
    getUploadInfo :`${environment.userApiUrl}casedata/search`,
    filePreview :`${environment.userApiUrl}casedata/filePreview`,
-   getFavourites :`${environment.userApiUrl}casedata/favourites`,
+   getFavourites :`${environment.userApiUrl}casedata/favourites?division_id`,
    getFilesLatest :`${environment.userApiUrl}casedata/files/latest`,
    casedataUpdate :`${environment.userApiUrl}casedata/update/`,
    favourite :`${environment.userApiUrl}casedata/files`,

@@ -273,7 +273,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       author: this.uploadDocumentForm.value.author,
       toAddr: this.uploadDocumentForm.value.toAddr,
       caseStatus:this.uploadDocumentForm.value.statusId,
-      year:this.uploadDocumentForm.value.yearId
+      year:this.uploadDocumentForm.value.yearId,
     };
    debugger
     const formData = new FormData();
@@ -283,7 +283,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       hashTag: file.metadata.hashTag ? file.metadata.hashTag.split(',').map(tag => tag.trim()).join(',') : '', 
       subject: file.metadata.subject || '', 
       classification: file.metadata.classification || '', 
-      fileType: file.metadata.fileType || ''
+      fileType: file.metadata.fileType || '',
+      fileStage: file.metadata.fileStage || '',
     }));
     formData.append("fileDetails", JSON.stringify(fileDetailsArray));
 
