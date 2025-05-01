@@ -61,83 +61,98 @@
 
         </div>
         <div class="overflow-x-auto">
-            <table mat-table [dataSource]="dataSource" matSort #sort1="matSort" class="w-full mt-[10px]">
-                <!-- ID Column -->
+            <mat-tab-group mat-stretch-tabs="false"  [(selectedIndex)]="selectedTab">
+                <mat-tab label="Pending Request">
+                    <table mat-table [dataSource]="pendingDataSource" matSort #sort1="matSort" class="w-full mt-[10px]">
+                        <!-- File Name -->
+                        <ng-container matColumnDef="file_name">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">File Name</th>
+                            <td mat-cell *matCellDef="let row"> {{row.file_name}} </td>
+                        </ng-container>
+                        <!-- Created At -->
+                        <ng-container matColumnDef="created_at">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Created At</th>
+                            <td mat-cell *matCellDef="let row"> {{row.created_at}} </td>
+                        </ng-container>
+                        <!-- Comments -->
+                        <ng-container matColumnDef="comments">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Comments</th>
+                            <td mat-cell *matCellDef="let row"> {{row.comments}} </td>
+                        </ng-container>
+                        <!-- Is Approved -->
+                        <ng-container matColumnDef="is_approved">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Is Approved</th>
+                            <td mat-cell *matCellDef="let row"> {{row.is_approved ? 'Approved' : 'Pending'}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Is Revoke</th>
+                            <td mat-cell *matCellDef="let row"> {{row.status}} </td>
+                        </ng-container>
+                        <!-- Action -->
+                        <ng-container matColumnDef="action">
+                            <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black">Action</th>
+                            <td mat-cell *matCellDef="let row">
+                                <div class="flex justify-center gap-2">
+                                    <button mat-icon-button color="primary" (click)="approvedRequest(row)" matTooltip="Approve">
+                                        <mat-icon [svgIcon]="'heroicons_solid:check-circle'"></mat-icon>
+                                    </button>
+                                </div>
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-hover cursor-pointer"></tr>
+                    </table>
+                    <div *ngIf="pendingDataSource?.data?.length === 0" class="p-8 text-center">
+                        No pending requests found
+                    </div>
+                    <div class="flex justify-end w-full dark:bg-gray-800 bg-card">
+                        <mat-paginator #paginator1="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10"
+                            showFirstLastButtons>
+                        </mat-paginator>
+                    </div>
+                </mat-tab>
 
-
-                <!-- KGID Column -->
-                <ng-container matColumnDef="email">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black">Email Id </th>
-                    <td mat-cell *matCellDef="let row"> {{row.email}} </td>
-                </ng-container>
-
-                <!-- Role Column -->
-                <ng-container matColumnDef="first_name">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black"> First Name </th>
-                    <td mat-cell *matCellDef="let row"> {{row.first_name}} </td>
-                </ng-container>
-
-                <!-- Role Column -->
-                <ng-container matColumnDef="last_name">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black"> Last Name </th>
-                    <td mat-cell *matCellDef="let row"> {{row.last_name}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="mobileno">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black"> Mobile No </th>
-                    <td mat-cell *matCellDef="let row"> {{row.mobileno}} </td>
-                </ng-container>
-
-
-                <!-- Mobile Column -->
-                <ng-container matColumnDef="kgid">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black">KGID </th>
-                    <td mat-cell *matCellDef="let row"> {{row.kgid}} </td>
-                </ng-container>
-
-                <!-- Mobile Column -->
-                <ng-container matColumnDef="roleName">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black">Role Name </th>
-                    <td mat-cell *matCellDef="let row"> {{row.roleName}} </td>
-                </ng-container>
-
-
-                <!-- Mobile Column -->
-                <ng-container matColumnDef="divisionName">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black">Division Name </th>
-                    <td mat-cell *matCellDef="let row"> {{row.divisionName}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="designationName">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black">Designation Name </th>
-                    <td mat-cell *matCellDef="let row"> {{row.designationName}} </td>
-                </ng-container>
-
-
-
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-hover cursor-pointer"></tr>
-            </table>
-
-            <!-- No data message -->
-            <div *ngIf="dataSource?.data?.length === 0" class="p-8 text-center">
-                No records found
-            </div>
+                <mat-tab label="After Approval">
+                    <table mat-table [dataSource]="approvedDataSource" matSort #sort2="matSort" class="w-full mt-[10px]">
+                        <!-- File Name -->
+                        <ng-container matColumnDef="file_name">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">File Name</th>
+                            <td mat-cell *matCellDef="let row"> {{row.file_name}} </td>
+                        </ng-container>
+                        <!-- Created At -->
+                        <ng-container matColumnDef="created_at">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Created At</th>
+                            <td mat-cell *matCellDef="let row"> {{row.created_at}} </td>
+                        </ng-container>
+                        <!-- Comments -->
+                        <ng-container matColumnDef="comments">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Comments</th>
+                            <td mat-cell *matCellDef="let row"> {{row.comments}} </td>
+                        </ng-container>
+                        <!-- Is Approved -->
+                        <ng-container matColumnDef="is_approved">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Is Approved</th>
+                            <td mat-cell *matCellDef="let row"> {{row.is_approved ? 'Approved' : 'Pending'}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Is Revoke</th>
+                            <td mat-cell *matCellDef="let row"> {{row.status}} </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumnsApproval"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumnsApproval;" class="hover:bg-hover cursor-pointer"></tr>
+                    </table>
+                    <div *ngIf="approvedDataSource?.data?.length === 0" class="p-8 text-center">
+                        No approved requests found
+                    </div>
+                    <div class="flex justify-end w-full dark:bg-gray-800 bg-card">
+                        <mat-paginator #paginator2="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10"
+                            showFirstLastButtons>
+                        </mat-paginator>
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
         </div>
-        <div class="flex justify-end w-full dark:bg-gray-800 bg-card">
-            <mat-paginator #paginator1="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10"
-                showFirstLastButtons>
-            </mat-paginator>
-        </div>
+
     </div>
 
     <!-- Buttons -->

@@ -129,12 +129,12 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     { labelen: "Mobile No", labelhi: "Mobile No", property: "mobileno" },
     { labelen: "Email ID", labelhi: "Email Id", property: "email" },
     { labelen: "Roles", labelhi: "Roles", property: "roles" },
-    {
-      labelen: "Action",
-      labelhi: "Action",
-      property: "action",
-      isAction: true,
-    },
+    // {
+    //   labelen: "Action",
+    //   labelhi: "Action",
+    //   property: "action",
+    //   isAction: true,
+    // },
   ];
 
   displayedColumns: string[] = [
@@ -143,8 +143,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     "kgid",
     "mobileno",
     "email",
-    "roles",
-    "action",
+    "roles"
   ];
   userRoleDropdown: [];
   designationsDropdown: [];

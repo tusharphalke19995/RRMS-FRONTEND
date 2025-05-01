@@ -108,5 +108,7 @@
   "onDenied": "Denied",
    "reqText":"Would you like to approve or deny this request? Please confirm your decision",
    "reqTextApprove":"Would you like to approve this request? Please confirm your decision",
-   "selectRole":"Select Division"
+   "reqRevokeApprove":"Would you like to Revoke this request? Please confirm your decision",
+   "selectRole":"Select Division",
+   "revoke":"Revoke"
 }

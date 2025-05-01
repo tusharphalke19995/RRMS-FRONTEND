@@ -23,6 +23,7 @@ import { RouterLink } from '@angular/router';
 import { TranslocoModule } from '@ngneat/transloco';
 import { DashbaordService } from '../../dashboard.service';
 import { ApproveReqDialogComponent } from './approve-req-dialog/approve-req-dialog.component';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-pending-approval-list',
@@ -49,6 +50,7 @@ import { ApproveReqDialogComponent } from './approve-req-dialog/approve-req-dial
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    MatTabsModule
   ],
   templateUrl: './pending-approval-list.component.html',
   styleUrl: './pending-approval-list.component.scss'
@@ -66,6 +68,9 @@ export class PendingApprovalListComponent implements OnInit, AfterViewInit {
   @ViewChild("sort1") sort1: MatSort;
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
+  selectedTab = 0;
+  pendingDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
+  approvedDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
   columns: any[] = [
 
     { labelen: "File Name", labelhi: "File Name", property: "file_name" },
@@ -83,10 +88,24 @@ export class PendingApprovalListComponent implements OnInit, AfterViewInit {
     "action"
   ];
 
+  columnsApproval: any[] = [
+    { labelen: "File Name", labelhi: "File Name", property: "file_name" },
+    { labelen: "Created At", labelhi: "Created At", property: "created_at" },
+    { labelen: "Comments", labelhi: "Comments", property: "comments" },
+    { labelen: "Is approved", labelhi: "Is Approved", property: "is_approved" },
+  ];
+
+  displayedColumnsApproval: string[] = [
+    "file_name",
+    "created_at",
+    "comments",
+    "is_approved"
+  ];
+
 
   userRoleDropdown: [];
   designationsDropdown: [];
-  pendingReqData: any;
+  pendingReqData: any[] = [];
   /**
    * Constructor
    */
@@ -110,14 +129,38 @@ export class PendingApprovalListComponent implements OnInit, AfterViewInit {
    * On init
    */
   ngOnInit(): void {
-    this.pendingReqestDataList();
-     this.getContentManagerReqForWkFlow();  
+    this.getContentManagerReqForWkFlow();
   }
 
-  pendingReqestDataList() {
-    this.sharedService.pendingReqData$.subscribe((userInfo: any) => {
-      this.pendingReqData = userInfo;
-      this.dataSource = new MatTableDataSource(this.pendingReqData);
+  getContentManagerReqForWkFlow() {
+    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+    this.dashbaordService.getContentManagerReqData(divisionID).subscribe({
+      next: (response: any) => {
+        this.pendingReqData = response;
+        this.filterTabData();
+      },
+      error: (error) => {
+        console.error("Error fetching current users:", error);
+      },
+    });
+  }
+
+  filterTabData() {
+    this.pendingDataSource = new MatTableDataSource(
+      (this.pendingReqData || []).filter((item: any) => !item.is_approved)
+    );
+    this.approvedDataSource = new MatTableDataSource(
+      (this.pendingReqData || []).filter((item: any) => item.is_approved)
+    );
+  }
+
+  approvedRequest(notification: any){
+    const dialogRef = this.dialog.open(ApproveReqDialogComponent, {
+      data: notification,
+      width: "677px",
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      this.getContentManagerReqForWkFlow();
     });
   }
 
@@ -167,30 +210,5 @@ export class PendingApprovalListComponent implements OnInit, AfterViewInit {
       this.dataSource.paginator.firstPage();
     }
   }
-
-  getContentManagerReqForWkFlow() {
-    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
-    this.dashbaordService.getContentManagerReqData(divisionID).subscribe({
-      next: (response: any) => {
-        this.pendingReqData = response;
-      this.dataSource = new MatTableDataSource(this.pendingReqData);
-        
-      },
-      error: (error) => {
-        console.error("Error fetching current users:", error);
-      },
-    });
-  }
-
-   approvedRequest(notification: any){
-      const dialogRef = this.dialog.open(ApproveReqDialogComponent, {
-        data: notification,
-        width: "677px",
-      });
-      dialogRef.afterClosed().subscribe((result) => {
-        this.getContentManagerReqForWkFlow();
-      });
-  
-    }
 }
 

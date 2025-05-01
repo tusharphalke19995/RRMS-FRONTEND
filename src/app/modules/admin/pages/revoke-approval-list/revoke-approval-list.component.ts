@@ -1,26 +1,29 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { ReactiveFormsModule, FormsModule, UntypedFormGroup, NgForm, UntypedFormBuilder } from '@angular/forms';
+import { UntypedFormGroup, NgForm, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { SearchUserService } from 'app/modules/admin/pages/manage-user/search-userlist/searchUser.service';
+import { MasterService } from 'app/modules/admin/pages/Master/master.service';
+import { SearchDocService } from 'app/modules/admin/pages/search-document/searchDoc.service';
+import { InventoryVendor } from 'app/modules/admin/pages/upload-document/uploadDoc.types';
+import { SharedService } from 'app/shared/shared.service';
+import { Subject } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import { TranslocoModule } from '@ngneat/transloco';
-import { SharedService } from 'app/shared/shared.service';
-import { Subject } from 'rxjs';
-import { SearchUserService } from '../manage-user/search-userlist/searchUser.service';
-import { MasterService } from '../Master/master.service';
-import { SearchDocService } from '../search-document/searchDoc.service';
-import { InventoryVendor } from '../upload-document/uploadDoc.types';
+import { MatTabsModule } from '@angular/material/tabs';
+import { DashbaordService } from '../../dashbaord/dashboard.service';
+import { RevokeApproveReqDialogComponent } from './revoke-approval-req-dialog/revoke-approval-dialog.component';
 
 @Component({
   selector: 'app-revoke-approval-list',
@@ -47,6 +50,7 @@ import { InventoryVendor } from '../upload-document/uploadDoc.types';
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    MatTabsModule
   ],
   templateUrl: './revoke-approval-list.component.html',
   styleUrl: './revoke-approval-list.component.scss'
@@ -64,42 +68,50 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
   @ViewChild("sort1") sort1: MatSort;
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
+  selectedTab = 0;
+  pendingDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
+  approvedDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
   columns: any[] = [
-    { labelen: "Email", labelhi: "Email", property: "email" },
-    {
-      labelen: "First Name",
-      labelhi: "Last Name",
-      property: "first_name",
-    },
-    { labelen: "Last Name", labelhi: "Last Name", property: "last_name" },
-    { labelen: "Mobile No", labelhi: "mobileno", property: "mobileno" },
-    { labelen: "kgid", labelhi: "kgid", property: "kgid" },
-    { labelen: "Role Name", labelhi: "Role Name", property: "roleName" },
-    {
-      labelen: "Division Name",
-      labelhi: "Division Name",
-      property: "divisionNameme",
-    },
-    {
-      labelen: "Designation Name",
-      labelhi: "Designation Name",
-      property: "designationName",
-    },
+
+    { labelen: "File Name", labelhi: "File Name", property: "file_name" },
+    { labelen: "Created At", labelhi: "Created At", property: "created_at" },
+    { labelen: "Comments", labelhi: "Comments", property: "comments" },
+    { labelen: "status", labelhi: "status", property: "status" },
+    { labelen: "status", labelhi: "is_approved", property: "is_approved" },
+
+    { labelen: "Action", labelhi: "Action", property: "action" }
   ];
 
   displayedColumns: string[] = [
-    "email",
-    "first_name",
-    "last_name",
-    "mobileno",
-    "kgid",
-    "roleName",
-    "divisionName",
-    "designationName",
+    "file_name",
+    "created_at",
+    "comments",
+    "status",
+    "is_approved",
+    "action"
   ];
+
+  columnsApproval: any[] = [
+    { labelen: "File Name", labelhi: "File Name", property: "file_name" },
+    { labelen: "Created At", labelhi: "Created At", property: "created_at" },
+    { labelen: "Comments", labelhi: "Comments", property: "comments" },
+    { labelen: "status", labelhi: "is_approved", property: "is_approved" },
+
+    { labelen: "status", labelhi: "status", property: "status" },
+  ];
+
+  displayedColumnsApproval: string[] = [
+    "file_name",
+    "created_at",
+    "comments",
+    "is_approved",
+    "status"
+  ];
+
+
   userRoleDropdown: [];
   designationsDropdown: [];
-  activeUserData: any;
+  pendingReqData: any[] = [];
   /**
    * Constructor
    */
@@ -111,7 +123,8 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
     private _masterService: MasterService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: UntypedFormBuilder,
-    private _citizeninfoService: SearchDocService
+    private _citizeninfoService: SearchDocService,
+    private dashbaordService:DashbaordService
   ) {}
 
   // -----------------------------------------------------------------------------------------------------
@@ -122,14 +135,38 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
    * On init
    */
   ngOnInit(): void {
-    this.getActiveUserList();
+    this.getContentManagerReqForWkFlow();
   }
 
-  getActiveUserList() {
-    this.sharedService.activeUserData$.subscribe((userInfo: any) => {
-      this.activeUserData = userInfo;
-      console.log(" this.activeUserData ", this.activeUserData);
-      this.dataSource = new MatTableDataSource(this.activeUserData);
+  getContentManagerReqForWkFlow() {
+    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+    this.dashbaordService.getContentManagerReqData(divisionID).subscribe({
+      next: (response: any) => {
+        this.pendingReqData = response;
+        this.filterTabData();
+      },
+      error: (error) => {
+        console.error("Error fetching current users:", error);
+      },
+    });
+  }
+
+  filterTabData() {
+    this.pendingDataSource = new MatTableDataSource(
+      (this.pendingReqData || []).filter((item: any) => !item.is_approved)
+    );
+    this.approvedDataSource = new MatTableDataSource(
+      (this.pendingReqData || []).filter((item: any) => item.is_approved)
+    );
+  }
+
+  approvedRequest(notification: any){
+    const dialogRef = this.dialog.open(RevokeApproveReqDialogComponent, {
+      data: notification,
+      width: "677px",
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      this.getContentManagerReqForWkFlow();
     });
   }
 
@@ -180,3 +217,4 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
     }
   }
 }
+

@@ -35,5 +35,7 @@ export const apiurls = {
    getCmoradmins:`${environment.userApiUrl}users/getcmoradmins`,
    caseDataFilePreview :`${environment.userApiUrl}casedata/filePreview`,
    caseDataFileApproveReq :`${environment.userApiUrl}casedata/access`,
+   casedataRevoke :`${environment.userApiUrl}casedata/revoke`,
+   
    
 }as const;

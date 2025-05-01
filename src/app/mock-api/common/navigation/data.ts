@@ -30,13 +30,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
         icon : 'heroicons_outline:user-circle',
         link : '/manage-user'
     },
-    {
-        id   : 'roleMng',
-        title: 'Role Management',
-        type : 'basic',
-        icon : 'heroicons_outline:star',
-        link : '/manage-user-role'
-    },
+    // {
+    //     id   : 'roleMng',
+    //     title: 'Role Management',
+    //     type : 'basic',
+    //     icon : 'heroicons_outline:star',
+    //     link : '/manage-user-role'
+    // },
     {
         id   : 'notification',
         title: 'Notification',
@@ -63,13 +63,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
         type    : 'collapsable',
         icon    : 'heroicons_outline:information-circle',
         children: [
-            // {
-            //     id        : 'roleMng',
-            //     title     : 'Role Management',
-            //     type      : 'basic',
-            //     link      : '/manage-master/role',
-            //     exactMatch: true,
-            // },
+            {
+                id        : 'roleMng',
+                title     : 'Role Management',
+                type      : 'basic',
+                link      : '/manage-master/role',
+                exactMatch: true,
+            },
             {
                 id   : 'divisionMng',
                 title: 'Division Management',

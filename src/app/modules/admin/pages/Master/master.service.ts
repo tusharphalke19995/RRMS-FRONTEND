@@ -99,11 +99,16 @@ createRole(data) {
     .pipe(catchError(this.handleError));
 }
 
-  getRole() {
-    return this._httpClient
-      .get(apiurls.getRolesMatser)
-      .pipe(catchError(this.handleError));
+  getRole(id:number) {
+    const url = `${apiurls.getRolesMatser}=${id}`
+    return this._httpClient.get(url, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
   }
+  
 
   getDivision(id:number) {
    
