@@ -269,4 +269,8 @@ export class DashbaordComponent implements OnInit, OnDestroy {
         this.showChangeDivision = false
       }
     }
+    getHashTags(hashTagString: string): string[] {
+      if (!hashTagString) return [];
+      return hashTagString.split(' ').filter(tag => tag.trim() !== '');
+    }
 }

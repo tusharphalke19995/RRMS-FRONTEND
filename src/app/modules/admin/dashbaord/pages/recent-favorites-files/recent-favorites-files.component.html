@@ -92,7 +92,7 @@
                         class="bg-primary-300 dark:bg-slate-500 text-black">Hash Tag </th>
                     <td mat-cell *matCellDef="let row">
                         <div class="custom-tag-list">
-                            <span *ngFor="let tag of row.file.hashTag.split(',')" class="custom-tag">{{tag}}</span>
+                            <span *ngFor="let tag of getHashTags(row.file.hashTag)" class="custom-tag">{{tag}}</span>
                         </div>
                     </td>
                 </ng-container>

@@ -194,5 +194,11 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
           this.cdr.detectChanges();
         });
       }
+      
+      getHashTags(hashTagString: string): string[] {
+        if (!hashTagString) return [];
+        return hashTagString.split(' ').filter(tag => tag.trim() !== '');
+      }
+    
 }
 

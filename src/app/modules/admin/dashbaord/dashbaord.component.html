@@ -14,25 +14,26 @@
                         <div class="flex flex-col min-w-0 ml-4">
                             <ng-container *transloco="let t">
                                 <div class="space-y-1 md:space-y-2" *ngIf="getDivisionRoleData() as roleData">
-                                  <h3 class="text-xl md:text-2xl font-semibold tracking-tight leading-7 md:leading-snug">
-                                    {{ t('welcome-back') }}, {{ authData.UserName }}!
-                                  </h3>
-                              
-                                  <p class="text-md md:text-lg text-gray-600">
-                                    <strong>Designation:</strong> {{ roleData.designation_name }}
-                                  </p>
-                              
-                                  <p class="text-md md:text-lg text-gray-600">
-                                    <strong>Role:</strong> {{ roleData.role_name }}
-                                  </p>
-                              
-                                  <p class="text-md md:text-lg text-gray-600">
-                                    <strong>Division:</strong> {{ roleData.division_name }}
-                                  </p>
+                                    <h3
+                                        class="text-xl md:text-2xl font-semibold tracking-tight leading-7 md:leading-snug">
+                                        {{ t('welcome-back') }}, {{ authData.UserName }}!
+                                    </h3>
+
+                                    <p class="text-md md:text-lg text-gray-600">
+                                        <strong>Designation:</strong> {{ roleData.designation_name }}
+                                    </p>
+
+                                    <p class="text-md md:text-lg text-gray-600">
+                                        <strong>Role:</strong> {{ roleData.role_name }}
+                                    </p>
+
+                                    <p class="text-md md:text-lg text-gray-600">
+                                        <strong>Division:</strong> {{ roleData.division_name }}
+                                    </p>
                                 </div>
-                              </ng-container>
-                              
-                          
+                            </ng-container>
+
+
                         </div>
                     </div>
                     <div class="flex items-center cursor-pointer" (click)="goToDivision()" *ngIf="showChangeDivision">
@@ -55,7 +56,8 @@
                     <div class="flex cursor-pointer" (click)="goToActiveUserList(currentUserData)">
                         <a class="inline-flex items-center -ml-1.5 text-blue-600 font-medium">
                             <span class="ml-1">Users</span>
-                            <mat-icon class="icon-size-5 text-blue-600" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                            <mat-icon class="icon-size-5 text-blue-600"
+                                [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
                         </a>
                     </div>
                 </div>
@@ -73,7 +75,8 @@
                     <div class="flex cursor-pointer" (click)="goToPendingApproval()">
                         <a class="inline-flex items-center -ml-1.5 text-red-500 font-medium">
                             <span class="ml-1">Approvals</span>
-                            <mat-icon class="icon-size-5 text-red-500" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                            <mat-icon class="icon-size-5 text-red-500"
+                                [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
                         </a>
                     </div>
                 </div>
@@ -91,13 +94,14 @@
                     <div class="flex cursor-pointer" (click)="goToNotification()">
                         <a class="inline-flex items-center -ml-1.5 text-amber-500 font-medium">
                             <span class="ml-1">Notifications</span>
-                            <mat-icon class="icon-size-5 text-amber-500" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                            <mat-icon class="icon-size-5 text-amber-500"
+                                [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="flex-auto border-t -mt-px pt-4 sm:pt-6">
             <div class="w-full max-w-screen-xl mx-auto">
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full min-w-0">
@@ -139,8 +143,8 @@
                                                     <strong>Hash Tag:</strong>
                                                     <mat-chip-list>
                                                         <mat-chip
-                                                            *ngFor="let tag of favoritesItem.file.hashTag.split(',')"
-                                                            class="py-0.5 bg-blue-400  dark:bg-blue-500 px-3 rounded-full text-sm font-semibold text-white">
+                                                            *ngFor="let tag of getHashTags(favoritesItem.file.hashTag)"
+                                                            class="py-0.5 bg-blue-400 dark:bg-blue-500 px-3 rounded-full text-sm font-semibold text-white">
                                                             {{ tag.trim() }}
                                                         </mat-chip>
                                                     </mat-chip-list>
@@ -160,7 +164,8 @@
                         </div>
                         <ng-template #noData>
                             <!-- <p class="text-center text-gray-500">No data available</p> -->
-                            <img  class="text-center noDataImg" src="../../../../assets/images/others/Nodataavailable.svg" alt="">
+                            <img class="text-center noDataImg"
+                                src="../../../../assets/images/others/Nodataavailable.svg" alt="">
                         </ng-template>
                     </div>
 
@@ -196,13 +201,13 @@
                                                     <strong>Hash Tag:</strong>
                                                     <mat-chip-list>
                                                         <mat-chip
-                                                            *ngFor="let tag of latestFileItem.hashTag.split(',')"
-                                                            class="py-0.5 bg-blue-400  dark:bg-blue-500 px-3 rounded-full text-sm font-semibold text-white">
+                                                            *ngFor="let tag of getHashTags(latestFileItem.hashTag)"
+                                                            class="py-0.5 bg-blue-400 dark:bg-blue-500 px-3 rounded-full text-sm font-semibold text-white">
                                                             {{ tag.trim() }}
                                                         </mat-chip>
                                                     </mat-chip-list>
                                                 </div>
-                                                
+
                                             </div>
                                         </div>
                                     </div>
