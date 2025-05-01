@@ -105,7 +105,7 @@
                         <td>
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-label *transloco="let t" class="font-medium">{{t('firNo')}}</mat-label>
-                                <input matInput [formControlName]="'firNo'" placeholder="Enter employee name">
+                                <input matInput [formControlName]="'firNo'" placeholder="Enter employee name"  (keypress)="allowOnlyNumbers($event)" >
                                 <mat-error *ngIf="searchDocumentForm.get('firNo').hasError('required')">
                                     Required
                                 </mat-error>
@@ -115,7 +115,7 @@
                         </td>
                         <td><mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium">{{t('caseNo')}}</mat-label>
-                                <input matInput matInput [formControlName]="'caseNo'" maxlength="4">
+                                <input matInput matInput [formControlName]="'caseNo'" maxlength="4" (keypress)="allowOnlyNumbers($event)">
                                 <mat-error *ngIf="searchDocumentForm.get('caseNo').hasError('required')">
                                     Required
                                 </mat-error>

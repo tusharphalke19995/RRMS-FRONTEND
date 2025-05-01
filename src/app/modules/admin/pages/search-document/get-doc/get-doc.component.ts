@@ -82,6 +82,7 @@ export class GetDocComponent {
   fileTypesDropDown: [];
 
   fileToView: any = null;
+  checkGetFile: boolean;
 
   constructor(
     private dataService: SharedService,
@@ -101,14 +102,23 @@ export class GetDocComponent {
     this.getCasedataSelected();
     this.getFileClassificationInfo();
     this.getFileTypesInfo();
+    this.getFilesCheck();
   }
 
   getFilesWithMetadataSelected() {
     this.dataService.getFilesData().subscribe((files) => {
       this.files = files;
-    });
+    })
+     
   }
 
+
+  getFilesCheck() {
+    this.dataService.getFileBoolean().subscribe((res) => {
+      this.checkGetFile = res;
+    });
+  }
+  
   getCasedataSelected() {
     this.dataService.getCaseData().subscribe((caseData) => {
       this.caseMetaData = caseData;
@@ -199,4 +209,11 @@ export class GetDocComponent {
   viewFile(file: any) {
     this.fileToView = file;
   }
+
+  hasRole(...roles: string[]): boolean {
+    return this.authData.DivisionsRoles.some(role =>
+      roles.includes(role.role_name)
+    );
+  }
+
 }

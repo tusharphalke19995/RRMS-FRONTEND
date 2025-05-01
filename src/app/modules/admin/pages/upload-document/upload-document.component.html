@@ -124,7 +124,7 @@
                         </td>
                         <td><mat-form-field appearance="outline">
                             <mat-label *transloco="let t" class="font-medium">{{ t('letterNo')}}</mat-label>
-                            <input matInput matInput [formControlName]="'letterNo'" [required]="true">
+                            <input matInput matInput [formControlName]="'letterNo'" [required]="true" (keypress)="allowOnlyNumbers($event)">
                             <mat-error *ngIf="uploadDocumentForm.get('letterNo').hasError('required')">
                                 Required
                             </mat-error>
@@ -152,7 +152,7 @@
                                 <mat-label *transloco="let t" class="font-medium">{{ t('location')}}</mat-label>
                                 <input matInput matInput [formControlName]="'toAddr'" [required]="true">
                                 <mat-error *ngIf="uploadDocumentForm.get('toAddr').hasError('required')">
-                                    Required
+                                    Required 
                                 </mat-error>
                             </mat-form-field>
 
@@ -206,7 +206,7 @@
                         <td><mat-form-field appearance="outline">
                                 <mat-label *transloco="let t" class="font-medium">{{ t('firNo')}}</mat-label>
                                 <input (input)="generateCrimeNo()" matInput matInput maxlength="4" [formControlName]="'firNo'"
-                                    [required]="true">
+                                    [required]="true"  (keypress)="allowOnlyNumbers($event)">
                                 <mat-error *ngIf="uploadDocumentForm.get('firNo').hasError('required')">
                                     Required
                                 </mat-error>

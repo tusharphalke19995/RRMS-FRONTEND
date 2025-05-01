@@ -376,4 +376,12 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   onYearChange(yearId: number): void {
     this.generateCrimeNo();
   }
+
+  allowOnlyNumbers(event: KeyboardEvent): void {
+    const charCode = event.key.charCodeAt(0);
+    // Allow only digits (0–9)
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
+  }
 }

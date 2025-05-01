@@ -372,6 +372,19 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   submitMetadata(): void {
     if (this.metadataForm.valid) {
       const metadata = this.metadataForm.value;
+      if (this.selectedFiles.length === 1) {
+        // If only one file, always apply metadata
+        this.selectedFiles[0].metadata = { ...this.selectedFiles[0].metadata, ...metadata };
+        this._snackBar.open("Metadata added to file", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["success-snackbar"],
+        });
+        this.openFileModal = false;
+        this.selectedIndexes.clear();
+        return;
+      }
       let anySelected = false;
       this.selectedIndexes.forEach(index => {
         const file = this.selectedFiles[index];
@@ -677,5 +690,13 @@ export class UploadFilesComponent implements OnInit, OnChanges {
 
   get hasSelectedFiles(): boolean {
     return this.selectedIndexes.size > 0;
+  }
+
+  toggleSelectAll(checked: boolean) {
+    if (checked) {
+      this.selectedFiles.forEach((_, i) => this.selectedIndexes.add(i));
+    } else {
+      this.selectedIndexes.clear();
+    }
   }
 }

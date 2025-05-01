@@ -314,4 +314,11 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     
   }
 
+  allowOnlyNumbers(event: KeyboardEvent): void {
+    const charCode = event.key.charCodeAt(0);
+    // Allow only digits (0–9)
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
+  }
 }

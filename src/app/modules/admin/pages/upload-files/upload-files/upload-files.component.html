@@ -24,23 +24,35 @@
       Allowed file types: PDF, JPG, PNG (100KB - 50GB)
     </div>
 
+    <!-- Select All Checkbox (only if more than one file) -->
+    <div *ngIf="selectedFiles.length > 1" class="flex items-center mb-2">
+      <mat-checkbox
+        [checked]="selectedIndexes.size === selectedFiles.length"
+        [indeterminate]="selectedIndexes.size > 0 && selectedIndexes.size < selectedFiles.length"
+        (change)="toggleSelectAll($event.checked)">
+        Select All
+      </mat-checkbox>
+    </div>
+
     <!-- Selected Files List with Metadata -->
     <div *ngIf="selectedFiles.length > 0" class="selected-files-list">
       <div *ngFor="let file of selectedFiles; let i = index" class="file-item">
         <div class="flex items-center justify-between p-2">
           <div class="flex items-center">
+            <!-- Per-file checkbox, only if more than one file -->
             <mat-checkbox
-            [checked]="selectedIndexes.has(i)"
-            (change)="onFileCheckboxChange(i, $event.checked)">
-          </mat-checkbox>
+              *ngIf="selectedFiles.length > 1"
+              [checked]="selectedIndexes.has(i)"
+              (change)="onFileCheckboxChange(i, $event.checked)">
+            </mat-checkbox>
             <mat-icon
-            (click)="!isRestrictedToView(file) && viewImage(file)"
-            [ngClass]="{
-              'cursor-pointer text-green-500': file.metadata && !isRestrictedToView(file),
-              'cursor-not-allowed text-gray-500': isRestrictedToView(file)
-            }">
-            {{ file.metadata ? 'check_circle' : 'insert_drive_file' }}
-          </mat-icon>
+              (click)="!isRestrictedToView(file) && viewImage(file)"
+              [ngClass]="{
+                'cursor-pointer text-green-500': file.metadata && !isRestrictedToView(file),
+                'cursor-not-allowed text-gray-500': isRestrictedToView(file)
+              }">
+              {{ file.metadata ? 'check_circle' : 'insert_drive_file' }}
+            </mat-icon>
             <span class="ml-2">{{crimeNo}}_{{ file.name || file.fileName}}</span>
             <span class="ml-2 text-sm text-gray-500" *ngIf="checkGetFile">
               ({{ (file.size / 1024).toFixed(1) }} KB)
