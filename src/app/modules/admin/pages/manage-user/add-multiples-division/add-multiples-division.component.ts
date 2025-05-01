@@ -62,8 +62,10 @@ export class AddMultiplesDivisionComponent {
   }
 
   onNoClose(): void {
-    this.dialogRef.close({ data: false });
+    this.dialogRef.close(); 
   }
+
+  
 
   reqRejected() {}
 
