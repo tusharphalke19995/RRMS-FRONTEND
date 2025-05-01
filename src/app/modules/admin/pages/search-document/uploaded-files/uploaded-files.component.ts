@@ -119,4 +119,6 @@ export class UploadedFilesComponent {
   getSafeUrl(url: string) {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
+
+  
 }

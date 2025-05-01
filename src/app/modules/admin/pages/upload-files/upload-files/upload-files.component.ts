@@ -520,8 +520,11 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   viewImage(data) {
     const dialogRef = this.dialog.open(UploadedFilesComponent, {
       data: data,
-      width: "1000px",
-    });
+    width: '850px', // or '100vw' for full width
+    maxWidth: '100vw',
+    height: '90vh',
+    panelClass: 'custom-dialog-class'
+  });
     dialogRef.afterClosed().subscribe((result) => {
       this._changeDetectorRef.detectChanges();
     });
