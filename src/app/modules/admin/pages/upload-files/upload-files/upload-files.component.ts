@@ -371,47 +371,83 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     this.fileToEdit = null;
   }
 
+  // submitMetadata(): void {
+  //   if (this.metadataForm.valid) {
+  //     const metadata = this.metadataForm.value;
+  //     if (this.selectedFiles.length === 1) {
+  //       // If only one file, always apply metadata
+  //       this.selectedFiles[0].metadata = { ...this.selectedFiles[0].metadata, ...metadata };
+  //       this._snackBar.open("Metadata added to file", "Close", {
+  //         duration: 3000,
+  //         horizontalPosition: "right",
+  //         verticalPosition: "top",
+  //         panelClass: ["success-snackbar"],
+  //       });
+  //       this.openFileModal = false;
+  //       this.selectedIndexes.clear();
+  //       return;
+  //     }
+  //     let anySelected = false;
+  //     this.selectedIndexes.forEach(index => {
+  //       const file = this.selectedFiles[index];
+  //       if (file) {
+  //         file.metadata = { ...file.metadata, ...metadata };
+  //         anySelected = true;
+  //       }
+  //     });
+  //     if (anySelected) {
+  //       this._snackBar.open("Metadata added to selected files", "Close", {
+  //         duration: 3000,
+  //         horizontalPosition: "right",
+  //         verticalPosition: "top",
+  //         panelClass: ["success-snackbar"],
+  //       });
+  //       this.openFileModal = false;
+  //       this.selectedIndexes.clear();
+  //     } else {
+  //       this._snackBar.open("Please select at least one file", "Close", {
+  //         duration: 3000,
+  //         horizontalPosition: "right",
+  //         verticalPosition: "top",
+  //         panelClass: ["error-snackbar"],
+  //       });
+  //     }
+  //   }
+  // }
+
   submitMetadata(): void {
     if (this.metadataForm.valid) {
       const metadata = this.metadataForm.value;
+  
+      // If only one file, always apply metadata
       if (this.selectedFiles.length === 1) {
-        // If only one file, always apply metadata
         this.selectedFiles[0].metadata = { ...this.selectedFiles[0].metadata, ...metadata };
-        this._snackBar.open("Metadata added to file", "Close", {
-          duration: 3000,
-          horizontalPosition: "right",
-          verticalPosition: "top",
-          panelClass: ["success-snackbar"],
+      } 
+      // If checkboxes are selected, apply to those files
+      else if (this.selectedIndexes.size > 0) {
+        this.selectedIndexes.forEach(index => {
+          const file = this.selectedFiles[index];
+          if (file) {
+            file.metadata = { ...file.metadata, ...metadata };
+          }
         });
-        this.openFileModal = false;
-        this.selectedIndexes.clear();
-        return;
-      }
-      let anySelected = false;
-      this.selectedIndexes.forEach(index => {
-        const file = this.selectedFiles[index];
+      } 
+      // If no checkboxes are selected, apply to the file for which modal was opened
+      else if (this.fileToEdit) {
+        const file = this.selectedFiles.find(f => f === this.fileToEdit || f.name === this.fileToEdit.name);
         if (file) {
           file.metadata = { ...file.metadata, ...metadata };
-          anySelected = true;
         }
-      });
-      if (anySelected) {
-        this._snackBar.open("Metadata added to selected files", "Close", {
-          duration: 3000,
-          horizontalPosition: "right",
-          verticalPosition: "top",
-          panelClass: ["success-snackbar"],
-        });
-        this.openFileModal = false;
-        this.selectedIndexes.clear();
-      } else {
-        this._snackBar.open("Please select at least one file", "Close", {
-          duration: 3000,
-          horizontalPosition: "right",
-          verticalPosition: "top",
-          panelClass: ["error-snackbar"],
-        });
       }
+  
+      this._snackBar.open("Metadata added", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["success-snackbar"],
+      });
+      this.openFileModal = false;
+      this.selectedIndexes.clear();
     }
   }
 

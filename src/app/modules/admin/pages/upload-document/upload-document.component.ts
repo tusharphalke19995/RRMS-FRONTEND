@@ -149,7 +149,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.uploadDocumentForm = this._formBuilder.group({
       stateIDInfo: ["", [Validators.required]],
       districtId: ["", [Validators.required]],
-      unitsId: [""],
+      unitsId: ["",[Validators.required]],
       office: ["", [Validators.required]],
       letterNo: ["", [Validators.required]],
       caseNo: [""],
@@ -383,5 +383,23 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     if (charCode < 48 || charCode > 57) {
       event.preventDefault();
     }
+  }
+
+  get canSubmit(): boolean {
+    if (this.uploadDocumentForm.invalid) return false;
+    if (!this.selectedFiles || this.selectedFiles.length === 0) return false;
+    for (const file of this.selectedFiles) {
+      const meta = file.metadata;
+      if (
+        !meta ||
+        !meta.subject ||
+        !meta.fileType ||
+        !meta.classification ||
+        !meta.fileStage
+      ) {
+        return false;
+      }
+    }
+    return true;
   }
 }

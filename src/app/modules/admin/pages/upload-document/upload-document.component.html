@@ -258,7 +258,7 @@
                         {{t('clear')}}
                     </button>
                     <button *transloco="let t" class="ml-2" mat-flat-button [color]="'primary'"
-                        [disabled]="uploadDocumentForm.pristine || uploadDocumentForm.invalid" (click)="sumbitUpload()">
+                    [disabled]="!canSubmit" (click)="sumbitUpload()">
                         {{t('submit')}}
                     </button>
                 </div>
