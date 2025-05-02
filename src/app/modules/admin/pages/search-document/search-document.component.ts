@@ -233,7 +233,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
 
   onStateChange(stateId: number): void {
     if (stateId) {
-      const divisionId =JSON.parse(sessionStorage.getItem("divisionID"));
+      const divisionId =Number(sessionStorage.getItem("divisionID"));
       this._uploadDocumentService.geDistrictByStateData(stateId,divisionId).subscribe(
         (districts: any) => {
           this.districtDropdown = districts.responseData;
@@ -249,7 +249,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   }
 
   getUserStateDropdown() {
-    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
+    const divisionId =Number(sessionStorage.getItem('divisionID'));
     this._uploadDocumentService.getState(divisionId).subscribe({
       next: (response: any) => {
         console.log("response", response);
@@ -268,7 +268,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   }
 
   onDisctrictChange(stateId: number): void {
-    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
+    const divisionId =Number(sessionStorage.getItem('divisionID'));
     this._uploadDocumentService.getUnitsByDistictIdData(stateId,divisionId).subscribe({
       next: (response: any) => {
         if (response.statusCode == 200) {
@@ -292,7 +292,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       caseNo: this.searchDocumentForm.value.caseNo,
       caseDate: this.searchDocumentForm.value.caseDate,
       firNo: this.searchDocumentForm.value.firNo,
-      division_id :JSON.parse(sessionStorage.getItem('divisionID'))
+      division_id :Number(sessionStorage.getItem('divisionID'))
     };
 
     this._searchDocService.getUploadDocMetaData(searchMetaData).subscribe({

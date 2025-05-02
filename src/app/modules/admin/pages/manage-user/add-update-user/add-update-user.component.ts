@@ -114,7 +114,7 @@ export class AddUpdateUserComponent {
   }
 
   getUserRoleDropdown() {
-    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+    const divisionID = Number(sessionStorage.getItem("divisionID"));
     this._searchUserService.getUserRole(divisionID).subscribe({
       next: (response: any) => {
         if (response) {
@@ -126,7 +126,7 @@ export class AddUpdateUserComponent {
   }
 
   getDivisionDropdown() {
-    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
+    const divisionId =Number(sessionStorage.getItem('divisionID'));
     this._searchUserService.getDivision(divisionId).subscribe({
       next: (response: any) => {
         if (response) {
@@ -138,7 +138,7 @@ export class AddUpdateUserComponent {
   }
 
   getDesignationsData() {
-    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
+    const divisionId =Number(sessionStorage.getItem('divisionID'));
     this._searchUserService.getDesignationsInfo(divisionId).subscribe({
       next: (response: any) => {
         if (response) {

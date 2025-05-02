@@ -37,7 +37,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class ConfirmationDialogComponent {
   manageNotificationConfirmation:FormGroup;
-
+  paloadApproveDenied:any;
   constructor( private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any , private _formBuilder:FormBuilder)
 {
 
@@ -58,46 +58,23 @@ initiateForm() {
   });
 }
 
-
-onDenied(): void {
-  const remarksControl = this.manageNotificationConfirmation.get('remarks');
-  remarksControl?.setValidators([Validators.required]);
-  remarksControl?.updateValueAndValidity();
-  const divisionID = JSON.parse(sessionStorage.getItem('divisionID'));
-  if (this.manageNotificationConfirmation.valid) {
-   this.notificationService.approveNotification(this.data.file.fileId,divisionID).subscribe({
-    next: (response: any) => {
-      this._snackBar.open("Request Approved successfully", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["success-snackbar"],
-      });
-      this.dialogRef.close(true);
-     
-    },
-    error: (error) => {
-      this._snackBar.open(error.message || "Error creating user", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["error-snackbar"],
-      });
-    },
-  });
-  } else {
-    remarksControl?.markAsTouched();
-  }
-}
-
-onApprove(): void {
+onApprove(status: string): void {
   const remarksControl = this.manageNotificationConfirmation.get('remarks');
   remarksControl?.clearValidators();
   remarksControl?.updateValueAndValidity();
-  const divisionID = JSON.parse(sessionStorage.getItem('divisionID'));
-  this.notificationService.approveNotification(this.data.file.fileId,divisionID).subscribe({
+
+  const divisionID = Number(sessionStorage.getItem('divisionID') || 'null');
+
+  const payload = {
+    file_id: this.data.file.fileId,
+    division_id: divisionID,
+    is_approved:Boolean(status),
+    comments: remarksControl?.value || ''
+  };
+  this.notificationService.approveNotification(payload).subscribe({
     next: (response: any) => {
-      this._snackBar.open("Request Approved successfully", "Close", {
+      const message = status === 'true' ? "Request Approved successfully" : "Request Denied successfully";
+      this._snackBar.open(message, "Close", {
         duration: 3000,
         horizontalPosition: "right",
         verticalPosition: "top",
@@ -105,10 +82,9 @@ onApprove(): void {
       });
       this.dialogRef.close(true);
       this.markAsRead();
-     
     },
     error: (error) => {
-      this._snackBar.open(error.message || "Error creating user", "Close", {
+      this._snackBar.open(error.message || "Error processing request", "Close", {
         duration: 3000,
         horizontalPosition: "right",
         verticalPosition: "top",

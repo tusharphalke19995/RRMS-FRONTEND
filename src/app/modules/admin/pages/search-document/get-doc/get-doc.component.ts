@@ -212,10 +212,10 @@ export class GetDocComponent {
     this.fileToView = file;
   }
 
-  hasRole(...roles: string[]): boolean {
-    return this.authData.DivisionsRoles.some(role =>
-      roles.includes(role.role_name)
+  hasRoleInDivision(...roles: string[]): boolean {
+    const divisionID = JSON.parse(sessionStorage.getItem('divisionID') || 'null');
+    return this.authData.DivisionsRoles.some(
+      (role) => roles.includes(role.role_name) && role.division_id === divisionID
     );
   }
-
 }

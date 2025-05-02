@@ -259,7 +259,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   }
 
   getUserInfo() {
-    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+    const divisionID = Number(sessionStorage.getItem("divisionID"));
     this._searchUserService.getUserList(divisionID).subscribe({
       next: (response: any) => {
         this.users = response.map(user => ({
@@ -273,7 +273,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   }
 
   getUserRoleDropdown() {
-    const divisionID = JSON.parse(sessionStorage.getItem('divisionID'));
+    const divisionID = Number(sessionStorage.getItem('divisionID'));
     this._searchUserService.getUserRole(divisionID).subscribe({
       next: (response: any) => {
         if (response) {
@@ -285,7 +285,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   }
 
   getDivisionDropdown() {
-    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
+    const divisionId =Number(sessionStorage.getItem('divisionID'));
     this._searchUserService.getDivision(divisionId).subscribe({
       next: (response: any) => {
         if (response) {
@@ -297,7 +297,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   }
 
   getDesignationsDropDownData() {
-    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
+    const divisionId =Number(sessionStorage.getItem('divisionID'));
     this._searchUserService.getDesignationsInfo(divisionId).subscribe({
       next: (response: any) => {
         if (response) {

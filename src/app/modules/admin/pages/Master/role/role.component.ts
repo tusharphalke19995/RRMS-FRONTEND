@@ -171,7 +171,7 @@ export class RoleComponent implements OnInit {
   }
 
   getRolesInfo() {
-    const divisionID= JSON.parse(sessionStorage.getItem('divisionID'))
+    const divisionID= Number(sessionStorage.getItem('divisionID'))
     this._masterService.getRole(divisionID).subscribe({
       next: (response: any) => {
         this.dataSource = new MatTableDataSource(response.responseData);

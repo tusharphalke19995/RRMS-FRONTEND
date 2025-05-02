@@ -134,7 +134,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   }
 
   getFavouritesInfo() {
-    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+    const divisionID = Number(sessionStorage.getItem("divisionID"));
     this._dashbaordService.getFavouritesData(divisionID).subscribe({
       next: (response: any) => {
         this.favoritesListViewAll = response;
@@ -163,7 +163,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   }
 
   getNotificationsCount() {
-    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+    const divisionID = Number(sessionStorage.getItem("divisionID"));
     this._dashbaordService.getNotificationsCount(divisionID).subscribe({
       next: (response: any) => {
         console.log("response Noti", response);
@@ -214,7 +214,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   }
 
   getContentManagerReqForWkFlow() {
-    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+    const divisionID = Number(sessionStorage.getItem("divisionID"));
     this._dashbaordService.getContentManagerReqData(divisionID).subscribe({
       next: (response: any) => {
         this.finalDataCaseReqPending = response;

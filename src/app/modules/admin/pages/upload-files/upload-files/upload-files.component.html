@@ -205,7 +205,7 @@
       Save Metadata
     </button>
     <button mat-raised-button color="primary" [disabled]="!metadataForm.valid" (click)="submitMetadata()"
-    *ngIf="!checkGetFile && hasRole('ContentManager', 'admin')">
+    *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin')">
       Update Metadata
     </button>
 

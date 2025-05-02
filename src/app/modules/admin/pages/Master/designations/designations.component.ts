@@ -196,7 +196,7 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
   }
 
   getDesignationInfo() {
-    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
+    const divisionId =Number(sessionStorage.getItem('divisionID'));
     this._searchUserService.getDesignationsInfo(divisionId).subscribe({
       next: (response: any) => {
         console.log("response", response);

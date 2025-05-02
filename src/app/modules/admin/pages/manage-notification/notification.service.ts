@@ -31,17 +31,12 @@ export class NotificationService
       .pipe(catchError(this.handleError));
   }
 
-  approveNotification(
-    fileId: number,
-    divisionId: number
-  ) {
-    const url = `${apiurls.approveFiles}/${fileId}`;
-    const body = {
-      division_id: divisionId
-    };
-    return this.commonApiCallService.post(url, body)
-      .pipe(catchError(this.handleError));
+  approveNotification(data:any){
+    return this._httpClient
+    .post(apiurls.approveFiles, data,)
+    .pipe(catchError(this.handleError));
   }
+
   /**
    * The error handler.
    * @param err The http error response.

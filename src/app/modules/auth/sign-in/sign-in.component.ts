@@ -139,7 +139,6 @@ export class AuthSignInComponent implements OnInit {
       this.divisionsRoles.DivisionsRoles.forEach((data:any) => {
         const divisionId = data.division_id;
         sessionStorage.setItem('divisionID', divisionId);
-        console.log("divisionIddwe",divisionId)
       });
      
       this._router.navigateByUrl("/dashboard");

@@ -124,7 +124,7 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
   }
 
   getFavFilesList() {
-    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+    const divisionID = Number(sessionStorage.getItem("divisionID"));
     this._dashbaordService.getFavouritesData(divisionID).subscribe({
         next: (response: any) => {
           this.dataSource = new MatTableDataSource(response);

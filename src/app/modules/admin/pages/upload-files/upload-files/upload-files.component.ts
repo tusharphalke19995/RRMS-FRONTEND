@@ -550,7 +550,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   markUnFavourite(data: any) {
-    const divisionID = JSON.parse(sessionStorage.getItem('divisionID'))
+    const divisionID = Number(sessionStorage.getItem('divisionID'))
     this._uploadDocumentService.markAsUnFavourite(data.fileId,divisionID).subscribe({
       next: (response: any) => {
         this._snackBar.open("Mark As Un Favourite successfully", "Close", {
@@ -574,7 +574,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   markFavourite(data: any) {
-    const divisionID = JSON.parse(sessionStorage.getItem('divisionID'))
+    const divisionID = Number(sessionStorage.getItem('divisionID'))
     this._uploadDocumentService.markAsFavourite(data.fileId,divisionID).subscribe({
       next: (response: any) => {
         this._snackBar.open("Mark As Favourite successfully", "Close", {
@@ -710,5 +710,12 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     } else {
       this.selectedIndexes.clear();
     }
+  }
+
+  hasRoleInDivision(...roles: string[]): boolean {
+    const divisionID = JSON.parse(sessionStorage.getItem('divisionID') || 'null');
+    return this.authData.DivisionsRoles.some(
+      (role) => roles.includes(role.role_name) && role.division_id === divisionID
+    );
   }
 }

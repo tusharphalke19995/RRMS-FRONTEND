@@ -171,7 +171,7 @@ export class DivisionComponent implements OnInit, AfterViewInit {
   }
 
   getDivisionInfo() {
-    const divisionId =JSON.parse(sessionStorage.getItem('divisionID'));
+    const divisionId =Number(sessionStorage.getItem('divisionID'));
     this._masterService.getDivision(divisionId).subscribe({
       next: (response: any) => {
         console.log("response", response);

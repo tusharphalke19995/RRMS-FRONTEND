@@ -105,7 +105,7 @@ export class ManageNotificationComponent {
 
   
   getNotificationsCount() {
-    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+    const divisionID = Number(sessionStorage.getItem("divisionID"));
     this._dashbaordService.getNotificationsCount(divisionID).subscribe({
         next: (response: any) => {
           console.log("response Noti",response);

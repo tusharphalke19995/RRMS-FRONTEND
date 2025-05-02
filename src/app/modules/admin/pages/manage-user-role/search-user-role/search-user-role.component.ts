@@ -241,7 +241,7 @@ export class SearchUserRoleComponent {
     }
 
     getUserInfo() {
-    const divisionID = JSON.parse(sessionStorage.getItem("divisionID"));
+    const divisionID = Number(sessionStorage.getItem("divisionID"));
           this._searchUserService.getUserList(divisionID).subscribe({
             next: (response: any) => {
              console.log("response",response);
@@ -260,7 +260,7 @@ export class SearchUserRoleComponent {
       }
 
       getUserRoleDropdown() {
-       const divisionID = JSON.parse(sessionStorage.getItem('divisionID'));
+       const divisionID = Number(sessionStorage.getItem('divisionID'));
         this._searchUserService.getUserRole(divisionID).subscribe({
           next: (response: any) => {
             if(response.statusCode==200){
