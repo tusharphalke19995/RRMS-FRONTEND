@@ -84,7 +84,7 @@ export class GetDocComponent {
   fileToView: any = null;
   checkGetFile: boolean;
   finalUserID: number;
-
+  showRequestConent:boolean=true;
   constructor(
     private dataService: SharedService,
     private _uploadDocumentService: UploadDocumentService,
@@ -110,6 +110,9 @@ export class GetDocComponent {
   getFilesWithMetadataSelected() {
     this.dataService.getFilesData().subscribe((files) => {
       this.files = files;
+      if(this.files.length>0){
+      this.showRequestConent= false;
+      }
     })
      
   }
