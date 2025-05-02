@@ -113,22 +113,23 @@
 
 
                         </td>
-                        <td><mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium">{{t('caseNo')}}</mat-label>
-                                <input matInput matInput [formControlName]="'caseNo'" maxlength="4" (keypress)="allowOnlyNumbers($event)">
-                                <mat-error *ngIf="searchDocumentForm.get('caseNo').hasError('required')">
-                                    Required
-                                </mat-error>
-                            </mat-form-field>
-
-                        </td>
-
+                     
 
                     </tr>
                 </table>
 
                 <table class="example-full-width" cellspacing="0">
                     <tr>
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                            <mat-label *transloco="let t" class="font-medium">{{t('caseNo')}}</mat-label>
+                            <input matInput matInput [formControlName]="'caseNo'" maxlength="4" (keypress)="allowOnlyNumbers($event)">
+                            <mat-error *ngIf="searchDocumentForm.get('caseNo').hasError('required')">
+                                Required
+                            </mat-error>
+                        </mat-form-field>
+
+                    </td>
+
                         <td>
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-label *transloco="let t" class="font-medium">{{t('office')}}</mat-label>
@@ -161,31 +162,36 @@
 
                         </td>
 
-                        <td><mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium">{{t('author')}}</mat-label>
-                                <input matInput matInput [formControlName]="'author'" maxlength="4">
-                                <mat-error *ngIf="searchDocumentForm.get('author').hasError('required')">
-                                    Required
-                                </mat-error>
-                            </mat-form-field>
-
-                        </td>
-
-                        <td><mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium">{{t('location')}}</mat-label>
-                                <input matInput matInput [formControlName]="'toAddr'" maxlength="4">
-                                <mat-error *ngIf="searchDocumentForm.get('toAddr').hasError('required')">
-                                    Required
-                                </mat-error>
-                            </mat-form-field>
-
-                        </td>
-
                     </tr>
 
 
                 </table>
 
+                <table class="example-full-width" cellspacing="0">
+                    <tr>
+
+                        <td><mat-form-field appearance="outline" class="example-full-width">
+                            <mat-label *transloco="let t" class="font-medium">{{t('author')}}</mat-label>
+                            <input matInput matInput [formControlName]="'author'" maxlength="4">
+                            <mat-error *ngIf="searchDocumentForm.get('author').hasError('required')">
+                                Required
+                            </mat-error>
+                        </mat-form-field>
+
+                    </td>
+
+                    <td><mat-form-field appearance="outline" class="example-full-width">
+                            <mat-label *transloco="let t" class="font-medium">{{t('location')}}</mat-label>
+                            <input matInput matInput [formControlName]="'toAddr'" maxlength="4">
+                            <mat-error *ngIf="searchDocumentForm.get('toAddr').hasError('required')">
+                                Required
+                            </mat-error>
+                        </mat-form-field>
+
+                    </td>
+
+                    </tr>
+                </table>
                 <div class="flex items-center justify-center">
                     <button *transloco="let t" mat-button [color]="'accent'"
                         [disabled]="searchDocumentForm.pristine || searchDocumentForm.untouched" (click)="clearForm()">
