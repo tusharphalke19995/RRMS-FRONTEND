@@ -118,6 +118,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   filesSlected: any[] = [];
   @Input() formGroup: FormGroup;
   @Input() filesDataSearch: any[] = [];
+  @Input() finalUserID:number;
   isUploadInProgress = false;
   isSaveDraftInProgress = false;
   openUploadDialog = false;
@@ -175,6 +176,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     {value:"I/O",fileStageName:"I/O"},
     {value:"Crime",fileStageName:"Crime"}
   ]
+
   constructor(
     private _snackBar: MatSnackBar,
     private fb: FormBuilder,
@@ -650,18 +652,25 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   canRequestAccess(file: any): boolean {
-    // console.log("canRequestAccess",file)
-    const userRole = this.authData.DivisionsRoles.find(
+    const hasUserRole = this.authData.DivisionsRoles.some(
       (role) => role.role_name === "User"
     );
+  
+    if (!hasUserRole) {
+      return false;
+    }
+  
+    const classification = file.metadata?.classification_name || file.classification_name;
+  
     return (
-      (file.metadata?.classification_name || file.classification_name) ===
-        "Confidential" &&
+      classification === "Confidential" &&
       !file.is_request_raised &&
       !file.is_access_request_approved &&
-      userRole.role_name === "User"
+      file.uploaded_by !== this.finalUserID
     );
   }
+  
+  
 
   hasRole(...roles: string[]): boolean {
     return this.authData.DivisionsRoles.some(role =>

@@ -104,7 +104,7 @@
   "addfileClassification": "Add File Classification",
   "classificationFileAccess": "Classification/File Access",
   "fileType": "File Type",
-  "reqAccess": "Request Access",
+  "reqAccess": "Request Sent",
   "onDenied": "Denied",
    "reqText":"Would you like to approve or deny this request? Please confirm your decision",
    "reqTextApprove":"Would you like to approve this request? Please confirm your decision",

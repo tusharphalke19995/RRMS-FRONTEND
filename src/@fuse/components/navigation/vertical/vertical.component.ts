@@ -808,7 +808,7 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
                 return true;
               } else if (roles.includes("User") || roles.includes("ContentManager")) {
                 // If the user is a User or ContentManager, include specific items
-                return item.id === 'searchDocument' || item.id === 'home' || item.id === 'uploadDocument' || item.id === 'notification';
+                return item.id === 'searchDocument' || item.id === 'home' || item.id === 'uploadDocument' || item.id === 'notification' || item.id === 'revokeApproval';
             }
             return false; // If no roles match, exclude the item
         });

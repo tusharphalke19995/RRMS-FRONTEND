@@ -71,7 +71,15 @@ export class AuthSignInComponent implements OnInit {
     // Create the form
     this.signInForm = this._formBuilder.group({
       kgid: ["", [Validators.required]],
-      password: ["", Validators.required],
+      password: [
+        "",
+        [
+          Validators.required,
+          // Validators.pattern(
+          //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+          // ),
+        ],
+      ],
       // rememberMe: [''],
     });
   }
@@ -122,6 +130,7 @@ export class AuthSignInComponent implements OnInit {
 
   checkDesignationObj() {
     this.divisionsRoles = this._authService.getAuthData();
+    sessionStorage.setItem('userID', this.divisionsRoles.UserID);
     const rolesLength = this.divisionsRoles.DivisionsRoles.length;
     if (rolesLength > 1) {
       this._router.navigateByUrl("/division-selection");

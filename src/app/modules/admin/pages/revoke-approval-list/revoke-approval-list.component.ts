@@ -95,8 +95,7 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
     { labelen: "File Name", labelhi: "File Name", property: "file_name" },
     { labelen: "Created At", labelhi: "Created At", property: "created_at" },
     { labelen: "Comments", labelhi: "Comments", property: "comments" },
-    { labelen: "status", labelhi: "is_approved", property: "is_approved" },
-
+  
     { labelen: "status", labelhi: "status", property: "status" },
   ];
 
@@ -104,7 +103,7 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
     "file_name",
     "created_at",
     "comments",
-    "is_approved",
+   
     "status"
   ];
 
@@ -153,10 +152,10 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
 
   filterTabData() {
     this.pendingDataSource = new MatTableDataSource(
-      (this.pendingReqData || []).filter((item: any) => !item.is_approved)
+      (this.pendingReqData || []).filter((item: any) => !item.is_approved && item.status==='revoked')
     );
     this.approvedDataSource = new MatTableDataSource(
-      (this.pendingReqData || []).filter((item: any) => item.is_approved)
+      (this.pendingReqData || []).filter((item: any) => item.is_approved )
     );
   }
 

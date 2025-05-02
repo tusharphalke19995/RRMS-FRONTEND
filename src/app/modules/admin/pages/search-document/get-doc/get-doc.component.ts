@@ -83,6 +83,7 @@ export class GetDocComponent {
 
   fileToView: any = null;
   checkGetFile: boolean;
+  finalUserID: number;
 
   constructor(
     private dataService: SharedService,
@@ -103,6 +104,7 @@ export class GetDocComponent {
     this.getFileClassificationInfo();
     this.getFileTypesInfo();
     this.getFilesCheck();
+    this.finalUserID=Number(sessionStorage.getItem('userID'))
   }
 
   getFilesWithMetadataSelected() {

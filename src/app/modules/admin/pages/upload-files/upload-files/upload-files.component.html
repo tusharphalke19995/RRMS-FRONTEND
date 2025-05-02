@@ -25,14 +25,17 @@
     </div>
 
     <!-- Select All Checkbox (only if more than one file) -->
-    <div *ngIf="selectedFiles.length > 1" class="flex items-center mb-2">
-      <mat-checkbox
-        [checked]="selectedIndexes.size === selectedFiles.length"
-        [indeterminate]="selectedIndexes.size > 0 && selectedIndexes.size < selectedFiles.length"
-        (change)="toggleSelectAll($event.checked)">
-        Select All
-      </mat-checkbox>
-    </div>
+     <div *ngIf="checkGetFile">
+      <div *ngIf="selectedFiles.length > 1" class="flex items-center mb-2">
+        <mat-checkbox
+          [checked]="selectedIndexes.size === selectedFiles.length"
+          [indeterminate]="selectedIndexes.size > 0 && selectedIndexes.size < selectedFiles.length"
+          (change)="toggleSelectAll($event.checked)">
+          Select All
+        </mat-checkbox>
+      </div>
+     </div>
+  
 
     <!-- Selected Files List with Metadata -->
     <div *ngIf="selectedFiles.length > 0" class="selected-files-list">
@@ -40,11 +43,14 @@
         <div class="flex items-center justify-between p-2">
           <div class="flex items-center">
             <!-- Per-file checkbox, only if more than one file -->
-            <mat-checkbox
+             <div  *ngIf="checkGetFile">
+              <mat-checkbox
               *ngIf="selectedFiles.length > 1"
               [checked]="selectedIndexes.has(i)"
               (change)="onFileCheckboxChange(i, $event.checked)">
             </mat-checkbox>
+             </div>
+           
             <mat-icon
               (click)="!isRestrictedToView(file) && viewImage(file)"
               [ngClass]="{
@@ -81,7 +87,7 @@
             <button mat-icon-button color="primary" (click)="openSelectedFileModal(file)" type="button">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="removeFile(i)" type="button">
+            <button mat-icon-button color="warn" (click)="removeFile(i)" type="button"  *ngIf="checkGetFile">
               <mat-icon>close</mat-icon>
             </button>
           </div>
@@ -192,7 +198,7 @@
           fileToEdit.fileName}}</span></p>
     </div>
   </form>
-  <div class="flex justify-end space-x-2 mt-6 pt-4 border-t py-4">
+  <div class="flex justify-end space-x-2 mt-6 pt-4 border-t py-4 mr-3">
     <button mat-button (click)="closeFileModal()">Cancel</button>
     <button mat-raised-button color="primary" [disabled]="!metadataForm.valid" (click)="submitMetadata()"
       *ngIf="checkGetFile">
