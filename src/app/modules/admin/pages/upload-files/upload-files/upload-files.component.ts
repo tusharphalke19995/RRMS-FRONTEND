@@ -61,6 +61,7 @@ interface FileWithMetadata extends CustomFile {
     fileType: string;
     classification: string;
     hashTag: string;
+    fileStage:string
   };
 }
 
@@ -164,7 +165,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   openFileModal: boolean;
   fileToEdit: FileWithMetadata | null = null;
   maxFileSize = 50 * 1024 * 1024 * 1024;
-  minFileSize = 100 * 1024; // 100KB
+  minFileSize = 1 * 1024; // 1KB
   checkGetFile: boolean;
   caseDetails: any[];
   authData: any;
@@ -194,7 +195,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       fileType: ["", Validators.required],
       classification: ["", Validators.required],
       hashTag: [""],
-      fileStage:[""]
+      fileStage:["",Validators.required]
     });
   }
 
@@ -371,50 +372,6 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     this.fileToEdit = null;
   }
 
-  // submitMetadata(): void {
-  //   if (this.metadataForm.valid) {
-  //     const metadata = this.metadataForm.value;
-  //     if (this.selectedFiles.length === 1) {
-  //       // If only one file, always apply metadata
-  //       this.selectedFiles[0].metadata = { ...this.selectedFiles[0].metadata, ...metadata };
-  //       this._snackBar.open("Metadata added to file", "Close", {
-  //         duration: 3000,
-  //         horizontalPosition: "right",
-  //         verticalPosition: "top",
-  //         panelClass: ["success-snackbar"],
-  //       });
-  //       this.openFileModal = false;
-  //       this.selectedIndexes.clear();
-  //       return;
-  //     }
-  //     let anySelected = false;
-  //     this.selectedIndexes.forEach(index => {
-  //       const file = this.selectedFiles[index];
-  //       if (file) {
-  //         file.metadata = { ...file.metadata, ...metadata };
-  //         anySelected = true;
-  //       }
-  //     });
-  //     if (anySelected) {
-  //       this._snackBar.open("Metadata added to selected files", "Close", {
-  //         duration: 3000,
-  //         horizontalPosition: "right",
-  //         verticalPosition: "top",
-  //         panelClass: ["success-snackbar"],
-  //       });
-  //       this.openFileModal = false;
-  //       this.selectedIndexes.clear();
-  //     } else {
-  //       this._snackBar.open("Please select at least one file", "Close", {
-  //         duration: 3000,
-  //         horizontalPosition: "right",
-  //         verticalPosition: "top",
-  //         panelClass: ["error-snackbar"],
-  //       });
-  //     }
-  //   }
-  // }
-
   submitMetadata(): void {
     if (this.metadataForm.valid) {
       const metadata = this.metadataForm.value;
@@ -552,6 +509,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       hashTag: formData.hashTag || "",
       fileType: formData.fileType || "",
       classification: formData.classification || "",
+      fileStage: formData.filestage || "",
     });
   }
 
@@ -714,12 +672,6 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     );
   }
 
-  isRestrictedToView(file: any): boolean {
-    const classification = file.metadata?.classification_name || file.classification_name;
-    const role = this.getUserRoleName();
-    return classification === 'Confidential' && role === 'User' && !file.is_access_request_approved;
-  }
-
   selectAllFiles() {
     this.selectedFiles.forEach((_, i) => this.selectedIndexes.add(i));
   }
@@ -754,4 +706,23 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       (role) => roles.includes(role.role_name) && role.division_id === divisionID
     );
   }
+
+  isRestrictedToView(file: any): boolean {
+    const classification = file.metadata?.classification_name || file.classification_name;
+    const role = this.getUserRoleName();
+    const currentUserId = Number(sessionStorage.getItem('userID'));
+    const uploaderUserId = file.uploaded_by || file.metadata?.uploaded_by;
+   console.log("currentUserId",currentUserId)
+   console.log("uploaderUserId",uploaderUserId)
+    // Allow access if not confidential or user is uploader
+    if (classification !== 'Confidential') return false;
+  
+    // Allow uploader to view their own confidential files
+    if (currentUserId === uploaderUserId) return false;
+  
+    // Restrict if User, not uploader, and access is not approved
+    return role === 'User' && !file.is_access_request_approved;
+  }
+
+  
 }

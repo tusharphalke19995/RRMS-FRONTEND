@@ -276,7 +276,6 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       caseStatus:this.uploadDocumentForm.value.statusId,
       year:this.uploadDocumentForm.value.yearId,
     };
-   debugger
     const formData = new FormData();
     formData.append("caseDetails", JSON.stringify(uploadMetaData));
     const fileDetailsArray = this.selectedFiles.map(file => ({
