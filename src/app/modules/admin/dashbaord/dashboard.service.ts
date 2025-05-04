@@ -46,14 +46,20 @@ export class DashbaordService
 }
 
 
-  fileAccessByRequestid(fileAccessRequestid: number,data:any) {
-    const url = `${apiurls.caseDataFileApproveReq}/${fileAccessRequestid}/action`; 
-    return this._httpClient.post(url,data, {
-        headers: new HttpHeaders({
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        })
-    }).pipe(catchError(this.handleError));
+//   fileAccessByRequestid(fileAccessRequestid: number,data:any) {
+//     const url = `${apiurls.caseDataFileApproveReq}/${fileAccessRequestid}/action`; 
+//     return this._httpClient.post(url,data, {
+//         headers: new HttpHeaders({
+//             'Content-Type': 'application/json',
+//             'Accept': 'application/json'
+//         })
+//     }).pipe(catchError(this.handleError));
+// }
+
+fileAccessByRequestid(data:any){
+  return this._httpClient
+  .post(apiurls.caseDataFileApproveReq, data,)
+  .pipe(catchError(this.handleError));
 }
   
 getContentManagerReqData(id:number) {

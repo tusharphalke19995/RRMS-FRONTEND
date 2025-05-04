@@ -2,6 +2,7 @@ import { CommonModule } from "@angular/common";
 import { Component, ViewChild, ViewEncapsulation } from "@angular/core";
 import {
   FormsModule,
+  MaxLengthValidator,
   ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormGroup,
@@ -98,7 +99,7 @@ export class AddUpdateUserComponent {
       lastName: ["", Validators.required],
 
       emailID: ["", [Validators.required, Validators.email]],
-      kgid: ["", Validators.required],
+      kgid: ["", Validators.required,MaxLengthValidator[6]],
       mobileNo: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
 
       password: [
@@ -150,7 +151,7 @@ export class AddUpdateUserComponent {
   }
 
   userSave() {
-    if (this.addUpdateUserForm.valid) {
+    if (this.addUpdateUserForm.valid && this.divisionInfo && this.divisionInfo.length > 0) {
       const data = {
         first_name: this.addUpdateUserForm.value.firstName,
         last_name: this.addUpdateUserForm.value.lastName,
@@ -182,6 +183,14 @@ export class AddUpdateUserComponent {
             panelClass: ["error-snackbar"],
           });
         },
+      });
+    }
+    else if (!this.divisionInfo || this.divisionInfo.length === 0) {
+      this._snackBar.open("Please add at least one Division/Role/Designation.", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["error-snackbar"],
       });
     }
   }
@@ -238,6 +247,20 @@ export class AddUpdateUserComponent {
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
+    }
+  }
+
+  allowOnlyNumbers(event: KeyboardEvent): void {
+    const charCode = event.key.charCodeAt(0);
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
+  }
+
+  allowOnlyLetters(event: KeyboardEvent): void {
+    const char = event.key;
+    if (!/^[a-zA-Z]$/.test(char)) {
+      event.preventDefault();
     }
   }
 }

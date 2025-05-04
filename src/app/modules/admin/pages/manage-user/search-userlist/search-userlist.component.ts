@@ -277,7 +277,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     this._searchUserService.getUserRole(divisionID).subscribe({
       next: (response: any) => {
         if (response) {
-          this.userRoleDropdown = response;
+          this.userRoleDropdown = response.responseData;
         }
       },
       error: (error) => {},
@@ -306,5 +306,19 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
       },
       error: (error) => {},
     });
+  }
+  
+  allowOnlyNumbers(event: KeyboardEvent): void {
+    const charCode = event.key.charCodeAt(0);
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
+  }
+
+  allowOnlyLetters(event: KeyboardEvent): void {
+    const char = event.key;
+    if (!/^[a-zA-Z]$/.test(char)) {
+      event.preventDefault();
+    }
   }
 }

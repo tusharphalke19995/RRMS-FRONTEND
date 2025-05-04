@@ -76,9 +76,6 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
     { labelen: "File Name", labelhi: "File Name", property: "file_name" },
     { labelen: "Created At", labelhi: "Created At", property: "created_at" },
     { labelen: "Comments", labelhi: "Comments", property: "comments" },
-    { labelen: "status", labelhi: "status", property: "status" },
-    { labelen: "status", labelhi: "is_approved", property: "is_approved" },
-
     { labelen: "Action", labelhi: "Action", property: "action" }
   ];
 
@@ -86,8 +83,6 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
     "file_name",
     "created_at",
     "comments",
-    "status",
-    "is_approved",
     "action"
   ];
 
@@ -159,9 +154,9 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
     );
   }
 
-  approvedRequest(notification: any){
+  approvedRequest(data: any){
     const dialogRef = this.dialog.open(RevokeApproveReqDialogComponent, {
-      data: notification,
+      data: data,
       width: "677px",
     });
     dialogRef.afterClosed().subscribe((result) => {

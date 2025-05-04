@@ -18,7 +18,12 @@
       <!-- First Row -->
       <h5 class="text-center font-semibold text-xl" *transloco="let t">{{t('reqTextApprove')}}</h5>
       <form [formGroup]="approvalReqlForm" class="flex flex-col flex-auto p-6 overflow-y-auto">
-        <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mb-4">
+        <div>
+          <mat-icon class=" align-middle text-primary" matTooltip="View File"
+             >insert_drive_file</mat-icon>
+            {{ data.file_name || 'No File Name' }}
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mb-4 mt-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Remarks</mat-label>
             <input matInput formControlName="remarks" placeholder="Enter Remarks" />
@@ -31,9 +36,15 @@
         <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
           <button mat-flat-button
             class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
-            (click)="approveRequestData()" *transloco="let t">
+            (click)="approveRequestData('true')" *transloco="let t">
             {{t('approve')}}
           </button>
+          <button mat-stroked-button
+          class="min-w-[90px] px-6 py-2 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+          (click)="approveRequestData('false')" *transloco="let t">
+
+          {{t('onDenied')}}
+        </button>
           <button mat-stroked-button
             class="min-w-[90px] px-6 py-2 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
             (click)="onCancel()" *transloco="let t">

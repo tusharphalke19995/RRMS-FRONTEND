@@ -79,11 +79,12 @@ export class ManageNotificationComponent {
       property: "created_at",
     },
     { labelen: "Date", labelhi: "Date", property: "message" },
+    { labelen: "classification_name", labelhi: "classification_name", property: "classification_name" },
     { labelen: "Read Status", labelhi: "Read Status", property: "is_read" },
     { labelen: "Action", labelhi: "Action", property: "action" },
   ];
 
-  displayedColumns: string[] = ["fileName","created_at", "message", "is_read", "action"];
+  displayedColumns: string[] = ["fileName","created_at", "message", "is_read",'classification_name', "action"];
   notificationInfo: any;
   constructor(
     private _dialog: MatDialog,

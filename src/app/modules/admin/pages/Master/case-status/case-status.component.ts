@@ -65,24 +65,19 @@ export class CaseStatusComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
   columns: any[] = [
     { labelen: "Status Id", labelhi: "Status Id", property: "statusId" },
-    { labelen: "Status Name", labelhi: "Status Name", property: "statusName" },
-    { labelen: "Last Modified Date", labelhi: "Last Modified Date", property: "lastModifiedDate" },
-    { labelen: "Status", labelhi: "Status", property: "active" },
-    
-    {
-      labelen: "Action",
-      labelhi: "Action",
-      property: "action",
-      isAction: true,
-    },
+    { labelen: "Status Name", labelhi: "Status Name", property: "statusName" },    
+    // {
+    //   labelen: "Action",
+    //   labelhi: "Action",
+    //   property: "action",
+    //   isAction: true,
+    // },
   ];
 
   displayedColumns: string[] = [
     "statusId",
     "statusName",
-     "lastModifiedDate",
-    "active",
-    "action",
+    
   ];
   userRoleDropdown: [];
   designationsDropdown: [];

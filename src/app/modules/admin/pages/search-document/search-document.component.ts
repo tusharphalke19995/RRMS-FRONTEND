@@ -215,6 +215,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   clearForm(): void {
     // Reset the form
     this.addcitizenInformationNgForm.resetForm();
+    this.dataSource=[]
   }
 
   SelectDataCase(value) {}
@@ -318,6 +319,13 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     const charCode = event.key.charCodeAt(0);
     // Allow only digits (0–9)
     if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
+  }
+
+  allowOnlyLetters(event: KeyboardEvent): void {
+    const char = event.key;
+    if (!/^[a-zA-Z]$/.test(char)) {
       event.preventDefault();
     }
   }

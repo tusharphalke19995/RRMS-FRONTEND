@@ -105,7 +105,7 @@
                         <td>
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-label *transloco="let t" class="font-medium">{{t('firNo')}}</mat-label>
-                                <input matInput [formControlName]="'firNo'" placeholder="Enter employee name"  (keypress)="allowOnlyNumbers($event)" >
+                                <input matInput [formControlName]="'firNo'" placeholder="Enter employee name" maxlength="4"  (keypress)="allowOnlyNumbers($event)" >
                                 <mat-error *ngIf="searchDocumentForm.get('firNo').hasError('required')">
                                     Required
                                 </mat-error>
@@ -122,7 +122,7 @@
                     <tr>
                         <td><mat-form-field appearance="outline" class="example-full-width">
                             <mat-label *transloco="let t" class="font-medium">{{t('caseNo')}}</mat-label>
-                            <input matInput matInput [formControlName]="'caseNo'" maxlength="4" (keypress)="allowOnlyNumbers($event)">
+                            <input matInput matInput [formControlName]="'caseNo'" maxlength="17" (keypress)="allowOnlyNumbers($event)">
                             <mat-error *ngIf="searchDocumentForm.get('caseNo').hasError('required')">
                                 Required
                             </mat-error>
@@ -133,7 +133,7 @@
                         <td>
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-label *transloco="let t" class="font-medium">{{t('office')}}</mat-label>
-                                <input matInput [formControlName]="'office'" placeholder="Enter employee name">
+                                <input matInput [formControlName]="'office'" (keypress)="allowOnlyLetters($event)" placeholder="Enter employee name">
                                 <mat-error *ngIf="searchDocumentForm.get('office').hasError('required')">
                                     Required
                                 </mat-error>
@@ -154,7 +154,7 @@
 
                         <td><mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium">{{t('caseType')}}</mat-label>
-                                <input matInput matInput [formControlName]="'caseType'" maxlength="4">
+                                <input matInput matInput [formControlName]="'caseType'" (keypress)="allowOnlyLetters($event)"  maxlength="10">
                                 <mat-error *ngIf="searchDocumentForm.get('caseType').hasError('required')">
                                     Required
                                 </mat-error>
@@ -172,7 +172,7 @@
 
                         <td><mat-form-field appearance="outline" class="example-full-width">
                             <mat-label *transloco="let t" class="font-medium">{{t('author')}}</mat-label>
-                            <input matInput matInput [formControlName]="'author'" maxlength="4">
+                            <input matInput matInput [formControlName]="'author'" (keypress)="allowOnlyLetters($event)" maxlength="10">
                             <mat-error *ngIf="searchDocumentForm.get('author').hasError('required')">
                                 Required
                             </mat-error>

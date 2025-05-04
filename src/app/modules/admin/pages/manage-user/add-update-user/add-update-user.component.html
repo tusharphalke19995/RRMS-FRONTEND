@@ -62,7 +62,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('firstName')}}</mat-label>
-                        <input matInput [formControlName]="'firstName'" placeholder="Enter employee name">
+                        <input matInput [formControlName]="'firstName'"  (keypress)="allowOnlyLetters($event)"  maxlength="10" placeholder="Enter First name">
                         <mat-error *ngIf="addUpdateUserForm.get('firstName').hasError('required')">
                             Required
                         </mat-error>
@@ -70,7 +70,7 @@
 
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('lastName')}}</mat-label>
-                        <input matInput [formControlName]="'lastName'" placeholder="Enter employee name">
+                        <input matInput [formControlName]="'lastName'"  (keypress)="allowOnlyLetters($event)" maxlength="10" placeholder="Enter Last name">
                         <mat-error *ngIf="addUpdateUserForm.get('lastName').hasError('required')">
                             Required
                         </mat-error>
@@ -87,34 +87,21 @@
 
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('kgId')}}</mat-label>
-                        <input matInput [formControlName]="'kgid'" placeholder="Enter KG ID">
+                        <input matInput [formControlName]="'kgid'" (keypress)="allowOnlyNumbers($event)" placeholder="Enter KG ID" maxlength="6">
                         <mat-error *ngIf="addUpdateUserForm.get('kgid').hasError('required')">
                             Required
                         </mat-error>
                     </mat-form-field>
 
-                    <!-- <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('designation')}}</mat-label>
-                <input matInput [formControlName]="'designation'" placeholder="Enter designation">
-                <mat-error *ngIf="addUpdateUserForm.get('designation').hasError('required')">
-                    This field is required
-                </mat-error>
-            </mat-form-field> -->
                 </div>
 
                 <!-- Second Row -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('userName')}}</mat-label>
-                <input matInput [formControlName]="'userName'" placeholder="Enter username">
-                <mat-error *ngIf="addUpdateUserForm.get('userName').hasError('required')">
-                    This field is required
-                </mat-error>
-            </mat-form-field> -->
+                  
 
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('empMobileno')}}</mat-label>
-                        <input matInput [formControlName]="'mobileNo'" placeholder="Enter mobile number">
+                        <input matInput [formControlName]="'mobileNo'" (keypress)="allowOnlyNumbers($event)" maxlength="10" placeholder="Enter mobile number">
                         <mat-error *ngIf="addUpdateUserForm.get('mobileNo').hasError('required')">
                             Required
                         </mat-error>

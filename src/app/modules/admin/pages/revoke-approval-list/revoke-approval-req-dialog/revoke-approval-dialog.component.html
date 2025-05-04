@@ -18,7 +18,12 @@
       <!-- First Row -->
       <h5 class="text-center font-semibold text-xl" *transloco="let t">{{t('reqRevokeApprove')}}</h5>
       <form [formGroup]="approvalReqlForm" class="flex flex-col flex-auto p-6 overflow-y-auto">
-        <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mb-4">
+        <div>
+          <mat-icon class=" align-middle text-primary" matTooltip="View File"
+             >insert_drive_file</mat-icon>
+            {{ data.file_name || 'No File Name' }}
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mb-4 mt-2">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Remarks</mat-label>
             <input matInput formControlName="remarks" placeholder="Enter Remarks" />

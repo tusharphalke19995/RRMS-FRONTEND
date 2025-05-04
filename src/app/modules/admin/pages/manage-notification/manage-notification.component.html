@@ -65,8 +65,9 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">File
             Name </th>
           <td mat-cell *matCellDef="let row">
+            <!-- (click)="viewImage(row.file)" -->
             <mat-icon class="mr-2 align-middle text-primary" matTooltip="View File"
-              (click)="viewImage(row.file)">insert_drive_file</mat-icon>
+            >insert_drive_file</mat-icon>
             {{ row.file?.fileName || 'No File Name' }}
           </td>
         </ng-container>
@@ -77,6 +78,13 @@
           <td mat-cell *matCellDef="let row"> {{row.message}} </td>
         </ng-container>
 
+        <ng-container matColumnDef="classification_name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">
+            Classification Name </th>
+          <td mat-cell *matCellDef="let row"> {{row.file.classification_name}} </td>
+        </ng-container>
+
+        
         <!--Last Name Column -->
         <ng-container matColumnDef="created_at">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">

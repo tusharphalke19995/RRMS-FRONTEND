@@ -67,22 +67,14 @@ export class FileTypeComponent implements OnInit {
     { labelen: "File Type Id", labelhi: "File Type Id", property: "fileTypeId" },
     { labelen: "File Type Name", labelhi: "File Type Name", property: "fileTypeName" },
     { labelen: "Last Modified Date", labelhi: "Last Modified Date", property: "lastModifiedDate" },
-    { labelen: "Status", labelhi: "Status", property: "active" },
-    
-    {
-      labelen: "Action",
-      labelhi: "Action",
-      property: "action",
-      isAction: true,
-    },
+  
   ];
 
   displayedColumns: string[] = [
     "fileTypeId",
     "fileTypeName",
      "lastModifiedDate",
-    "active",
-    "action",
+   
   ];
   userRoleDropdown: [];
   designationsDropdown: [];

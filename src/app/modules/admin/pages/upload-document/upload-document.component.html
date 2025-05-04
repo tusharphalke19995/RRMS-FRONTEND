@@ -115,7 +115,7 @@
                        
                         <td><mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{t('office')}}</mat-label>
-                                <input matInput matInput [formControlName]="'office'">
+                                <input matInput matInput [formControlName]="'office'" (keypress)="allowOnlyLetters($event)">
                                 <mat-error *ngIf="uploadDocumentForm.get('office').hasError('required')">
                                     Required
                                 </mat-error>
@@ -141,7 +141,7 @@
                         </td>
                         <td><mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('caseType')}}</mat-label>
-                                <input matInput matInput [formControlName]="'caseType'" [required]="true">
+                                <input matInput matInput [formControlName]="'caseType'" [required]="true" (keypress)="allowOnlyLetters($event)" maxlength="10">
                                 <mat-error *ngIf="uploadDocumentForm.get('caseType').hasError('required')">
                                     Required
                                 </mat-error>
@@ -152,7 +152,7 @@
 
                         <td><mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('location')}}</mat-label>
-                                <input matInput matInput [formControlName]="'toAddr'" [required]="true">
+                                <input matInput matInput [formControlName]="'toAddr'" [required]="true" (keypress)="allowOnlyLetters($event)">
                                 <mat-error *ngIf="uploadDocumentForm.get('toAddr').hasError('required')">
                                     Required 
                                 </mat-error>
@@ -161,7 +161,7 @@
                         </td>
                         <td><mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('author')}}</mat-label>
-                                <input matInput matInput [formControlName]="'author'" [required]="true">
+                                <input matInput matInput [formControlName]="'author'" [required]="true" maxlength="10" (keypress)="allowOnlyLetters($event)">
                                 <mat-error *ngIf="uploadDocumentForm.get('author').hasError('required')">
                                     Required
                                 </mat-error>
@@ -239,19 +239,15 @@
 
                 <table class="example-full-width" cellspacing="0">
 
-                    <tr>
-                
-                       <td>
-                        <mat-form-field appearance="outline"  class="example-full-width">
+        
+                        <mat-form-field appearance="outline"  class="col-md-3">
                             <mat-label *transloco="let t" class="font-medium example-full-width">{{t('registerDate')}}</mat-label>
                             <input matInput [matDatepicker]="picker1" [placeholder]="'Choose a date'"
                                 [formControlName]="'caseDate'">
                             <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
                             <mat-datepicker #picker1></mat-datepicker>
                         </mat-form-field>
-                    </td>
-             
-                    </tr>
+                   
                 </table>
 
                 <div class="flex font-semibold text-2xl  whitespace-nowrap my-5 ">

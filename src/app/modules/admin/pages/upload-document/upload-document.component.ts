@@ -385,6 +385,13 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     }
   }
 
+  allowOnlyLetters(event: KeyboardEvent): void {
+    const char = event.key;
+    if (!/^[a-zA-Z]$/.test(char)) {
+      event.preventDefault();
+    }
+  }
+  
   get canSubmit(): boolean {
     if (this.uploadDocumentForm.invalid) return false;
     if (!this.selectedFiles || this.selectedFiles.length === 0) return false;

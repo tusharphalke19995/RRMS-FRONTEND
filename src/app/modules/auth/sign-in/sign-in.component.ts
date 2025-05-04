@@ -2,6 +2,7 @@ import { NgIf } from "@angular/common";
 import { Component, OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
 import {
   FormsModule,
+  MaxLengthValidator,
   NgForm,
   ReactiveFormsModule,
   UntypedFormBuilder,
@@ -70,14 +71,14 @@ export class AuthSignInComponent implements OnInit {
   ngOnInit(): void {
     // Create the form
     this.signInForm = this._formBuilder.group({
-      kgid: ["", [Validators.required]],
+      kgid: ["", [Validators.required],MaxLengthValidator[6]],
       password: [
         "",
         [
           Validators.required,
-          // Validators.pattern(
-          //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-          // ),
+          Validators.pattern(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+          ),
         ],
       ],
       // rememberMe: [''],
@@ -128,6 +129,14 @@ export class AuthSignInComponent implements OnInit {
     });
   }
 
+  allowOnlyNumbers(event: KeyboardEvent): void {
+    const charCode = event.key.charCodeAt(0);
+    // Allow only digits (0–9)
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
+  }
+  
   checkDesignationObj() {
     this.divisionsRoles = this._authService.getAuthData();
     sessionStorage.setItem('userID', this.divisionsRoles.UserID);

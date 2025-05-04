@@ -66,22 +66,13 @@ export class FileClassificationComponent implements OnInit {
   columns: any[] = [
     { labelen: "Role Id", labelhi: "Role Id", property: "fileClassificationId" },
     { labelen: "Role Name", labelhi: "Role Name", property: "fileClassificationName" },
-    { labelen: "Role Name", labelhi: "Role Name", property: "lastModifiedDate" },
-    { labelen: "Role Name", labelhi: "Role Name", property: "active" },
-    {
-      labelen: "Action",
-      labelhi: "Action",
-      property: "action",
-      isAction: true,
-    },
+    
   ];
 
   displayedColumns: string[] = [
     "fileClassificationId",
-    "fileClassificationName",
-    "lastModifiedDate",
-    "active",
-    "action",
+    "fileClassificationName"
+ 
   ];
   userRoleDropdown: [];
   designationsDropdown: [];

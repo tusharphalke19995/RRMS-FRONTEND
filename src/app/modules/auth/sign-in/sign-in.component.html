@@ -40,9 +40,11 @@
                         <input
                             id="kgid"
                             matInput
+                            (keypress)="allowOnlyNumbers($event)"
+                            maxlength="6"
                             [formControlName]="'kgid'">
                         <mat-error *ngIf="signInForm.get('kgid').hasError('required')">
-                           <span class="text-white">kgid is required</span> 
+                         kgid is required
                         </mat-error>
                        
                     </mat-form-field>
@@ -95,7 +97,7 @@
     
                     <!-- Submit button -->
                     <button
-                        class="fuse-mat-button-large w-full mt-6"
+                        class="fuse-mat-button-large w-full mt-8"
                         mat-flat-button
                         [color]="'primary'"
                         [disabled]="signInForm.disabled"

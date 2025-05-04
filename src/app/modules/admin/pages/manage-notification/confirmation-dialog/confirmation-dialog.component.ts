@@ -38,6 +38,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class ConfirmationDialogComponent {
   manageNotificationConfirmation:FormGroup;
   paloadApproveDenied:any;
+  payloadAppDenied: { file_id: any; division_id: number; is_approved: boolean; comments: any; };
   constructor( private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any , private _formBuilder:FormBuilder)
 {
 
@@ -59,19 +60,31 @@ initiateForm() {
 }
 
 onApprove(status: string): void {
+  console.log("status",status)
   const remarksControl = this.manageNotificationConfirmation.get('remarks');
   remarksControl?.clearValidators();
   remarksControl?.updateValueAndValidity();
 
   const divisionID = Number(sessionStorage.getItem('divisionID') || 'null');
 
-  const payload = {
-    file_id: this.data.file.fileId,
-    division_id: divisionID,
-    is_approved:Boolean(status),
-    comments: remarksControl?.value || ''
-  };
-  this.notificationService.approveNotification(payload).subscribe({
+  if(status==="true"){
+    debugger
+    this.payloadAppDenied =  {
+      file_id: this.data.file.fileId,
+      division_id: divisionID,
+      is_approved:true,
+      comments: remarksControl?.value || ''
+    };
+  }else if(status==="false"){
+    debugger
+     this.payloadAppDenied = {
+      file_id: this.data.file.fileId,
+      division_id: divisionID,
+      is_approved:false,
+      comments: remarksControl?.value || ''
+    };
+  }
+  this.notificationService.approveNotification(this.payloadAppDenied).subscribe({
     next: (response: any) => {
       const message = status === 'true' ? "Request Approved successfully" : "Request Denied successfully";
       this._snackBar.open(message, "Close", {

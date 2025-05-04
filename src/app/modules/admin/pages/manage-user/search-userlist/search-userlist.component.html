@@ -66,74 +66,77 @@
                 {{alert.message}}
             </fuse-alert>
             <form class="example-form" [formGroup]="searchUserListForm" #addcitizenInformationNgForm="ngForm">
-                <table class="example-full-width mt-2" cellspacing="0">
-                    <tr>
-                        <td>
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label *transloco="let t" class="font-medium">{{t('role')}}</mat-label>
-                                <mat-select [formControlName]="'roleId'">
-                                    <mat-option [value]="null">Please Select</mat-option>
-                                    <ng-container *ngFor="let roleInfo of userRoleDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="roleInfo.roleId">{{roleInfo.roleName}}</mat-option>
-                                    </ng-container>
-                                </mat-select>
-                                <mat-error *ngIf="searchUserListForm.get('roleId').hasError('required')">
-                                    Role is required
-                                </mat-error>
-                            </mat-form-field>
-                        </td>
-                        <td>
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label *transloco="let t" class="font-medium">{{t('division')}}</mat-label>
-                                <mat-select [formControlName]="'divisionId'">
-                                    <mat-option [value]="null">Please Select</mat-option>
-                                    <ng-container *ngFor="let roleInfo of divisionDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="roleInfo.divisionId">{{roleInfo.divisionName}}</mat-option>
-                                    </ng-container>
-                                </mat-select>
-                                <mat-error *ngIf="searchUserListForm.get('divisionId').hasError('required')">
-                                    Division is required
-                                </mat-error>
-                            </mat-form-field>
-                        </td>
-
-                        <td>
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label *transloco="let t" class="font-medium">{{t('designations')}}</mat-label>
-                                <mat-select [formControlName]="'designationId'">
-                                    <mat-option [value]="null">Please Select</mat-option>
-                                    <ng-container
-                                        *ngFor="let designationInfo of designationsDropdown; trackBy: trackByFn">
-                                        <mat-option
-                                            [value]="designationInfo.designationId">{{designationInfo.designationName}}</mat-option>
-                                    </ng-container>
-                                </mat-select>
-                                <mat-error *ngIf="searchUserListForm.get('designationId').hasError('required')">
-                                    Designations is required
-                                </mat-error>
-                            </mat-form-field>
-                        </td>
-                        <td>
-                            <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium">{{t('empName')}}</mat-label>
-                                <input matInput matInput [formControlName]="'empName'">
-                                <mat-error *ngIf="searchUserListForm.get('empName')?.hasError('required')">
-                                    Required
-                                </mat-error>
-                            </mat-form-field>
-                        </td>
-                        <td>
-                            <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium">{{t('kgId')}}</mat-label>
-                                <input matInput matInput [formControlName]="'kgid'">
-                                <mat-error *ngIf="searchUserListForm.get('kgid')?.hasError('required')">
-                                    Required
-                                </mat-error>
-                            </mat-form-field>
-                        </td>
-
-                    </tr>
-                </table>
+                <div class="col-md-3 col-sm-3 col-lg-3">
+                    <table class="mt-2" cellspacing="0">
+                        <tr>
+                            <td>
+                                <mat-form-field appearance="outline" class="">
+                                    <mat-label *transloco="let t" class="font-medium">{{t('role')}}</mat-label>
+                                    <mat-select [formControlName]="'roleId'">
+                                        <mat-option [value]="null">Please Select</mat-option>
+                                        <ng-container *ngFor="let roleInfo of userRoleDropdown; trackBy: trackByFn">
+                                            <mat-option [value]="roleInfo.roleId">{{roleInfo.roleName}}</mat-option>
+                                        </ng-container>
+                                    </mat-select>
+                                    <mat-error *ngIf="searchUserListForm.get('roleId').hasError('required')">
+                                        Role is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field appearance="outline" class="">
+                                    <mat-label *transloco="let t" class="font-medium">{{t('division')}}</mat-label>
+                                    <mat-select [formControlName]="'divisionId'">
+                                        <mat-option [value]="null">Please Select</mat-option>
+                                        <ng-container *ngFor="let roleInfo of divisionDropdown; trackBy: trackByFn">
+                                            <mat-option [value]="roleInfo.divisionId">{{roleInfo.divisionName}}</mat-option>
+                                        </ng-container>
+                                    </mat-select>
+                                    <mat-error *ngIf="searchUserListForm.get('divisionId').hasError('required')">
+                                        Division is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </td>
+    
+                            <td>
+                                <mat-form-field appearance="outline" class="">
+                                    <mat-label *transloco="let t" class="font-medium">{{t('designations')}}</mat-label>
+                                    <mat-select [formControlName]="'designationId'">
+                                        <mat-option [value]="null">Please Select</mat-option>
+                                        <ng-container
+                                            *ngFor="let designationInfo of designationsDropdown; trackBy: trackByFn">
+                                            <mat-option
+                                                [value]="designationInfo.designationId">{{designationInfo.designationName}}</mat-option>
+                                        </ng-container>
+                                    </mat-select>
+                                    <mat-error *ngIf="searchUserListForm.get('designationId').hasError('required')">
+                                        Designations is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field appearance="outline" class="">
+                                    <mat-label *transloco="let t" class="font-medium">{{t('empName')}}</mat-label>
+                                    <input matInput matInput max="10" (keypress)="allowOnlyLetters($event)" [formControlName]="'empName'">
+                                    <mat-error *ngIf="searchUserListForm.get('empName')?.hasError('required')">
+                                        Required
+                                    </mat-error>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field appearance="outline" class="col-3">
+                                    <mat-label *transloco="let t" class="font-medium">{{t('kgId')}}</mat-label>
+                                    <input matInput matInput (keypress)="allowOnlyNumbers($event)" maxlength="6" [formControlName]="'kgid'">
+                                    <mat-error *ngIf="searchUserListForm.get('kgid')?.hasError('required')">
+                                        Required
+                                    </mat-error>
+                                </mat-form-field>
+                            </td>
+    
+                        </tr>
+                    </table>
+                </div>
+              
 
                 <div class="flex items-center justify-center">
                     <button *transloco="let t" mat-button [color]="'accent'"

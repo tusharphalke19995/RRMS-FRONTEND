@@ -56,8 +56,8 @@ export class AddMultiplesDivisionComponent {
   initiateForm() {
     this.addDivisionForm = this._formBuilder.group({
       divisionId:["",Validators.required],
-      roleId: [""],
-      designationId:[""],
+      roleId: ["",Validators.required],
+      designationId:["",Validators.required],
     });
   }
 
