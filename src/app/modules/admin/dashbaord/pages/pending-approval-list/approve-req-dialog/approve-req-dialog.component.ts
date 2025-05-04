@@ -33,7 +33,7 @@ import { DashbaordService } from '../../../dashboard.service';
 })
 export class ApproveReqDialogComponent {
   approvalReqlForm:FormGroup;
-  payloadAppDenied: { file_id: any; division_id: number; is_approved: boolean; comments: any; };
+  payloadAppDenied: {  is_approved: boolean; comments: any; };
 
   constructor( private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any , private _formBuilder:FormBuilder,
   private dashbaordService:DashbaordService
@@ -63,23 +63,19 @@ approveRequestData(status: string): void {
   const remarksControl = this.approvalReqlForm.get('remarks');
   remarksControl?.clearValidators();
   remarksControl?.updateValueAndValidity();
-  const divisionID = Number(sessionStorage.getItem('divisionID') || 'null');
 if(status==="true"){
   this.payloadAppDenied =  {
-    file_id: this.data.id,
-    division_id: divisionID,
     is_approved:true,
     comments: remarksControl?.value || ''
   };
-}else{
+}else {
    this.payloadAppDenied = {
-    file_id: this.data.id,
-    division_id: divisionID,
     is_approved:false,
     comments: remarksControl?.value || ''
   };
 }
-  this.dashbaordService.fileAccessByRequestid(this.payloadAppDenied).subscribe({
+
+  this.dashbaordService.fileAccessByRequestid(this.data.id,this.payloadAppDenied).subscribe({
     next: (response: any) => {
       this._snackBar.open("Request Approved successfully", "Close", {
         duration: 3000,

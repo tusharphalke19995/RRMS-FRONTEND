@@ -68,7 +68,6 @@ onApprove(status: string): void {
   const divisionID = Number(sessionStorage.getItem('divisionID') || 'null');
 
   if(status==="true"){
-    debugger
     this.payloadAppDenied =  {
       file_id: this.data.file.fileId,
       division_id: divisionID,
@@ -76,7 +75,6 @@ onApprove(status: string): void {
       comments: remarksControl?.value || ''
     };
   }else if(status==="false"){
-    debugger
      this.payloadAppDenied = {
       file_id: this.data.file.fileId,
       division_id: divisionID,

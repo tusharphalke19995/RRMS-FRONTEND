@@ -71,14 +71,14 @@ export class AuthSignInComponent implements OnInit {
   ngOnInit(): void {
     // Create the form
     this.signInForm = this._formBuilder.group({
-      kgid: ["", [Validators.required],MaxLengthValidator[6]],
+      kgid: ["", [Validators.required]],
       password: [
         "",
         [
           Validators.required,
-          Validators.pattern(
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-          ),
+          // Validators.pattern(
+          //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+          // ),
         ],
       ],
       // rememberMe: [''],

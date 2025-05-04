@@ -41,7 +41,6 @@
                             id="kgid"
                             matInput
                             (keypress)="allowOnlyNumbers($event)"
-                            maxlength="6"
                             [formControlName]="'kgid'">
                         <mat-error *ngIf="signInForm.get('kgid').hasError('required')">
                          kgid is required
