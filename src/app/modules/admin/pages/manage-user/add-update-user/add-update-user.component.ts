@@ -99,7 +99,7 @@ export class AddUpdateUserComponent {
       lastName: ["", Validators.required],
 
       emailID: ["", [Validators.required, Validators.email]],
-      kgid: ["", Validators.required,MaxLengthValidator[6]],
+      kgid: ["", Validators.required,MaxLengthValidator[12]],
       mobileNo: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
 
       password: [

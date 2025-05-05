@@ -126,7 +126,7 @@
                             <td>
                                 <mat-form-field appearance="outline" class="col-3">
                                     <mat-label *transloco="let t" class="font-medium">{{t('kgId')}}</mat-label>
-                                    <input matInput matInput (keypress)="allowOnlyNumbers($event)" maxlength="6" [formControlName]="'kgid'">
+                                    <input matInput matInput (keypress)="allowOnlyNumbers($event)" maxlength="12" minlength="6" [formControlName]="'kgid'">
                                     <mat-error *ngIf="searchUserListForm.get('kgid')?.hasError('required')">
                                         Required
                                     </mat-error>

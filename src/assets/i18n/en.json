@@ -114,5 +114,6 @@
    "fileStage":"File Stage",
    "action":"Action",
    "close":"Close",
-   "request":"Request"
+   "request":"Request",
+   "password":"Password"
 }

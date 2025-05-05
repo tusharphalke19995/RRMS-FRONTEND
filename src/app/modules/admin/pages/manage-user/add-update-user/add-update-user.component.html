@@ -87,7 +87,7 @@
 
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('kgId')}}</mat-label>
-                        <input matInput [formControlName]="'kgid'" (keypress)="allowOnlyNumbers($event)" placeholder="Enter KG ID" maxlength="6">
+                        <input matInput [formControlName]="'kgid'" (keypress)="allowOnlyNumbers($event)" placeholder="Enter KG ID" maxlength="12" minlength="6">
                         <mat-error *ngIf="addUpdateUserForm.get('kgid').hasError('required')">
                             Required
                         </mat-error>
