@@ -65,14 +65,17 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
   alert: { type: string; message: string };
   divisionDropdown = [];
 
-  @ViewChild("sort1") sort1: MatSort;
-  @ViewChild("paginator1") paginator1: MatPaginator;
-  dataSource: MatTableDataSource<any>;
+  @ViewChild('sort1') sort1: MatSort;
+  @ViewChild('paginator1') paginator1: MatPaginator;
+  @ViewChild('sort2') sort2: MatSort;
+  @ViewChild('paginator2') paginator2: MatPaginator;
+
+  dataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
   selectedTab = 0;
   pendingDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
   approvedDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
-  columns: any[] = [
 
+  columns: any[] = [
     { labelen: "File Name", labelhi: "File Name", property: "file_name" },
     { labelen: "Created At", labelhi: "Created At", property: "created_at" },
     { labelen: "Comments", labelhi: "Comments", property: "comments" },
@@ -101,7 +104,6 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
    
     "status"
   ];
-
 
   userRoleDropdown: [];
   designationsDropdown: [];
@@ -150,8 +152,9 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
       (this.pendingReqData || []).filter((item: any) => !item.is_approved && item.status==='revoked')
     );
     this.approvedDataSource = new MatTableDataSource(
-      (this.pendingReqData || []).filter((item: any) => item.is_approved )
+      (this.pendingReqData || []).filter((item: any) => item.is_approved)
     );
+    this.setupPagination();
   }
 
   approvedRequest(data: any){
@@ -165,9 +168,18 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort1;
-    this.dataSource.paginator = this.paginator1;
+    this.setupPagination();
+  }
 
+  private setupPagination(): void {
+    if (this.pendingDataSource) {
+      this.pendingDataSource.sort = this.sort2;
+      this.pendingDataSource.paginator = this.paginator2;
+    }
+    if (this.approvedDataSource) {
+      this.approvedDataSource.sort = this.sort1;
+      this.approvedDataSource.paginator = this.paginator1;
+    }
     this._changeDetectorRef.detectChanges();
   }
 
@@ -204,10 +216,16 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+    if (this.selectedTab === 0) {
+      this.approvedDataSource.filter = filterValue.trim().toLowerCase();
+      if (this.approvedDataSource.paginator) {
+        this.approvedDataSource.paginator.firstPage();
+      }
+    } else {
+      this.pendingDataSource.filter = filterValue.trim().toLowerCase();
+      if (this.pendingDataSource.paginator) {
+        this.pendingDataSource.paginator.firstPage();
+      }
     }
   }
 }

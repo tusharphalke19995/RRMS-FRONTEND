@@ -157,7 +157,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       firNo: ["", [Validators.required]],
       author: ["", [Validators.required]],
       toAddr: ["", [Validators.required]],
-      caseDate: ["", [Validators.required]],
+      caseDate: [""],
       statusId:[""],
       yearId:[""]
     });
@@ -268,7 +268,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       Office: this.uploadDocumentForm.value.office,
       letterNo: this.uploadDocumentForm.value.letterNo,
       caseNo: this.uploadDocumentForm.value.caseNo,
-      caseDate: this.uploadDocumentForm.value.caseDate,
+      caseDate: this.uploadDocumentForm.value.caseDate || "",
       caseType: this.uploadDocumentForm.value.caseType,
       firNo: this.uploadDocumentForm.value.firNo,
       author: this.uploadDocumentForm.value.author,

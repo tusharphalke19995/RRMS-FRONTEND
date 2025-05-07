@@ -66,10 +66,9 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
 
   @ViewChild("sort1") sort1: MatSort;
   @ViewChild("paginator1") paginator1: MatPaginator;
-  dataSource: MatTableDataSource<any>;
+  dataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
   columns: any[] = [
     { labelen: "File Name", labelhi: "File Name", property: "fileName" },
-    { labelen: "File Path", labelhi: "File Path", property: "filePath" },
     { labelen: "Hash Tag", labelhi: "Hash Tag", property: "hashTag" },
     { labelen: "Subject", labelhi: "Subject", property: "subject" },
     {
@@ -86,7 +85,6 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = [
     "fileName",
-    "filePath",
     "hashTag",
     "subject",
     "fileType",
@@ -128,6 +126,7 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
     this._dashbaordService.getFavouritesData(divisionID).subscribe({
         next: (response: any) => {
           this.dataSource = new MatTableDataSource(response);
+          this.setupPagination();
         },
         error: (error) => {
             console.error("Error fetching favorites:", error);
@@ -137,12 +136,19 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
   
 
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort1;
-    this.dataSource.paginator = this.paginator1;
-
-    this._changeDetectorRef.detectChanges();
+   
+    this.setupPagination();
   }
 
+  private setupPagination(): void {
+    if (this.dataSource) {
+      this.dataSource.paginator = this.paginator1;
+      this.dataSource.sort = this.sort1;
+      this._changeDetectorRef.detectChanges();
+    }
+  }
+
+  
   /**
    * On destroy
    */

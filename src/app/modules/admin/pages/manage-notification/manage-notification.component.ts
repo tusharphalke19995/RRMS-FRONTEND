@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ViewChild } from "@angular/core";
+import { ChangeDetectorRef, Component, ViewChild, AfterViewInit } from "@angular/core";
 import {
   CommonModule,
   CurrencyPipe,
@@ -58,14 +58,14 @@ import { DashbaordService } from "../../dashbaord/dashboard.service";
   templateUrl: "./manage-notification.component.html",
   styleUrl: "./manage-notification.component.scss",
 })
-export class ManageNotificationComponent {
+export class ManageNotificationComponent implements AfterViewInit {
   alert: { type: string; message: string };
   isLoading: boolean = false;
 
   @ViewChild("sort1") sort1: MatSort;
   @ViewChild("paginator1") paginator1: MatPaginator;
   
-  dataSource: MatTableDataSource<any>;
+  dataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
 
   columns: any[] = [
     {
@@ -111,7 +111,8 @@ export class ManageNotificationComponent {
         next: (response: any) => {
           console.log("response Noti",response);
           this.dataSource = new MatTableDataSource(response);
-            this.cdr.detectChanges();
+          this.setupPagination();
+          this.cdr.detectChanges();
         },
         error: (error) => {
             console.error("Error fetching latest files:", error);
@@ -124,6 +125,8 @@ export class ManageNotificationComponent {
       this.notificationInfo = userInfo;
       console.log(" this.notificationInfo ", this.notificationInfo);
       this.dataSource = new MatTableDataSource(this.notificationInfo);
+      this.setupPagination();
+      this.cdr.detectChanges();
     });
   }
 
@@ -150,5 +153,15 @@ export class ManageNotificationComponent {
 
   }
 
-  
+  ngAfterViewInit(): void {
+    this.setupPagination();
+  }
+
+  private setupPagination(): void {
+    if (this.dataSource) {
+      this.dataSource.paginator = this.paginator1;
+      this.dataSource.sort = this.sort1;
+      this.cdr.detectChanges();
+    }
+  }
 }

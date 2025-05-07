@@ -39,7 +39,7 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { SearchDocService } from "./searchDoc.service";
 import { MatSort, MatSortModule } from "@angular/material/sort";
 import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
-import { MatTableModule } from "@angular/material/table";
+import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { UploadDocumentService } from "../upload-document/uploadDoc.service";
 import { MatDialog } from "@angular/material/dialog";
 import { UploadFilesComponent } from "../upload-files/upload-files/upload-files.component";
@@ -111,7 +111,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   ];
   @ViewChild("sort1") sort1: MatSort;
   @ViewChild("paginator1") paginator1: MatPaginator;
-  dataSource: any = [];
+  dataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
   columns: any[] = [
     { labelen: "State", labelhi: "State", property: "stateName" },
     { labelen: "District", labelhi: "District", property: "districtName" },
@@ -215,7 +215,9 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   clearForm(): void {
     // Reset the form
     this.addcitizenInformationNgForm.resetForm();
-    this.dataSource=[]
+   
+    
+    
   }
 
   SelectDataCase(value) {}
@@ -238,7 +240,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       this._uploadDocumentService.geDistrictByStateData(stateId,divisionId).subscribe(
         (districts: any) => {
           this.districtDropdown = districts.responseData;
-          // this.searchDocumentForm.get("districtId")?.setValue(443);
+          this.searchDocumentForm.get("districtId")?.setValue(443);
         },
         (error) => {
           console.error("Error fetching districts:", error);
@@ -255,14 +257,14 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       next: (response: any) => {
         console.log("response", response);
         this.stateDropdown = response.responseData;
-        // this.stateDropdown.forEach((element: any) => {
-        //   if (element.stateId == 16) {
-        //     this.searchDocumentForm.patchValue({
-        //       stateId: element.stateId,
-        //     });
-        //     this.searchDocumentForm.get("stateId").disable();
-        //   }
-        // });
+        this.stateDropdown.forEach((element: any) => {
+          if (element.stateId == 16) {
+            this.searchDocumentForm.patchValue({
+              stateId: element.stateId,
+            });
+            this.searchDocumentForm.get("stateId").disable();
+          }
+        });
       },
       error: (error) => {},
     });
@@ -293,17 +295,29 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       caseNo: this.searchDocumentForm.value.caseNo,
       caseDate: this.searchDocumentForm.value.caseDate,
       firNo: this.searchDocumentForm.value.firNo,
-      division_id :Number(sessionStorage.getItem('divisionID'))
+      division_id: Number(sessionStorage.getItem('divisionID'))
     };
 
     this._searchDocService.getUploadDocMetaData(searchMetaData).subscribe({
       next: (res: any) => {
         if (res.responseData.response) {
-          this.dataSource = res.responseData.response;
+          this.dataSource = new MatTableDataSource(res.responseData.response);
+          // Set up pagination after data is loaded
+          this.setupPagination();
         }
       },
-      error: (error) => {},
+      error: (error) => {
+        console.error('Error fetching data:', error);
+      },
     });
+  }
+
+  private setupPagination(): void {
+    if (this.dataSource) {
+      this.dataSource.paginator = this.paginator1;
+      this.dataSource.sort = this.sort1;
+      this._changeDetectorRef.detectChanges();
+    }
   }
 
   goToDocument(data: any) {
@@ -328,5 +342,19 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     if (!/^[a-zA-Z]$/.test(char)) {
       event.preventDefault();
     }
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  ngAfterViewInit(): void {
+    // Initial setup of pagination
+    this.setupPagination();
   }
 }

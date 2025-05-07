@@ -68,7 +68,6 @@ export class LatestFilesComponent implements OnInit, AfterViewInit {
   dataSource: MatTableDataSource<any>;
   columns: any[] = [
     { labelen: "File Name", labelhi: "File Name", property: "fileName" },
-    { labelen: "File Path", labelhi: "File Path", property: "filePath" },
     { labelen: "Hash Tag", labelhi: "Hash Tag", property: "hashTag" },
     { labelen: "Subject", labelhi: "Subject", property: "subject" },
     {
@@ -85,7 +84,6 @@ export class LatestFilesComponent implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = [
     "fileName",
-    "filePath",
     "hashTag",
     "subject",
     "fileType",
@@ -123,7 +121,7 @@ export class LatestFilesComponent implements OnInit, AfterViewInit {
   getLatestFilesInfo() {
     this.sharedService.latesFileData$.subscribe((userInfo: any) => {
       this.latestFilesInfo = userInfo;
-      console.log(" this.latestFilesInfo ", this.latestFilesInfo);
+      // console.log(" this.latestFilesInfo ", this.latestFilesInfo);
       this.dataSource = new MatTableDataSource(this.latestFilesInfo);
     });
   }

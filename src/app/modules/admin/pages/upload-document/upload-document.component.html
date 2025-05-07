@@ -133,7 +133,7 @@
                     <tr>
                         <td><mat-form-field appearance="outline" class="example-full-width">
                             <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('letterNo')}}</mat-label>
-                            <input matInput matInput [formControlName]="'letterNo'" [required]="true" (keypress)="allowOnlyNumbers($event)">
+                            <input matInput matInput [formControlName]="'letterNo'" [required]="true" >
                             <mat-error *ngIf="uploadDocumentForm.get('letterNo').hasError('required')">
                                 Required
                             </mat-error>

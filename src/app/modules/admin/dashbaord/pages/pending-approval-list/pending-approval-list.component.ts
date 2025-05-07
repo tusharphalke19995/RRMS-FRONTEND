@@ -155,6 +155,7 @@ export class PendingApprovalListComponent implements OnInit, AfterViewInit {
     this.approvedDataSource = new MatTableDataSource(
       (this.pendingReqData || []).filter((item: any) => item.is_approved)
     );
+    this.setupPagination();
   }
 
   approvedRequest(notification: any){
@@ -168,13 +169,20 @@ export class PendingApprovalListComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.pendingDataSource.sort = this.pendingSort;
-    this.pendingDataSource.paginator = this.pendingPaginator;
-    this.approvedDataSource.sort = this.approvedSort;
-    this.approvedDataSource.paginator = this.approvedPaginator;
-    this._changeDetectorRef.detectChanges();
+    this.setupPagination();
   }
 
+  private setupPagination(): void {
+    if (this.pendingDataSource) {
+      this.pendingDataSource.sort = this.pendingSort;
+      this.pendingDataSource.paginator = this.pendingPaginator;
+    }
+    if (this.approvedDataSource) {
+      this.approvedDataSource.sort = this.approvedSort;
+      this.approvedDataSource.paginator = this.approvedPaginator;
+    }
+    this._changeDetectorRef.detectChanges();
+  }
 
   /**
    * On destroy
@@ -209,10 +217,16 @@ export class PendingApprovalListComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+    if (this.selectedTab === 0) {
+      this.pendingDataSource.filter = filterValue.trim().toLowerCase();
+      if (this.pendingDataSource.paginator) {
+        this.pendingDataSource.paginator.firstPage();
+      }
+    } else {
+      this.approvedDataSource.filter = filterValue.trim().toLowerCase();
+      if (this.approvedDataSource.paginator) {
+        this.approvedDataSource.paginator.firstPage();
+      }
     }
   }
 }

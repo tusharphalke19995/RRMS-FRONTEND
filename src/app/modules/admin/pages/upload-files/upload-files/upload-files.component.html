@@ -145,14 +145,6 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-full">
-        <mat-label>hashTag</mat-label>
-        <input matInput formControlName="hashTag" (keyup)="onHashTagKeyUp($event)" placeholder="Enter hashTag" />
-      </mat-form-field>
-
-    </div>
-
-    <div class="">
-      <mat-form-field appearance="outline" class="w-full">
         <mat-label>File Type</mat-label>
         <mat-select formControlName="fileType">
           <mat-option [value]="null">Please Select</mat-option>
@@ -164,6 +156,23 @@
           Required
         </mat-error>
       </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label *transloco="let t" class="font-medium">{{t('fileStage')}}</mat-label>
+        <mat-select [formControlName]="'fileStage'">
+            <mat-option [value]="null">Please Select</mat-option>
+            <ng-container *ngFor="let fileStageData of fileStageDropDown; trackBy: trackByFn">
+                <mat-option [value]="fileStageData.value">{{fileStageData.fileStageName}}</mat-option>
+            </ng-container>
+        </mat-select>
+        <mat-error *ngIf="metadataForm.get('fileStage').hasError('required')">
+            Required
+        </mat-error>
+    </mat-form-field>
+    </div>
+
+    <div class="">
+    
 
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Classification</mat-label>
@@ -179,18 +188,13 @@
         </mat-error>
       </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-full">
-            <mat-label *transloco="let t" class="font-medium">{{t('fileStage')}}</mat-label>
-            <mat-select [formControlName]="'fileStage'">
-                <mat-option [value]="null">Please Select</mat-option>
-                <ng-container *ngFor="let fileStageData of fileStageDropDown; trackBy: trackByFn">
-                    <mat-option [value]="fileStageData.value">{{fileStageData.fileStageName}}</mat-option>
-                </ng-container>
-            </mat-select>
-            <mat-error *ngIf="metadataForm.get('fileStage').hasError('required')">
-                Required
-            </mat-error>
-        </mat-form-field>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>hashTag</mat-label>
+        <input matInput formControlName="hashTag" (keyup)="onHashTagKeyUp($event)"  placeholder="Type and press space – '#' will be auto-appended"  />
+        <mat-hint class="hintHashtag">After typing, press space to auto-append #</mat-hint>
+      </mat-form-field>
+      
+      
     </div>
 
     <div class="p-2">

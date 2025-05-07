@@ -78,13 +78,7 @@
                         {{ row.fileName }}
                       </td>
                 </ng-container>
-                <!-- Role Column -->
-                <ng-container matColumnDef="filePath">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black">File Path </th>
-                    <td mat-cell *matCellDef="let row"> {{row.filePath}} </td>
-                </ng-container>
-
+  
                 <!-- Role Column -->
                
 
@@ -116,7 +110,7 @@
                 <!-- Mobile Column -->
                 <ng-container matColumnDef="classification">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black">classification </th>
+                        class="bg-primary-300 dark:bg-slate-500 text-black">Classification </th>
                     <td mat-cell *matCellDef="let row"> {{row.classification_name}} </td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
