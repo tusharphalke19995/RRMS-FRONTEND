@@ -25,17 +25,21 @@
     </div>
 
     <!-- Select All Checkbox (only if more than one file) -->
-     <div *ngIf="checkGetFile">
-      <div *ngIf="selectedFiles.length > 1" class="flex items-center mb-2">
-        <mat-checkbox
-          [checked]="selectedIndexes.size === selectedFiles.length"
+    <div *ngIf="checkGetFile">
+      <div *ngIf="selectedFiles.length > 1" class="flex items-center justify-between mb-2">
+        <mat-checkbox [checked]="selectedIndexes.size === selectedFiles.length"
           [indeterminate]="selectedIndexes.size > 0 && selectedIndexes.size < selectedFiles.length"
           (change)="toggleSelectAll($event.checked)">
           Select All
         </mat-checkbox>
+        <button *ngIf="hasSelectedFiles" mat-raised-button color="primary" (click)="openMetadataForSelected()"
+          class="apply-metadata-btn">
+          <mat-icon>edit</mat-icon>
+          Edit All
+        </button>
       </div>
-     </div>
-  
+    </div>
+
 
     <!-- Selected Files List with Metadata -->
     <div *ngIf="selectedFiles.length > 0" class="selected-files-list">
@@ -43,17 +47,13 @@
         <div class="flex items-center justify-between p-2">
           <div class="flex items-center">
             <!-- Per-file checkbox, only if more than one file -->
-             <div  *ngIf="checkGetFile">
-              <mat-checkbox
-              *ngIf="selectedFiles.length > 1"
-              [checked]="selectedIndexes.has(i)"
-              (change)="onFileCheckboxChange(i, $event.checked)">
-            </mat-checkbox>
-             </div>
-           
-            <mat-icon
-              (click)="!isRestrictedToView(file) && viewImage(file)"
-              [ngClass]="{
+            <div *ngIf="checkGetFile">
+              <mat-checkbox *ngIf="selectedFiles.length > 1" [checked]="selectedIndexes.has(i)"
+                (change)="onFileCheckboxChange(i, $event.checked)">
+              </mat-checkbox>
+            </div>
+
+            <mat-icon (click)="!isRestrictedToView(file) && viewImage(file)" [ngClass]="{
                 'cursor-pointer text-green-500': file.metadata && !isRestrictedToView(file),
                 'cursor-not-allowed text-gray-500': isRestrictedToView(file)
               }">
@@ -65,7 +65,8 @@
             </span>
             <!-- Metadata Badge -->
             <ng-container *ngIf="file.metadata || file">
-              <span *ngIf="(file.metadata?.classification || file.classification) && fileClassificationDropDown?.length > 0" 
+              <span
+                *ngIf="(file.metadata?.classification || file.classification) && ClassificationTypeDropDown?.length > 0"
                 class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-md">
                 {{ getFileClassificationNameById(file.metadata?.classification || file.classification) }}
               </span>
@@ -88,7 +89,7 @@
             <button mat-icon-button color="primary" (click)="openSelectedFileModal(file)" type="button">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="removeFile(i)" type="button"  *ngIf="checkGetFile">
+            <button mat-icon-button color="warn" (click)="removeFile(i)" type="button" *ngIf="checkGetFile">
               <mat-icon>close</mat-icon>
             </button>
           </div>
@@ -98,10 +99,12 @@
         <ng-container *ngIf="file.metadata || file">
           <div class="metadata-preview px-4 py-2 bg-gray-50">
             <div class="grid grid-cols-2 gap-2 text-sm">
-              <div *ngIf="file.metadata?.subject || file.subject"><strong>Subject:</strong> {{ file.metadata?.subject ||
-                file.subject }}</div>
-              <div *ngIf="file.metadata?.fileType || file.fileType"> <strong>Type:</strong> {{
-                getFileTypeNameById(file.metadata?.fileType || file.fileType) }}</div>
+              <div *ngIf="getFileSubject(file) && getFileSubject(file) !== 'Multiple Files Selected'">
+                <strong>Subject:</strong> {{ getFileSubject(file) }}
+              </div>
+              <div *ngIf="file.metadata?.fileType || file.fileType">
+                <strong>Type:</strong> {{ getFileTypeNameById(file.metadata?.fileType || file.fileType) }}
+              </div>
               <div *ngIf="file.metadata?.hashTag || file.hashTag" class="tags-container">
                 <strong>Tags:</strong>
                 <div class="custom-tag-list">
@@ -111,7 +114,6 @@
                 </div>
               </div>
             </div>
-
           </div>
         </ng-container>
       </div>
@@ -145,42 +147,44 @@
         </mat-error>
       </mat-form-field>
 
+
+
       <mat-form-field appearance="outline" class="w-full">
-        <mat-label>File Type</mat-label>
+        <mat-label *transloco="let t" class="font-medium">{{t('fileStage')}}</mat-label>
+        <mat-select [formControlName]="'fileStage'" (selectionChange)="onFileTypeChange($event)">
+          <mat-option [value]="null">Please Select</mat-option>
+          <ng-container *ngFor="let fileStageData of FileTypeDropDown; trackBy: trackByFn">
+            <mat-option [value]="fileStageData.id">{{fileStageData.value}}</mat-option>
+          </ng-container>
+        </mat-select>
+        <mat-error *ngIf="metadataForm.get('fileStage').hasError('required')">
+          Required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Document Type</mat-label>
         <mat-select formControlName="fileType">
           <mat-option [value]="null">Please Select</mat-option>
-          <ng-container *ngFor="let fileType of fileTypesDropDown">
-            <mat-option [value]="fileType.fileTypeId">{{ fileType.fileTypeName }}</mat-option>
+          <ng-container *ngFor="let fileType of DocumentTypeDropDown">
+            <mat-option [value]="fileType.id">{{ fileType.value }}</mat-option>
           </ng-container>
         </mat-select>
         <mat-error *ngIf="metadataForm.get('fileType').hasError('required')">
           Required
         </mat-error>
       </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label *transloco="let t" class="font-medium">{{t('fileStage')}}</mat-label>
-        <mat-select [formControlName]="'fileStage'">
-            <mat-option [value]="null">Please Select</mat-option>
-            <ng-container *ngFor="let fileStageData of fileStageDropDown; trackBy: trackByFn">
-                <mat-option [value]="fileStageData.value">{{fileStageData.fileStageName}}</mat-option>
-            </ng-container>
-        </mat-select>
-        <mat-error *ngIf="metadataForm.get('fileStage').hasError('required')">
-            Required
-        </mat-error>
-    </mat-form-field>
     </div>
 
     <div class="">
-    
+
 
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Classification</mat-label>
         <mat-select formControlName="classification">
           <mat-option [value]="null">Please Select</mat-option>
-          <ng-container *ngFor="let classification of fileClassificationDropDown">
-            <mat-option [value]="classification.fileClassificationId">{{ classification.fileClassificationName
+          <ng-container *ngFor="let classification of ClassificationTypeDropDown">
+            <mat-option [value]="classification.id">{{ classification.value
               }}</mat-option>
           </ng-container>
         </mat-select>
@@ -190,17 +194,18 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-full">
-        <mat-label>hashTag</mat-label>
-        <input matInput formControlName="hashTag" (keyup)="onHashTagKeyUp($event)"  placeholder="Type and press space – '#' will be auto-appended"  />
+        <mat-label>HashTag</mat-label>
+        <input matInput formControlName="hashTag" (keyup)="onHashTagKeyUp($event)"
+          placeholder="Type and press space – '#' will be auto-appended" />
         <mat-hint class="hintHashtag">After typing, press space to auto-append #</mat-hint>
       </mat-form-field>
-      
-      
+
+
     </div>
 
     <div class="p-2">
-      <p> File/Document Name: <span class="font-semibold"> {{crimeNo}}_{{ fileToEdit?.name ||
-          fileToEdit.fileName}}</span></p>
+      <p> File/Document Name: <span class="font-semibold"> {{crimeNo}}_{{ fileToEdit?.fileName ||
+          fileToEdit?.name}}</span></p>
     </div>
   </form>
   <div class="flex justify-end space-x-2 mt-6 pt-4 border-t py-4 mr-3">
@@ -210,7 +215,7 @@
       Save Metadata
     </button>
     <button mat-raised-button color="primary" [disabled]="!metadataForm.valid" (click)="submitMetadata()"
-    *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin')">
+      *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin')">
       Update Metadata
     </button>
 

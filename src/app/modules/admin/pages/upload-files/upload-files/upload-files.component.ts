@@ -61,8 +61,10 @@ interface FileWithMetadata extends CustomFile {
     fileType: string;
     classification: string;
     hashTag: string;
-    fileStage:string
+    fileStage: string;
   };
+  fileName?: string;
+  subject?: string;
 }
 
 @Component({
@@ -105,7 +107,10 @@ export class UploadFilesComponent implements OnInit, OnChanges {
 
   @Input() filesData: any[] = [];
   @Input() getfiles: any[] = [];
-
+  @Input() ClassificationTypeDropDown: any[] = [];
+  @Input() DocumentTypeDropDown: any[] = [];
+  @Input() FileTypeDropDown: any[] = [];
+  @Input() masterData:any;
   @Output() formReady = new EventEmitter<FormGroup>();
   @Output() filesSelected = new EventEmitter<IVerificationFileUploadModel[]>();
   // @ViewChildren(UploadDocsComponent) childGames!: QueryList<UploadDocsComponent>;
@@ -157,8 +162,6 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   @Input() isViewAction: boolean;
   isViewSearchAction: string;
   private subscriptions = new Subscription();
-  @Input() fileTypesDropDown = [];
-  @Input() fileClassificationDropDown = [];
   @Input() contentManagerDropdown = [];
   @Input() crimeNo: string;
   metadataForm: FormGroup;
@@ -173,10 +176,10 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   // canEdit: boolean = false;
   // canDelete: boolean = false;
   selectedIndexes = new Set<number>();
-  fileStageDropDown=[{value:"Enquiry",fileStageName:"Enquiry"},
-    {value:"I/O",fileStageName:"I/O"},
-    {value:"Crime",fileStageName:"Crime"}
-  ]
+  // fileStageDropDown=[{value:"Enquiry",fileStageName:"Enquiry"},
+  //   {value:"I/O",fileStageName:"I/O"},
+  //   {value:"Crime",fileStageName:"Crime"}
+  // ]
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -372,20 +375,57 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     this.fileToEdit = null;
   }
 
+  openMetadataForSelected(): void {
+    // Reset the metadata form
+    this.metadataForm.reset();
+    
+    // If multiple files are selected, patch the subject field with a dynamic placeholder
+    if (this.selectedIndexes.size > 0) {
+      this.metadataForm.patchValue({
+        subject: 'Multiple Files Selected' // Placeholder for multiple files
+      });
+    }
+    
+    // Open the metadata modal
+    this.openFileModal = true;
+    
+    // Clear the fileToEdit since we're applying to multiple files
+    this.fileToEdit = null;
+  }
+
+  getFileSubject(file: FileWithMetadata): string {
+    if (file.metadata?.subject) {
+      return file.metadata.subject;
+    }
+    if (file.subject) {
+      return file.subject;
+    }
+    return file.name || file.fileName || '';
+  }
+
   submitMetadata(): void {
     if (this.metadataForm.valid) {
       const metadata = this.metadataForm.value;
   
       // If only one file, always apply metadata
       if (this.selectedFiles.length === 1) {
-        this.selectedFiles[0].metadata = { ...this.selectedFiles[0].metadata, ...metadata };
+        this.selectedFiles[0].metadata = { 
+          ...this.selectedFiles[0].metadata, 
+          ...metadata,
+          subject: metadata.subject || this.getFileSubject(this.selectedFiles[0])
+        };
       } 
       // If checkboxes are selected, apply to those files
       else if (this.selectedIndexes.size > 0) {
         this.selectedIndexes.forEach(index => {
           const file = this.selectedFiles[index];
           if (file) {
-            file.metadata = { ...file.metadata, ...metadata };
+            // Apply the new subject to all selected files
+            file.metadata = { 
+              ...file.metadata, 
+              ...metadata,
+              subject: metadata.subject || this.getFileSubject(file)
+            };
           }
         });
       } 
@@ -393,11 +433,15 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       else if (this.fileToEdit) {
         const file = this.selectedFiles.find(f => f === this.fileToEdit || f.name === this.fileToEdit.name);
         if (file) {
-          file.metadata = { ...file.metadata, ...metadata };
+          file.metadata = { 
+            ...file.metadata, 
+            ...metadata,
+            subject: metadata.subject || this.getFileSubject(file)
+          };
         }
       }
   
-      this._snackBar.open("Metadata added", "Close", {
+      this._snackBar.open("Metadata added successfully", "Close", {
         duration: 3000,
         horizontalPosition: "right",
         verticalPosition: "top",
@@ -624,17 +668,17 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   getFileTypeNameById(fileTypeId: number): string {
-    const type = this.fileTypesDropDown?.find(
-      (t) => t.fileTypeId === fileTypeId
+    const type = this.DocumentTypeDropDown?.find(
+      (t) => t.id === fileTypeId
     );
-    return type ? type.fileTypeName : "Unknown";
+    return type ? type.value : "Unknown";
   }
 
   getFileClassificationNameById(classificationId: number): string {
-    const classification = this.fileClassificationDropDown?.find(
-      (c) => c.fileClassificationId === classificationId
+    const classification = this.ClassificationTypeDropDown?.find(
+      (c) => c.id === classificationId
     );
-    return classification ? classification.fileClassificationName : "Unknown";
+    return classification ? classification.value : "Unknown";
   }
 
   getUserRoleName(): string | null {
@@ -686,6 +730,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     } else {
       this.selectedIndexes.delete(index);
     }
+    this._changeDetectorRef.detectChanges();
   }
 
   get hasSelectedFiles(): boolean {
@@ -724,5 +769,12 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     return role === 'User' && !file.is_access_request_approved;
   }
 
+  onFileTypeChange(data) {
+    if (data.value == 3) {
+      this.DocumentTypeDropDown = this.masterData.CaseFiles;
+    } else if (data.value == 4) {
+      this.DocumentTypeDropDown = this.masterData.Correspondence;
+    }
+  }
   
 }

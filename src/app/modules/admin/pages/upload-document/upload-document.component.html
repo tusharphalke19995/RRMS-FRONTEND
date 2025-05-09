@@ -115,7 +115,7 @@
                        
                         <td><mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{t('office')}}</mat-label>
-                                <input matInput matInput [formControlName]="'office'" (keypress)="allowOnlyLetters($event)">
+                                <input matInput matInput [formControlName]="'office'" maxlength="30" (keypress)="allowOnlyLetters($event)">
                                 <mat-error *ngIf="uploadDocumentForm.get('office').hasError('required')">
                                     Required
                                 </mat-error>
@@ -139,20 +139,26 @@
                             </mat-error>
                         </mat-form-field>
                         </td>
-                        <td><mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('caseType')}}</mat-label>
-                                <input matInput matInput [formControlName]="'caseType'" [required]="true" (keypress)="allowOnlyLetters($event)" maxlength="10">
-                                <mat-error *ngIf="uploadDocumentForm.get('caseType').hasError('required')">
+                        
+                        <td>
+                            <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('caseType')}}</mat-label>
+                                <mat-select [formControlName]="'caseType'"  (selectionChange)="onCaseTypeChange($event)">
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let caseStatus of caseTypeDropDown; trackBy: trackByFn">
+                                        <mat-option [value]="caseStatus.id">{{caseStatus.value}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                                <mat-error *ngIf="uploadDocumentForm.get('statusId').hasError('required')">
                                     Required
                                 </mat-error>
                             </mat-form-field>
-
                         </td>
                        
 
                         <td><mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('location')}}</mat-label>
-                                <input matInput matInput [formControlName]="'toAddr'" [required]="true" (keypress)="allowOnlyLetters($event)">
+                                <input matInput matInput [formControlName]="'toAddr'" maxlength="100" [required]="true" (keypress)="allowOnlyLetters($event)">
                                 <mat-error *ngIf="uploadDocumentForm.get('toAddr').hasError('required')">
                                     Required 
                                 </mat-error>
@@ -161,7 +167,7 @@
                         </td>
                         <td><mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('author')}}</mat-label>
-                                <input matInput matInput [formControlName]="'author'" [required]="true" maxlength="10" (keypress)="allowOnlyLetters($event)">
+                                <input matInput matInput [formControlName]="'author'" [required]="true" maxlength="20" (keypress)="allowOnlyLetters($event)">
                                 <mat-error *ngIf="uploadDocumentForm.get('author').hasError('required')">
                                     Required
                                 </mat-error>
@@ -195,7 +201,7 @@
                                 <mat-select [formControlName]="'statusId'">
                                     <mat-option [value]="null">Please Select</mat-option>
                                     <ng-container *ngFor="let caseStatus of caseStatusDropdown; trackBy: trackByFn">
-                                        <mat-option [value]="caseStatus.statusId">{{caseStatus.statusName}}</mat-option>
+                                        <mat-option [value]="caseStatus.id">{{caseStatus.value}}</mat-option>
                                     </ng-container>
                                 </mat-select>
                                 <mat-error *ngIf="uploadDocumentForm.get('statusId').hasError('required')">
@@ -255,7 +261,7 @@
                 </div>
 
                 <app-upload-files (filesWithMetadataSelected)="onFilesWithMetadataSelected($event)"
-                    [fileClassificationDropDown]="fileClassificationDropDown" [fileTypesDropDown]="fileTypesDropDown" [crimeNo]="crimeNo">
+                    [DocumentTypeDropDown]="DocumentTypeDropDown" [crimeNo]="crimeNo" [FileTypeDropDown]="FileTypeDropDown" [ClassificationTypeDropDown]="ClassificationTypeDropDown" [masterData]="masterData">
                 </app-upload-files>
 
                 <div class="flex items-center justify-end py-3">

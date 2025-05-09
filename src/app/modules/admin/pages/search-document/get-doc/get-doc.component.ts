@@ -101,8 +101,7 @@ export class GetDocComponent {
     this.dataService.setFileBoolean(false);
     this.getFilesWithMetadataSelected();
     this.getCasedataSelected();
-    this.getFileClassificationInfo();
-    this.getFileTypesInfo();
+    this.getMasterDropDown()
     this.getFilesCheck();
     this.finalUserID=Number(sessionStorage.getItem('userID'))
   }
@@ -184,24 +183,6 @@ export class GetDocComponent {
         },
       });
   }
-  
-  getFileClassificationInfo() {
-    this._masterService.getFileClassification().subscribe({
-      next: (response: any) => {
-        this.fileClassificationDropDown= response;
-      },
-      error: (error) => {},
-    });
-  }
-
-    getFileTypesInfo() {
-      this._masterService.getFileTypes().subscribe({
-        next: (response: any) => {
-         this.fileTypesDropDown= response;
-        },
-        error: (error) => {},
-      });
-    } 
 
   isImage(file: any): boolean {
     return file && file.type && file.type.startsWith('image/');
@@ -221,4 +202,15 @@ export class GetDocComponent {
       (role) => roles.includes(role.role_name) && role.division_id === divisionID
     );
   }
+
+  getMasterDropDown() {
+    this._uploadDocumentService.getMasterDropDownData().subscribe({
+      next: (response: any) => {
+       this.fileClassificationDropDown =response.ClassificationType;
+       this.fileTypesDropDown =response.Category_4;
+      },
+      error: (error) => {},
+    });
+  } 
+
 }

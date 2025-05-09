@@ -63,6 +63,10 @@ getUnitsByDistictIdData(
     return this.commonApiCallService.post(apiurls.uploadInfo, data).pipe(catchError(this.handleError));
   }
 
+  getMasterDropDownData() {
+    return this.commonApiCallService.get(apiurls.getMasterDropDown).pipe(catchError(this.handleError));
+  }
+
   updateUploadedDoc(pk: number, caseData: any) {
     const url = `${apiurls.casedataUpdate}${pk}`;
     return this.commonApiCallService.put(url, caseData); // or use .patch if partial update

@@ -66,18 +66,18 @@ export class CaseStatusComponent implements OnInit {
   columns: any[] = [
     { labelen: "Status Id", labelhi: "Status Id", property: "statusId" },
     { labelen: "Status Name", labelhi: "Status Name", property: "statusName" },    
-    // {
-    //   labelen: "Action",
-    //   labelhi: "Action",
-    //   property: "action",
-    //   isAction: true,
-    // },
+    {
+      labelen: "Action",
+      labelhi: "Action",
+      property: "action",
+      isAction: true,
+    },
   ];
 
   displayedColumns: string[] = [
     "statusId",
     "statusName",
-    
+    "action"
   ];
   userRoleDropdown: [];
   designationsDropdown: [];

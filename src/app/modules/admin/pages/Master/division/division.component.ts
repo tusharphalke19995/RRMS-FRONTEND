@@ -67,12 +67,19 @@ export class DivisionComponent implements OnInit, AfterViewInit {
   dataSource: MatTableDataSource<any>;
   columns: any[] = [
     { labelen: "Division Id", labelhi: "Division Id", property: "divisionId" },
-    { labelen: "Division Name", labelhi: "Division Name", property: "divisionName" }
+    { labelen: "Division Name", labelhi: "Division Name", property: "divisionName" },
+    {
+      labelen: "Action",
+      labelhi: "Action",
+      property: "action",
+      isAction: true,
+    },
   ];
 
   displayedColumns: string[] = [
     "divisionId",
-    "divisionName"
+    "divisionName",
+    "action"
   ];
   userRoleDropdown: [];
   designationsDropdown: [];

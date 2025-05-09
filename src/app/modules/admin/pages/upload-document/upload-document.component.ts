@@ -93,9 +93,14 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   stateDropdown: [];
   caseStatusDropdown: any;
   yearDropDown: { yearId: number; yearName: number }[] = [];
-  fileTypesDropDown: [];
-  fileClassificationDropDown: [];
   authData:any;
+  caseTypeDropDown:[];
+  ClassificationTypeDropDown: [];
+  FileTypeDropDown: [];
+  DocumentTypeDropDown:[];
+  selectedFCaseType: any;
+  caseTypeFinalId: number;
+  masterData:any;
   // selectedFiles: any;
   /**
    * Constructor
@@ -131,9 +136,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.getUserStateDropdown();
     this.onStateChange(16);
     this.onDisctrictChange(443);
-    this.getCaseStatusInfo();
-    this.getFileClassificationInfo();
-    this.getFileTypesInfo();
+    this.getMasterDropDown();
   }
 
   /**
@@ -221,7 +224,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
             this.uploadDocumentForm.patchValue({
               stateIDInfo: element.stateId,
             });
-            this.uploadDocumentForm.get("stateIDInfo").disable();
+            // this.uploadDocumentForm.get("stateIDInfo").disable();
           }
         });
       },
@@ -321,47 +324,27 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       },
     });
   }
-
-   getCaseStatusInfo() {
-      this._masterService.getCaseStatus().subscribe({
-        next: (response: any) => {
-          this.caseStatusDropdown = response;
-        },
-        error: (error) => {},
-      });
-    }
-  
-    getFileClassificationInfo() {
-      this._masterService.getFileClassification().subscribe({
-        next: (response: any) => {
-          this.fileClassificationDropDown= response;
-        },
-        error: (error) => {},
-      });
-    }
-  
-
-      getFileTypesInfo() {
-        this._masterService.getFileTypes().subscribe({
-          next: (response: any) => {
-           this.fileTypesDropDown= response;
-          },
-          error: (error) => {},
-        });
-      } 
-      
      
   generateCrimeNo(): void {
-    // const stateId = this.uploadDocumentForm.get('stateIDInfo')?.value;
     const districtId = this.uploadDocumentForm.get('districtId')?.value;
     const unitId = this.uploadDocumentForm.get('unitsId')?.value;
     const yearId = this.uploadDocumentForm.get('yearId')?.value;
     const firNo = this.uploadDocumentForm.get('firNo')?.value;
     if (districtId && unitId != null && yearId && firNo) {
       const paddedUnitId = String(unitId).padStart(4, '0');
-      this.crimeNo = `10${districtId}${paddedUnitId}${yearId}${firNo}`;
+      this.crimeNo = `${this.caseTypeFinalId}${districtId}${paddedUnitId}${yearId}${firNo}`;
       this.uploadDocumentForm.get('caseNo')?.setValue(this.crimeNo);
     }
+  }
+
+  onCaseTypeChange(event:any) {
+    this.selectedFCaseType =event.value;
+    if (this.selectedFCaseType == 1) {
+      this.caseTypeFinalId = 10;
+    } else if (this.selectedFCaseType == 2) {
+      this.caseTypeFinalId= 20;
+    }    
+    this.generateCrimeNo();
   }
 
   onDistrictChange(districtId: number): void {
@@ -384,12 +367,13 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     }
   }
 
-  allowOnlyLetters(event: KeyboardEvent): void {
-    const char = event.key;
-    if (!/^[a-zA-Z]$/.test(char)) {
-      event.preventDefault();
-    }
+allowOnlyLetters(event: KeyboardEvent): void {
+  const char = event.key;
+  if (!/^[a-zA-Z\s]$/.test(char)) {
+    event.preventDefault();
   }
+}
+
   
   get canSubmit(): boolean {
     if (this.uploadDocumentForm.invalid) return false;
@@ -408,4 +392,20 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     }
     return true;
   }
+
+  getMasterDropDown() {
+    this._uploadDocumentService.getMasterDropDownData().subscribe({
+      next: (response: any) => {
+       this.masterData = response
+       this.caseTypeDropDown= response.CaseType;
+       this.ClassificationTypeDropDown =response.ClassificationType;
+       this.FileTypeDropDown =response.FileType;
+       this.DocumentTypeDropDown =response.Category_4;
+       this.caseStatusDropdown =response.CaseStatus;
+
+      },
+      error: (error) => {},
+    });
+  } 
+  
 }

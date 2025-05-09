@@ -797,20 +797,46 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
         this.openedChanged.next(open);
     }
 
+    // setNavigation(): void {
+    //     const isSuperAdmin = this.authData.SuperAdmin;
+    //     const roles = this.authData.DivisionsRoles
+    //         .filter(a => a.role_name) // Filter out the roles that have a truthy `role_name`
+    //         .map(a => a.role_name);    // Map to an array of role names
+    //     const isAdmin = roles.length === 0 || roles.includes("Admin");
+    //     this.navigation = this.navigation.filter(item => {
+    //         if (isSuperAdmin) {
+    //             return ['Master', 'orgMapping', 'notification', 'userMng', 'home', 'revokeApproval'].includes(item.id);
+    //         } else if (isAdmin) {
+    //            return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval'].includes(item.id);
+    //         } else if (roles.includes("ContentManager")) {
+    //             return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval'].includes(item.id);
+    //         } else if (roles.includes("User")) {
+    //             return ['searchDocument', 'home', 'uploadDocument'].includes(item.id);
+    //         }
+    //         return false;
+    //     });
+    // }
+
     setNavigation(): void {
-        const roles = this.authData.DivisionsRoles
-            .filter(a => a.role_name) // Filter out the roles that have a truthy `role_name`
-            .map(a => a.role_name);    // Map to an array of role names
-        const isAdmin = roles.length === 0 || roles.includes("Admin");
+        const isSuperAdmin = this.authData.SuperAdmin;
+        const sessionDivisionId = Number(sessionStorage.getItem('divisionID'));
+        const currentDivisionRole = this.authData.DivisionsRoles.find(
+            role => role.division_id === sessionDivisionId
+        );
+        const currentRole = currentDivisionRole?.role_name || null;
+        const isAdmin = !currentRole || currentRole === "Admin";
         this.navigation = this.navigation.filter(item => {
-            if (isAdmin) {
-                // empty OR Admin → see everything
-                return true;
-              } else if (roles.includes("User") || roles.includes("ContentManager")) {
-                // If the user is a User or ContentManager, include specific items
-                return item.id === 'searchDocument' || item.id === 'home' || item.id === 'uploadDocument' || item.id === 'notification' || item.id === 'revokeApproval';
+            if (isSuperAdmin) {
+                return ['master', 'orgMapping', 'userMng', 'home', 'revokeApproval'].includes(item.id);
+            } else if (isAdmin) {
+                return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval'].includes(item.id);
+            } else if (currentRole === "ContentManager") {
+                return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval'].includes(item.id);
+            } else if (currentRole === "User") {
+                return ['searchDocument', 'home', 'uploadDocument','notification'].includes(item.id);
             }
-            return false; // If no roles match, exclude the item
+            return false;
         });
     }
+    
 }

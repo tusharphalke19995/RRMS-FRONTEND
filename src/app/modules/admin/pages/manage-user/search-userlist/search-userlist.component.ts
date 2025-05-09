@@ -315,10 +315,10 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     }
   }
 
-  allowOnlyLetters(event: KeyboardEvent): void {
-    const char = event.key;
-    if (!/^[a-zA-Z]$/.test(char)) {
-      event.preventDefault();
-    }
+allowOnlyLetters(event: KeyboardEvent): void {
+  const char = event.key;
+  if (!/^[a-zA-Z\s]$/.test(char)) {
+    event.preventDefault();
   }
+}
 }

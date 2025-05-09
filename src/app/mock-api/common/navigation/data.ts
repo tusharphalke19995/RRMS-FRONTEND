@@ -59,17 +59,18 @@ export const defaultNavigation: FuseNavigationItem[] = [
         link : '/org-mapping'
     },
     {
+        id   : 'master',
         title   : 'Master',
         type    : 'collapsable',
         icon    : 'heroicons_outline:information-circle',
         children: [
-            // {
-            //     id        : 'roleMng',
-            //     title     : 'Role Management',
-            //     type      : 'basic',
-            //     link      : '/manage-master/role',
-            //     exactMatch: true,
-            // },
+            {
+                id        : 'roleMng',
+                title     : 'Role Management',
+                type      : 'basic',
+                link      : '/manage-master/role',
+                exactMatch: true,
+            },
             {
                 id   : 'divisionMng',
                 title: 'Division Management',

@@ -6,6 +6,7 @@ import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterLink } from '@angular/router';
+import { AuthService } from 'app/core/auth/auth.service';
 import { NotificationsService } from 'app/layout/common/notifications/notifications.service';
 import { Notification } from 'app/layout/common/notifications/notifications.types';
 import { DashbaordService } from 'app/modules/admin/dashbaord/dashboard.service';
@@ -29,7 +30,12 @@ export class NotificationsComponent implements OnInit, OnDestroy
     unreadCount: number = 0;
     private _overlayRef: OverlayRef;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
-
+    canViewNotifications = false;
+    navigation: any[] = []; // your actual navigation list
+    authData = {
+      SuperAdmin: false,
+      DivisionsRoles: []
+    };
     /**
      * Constructor
      */
@@ -39,7 +45,8 @@ export class NotificationsComponent implements OnInit, OnDestroy
         private _overlay: Overlay,
         private _viewContainerRef: ViewContainerRef,
         private _dashbaordService:DashbaordService,
-        private router:Router
+        private router:Router,
+         private authenticationService:AuthService
     )
     {
     }
@@ -68,8 +75,31 @@ export class NotificationsComponent implements OnInit, OnDestroy
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+            this.setNotificationVisibility();
     }
 
+    setNotificationVisibility(): void {
+        const isSuperAdmin = this.authData.SuperAdmin;
+        const sessionDivisionId = Number(sessionStorage.getItem('divisionID'));
+        const currentDivisionRole = this.authData.DivisionsRoles.find(
+          role => role.division_id === sessionDivisionId
+        )
+        const currentRole = currentDivisionRole?.role_name || null;
+        const isAdmin = !currentRole || currentRole === 'Admin';
+        let allowedIds: string[] = [];
+    
+        if (isSuperAdmin) {
+          allowedIds = ['master', 'orgMapping', 'userMng', 'home', 'revokeApproval'];
+        } else if (isAdmin) {
+          allowedIds = ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval'];
+        } else if (currentRole === 'ContentManager') {
+          allowedIds = ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval'];
+        } else if (currentRole === 'User') {
+          allowedIds = ['searchDocument', 'home', 'uploadDocument','notification'];
+        }
+    
+        this.canViewNotifications = allowedIds.includes('notification');
+      }
     /**
      * On destroy
      */
@@ -247,5 +277,7 @@ export class NotificationsComponent implements OnInit, OnDestroy
       goToAllNotifications(){
         this.router.navigateByUrl("manage-notification")
       }
+
+
     
 }

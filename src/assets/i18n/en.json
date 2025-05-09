@@ -111,9 +111,10 @@
    "reqRevokeApprove":"Would you like to Revoke this request? Please confirm your decision",
    "selectRole":"Select Division",
    "revoke":"Revoke",
-   "fileStage":"Document Type",
+   "fileStage":"File Type",
    "action":"Action",
    "close":"Close",
    "request":"Request",
-   "password":"Password"
+   "password":"Password",
+   "fileExtension":"File Extension"
 }

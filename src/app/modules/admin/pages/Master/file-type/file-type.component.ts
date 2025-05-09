@@ -62,19 +62,22 @@ export class FileTypeComponent implements OnInit {
 
   @ViewChild("sort1") sort1: MatSort;
   @ViewChild("paginator1") paginator1: MatPaginator;
-  dataSource: MatTableDataSource<any>;
+  dataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
   columns: any[] = [
     { labelen: "File Type Id", labelhi: "File Type Id", property: "fileTypeId" },
     { labelen: "File Type Name", labelhi: "File Type Name", property: "fileTypeName" },
-    { labelen: "Last Modified Date", labelhi: "Last Modified Date", property: "lastModifiedDate" },
-  
+    {
+      labelen: "Action",
+      labelhi: "Action",
+      property: "action",
+      isAction: true,
+    },
   ];
 
   displayedColumns: string[] = [
     "fileTypeId",
     "fileTypeName",
-     "lastModifiedDate",
-   
+   "action",
   ];
   userRoleDropdown: [];
   designationsDropdown: [];

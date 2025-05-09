@@ -75,7 +75,7 @@ import { join } from "lodash";
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
-    UploadFilesComponent
+    UploadFilesComponent,
   ],
 })
 export class SearchDocumentComponent implements OnInit, OnDestroy {
@@ -146,12 +146,19 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     "action",
   ];
 
-
+  caseTypeDropDown: [];
+  ClassificationTypeDropDown: [];
+  FileTypeDropDown: [];
+  fileExtensionsDropdown: [];
+  documentTypeDropDown: [];
+  caseStatusDropdown:[];
+  caseTypeFinalId: number;
+  masterData: any;
   /**
    * Constructor
    */
   constructor(
-    private dataService:SharedService,
+    private dataService: SharedService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: UntypedFormBuilder,
     private _searchDocService: SearchDocService,
@@ -173,6 +180,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     this.onStateChange(16);
     this.onDisctrictChange(443);
     this.getUploadMetaDataFiles();
+    this.getMasterDropDown();
   }
 
   /**
@@ -194,10 +202,15 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       caseStatus: [""],
       unitsId: [""],
       stateId: [""],
-      letterNo:[""],
-      toAddr:[""],
-      caseType:[""],
-      author:[""]
+      letterNo: [""],
+      toAddr: [""],
+      caseType: [""],
+      author: [""],
+      fileStage: [""],
+      fileType: [""],
+      hashTag: [""],
+      docType: [""],
+      statusId:[""]
     });
   }
 
@@ -215,9 +228,6 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   clearForm(): void {
     // Reset the form
     this.addcitizenInformationNgForm.resetForm();
-   
-    
-    
   }
 
   SelectDataCase(value) {}
@@ -236,23 +246,25 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
 
   onStateChange(stateId: number): void {
     if (stateId) {
-      const divisionId =Number(sessionStorage.getItem("divisionID"));
-      this._uploadDocumentService.geDistrictByStateData(stateId,divisionId).subscribe(
-        (districts: any) => {
-          this.districtDropdown = districts.responseData;
-          this.searchDocumentForm.get("districtId")?.setValue(443);
-        },
-        (error) => {
-          console.error("Error fetching districts:", error);
-        }
-      );
+      const divisionId = Number(sessionStorage.getItem("divisionID"));
+      this._uploadDocumentService
+        .geDistrictByStateData(stateId, divisionId)
+        .subscribe(
+          (districts: any) => {
+            this.districtDropdown = districts.responseData;
+            this.searchDocumentForm.get("districtId")?.setValue(443);
+          },
+          (error) => {
+            console.error("Error fetching districts:", error);
+          }
+        );
     } else {
       this.districtDropdown = [];
     }
   }
 
   getUserStateDropdown() {
-    const divisionId =Number(sessionStorage.getItem('divisionID'));
+    const divisionId = Number(sessionStorage.getItem("divisionID"));
     this._uploadDocumentService.getState(divisionId).subscribe({
       next: (response: any) => {
         console.log("response", response);
@@ -262,7 +274,6 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
             this.searchDocumentForm.patchValue({
               stateId: element.stateId,
             });
-            this.searchDocumentForm.get("stateId").disable();
           }
         });
       },
@@ -271,15 +282,17 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   }
 
   onDisctrictChange(stateId: number): void {
-    const divisionId =Number(sessionStorage.getItem('divisionID'));
-    this._uploadDocumentService.getUnitsByDistictIdData(stateId,divisionId).subscribe({
-      next: (response: any) => {
-        if (response.statusCode == 200) {
-          this.unitsDropdown = response.responseData;
-        }
-      },
-      error: (error) => {},
-    });
+    const divisionId = Number(sessionStorage.getItem("divisionID"));
+    this._uploadDocumentService
+      .getUnitsByDistictIdData(stateId, divisionId)
+      .subscribe({
+        next: (response: any) => {
+          if (response.statusCode == 200) {
+            this.unitsDropdown = response.responseData;
+          }
+        },
+        error: (error) => {},
+      });
   }
 
   /**
@@ -287,6 +300,11 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
    */
 
   getUploadMetaDataFiles(): void {
+    if (this.searchDocumentForm.value.caseType == 1) {
+      this.caseTypeFinalId = 10;
+    } else if (this.searchDocumentForm.value.caseType == 2) {
+      this.caseTypeFinalId = 20;
+    }
     let searchMetaData = {
       stateId: this.searchDocumentForm.value.stateId,
       districtId: this.searchDocumentForm.value.districtId,
@@ -295,7 +313,11 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       caseNo: this.searchDocumentForm.value.caseNo,
       caseDate: this.searchDocumentForm.value.caseDate,
       firNo: this.searchDocumentForm.value.firNo,
-      division_id: Number(sessionStorage.getItem('divisionID'))
+      caseType: this.caseTypeFinalId,
+      fileStage: this.searchDocumentForm.value.fileStage,
+      fileType: this.searchDocumentForm.value.fileType,
+      division_id: Number(sessionStorage.getItem("divisionID")),
+      docType: this.searchDocumentForm.value.docType,
     };
 
     this._searchDocService.getUploadDocMetaData(searchMetaData).subscribe({
@@ -307,7 +329,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       },
     });
   }
@@ -322,11 +344,10 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
 
   goToDocument(data: any) {
     console.log("data", data.files);
-    this.dataService.setFilesData(data.files); 
+    this.dataService.setFilesData(data.files);
     this.dataService.setCaseData(data);
     this.dataService.setFileBoolean(false);
     this._router.navigateByUrl("/search-document/get-doc"); // Navigate to the GetDocComponent
-    
   }
 
   allowOnlyNumbers(event: KeyboardEvent): void {
@@ -339,7 +360,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
 
   allowOnlyLetters(event: KeyboardEvent): void {
     const char = event.key;
-    if (!/^[a-zA-Z]$/.test(char)) {
+    if (!/^[a-zA-Z\s]$/.test(char)) {
       event.preventDefault();
     }
   }
@@ -356,5 +377,40 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   ngAfterViewInit(): void {
     // Initial setup of pagination
     this.setupPagination();
+  }
+
+  onFileTypeChange(data) {
+    if (data.value == 3) {
+      this.documentTypeDropDown = this.masterData.CaseFiles;
+    } else if (data.value == 4) {
+      this.documentTypeDropDown = this.masterData.Correspondence;
+    }
+  }
+
+  getMasterDropDown() {
+    this._uploadDocumentService.getMasterDropDownData().subscribe({
+      next: (response: any) => {
+        this.masterData = response;
+        this.caseTypeDropDown = response.CaseType;
+        this.ClassificationTypeDropDown = response.ClassificationType;
+        this.FileTypeDropDown = response.FileType;
+        this.fileExtensionsDropdown = response.FileExtension;
+        this.documentTypeDropDown = response.Category_4;
+        this.caseStatusDropdown = response.CaseStatus;
+      },
+      error: (error) => {},
+    });
+  }
+
+  onHashTagKeyUp(event: KeyboardEvent): void {
+    if (event.key === " ") {
+      const hashTagControl = this.searchDocumentForm.get("hashTag");
+      const hashTagValue = hashTagControl.value;
+      const words = hashTagValue
+        .split(" ")
+        .map((word) => (word.startsWith("#") ? word : `#${word}`));
+      const updatedHashTag = words.join(" ");
+      hashTagControl.setValue(updatedHashTag);
+    }
   }
 }
