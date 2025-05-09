@@ -138,6 +138,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   selectedFCaseType: any;
   caseTypeFinalId: number;
   masterData: any;
+  isSubmitting: boolean = false;
   // selectedFiles: any;
   /**
    * Constructor
@@ -318,6 +319,11 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }
 
   sumbitUpload() {
+    if (this.isSubmitting) return;
+    
+    this.isSubmitting = true;
+    this._changeDetectorRef.detectChanges();
+
     let uploadMetaData = {
       stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
       districtId: this.uploadDocumentForm.value.districtId,
@@ -330,13 +336,13 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       firNo: this.uploadDocumentForm.value.firNo,
       author: this.uploadDocumentForm.value.author,
       toAddr: this.uploadDocumentForm.value.toAddr,
-      caseStatus:this.uploadDocumentForm.value.statusId,
-      year:this.uploadDocumentForm.value.yearId,
+      caseStatus: this.uploadDocumentForm.value.statusId,
+      year: this.uploadDocumentForm.value.yearId,
     };
     const formData = new FormData();
     formData.append("caseDetails", JSON.stringify(uploadMetaData));
     const fileDetailsArray = this.selectedFiles.map(file => ({
-      fileId:null,
+      fileId: null,
       hashTag: file.metadata.hashTag ? file.metadata.hashTag.split(',').map(tag => tag.trim()).join(',') : '', 
       subject: file.metadata.subject || '', 
       classification: file.metadata.classification || '', 
@@ -345,16 +351,13 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     }));
     formData.append("fileDetails", JSON.stringify(fileDetailsArray));
 
-    // this.selectedFiles.forEach((file) => {
-    // formData.append(`Files`, file); 
-    // formData.append(`division_id`, sessionStorage.getItem('divisionID')); 
-
     this.selectedFiles.forEach((file) => {
       const newFileName = this.uploadDocumentForm.value.caseNo + '_' + (file.name);
       const newFile = new File([file], newFileName, { type: file.type });
       formData.append('Files', newFile);
       formData.append('division_id', sessionStorage.getItem('divisionID'));
     });
+
     this._uploadDocumentService.uploadDocument(formData).subscribe({
       next: (response: any) => {
         this._snackBar.open("File Upload successfully", "Close", {
@@ -364,9 +367,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           panelClass: ["success-snackbar"],
         });
         this.addcitizenfeedbackNgForm.resetForm();
-        this._router.navigateByUrl("search-document")
+        this._router.navigateByUrl("search-document");
         this.selectedFiles = [];
-       
       },
       error: (error) => {
         this._snackBar.open(error.message || "Error creating user", "Close", {
@@ -376,6 +378,10 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           panelClass: ["error-snackbar"],
         });
       },
+      complete: () => {
+        this.isSubmitting = false;
+        this._changeDetectorRef.detectChanges();
+      }
     });
   }
      
@@ -430,6 +436,7 @@ allowOnlyLetters(event: KeyboardEvent): void {
 
   
   get canSubmit(): boolean {
+    if (this.isSubmitting) return false;
     if (this.uploadDocumentForm.invalid) return false;
     if (!this.selectedFiles || this.selectedFiles.length === 0) return false;
     for (const file of this.selectedFiles) {

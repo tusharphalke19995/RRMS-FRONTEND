@@ -336,7 +336,9 @@
                     </button>
                     <button *transloco="let t" class="ml-2" mat-flat-button [color]="'primary'"
                     [disabled]="!canSubmit" (click)="sumbitUpload()">
-                        {{t('submit')}}
+                        <mat-spinner *ngIf="isSubmitting" diameter="20" class="mr-2"></mat-spinner>
+                        <span *ngIf="!isSubmitting">{{t('submit')}}</span>
+                        <span *ngIf="isSubmitting">{{t('uploading')}}</span>
                     </button>
                 </div>
             </form>
