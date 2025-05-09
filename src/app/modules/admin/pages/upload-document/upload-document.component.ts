@@ -45,6 +45,31 @@ import { SharedService } from "app/shared/shared.service";
 import { MasterService } from "../Master/master.service";
 import { AuthService } from "app/core/auth/auth.service";
 
+interface State {
+  stateId: number;
+  stateName: string;
+}
+
+interface District {
+  districtId: number;
+  districtName: string;
+}
+
+interface Unit {
+  unitId: number;
+  unitName: string;
+}
+
+interface CaseType {
+  id: number;
+  value: string;
+}
+
+interface CaseStatus {
+  id: number;
+  value: string;
+}
+
 @Component({
   selector: "app-upload-document",
   templateUrl: "./upload-document.component.html",
@@ -87,20 +112,32 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   vendors: InventoryVendor[];
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   alert: { type: string; message: string };
-  unitsDropdown: any;
+  unitsDropdown: Unit[] = [];
+  filteredUnits: Unit[] = [];
+  filteredStates: State[] = [];
+  filteredDistricts: District[] = [];
+  filteredCaseTypes: CaseType[] = [];
+  filteredCaseStatus: CaseStatus[] = [];
+  private searchTimeout: any;
+  private stateSearchTimeout: any;
+  private districtSearchTimeout: any;
+  private caseTypeSearchTimeout: any;
+  private caseStatusSearchTimeout: any;
 
-  districtDropdown: any;
-  stateDropdown: [];
-  caseStatusDropdown: any;
+  districtDropdown: District[] = [];
+  stateDropdown: State[] = [];
+  caseStatusDropdown: CaseStatus[] = [];
+  caseTypeDropDown: CaseType[] = [];
   yearDropDown: { yearId: number; yearName: number }[] = [];
-  authData:any;
-  caseTypeDropDown:[];
-  ClassificationTypeDropDown: [];
-  FileTypeDropDown: [];
-  DocumentTypeDropDown:[];
+  filteredYears: { yearId: number; yearName: number }[] = [];
+  private yearSearchTimeout: any;
+  authData: any;
+  ClassificationTypeDropDown: any[] = [];
+  FileTypeDropDown: any[] = [];
+  DocumentTypeDropDown: any[] = [];
   selectedFCaseType: any;
   caseTypeFinalId: number;
-  masterData:any;
+  masterData: any;
   // selectedFiles: any;
   /**
    * Constructor
@@ -137,6 +174,13 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.onStateChange(16);
     this.onDisctrictChange(443);
     this.getMasterDropDown();
+    
+    // Initialize filtered arrays
+    this.filteredStates = this.stateDropdown || [];
+    this.filteredDistricts = this.districtDropdown || [];
+    this.filteredCaseTypes = this.caseTypeDropDown || [];
+    this.filteredCaseStatus = this.caseStatusDropdown || [];
+    this.filteredYears = [...this.yearDropDown];
   }
 
   /**
@@ -213,20 +257,21 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }
 
   getUserStateDropdown() {
-    const divisionId =Number(sessionStorage.getItem('divisionID'));
+    const divisionId = Number(sessionStorage.getItem('divisionID'));
 
     this._uploadDocumentService.getState(divisionId).subscribe({
       next: (response: any) => {
         console.log("response", response);
-        this.stateDropdown = response.responseData;
-        this.stateDropdown.forEach((element: any) => {
+        this.stateDropdown = response.responseData as State[];
+        this.filteredStates = [...this.stateDropdown];
+        this.stateDropdown.forEach((element: State) => {
           if (element.stateId == 16) {
             this.uploadDocumentForm.patchValue({
               stateIDInfo: element.stateId,
             });
-            // this.uploadDocumentForm.get("stateIDInfo").disable();
           }
         });
+        this._changeDetectorRef.detectChanges();
       },
       error: (error) => {},
     });
@@ -236,11 +281,13 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   onStateChange(stateId: number): void {
     this.generateCrimeNo();
     if (stateId) {
-      const divisionId =Number(sessionStorage.getItem("divisionID"));
-      this._uploadDocumentService.geDistrictByStateData(stateId,divisionId).subscribe(
+      const divisionId = Number(sessionStorage.getItem("divisionID"));
+      this._uploadDocumentService.geDistrictByStateData(stateId, divisionId).subscribe(
         (districts: any) => {
-          this.districtDropdown = districts.responseData;
+          this.districtDropdown = districts.responseData as District[];
+          this.filteredDistricts = [...this.districtDropdown];
           this.uploadDocumentForm.get("districtId")?.setValue(443);
+          this._changeDetectorRef.detectChanges();
         },
         (error) => {
           console.error("Error fetching districts:", error);
@@ -248,18 +295,25 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       );
     } else {
       this.districtDropdown = [];
+      this.filteredDistricts = [];
     }
   }
 
   onDisctrictChange(stateId: number): void {
-    const divisionId =Number(sessionStorage.getItem('divisionID'));
-    this._uploadDocumentService.getUnitsByDistictIdData(stateId,divisionId).subscribe({
+    const divisionId = Number(sessionStorage.getItem('divisionID'));
+    this._uploadDocumentService.getUnitsByDistictIdData(stateId, divisionId).subscribe({
       next: (response: any) => {
         if (response.statusCode == 200) {
           this.unitsDropdown = response.responseData;
+          this.filteredUnits = [...this.unitsDropdown];
+          this._changeDetectorRef.detectChanges();
         }
       },
-      error: (error) => {},
+      error: (error) => {
+        this.unitsDropdown = [];
+        this.filteredUnits = [];
+        this._changeDetectorRef.detectChanges();
+      },
     });
   }
 
@@ -287,7 +341,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       subject: file.metadata.subject || '', 
       classification: file.metadata.classification || '', 
       fileType: file.metadata.fileType || '',
-      fileStage: file.metadata.fileStage || '',
+      documentType: file.metadata.fileStage || '',
     }));
     formData.append("fileDetails", JSON.stringify(fileDetailsArray));
 
@@ -396,16 +450,137 @@ allowOnlyLetters(event: KeyboardEvent): void {
   getMasterDropDown() {
     this._uploadDocumentService.getMasterDropDownData().subscribe({
       next: (response: any) => {
-       this.masterData = response
-       this.caseTypeDropDown= response.CaseType;
-       this.ClassificationTypeDropDown =response.ClassificationType;
-       this.FileTypeDropDown =response.FileType;
-       this.DocumentTypeDropDown =response.Category_4;
-       this.caseStatusDropdown =response.CaseStatus;
-
+        this.masterData = response;
+        this.caseTypeDropDown = response.CaseType as CaseType[];
+        this.filteredCaseTypes = [...this.caseTypeDropDown];
+        this.ClassificationTypeDropDown = response.ClassificationType;
+        this.FileTypeDropDown = response.FileType;
+        this.DocumentTypeDropDown = response.Category_4;
+        this.caseStatusDropdown = response.CaseStatus as CaseStatus[];
+        this.filteredCaseStatus = [...this.caseStatusDropdown];
+        this._changeDetectorRef.detectChanges();
       },
       error: (error) => {},
     });
   } 
   
+  filterStates(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.stateSearchTimeout) {
+      clearTimeout(this.stateSearchTimeout);
+    }
+
+    this.stateSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredStates = this.stateDropdown;
+      } else {
+        this.filteredStates = this.stateDropdown.filter(state => {
+          const stateName = (state.stateName || '').toLowerCase();
+          return stateName.includes(searchText);
+        });
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
+  }
+
+  filterDistricts(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.districtSearchTimeout) {
+      clearTimeout(this.districtSearchTimeout);
+    }
+
+    this.districtSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredDistricts = this.districtDropdown;
+      } else {
+        this.filteredDistricts = this.districtDropdown.filter(district => {
+          const districtName = (district.districtName || '').toLowerCase();
+          return districtName.includes(searchText);
+        });
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
+  }
+
+  filterUnits(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+
+    this.searchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredUnits = this.unitsDropdown;
+      } else {
+        this.filteredUnits = this.unitsDropdown.filter(unit => {
+          const unitName = (unit.unitName || '').toLowerCase();
+          return unitName.includes(searchText);
+        });
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
+  }
+
+  filterCaseTypes(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.caseTypeSearchTimeout) {
+      clearTimeout(this.caseTypeSearchTimeout);
+    }
+
+    this.caseTypeSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredCaseTypes = this.caseTypeDropDown;
+      } else {
+        this.filteredCaseTypes = this.caseTypeDropDown.filter(caseType => {
+          const caseTypeName = (caseType.value || '').toLowerCase();
+          return caseTypeName.includes(searchText);
+        });
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
+  }
+
+  filterCaseStatus(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.caseStatusSearchTimeout) {
+      clearTimeout(this.caseStatusSearchTimeout);
+    }
+
+    this.caseStatusSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredCaseStatus = this.caseStatusDropdown;
+      } else {
+        this.filteredCaseStatus = this.caseStatusDropdown.filter(status => {
+          const statusName = (status.value || '').toLowerCase();
+          return statusName.includes(searchText);
+        });
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
+  }
+
+  filterYears(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.yearSearchTimeout) {
+      clearTimeout(this.yearSearchTimeout);
+    }
+
+    this.yearSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredYears = [...this.yearDropDown];
+      } else {
+        this.filteredYears = this.yearDropDown.filter(year => {
+          const yearName = year.yearName.toString().toLowerCase();
+          return yearName.includes(searchText);
+        });
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
+  }
 }

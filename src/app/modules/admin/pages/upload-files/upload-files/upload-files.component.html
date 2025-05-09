@@ -162,7 +162,7 @@
         </mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-full">
+      <!-- <mat-form-field appearance="outline" class="w-full">
         <mat-label>Document Type</mat-label>
         <mat-select formControlName="fileType">
           <mat-option [value]="null">Please Select</mat-option>
@@ -173,7 +173,27 @@
         <mat-error *ngIf="metadataForm.get('fileType').hasError('required')">
           Required
         </mat-error>
-      </mat-form-field>
+      </mat-form-field> -->
+
+        <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Document Type</mat-label>
+                                <mat-select formControlName="fileType" [panelClass]="'custom-select-panel'">
+                                    <div class="px-3 py-2">
+                                        <mat-form-field class="w-full">
+                                            <input matInput (keyup)="filterDocumentTypes($event)"
+                                                placeholder="Search document type..." #docTypeSearchInput [value]="''"
+                                                autocomplete="off">
+                                        </mat-form-field>
+                                    </div>
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let fileType of filteredDocumentTypes">
+                                        <mat-option [value]="fileType.id">{{ fileType.value }}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                                <mat-error *ngIf="metadataForm.get('fileType').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
     </div>
 
     <div class="">

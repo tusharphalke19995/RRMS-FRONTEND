@@ -29,9 +29,20 @@
                     <mat-form-field  class="w-full">
                         <mat-label *transloco="let t" class="font-medium text-white">{{t('division')}}</mat-label>
                         <mat-select [formControlName]="'divisionId'"
-                            (selectionChange)="onStateChange($event.value)">
+                            (selectionChange)="onStateChange($event.value)"
+                            [panelClass]="'custom-select-panel'">
+                            <div class="px-3 py-2">
+                                <mat-form-field class="w-full">
+                                    <input matInput
+                                        (keyup)="filterDivisions($event)"
+                                        placeholder="Search division..."
+                                        #divisionSearchInput
+                                        [value]="''"
+                                        autocomplete="off">
+                                </mat-form-field>
+                            </div>
                             <mat-option [value]="null">Please Select</mat-option>
-                            <ng-container *ngFor="let data of divisionsRoles.DivisionsRoles; trackBy: trackByFn">
+                            <ng-container *ngFor="let data of filteredDivisions; trackBy: trackByFn">
                                 <mat-option [value]="data.division_id">{{data.division_name}}</mat-option>
                             </ng-container>
                         </mat-select>

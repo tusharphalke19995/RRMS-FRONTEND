@@ -20,16 +20,26 @@
         <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mb-4">
             <mat-form-field appearance="outline" class="w-full">
                 <mat-label>Content Manager</mat-label>
-                <mat-select formControlName="contentMangId">
-                  <mat-option [value]="null">Please Select</mat-option>
-                  <ng-container *ngFor="let dropDownData of contentManagerDropdown">
-                    <mat-option [value]="dropDownData.id">{{ dropDownData.first_name }}</mat-option>
-                  </ng-container>
+                <mat-select formControlName="contentMangId" [panelClass]="'custom-select-panel'">
+                    <div class="px-3 py-2">
+                        <mat-form-field class="w-full">
+                            <input matInput
+                                (keyup)="filterContentManagers($event)"
+                                placeholder="Search content manager..."
+                                #contentManagerSearchInput
+                                [value]="''"
+                                autocomplete="off">
+                        </mat-form-field>
+                    </div>
+                    <mat-option [value]="null">Please Select</mat-option>
+                    <ng-container *ngFor="let dropDownData of filteredContentManagers">
+                        <mat-option [value]="dropDownData.id">{{ dropDownData.first_name }}</mat-option>
+                    </ng-container>
                 </mat-select>
                 <mat-error *ngIf="contentMangerListForm.get('contentMangId').hasError('required')">
-                  Required
+                    Required
                 </mat-error>
-              </mat-form-field>
+            </mat-form-field>
 
               <mat-form-field appearance="outline" class="w-full">
                 <mat-label>Reasons For Request</mat-label>

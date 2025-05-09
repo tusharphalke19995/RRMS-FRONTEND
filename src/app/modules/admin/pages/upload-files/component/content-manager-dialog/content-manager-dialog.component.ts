@@ -34,6 +34,8 @@ import { SharedService } from 'app/shared/shared.service';
 export class ContentManagerDialogComponent {
   contentMangerListForm:FormGroup;
   contentManagerDropdown: any;
+  filteredContentManagers: any[] = [];
+  private contentManagerSearchTimeout: any;
   caseMetaData: any;
   constructor(private _formBuilder:FormBuilder,private _uploadDocumentService:UploadDocumentService ,private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ContentManagerDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any,private dataService:SharedService )
 {
@@ -63,9 +65,29 @@ getFileAccess() {
   this._uploadDocumentService.getCmoradmins(payload,).subscribe({
     next: (response: any) => {
       this.contentManagerDropdown = response.users;
+      this.filteredContentManagers = [...this.contentManagerDropdown];
     },
     error: (error) => {},
   });
+}
+
+filterContentManagers(event: any): void {
+  const searchText = event.target.value.toLowerCase().trim();
+  
+  if (this.contentManagerSearchTimeout) {
+    clearTimeout(this.contentManagerSearchTimeout);
+  }
+
+  this.contentManagerSearchTimeout = setTimeout(() => {
+    if (!searchText) {
+      this.filteredContentManagers = [...this.contentManagerDropdown];
+    } else {
+      this.filteredContentManagers = this.contentManagerDropdown.filter(manager => {
+        const firstName = (manager.first_name || '').toLowerCase();
+        return firstName.includes(searchText);
+      });
+    }
+  }, 300);
 }
 
 getCasedataSelected() {

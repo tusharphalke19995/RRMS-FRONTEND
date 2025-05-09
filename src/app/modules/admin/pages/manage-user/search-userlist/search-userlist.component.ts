@@ -39,6 +39,21 @@ import { MatDialog } from "@angular/material/dialog";
 import { AddUpdateUserComponent } from "../add-update-user/add-update-user.component";
 import { SearchUserService } from "./searchUser.service";
 
+interface Role {
+  roleId: number;
+  roleName: string;
+}
+
+interface Division {
+  divisionId: number;
+  divisionName: string;
+}
+
+interface Designation {
+  designationId: number;
+  designationName: string;
+}
+
 @Component({
   selector: "app-search-userlist",
   standalone: true,
@@ -76,49 +91,17 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   vendors: InventoryVendor[];
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   alert: { type: string; message: string };
-  divisionDropdown = [];
-  // dataShow = [
-  //     {
-  //         empID: 1,
-  //         empName: 'Rohit',
-  //         roleName: 'Admin User',
-  //         kgid: '383323',
-  //         mobileNo: '893949494',
-  //         emailId: 'rohit123@gmail.com',
-  //     },
-  //     {
-  //         empID: 2,
-  //         empName: 'Rajesh',
-  //         roleName: 'Admin',
-  //         kgid: '93339933',
-  //         mobileNo: '949494494',
-  //         emailId: 'rajesh23@gmail.com',
-  //     },
-  // {
-  //     empID: 3,
-  //         empName: 'Lina',
-  //         roleName: 'Admin User',
-  //         kgid: '949449',
-  //         mobileNo: '844494944',
-  //         emailId: 'lina@gmail.com',
-  // },
-  // {
-  //     empID: 4,
-  //         empName: 'Sham',
-  //         roleName: 'User',
-  //         kgid: '494944',
-  //         mobileNo: '842423244',
-  //         emailId: 'shamd@gmail.com',
-  // },
-  // {
-  //     empID: 5,
-  //         empName: 'Ram',
-  //         roleName: 'Admin User',
-  //         kgid: '339945',
-  //         mobileNo: '8974747475',
-  //         emailId: 'ram12@gmail.com',
-  // }
-  // ];
+  divisionDropdown: Division[] = [];
+  filteredDivisions: Division[] = [];
+  userRoleDropdown: Role[] = [];
+  filteredUserRoles: Role[] = [];
+  designationsDropdown: Designation[] = [];
+  filteredDesignations: Designation[] = [];
+  
+  private roleSearchTimeout: any;
+  private divisionSearchTimeout: any;
+  private designationSearchTimeout: any;
+  users: any;
   @ViewChild("sort1") sort1: MatSort;
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
@@ -145,9 +128,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     "email",
     "roles"
   ];
-  userRoleDropdown: [];
-  designationsDropdown: [];
-  users:any;
+
   /**
    * Constructor
    */
@@ -272,12 +253,70 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     });
   }
 
+  filterUserRoles(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.roleSearchTimeout) {
+      clearTimeout(this.roleSearchTimeout);
+    }
+
+    this.roleSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredUserRoles = [...this.userRoleDropdown];
+      } else {
+        this.filteredUserRoles = this.userRoleDropdown.filter(role => {
+          const roleName = (role.roleName || '').toLowerCase();
+          return roleName.includes(searchText);
+        });
+      }
+    }, 300);
+  }
+
+  filterDivisions(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.divisionSearchTimeout) {
+      clearTimeout(this.divisionSearchTimeout);
+    }
+
+    this.divisionSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredDivisions = [...this.divisionDropdown];
+      } else {
+        this.filteredDivisions = this.divisionDropdown.filter(division => {
+          const divisionName = (division.divisionName || '').toLowerCase();
+          return divisionName.includes(searchText);
+        });
+      }
+    }, 300);
+  }
+
+  filterDesignations(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.designationSearchTimeout) {
+      clearTimeout(this.designationSearchTimeout);
+    }
+
+    this.designationSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredDesignations = [...this.designationsDropdown];
+      } else {
+        this.filteredDesignations = this.designationsDropdown.filter(designation => {
+          const designationName = (designation.designationName || '').toLowerCase();
+          return designationName.includes(searchText);
+        });
+      }
+    }, 300);
+  }
+
   getUserRoleDropdown() {
     const divisionID = Number(sessionStorage.getItem('divisionID'));
     this._searchUserService.getUserRole(divisionID).subscribe({
       next: (response: any) => {
         if (response) {
           this.userRoleDropdown = response.responseData;
+          this.filteredUserRoles = [...this.userRoleDropdown];
         }
       },
       error: (error) => {},
@@ -285,11 +324,12 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   }
 
   getDivisionDropdown() {
-    const divisionId =Number(sessionStorage.getItem('divisionID'));
+    const divisionId = Number(sessionStorage.getItem('divisionID'));
     this._searchUserService.getDivision(divisionId).subscribe({
       next: (response: any) => {
         if (response) {
           this.divisionDropdown = response;
+          this.filteredDivisions = [...this.divisionDropdown];
         }
       },
       error: (error) => {},
@@ -297,11 +337,12 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   }
 
   getDesignationsDropDownData() {
-    const divisionId =Number(sessionStorage.getItem('divisionID'));
+    const divisionId = Number(sessionStorage.getItem('divisionID'));
     this._searchUserService.getDesignationsInfo(divisionId).subscribe({
       next: (response: any) => {
         if (response) {
           this.designationsDropdown = response;
+          this.filteredDesignations = [...this.designationsDropdown];
         }
       },
       error: (error) => {},

@@ -22,4 +22,39 @@
     0 8px 32px 0 rgba(255, 255, 255, 0.18),
     0 1.5px 6px 0 rgba(0,0,0,0.08);
 }
+
+.custom-select-panel {
+    .mat-mdc-select-panel {
+        max-height: 400px !important;
+    }
+
+    .mat-mdc-form-field {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+    }
+
+    .mat-mdc-form-field-infix {
+        padding: 8px 0;
+    }
+
+    .mat-mdc-text-field-wrapper {
+        padding: 0 8px;
+    }
+
+    .mat-mdc-form-field-flex {
+        padding: 0;
+    }
+}
+
+// Hide the search input's underline
+::ng-deep .custom-select-panel {
+    .mat-mdc-form-field-underline {
+        display: none;
+    }
+}
  

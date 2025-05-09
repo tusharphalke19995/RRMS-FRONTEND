@@ -11,7 +11,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslocoModule } from '@ngneat/transloco';
 import { SearchUserService } from '../search-userlist/searchUser.service';
 
-
 @Component({
   selector: 'app-add-multiples-divsion',
   standalone: true,
@@ -34,10 +33,17 @@ import { SearchUserService } from '../search-userlist/searchUser.service';
 export class AddMultiplesDivisionComponent {
   addDivisionForm: UntypedFormGroup;
   hidePassword: boolean = true;
-  userRoleDropdown = [
-  ]
+  userRoleDropdown = [];
+  filteredUserRoles = [];
   divisionDropdown = [];
+  filteredDivisions = [];
   designationsDropdown = [];
+  filteredDesignations = [];
+  
+  private roleSearchTimeout: any;
+  private divisionSearchTimeout: any;
+  private designationSearchTimeout: any;
+
   constructor(
     private _searchUserService: SearchUserService,
     private _formBuilder: UntypedFormBuilder,
@@ -50,7 +56,6 @@ export class AddMultiplesDivisionComponent {
     this.getUserRoleDropdown();
     this.getDivisionDropdown();
     this.getDesignationsData();
-    
   }
 
   initiateForm() {
@@ -65,17 +70,70 @@ export class AddMultiplesDivisionComponent {
     this.dialogRef.close(); 
   }
 
-  
+  filterUserRoles(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.roleSearchTimeout) {
+      clearTimeout(this.roleSearchTimeout);
+    }
 
-  reqRejected() {}
+    this.roleSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredUserRoles = [...this.userRoleDropdown];
+      } else {
+        this.filteredUserRoles = this.userRoleDropdown.filter(role => {
+          const roleName = (role.roleName || '').toLowerCase();
+          return roleName.includes(searchText);
+        });
+      }
+    }, 300);
+  }
 
+  filterDivisions(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.divisionSearchTimeout) {
+      clearTimeout(this.divisionSearchTimeout);
+    }
+
+    this.divisionSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredDivisions = [...this.divisionDropdown];
+      } else {
+        this.filteredDivisions = this.divisionDropdown.filter(division => {
+          const divisionName = (division.divisionName || '').toLowerCase();
+          return divisionName.includes(searchText);
+        });
+      }
+    }, 300);
+  }
+
+  filterDesignations(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.designationSearchTimeout) {
+      clearTimeout(this.designationSearchTimeout);
+    }
+
+    this.designationSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredDesignations = [...this.designationsDropdown];
+      } else {
+        this.filteredDesignations = this.designationsDropdown.filter(designation => {
+          const designationName = (designation.designationName || '').toLowerCase();
+          return designationName.includes(searchText);
+        });
+      }
+    }, 300);
+  }
 
   getUserRoleDropdown() {
     const divisionID = Number(sessionStorage.getItem('divisionID'));
     this._searchUserService.getUserRole(divisionID).subscribe({
       next: (response: any) => {
         if(response){
-          this.userRoleDropdown= response.responseData;
+          this.userRoleDropdown = response.responseData;
+          this.filteredUserRoles = [...this.userRoleDropdown];
         }
       },
       error: (error) => {},
@@ -83,11 +141,12 @@ export class AddMultiplesDivisionComponent {
   }
 
   getDivisionDropdown() {
-    const divisionId =Number(sessionStorage.getItem('divisionID'));
+    const divisionId = Number(sessionStorage.getItem('divisionID'));
     this._searchUserService.getDivision(divisionId).subscribe({
       next: (response: any) => {
         if(response){
-          this.divisionDropdown= response;
+          this.divisionDropdown = response;
+          this.filteredDivisions = [...this.divisionDropdown];
         }
       },
       error: (error) => {},
@@ -95,35 +154,29 @@ export class AddMultiplesDivisionComponent {
   }
 
   getDesignationsData() {
-    const divisionId =Number(sessionStorage.getItem('divisionID'));
+    const divisionId = Number(sessionStorage.getItem('divisionID'));
     this._searchUserService.getDesignationsInfo(divisionId).subscribe({
       next: (response: any) => {
         if(response){
-          this.designationsDropdown= response;
+          this.designationsDropdown = response;
+          this.filteredDesignations = [...this.designationsDropdown];
         }
       },
       error: (error) => {},
     });
   }
 
-
   addDivision() {
     if (this.addDivisionForm.valid) {
       const data = {
         roleId: Number(this.addDivisionForm.value.roleId),
-        divisionId:this.addDivisionForm.value.divisionId,
-        designationId:this.addDivisionForm.value.designationId,
+        divisionId: this.addDivisionForm.value.divisionId,
+        designationId: this.addDivisionForm.value.designationId,
       };
       this.dialogRef.close(this.addDivisionForm.value);
     }
   }
 
-  /**
-   * Track by function for ngFor loops
-   *
-   * @param index
-   * @param item
-   */
   trackByFn(index: number, item: any): any {
     return item.id || index;
   }

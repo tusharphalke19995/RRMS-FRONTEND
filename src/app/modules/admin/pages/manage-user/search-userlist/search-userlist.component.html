@@ -72,9 +72,19 @@
                             <td>
                                 <mat-form-field appearance="outline" class="">
                                     <mat-label *transloco="let t" class="font-medium">{{t('role')}}</mat-label>
-                                    <mat-select [formControlName]="'roleId'">
+                                    <mat-select [formControlName]="'roleId'" [panelClass]="'custom-select-panel'">
+                                        <div class="px-3 py-2">
+                                            <mat-form-field class="w-full">
+                                                <input matInput
+                                                    (keyup)="filterUserRoles($event)"
+                                                    placeholder="Search role..."
+                                                    #roleSearchInput
+                                                    [value]="''"
+                                                    autocomplete="off">
+                                            </mat-form-field>
+                                        </div>
                                         <mat-option [value]="null">Please Select</mat-option>
-                                        <ng-container *ngFor="let roleInfo of userRoleDropdown; trackBy: trackByFn">
+                                        <ng-container *ngFor="let roleInfo of filteredUserRoles; trackBy: trackByFn">
                                             <mat-option [value]="roleInfo.roleId">{{roleInfo.roleName}}</mat-option>
                                         </ng-container>
                                     </mat-select>
@@ -86,9 +96,19 @@
                             <td>
                                 <mat-form-field appearance="outline" class="">
                                     <mat-label *transloco="let t" class="font-medium">{{t('division')}}</mat-label>
-                                    <mat-select [formControlName]="'divisionId'">
+                                    <mat-select [formControlName]="'divisionId'" [panelClass]="'custom-select-panel'">
+                                        <div class="px-3 py-2">
+                                            <mat-form-field class="w-full">
+                                                <input matInput
+                                                    (keyup)="filterDivisions($event)"
+                                                    placeholder="Search division..."
+                                                    #divisionSearchInput
+                                                    [value]="''"
+                                                    autocomplete="off">
+                                            </mat-form-field>
+                                        </div>
                                         <mat-option [value]="null">Please Select</mat-option>
-                                        <ng-container *ngFor="let roleInfo of divisionDropdown; trackBy: trackByFn">
+                                        <ng-container *ngFor="let roleInfo of filteredDivisions; trackBy: trackByFn">
                                             <mat-option [value]="roleInfo.divisionId">{{roleInfo.divisionName}}</mat-option>
                                         </ng-container>
                                     </mat-select>
@@ -101,12 +121,20 @@
                             <td>
                                 <mat-form-field appearance="outline" class="">
                                     <mat-label *transloco="let t" class="font-medium">{{t('designations')}}</mat-label>
-                                    <mat-select [formControlName]="'designationId'">
+                                    <mat-select [formControlName]="'designationId'" [panelClass]="'custom-select-panel'">
+                                        <div class="px-3 py-2">
+                                            <mat-form-field class="w-full">
+                                                <input matInput
+                                                    (keyup)="filterDesignations($event)"
+                                                    placeholder="Search designation..."
+                                                    #designationSearchInput
+                                                    [value]="''"
+                                                    autocomplete="off">
+                                            </mat-form-field>
+                                        </div>
                                         <mat-option [value]="null">Please Select</mat-option>
-                                        <ng-container
-                                            *ngFor="let designationInfo of designationsDropdown; trackBy: trackByFn">
-                                            <mat-option
-                                                [value]="designationInfo.designationId">{{designationInfo.designationName}}</mat-option>
+                                        <ng-container *ngFor="let designationInfo of filteredDesignations; trackBy: trackByFn">
+                                            <mat-option [value]="designationInfo.designationId">{{designationInfo.designationName}}</mat-option>
                                         </ng-container>
                                     </mat-select>
                                     <mat-error *ngIf="searchUserListForm.get('designationId').hasError('required')">

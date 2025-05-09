@@ -54,6 +54,9 @@ export class DivisionInfoComponent implements OnInit {
   designationRoleForm: UntypedFormGroup;
   showAlert: boolean = false;
   divisionsRoles: any;
+  filteredDivisions: any[] = [];
+  private divisionSearchTimeout: any;
+
   /**
    * Constructor
    */
@@ -77,8 +80,27 @@ export class DivisionInfoComponent implements OnInit {
       divisionId: ["", [Validators.required]]
     });
     this.divisionsRoles = this._authService.getAuthData();
+    this.filteredDivisions = [...this.divisionsRoles.DivisionsRoles];
   }
 
+  filterDivisions(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.divisionSearchTimeout) {
+      clearTimeout(this.divisionSearchTimeout);
+    }
+
+    this.divisionSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredDivisions = [...this.divisionsRoles.DivisionsRoles];
+      } else {
+        this.filteredDivisions = this.divisionsRoles.DivisionsRoles.filter(division => {
+          const divisionName = (division.division_name || '').toLowerCase();
+          return divisionName.includes(searchText);
+        });
+      }
+    }, 300);
+  }
 
 onStateChange(data:any)
 {

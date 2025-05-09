@@ -69,9 +69,20 @@
                             <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{t('state')}}</mat-label>
                                 <mat-select [formControlName]="'stateIDInfo'"
-                                    (selectionChange)="onStateChange($event.value)">
+                                    (selectionChange)="onStateChange($event.value)"
+                                    [panelClass]="'custom-select-panel'">
+                                    <div class="px-3 py-2">
+                                        <mat-form-field class="w-full">
+                                            <input matInput
+                                                (keyup)="filterStates($event)"
+                                                placeholder="Search state..."
+                                                #stateSearchInput
+                                                [value]="''"
+                                                autocomplete="off">
+                                        </mat-form-field>
+                                    </div>
                                     <mat-option [value]="null">Please Select</mat-option>
-                                    <ng-container *ngFor="let stData of stateDropdown; trackBy: trackByFn">
+                                    <ng-container *ngFor="let stData of filteredStates; trackBy: trackByFn">
                                         <mat-option [value]="stData.stateId">{{stData.stateName}}</mat-option>
                                     </ng-container>
                                 </mat-select>
@@ -84,11 +95,21 @@
                             <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{t('district')}}</mat-label>
                                 <mat-select [formControlName]="'districtId'"
-                                    (selectionChange)="onDisctrictChange($event.value)">
+                                    (selectionChange)="onDisctrictChange($event.value)"
+                                    [panelClass]="'custom-select-panel'">
+                                    <div class="px-3 py-2">
+                                        <mat-form-field class="w-full">
+                                            <input matInput
+                                                (keyup)="filterDistricts($event)"
+                                                placeholder="Search district..."
+                                                #districtSearchInput
+                                                [value]="''"
+                                                autocomplete="off">
+                                        </mat-form-field>
+                                    </div>
                                     <mat-option [value]="null">Please Select</mat-option>
-                                    <ng-container *ngFor="let districtIData of districtDropdown; trackBy: trackByFn">
-                                        <mat-option
-                                            [value]="districtIData.districtId">{{districtIData.districtName}}</mat-option>
+                                    <ng-container *ngFor="let districtIData of filteredDistricts; trackBy: trackByFn">
+                                        <mat-option [value]="districtIData.districtId">{{districtIData.districtName}}</mat-option>
                                     </ng-container>
                                 </mat-select>
                                 <mat-error *ngIf="uploadDocumentForm.get('districtId').hasError('required')">
@@ -100,9 +121,20 @@
                             <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{t('policeStation')}}</mat-label>
                                 <mat-select [formControlName]="'unitsId'"
-                                    (selectionChange)="onUnitChange($event.value)">
+                                    (selectionChange)="onUnitChange($event.value)"
+                                    [panelClass]="'custom-select-panel'">
+                                    <div class="px-3 py-2">
+                                        <mat-form-field class="w-full">
+                                            <input matInput
+                                                (keyup)="filterUnits($event)"
+                                                placeholder="Search police station..."
+                                                #searchInput
+                                                [value]="''"
+                                                autocomplete="off">
+                                        </mat-form-field>
+                                    </div>
                                     <mat-option [value]="null">Please Select</mat-option>
-                                    <ng-container *ngFor="let unitsData of unitsDropdown; trackBy: trackByFn">
+                                    <ng-container *ngFor="let unitsData of filteredUnits; trackBy: trackByFn">
                                         <mat-option [value]="unitsData.unitId">{{unitsData.unitName}}</mat-option>
                                     </ng-container>
                                 </mat-select>
@@ -143,9 +175,20 @@
                         <td>
                             <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{t('caseType')}}</mat-label>
-                                <mat-select [formControlName]="'caseType'"  (selectionChange)="onCaseTypeChange($event)">
+                                <mat-select [formControlName]="'caseType'"  (selectionChange)="onCaseTypeChange($event)"
+                                    [panelClass]="'custom-select-panel'">
+                                    <div class="px-3 py-2">
+                                        <mat-form-field class="w-full">
+                                            <input matInput
+                                                (keyup)="filterCaseTypes($event)"
+                                                placeholder="Search case type..."
+                                                #caseTypeSearchInput
+                                                [value]="''"
+                                                autocomplete="off">
+                                        </mat-form-field>
+                                    </div>
                                     <mat-option [value]="null">Please Select</mat-option>
-                                    <ng-container *ngFor="let caseStatus of caseTypeDropDown; trackBy: trackByFn">
+                                    <ng-container *ngFor="let caseStatus of filteredCaseTypes; trackBy: trackByFn">
                                         <mat-option [value]="caseStatus.id">{{caseStatus.value}}</mat-option>
                                     </ng-container>
                                 </mat-select>
@@ -184,9 +227,20 @@
                         <td>
                             <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{t('year')}}</mat-label>
-                                <mat-select [formControlName]="'yearId'" (selectionChange)="onYearChange($event.value)">
+                                <mat-select [formControlName]="'yearId'" (selectionChange)="onYearChange($event.value)"
+                                    [panelClass]="'custom-select-panel'">
+                                    <div class="px-3 py-2">
+                                        <mat-form-field class="w-full">
+                                            <input matInput
+                                                (keyup)="filterYears($event)"
+                                                placeholder="Search year..."
+                                                #yearSearchInput
+                                                [value]="''"
+                                                autocomplete="off">
+                                        </mat-form-field>
+                                    </div>
                                     <mat-option [value]="null">Please Select</mat-option>
-                                    <ng-container *ngFor="let yrData of yearDropDown; trackBy: trackByFn">
+                                    <ng-container *ngFor="let yrData of filteredYears; trackBy: trackByFn">
                                         <mat-option [value]="yrData.yearId">{{yrData.yearName}}</mat-option>
                                     </ng-container>
                                 </mat-select>
@@ -198,9 +252,20 @@
                         <td>
                             <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{t('caseStatus')}}</mat-label>
-                                <mat-select [formControlName]="'statusId'">
+                                <mat-select [formControlName]="'statusId'"
+                                    [panelClass]="'custom-select-panel'">
+                                    <div class="px-3 py-2">
+                                        <mat-form-field class="w-full">
+                                            <input matInput
+                                                (keyup)="filterCaseStatus($event)"
+                                                placeholder="Search case status..."
+                                                #caseStatusSearchInput
+                                                [value]="''"
+                                                autocomplete="off">
+                                        </mat-form-field>
+                                    </div>
                                     <mat-option [value]="null">Please Select</mat-option>
-                                    <ng-container *ngFor="let caseStatus of caseStatusDropdown; trackBy: trackByFn">
+                                    <ng-container *ngFor="let caseStatus of filteredCaseStatus; trackBy: trackByFn">
                                         <mat-option [value]="caseStatus.id">{{caseStatus.value}}</mat-option>
                                     </ng-container>
                                 </mat-select>

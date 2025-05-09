@@ -173,6 +173,8 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   caseDetails: any[];
   authData: any;
   DivisionsRoles: any;
+  filteredDocumentTypes: DocumentType[] = [];
+  documentTypeSearchTimeout: any;
   // canEdit: boolean = false;
   // canDelete: boolean = false;
   selectedIndexes = new Set<number>();
@@ -772,9 +774,32 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   onFileTypeChange(data) {
     if (data.value == 3) {
       this.DocumentTypeDropDown = this.masterData.CaseFiles;
+      this.filteredDocumentTypes = [...this.DocumentTypeDropDown];
     } else if (data.value == 4) {
       this.DocumentTypeDropDown = this.masterData.Correspondence;
+      this.filteredDocumentTypes = [...this.DocumentTypeDropDown];
     }
+    this._changeDetectorRef.detectChanges();
+  }
+
+    filterDocumentTypes(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.documentTypeSearchTimeout) {
+      clearTimeout(this.documentTypeSearchTimeout);
+    }
+
+    this.documentTypeSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredDocumentTypes = this.DocumentTypeDropDown;
+      } else {
+        this.filteredDocumentTypes = this.DocumentTypeDropDown.filter(docType => {
+          const docTypeName = (docType.value || '').toLowerCase();
+          return docTypeName.includes(searchText);
+        });
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
   }
   
 }
