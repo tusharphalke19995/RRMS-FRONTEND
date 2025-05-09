@@ -361,15 +361,22 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     if (file.metadata) {
       this.metadataForm.patchValue(file.metadata);
     }
-    if (file) {
-      this.metadataForm.patchValue(file);
-    }
-    if (this.checkGetFile) {
+    
+    // Set default subject if none exists
+    if (!this.metadataForm.get('subject').value) {
       this.metadataForm.patchValue({
-        subject: this.fileToEdit.name,
+        subject: `${this.crimeNo}_${file.name || file.fileName}`
       });
     }
+
+    if (this.checkGetFile) {
+      this.metadataForm.patchValue({
+        subject: `${this.crimeNo}_${file.name || file.fileName}`
+      });
+    }
+
     this.openFileModal = true;
+    this._changeDetectorRef.detectChanges();
   }
 
   closeFileModal(): void {
@@ -381,11 +388,20 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     // Reset the metadata form
     this.metadataForm.reset();
     
-    // If multiple files are selected, patch the subject field with a dynamic placeholder
+    // If multiple files are selected, create a dynamic subject
     if (this.selectedIndexes.size > 0) {
-      this.metadataForm.patchValue({
-        subject: 'Multiple Files Selected' // Placeholder for multiple files
-      });
+      // For both "Edit All" and "Edit Selected" cases, we'll use the first file's name
+      const firstFileIndex = Array.from(this.selectedIndexes)[0];
+      const firstFile = this.selectedFiles[firstFileIndex];
+      
+      if (firstFile) {
+        this.metadataForm.patchValue({
+          subject: `${this.crimeNo}_${firstFile.name || firstFile.fileName}`
+        });
+      }
+
+      // Force change detection
+      this._changeDetectorRef.detectChanges();
     }
     
     // Open the metadata modal
@@ -414,7 +430,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
         this.selectedFiles[0].metadata = { 
           ...this.selectedFiles[0].metadata, 
           ...metadata,
-          subject: metadata.subject || this.getFileSubject(this.selectedFiles[0])
+          subject: `${this.crimeNo}_${this.selectedFiles[0].name || this.selectedFiles[0].fileName}`
         };
       } 
       // If checkboxes are selected, apply to those files
@@ -422,11 +438,11 @@ export class UploadFilesComponent implements OnInit, OnChanges {
         this.selectedIndexes.forEach(index => {
           const file = this.selectedFiles[index];
           if (file) {
-            // Apply the new subject to all selected files
+            // Apply metadata with individual file's subject
             file.metadata = { 
               ...file.metadata, 
               ...metadata,
-              subject: metadata.subject || this.getFileSubject(file)
+              subject: `${this.crimeNo}_${file.name || file.fileName}`
             };
           }
         });
@@ -438,7 +454,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
           file.metadata = { 
             ...file.metadata, 
             ...metadata,
-            subject: metadata.subject || this.getFileSubject(file)
+            subject: `${this.crimeNo}_${file.name || file.fileName}`
           };
         }
       }
@@ -451,6 +467,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       });
       this.openFileModal = false;
       this.selectedIndexes.clear();
+      this._changeDetectorRef.detectChanges();
     }
   }
 

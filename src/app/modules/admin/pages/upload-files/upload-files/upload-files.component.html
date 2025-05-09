@@ -35,7 +35,7 @@
         <button *ngIf="hasSelectedFiles" mat-raised-button color="primary" (click)="openMetadataForSelected()"
           class="apply-metadata-btn">
           <mat-icon>edit</mat-icon>
-          Edit All
+          {{ selectedIndexes.size === selectedFiles.length ? 'Edit All' : 'Edit Selected' }}
         </button>
       </div>
     </div>
@@ -129,9 +129,12 @@
   <div
     class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md">
     <div class="flex items-center">
-      <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('uploadSupportingFiles')}}</span>
+      <span class="text-xl font-semibold tracking-tight" *transloco="let t">
+        {{ selectedIndexes.size === selectedFiles.length ? 'Edit All Files' : 
+           selectedIndexes.size > 0 ? 'Edit Selected Files' : 'Edit File' }}
+      </span>
     </div>
-    <button mat-icon-button class=" rounded-full transition-colors duration-200" (click)="onNoClose()" [tabIndex]="-1">
+    <button mat-icon-button class="rounded-full transition-colors duration-200" (click)="closeFileModal()" [tabIndex]="-1">
       <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
     </button>
   </div>
@@ -232,11 +235,13 @@
     <button mat-button (click)="closeFileModal()">Cancel</button>
     <button mat-raised-button color="primary" [disabled]="!metadataForm.valid" (click)="submitMetadata()"
       *ngIf="checkGetFile">
-      Save Metadata
+      {{ selectedIndexes.size === selectedFiles.length ? 'Save All' : 
+         selectedIndexes.size > 0 ? 'Save Selected' : 'Save Metadata' }}
     </button>
     <button mat-raised-button color="primary" [disabled]="!metadataForm.valid" (click)="submitMetadata()"
       *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin')">
-      Update Metadata
+      {{ selectedIndexes.size === selectedFiles.length ? 'Update All' : 
+         selectedIndexes.size > 0 ? 'Update Selected' : 'Update Metadata' }}
     </button>
 
   </div>
