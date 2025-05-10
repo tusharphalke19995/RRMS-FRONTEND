@@ -130,11 +130,12 @@
     class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md">
     <div class="flex items-center">
       <span class="text-xl font-semibold tracking-tight" *transloco="let t">
-        {{ selectedIndexes.size === selectedFiles.length ? 'Edit All Files' : 
-           selectedIndexes.size > 0 ? 'Edit Selected Files' : 'Edit File' }}
+        {{ selectedIndexes.size === selectedFiles.length ? 'Edit All Files' :
+        selectedIndexes.size > 0 ? 'Edit Selected Files' : 'Edit File' }}
       </span>
     </div>
-    <button mat-icon-button class="rounded-full transition-colors duration-200" (click)="closeFileModal()" [tabIndex]="-1">
+    <button mat-icon-button class="rounded-full transition-colors duration-200" (click)="closeFileModal()"
+      [tabIndex]="-1">
       <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
     </button>
   </div>
@@ -178,25 +179,18 @@
         </mat-error>
       </mat-form-field> -->
 
-        <mat-form-field appearance="outline" class="w-full">
-                                <mat-label>Document Type</mat-label>
-                                <mat-select formControlName="fileType" [panelClass]="'custom-select-panel'">
-                                    <div class="px-3 py-2">
-                                        <mat-form-field class="w-full">
-                                            <input matInput (keyup)="filterDocumentTypes($event)"
-                                                placeholder="Search document type..." #docTypeSearchInput [value]="''"
-                                                autocomplete="off">
-                                        </mat-form-field>
-                                    </div>
-                                    <mat-option [value]="null">Please Select</mat-option>
-                                    <ng-container *ngFor="let fileType of filteredDocumentTypes">
-                                        <mat-option [value]="fileType.id">{{ fileType.value }}</mat-option>
-                                    </ng-container>
-                                </mat-select>
-                                <mat-error *ngIf="metadataForm.get('fileType').hasError('required')">
-                                    Required
-                                </mat-error>
-                            </mat-form-field>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Document Type</mat-label>
+        <mat-select formControlName="fileType" [panelClass]="'custom-select-panel'">
+          <mat-option [value]="null">Please Select</mat-option>
+          <ng-container *ngFor="let fileType of DocumentTypeDropDown">
+            <mat-option [value]="fileType.id">{{ fileType.value }}</mat-option>
+          </ng-container>
+        </mat-select>
+        <mat-error *ngIf="metadataForm.get('fileType').hasError('required')">
+          Required
+        </mat-error>
+      </mat-form-field>
     </div>
 
     <div class="">
@@ -235,13 +229,13 @@
     <button mat-button (click)="closeFileModal()">Cancel</button>
     <button mat-raised-button color="primary" [disabled]="!metadataForm.valid" (click)="submitMetadata()"
       *ngIf="checkGetFile">
-      {{ selectedIndexes.size === selectedFiles.length ? 'Save All' : 
-         selectedIndexes.size > 0 ? 'Save Selected' : 'Save Metadata' }}
+      {{ selectedIndexes.size === selectedFiles.length ? 'Save All' :
+      selectedIndexes.size > 0 ? 'Save Selected' : 'Save Metadata' }}
     </button>
     <button mat-raised-button color="primary" [disabled]="!metadataForm.valid" (click)="submitMetadata()"
       *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin')">
-      {{ selectedIndexes.size === selectedFiles.length ? 'Update All' : 
-         selectedIndexes.size > 0 ? 'Update Selected' : 'Update Metadata' }}
+      {{ selectedIndexes.size === selectedFiles.length ? 'Update All' :
+      selectedIndexes.size > 0 ? 'Update Selected' : 'Update Metadata' }}
     </button>
 
   </div>

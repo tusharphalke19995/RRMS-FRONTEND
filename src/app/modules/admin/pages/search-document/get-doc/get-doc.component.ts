@@ -85,6 +85,7 @@ export class GetDocComponent {
   checkGetFile: boolean;
   finalUserID: number;
   showRequestConent:boolean=true;
+  masterData: any;
   constructor(
     private dataService: SharedService,
     private _uploadDocumentService: UploadDocumentService,
@@ -207,7 +208,8 @@ export class GetDocComponent {
     this._uploadDocumentService.getMasterDropDownData().subscribe({
       next: (response: any) => {
        this.fileClassificationDropDown =response.ClassificationType;
-       this.fileTypesDropDown =response.Category_4;
+       this.fileTypesDropDown =response.FileType;
+       this.masterData =response;
       },
       error: (error) => {},
     });

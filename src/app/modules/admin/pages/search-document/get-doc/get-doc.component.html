@@ -109,7 +109,7 @@
       <div *ngIf="showRequestConent">
         <p class="text-center text-3xl text-primary-500  font-extrabold">The data will appear only after the Content Manager has approved the request.</p>
       </div>
-      <app-upload-files [getfiles]="files" (filesWithMetadataSelected)="onFilesWithMetadataSelectedUpdate($event)" [ClassificationTypeDropDown]="fileClassificationDropDown" [FileTypeDropDown]="fileTypesDropDown" [finalUserID]="finalUserID">
+      <app-upload-files [getfiles]="files" (filesWithMetadataSelected)="onFilesWithMetadataSelectedUpdate($event)" [ClassificationTypeDropDown]="fileClassificationDropDown" [FileTypeDropDown]="fileTypesDropDown" [finalUserID]="finalUserID" [masterData]="masterData">
       </app-upload-files>
 
 
