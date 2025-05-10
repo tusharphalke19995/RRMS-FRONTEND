@@ -155,13 +155,13 @@
 
       <mat-form-field appearance="outline" class="w-full">
         <mat-label *transloco="let t" class="font-medium">{{t('fileStage')}}</mat-label>
-        <mat-select [formControlName]="'fileStage'" (selectionChange)="onFileTypeChange($event)">
+        <mat-select [formControlName]="'documentType'" (selectionChange)="onFileTypeChange($event)">
           <mat-option [value]="null">Please Select</mat-option>
           <ng-container *ngFor="let fileStageData of FileTypeDropDown; trackBy: trackByFn">
             <mat-option [value]="fileStageData.id">{{fileStageData.value}}</mat-option>
           </ng-container>
         </mat-select>
-        <mat-error *ngIf="metadataForm.get('fileStage').hasError('required')">
+        <mat-error *ngIf="metadataForm.get('documentType').hasError('required')">
           Required
         </mat-error>
       </mat-form-field>

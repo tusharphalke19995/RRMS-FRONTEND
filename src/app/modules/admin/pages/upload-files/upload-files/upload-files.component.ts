@@ -61,7 +61,7 @@ interface FileWithMetadata extends CustomFile {
     fileType: string;
     classification: string;
     hashTag: string;
-    fileStage: string;
+    documentType: string;
   };
   fileName?: string;
   subject?: string;
@@ -200,7 +200,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       fileType: ["", Validators.required],
       classification: ["", Validators.required],
       hashTag: [""],
-      fileStage:["",Validators.required]
+      documentType:["",Validators.required]
     });
   }
 
@@ -358,8 +358,9 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     this.metadataForm.reset();
 
     // If file has existing metadata, populate the form
-    if (file.metadata) {
-      this.metadataForm.patchValue(file.metadata);
+    if (file.metadata || file ) {
+      this.metadataForm.patchValue(file.metadata|| file);
+      this.onFileTypeChangeEdit(file)
     }
     
     // Set default subject if none exists
@@ -572,7 +573,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       hashTag: formData.hashTag || "",
       fileType: formData.fileType || "",
       classification: formData.classification || "",
-      fileStage: formData.filestage || "",
+      documentType: formData.documentType || "",
     });
   }
 
@@ -776,8 +777,6 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     const role = this.getUserRoleName();
     const currentUserId = Number(sessionStorage.getItem('userID'));
     const uploaderUserId = file.uploaded_by || file.metadata?.uploaded_by;
-   console.log("currentUserId",currentUserId)
-   console.log("uploaderUserId",uploaderUserId)
     // Allow access if not confidential or user is uploader
     if (classification !== 'Confidential') return false;
   
@@ -787,6 +786,18 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     // Restrict if User, not uploader, and access is not approved
     return role === 'User' && !file.is_access_request_approved;
   }
+
+  onFileTypeChangeEdit(data) {
+    if (data.documentType == 3) {
+      this.DocumentTypeDropDown = this.masterData.CaseFiles;
+      
+    } else if (data.documentType == 4) {
+      this.DocumentTypeDropDown = this.masterData.Correspondence;
+
+    }
+    this._changeDetectorRef.detectChanges();
+  }
+
 
   onFileTypeChange(data) {
     if (data.value == 3) {

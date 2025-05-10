@@ -347,7 +347,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       subject: file.metadata.subject || '', 
       classification: file.metadata.classification || '', 
       fileType: file.metadata.fileType || '',
-      documentType: file.metadata.fileStage || '',
+      documentType: file.metadata.documentType || '',
     }));
     formData.append("fileDetails", JSON.stringify(fileDetailsArray));
 
@@ -446,7 +446,7 @@ allowOnlyLetters(event: KeyboardEvent): void {
         !meta.subject ||
         !meta.fileType ||
         !meta.classification ||
-        !meta.fileStage
+        !meta.documentType
       ) {
         return false;
       }

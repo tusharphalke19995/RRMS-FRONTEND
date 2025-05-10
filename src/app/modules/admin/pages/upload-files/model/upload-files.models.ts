@@ -56,7 +56,7 @@ export interface IFileUploadModel {
       fileType: string;
       classification: string;
       hashTag: string;
-      fileStage:string
+      documentType:string
     };
   }
 
