@@ -212,7 +212,6 @@ getCaseStatus() {
     .pipe(catchError(this.handleError));
 }
 
-
 deleteCaseStatusById(caseStatusId: number) {
 const url = `${apiurls.getCaseStatus}/${caseStatusId}`; // Construct the full URL with user ID
 return this._httpClient.delete(url, {
@@ -233,10 +232,42 @@ return this._httpClient.put(url, data,{
 }).pipe(catchError(this.handleError));
 }
 
-
 createCaseStatus(data) {
 return this._httpClient
   .post(apiurls.getCaseStatus, data,)
+  .pipe(catchError(this.handleError));
+}
+
+
+getDepartments() {
+  return this._httpClient
+    .get(apiurls.departmentsAddUpdateDelete)
+    .pipe(catchError(this.handleError));
+}
+
+deleteDepartmentById(departmentId: number) {
+const url = `${apiurls.departmentsAddUpdateDelete}/${departmentId}`; // Construct the full URL with user ID
+return this._httpClient.delete(url, {
+    headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    })
+}).pipe(catchError(this.handleError));
+}
+
+updatDepartmentById(departmentId: number, data: any) {
+const url = `${apiurls.departmentsAddUpdateDelete}/${departmentId}`; // Construct the full URL with user ID
+return this._httpClient.put(url, data,{
+    headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    })
+}).pipe(catchError(this.handleError));
+}
+
+createDepartments(data) {
+return this._httpClient
+  .post(apiurls.departmentsAddUpdateDelete, data,)
   .pipe(catchError(this.handleError));
 }
 

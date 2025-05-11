@@ -1,4 +1,4 @@
-<div class="flex flex-col max-w-120 md:min-w-100 max-h-screen">
+<div class="flex flex-col max-w-450 md:min-w-100 max-h-screen">
     <!-- Header with improved styling -->
     <div class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md"
         cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle cdkDrag>
@@ -14,7 +14,7 @@
     <!-- Form Content -->
     <form [formGroup]="addUpdateDesignationForm" class="flex flex-col flex-auto p-6 overflow-y-auto">
         <!-- First Row -->
-        <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <mat-form-field appearance="outline" class="w-full">
                 <mat-label *transloco="let t" class="font-medium">{{t('designations')}}</mat-label>
                 <input matInput [formControlName]="'designationName'" placeholder="Enter employee name">
@@ -22,41 +22,72 @@
                     Required
                 </mat-error>
             </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('departmentName')}}</mat-label>
+                <mat-select [formControlName]="'departmentId'" [panelClass]="'custom-select-panel'" multiple>
+                    <div class="px-3 py-2">
+                        <mat-form-field class="w-full">
+                            <input matInput (keyup)="filterDepartment($event)" placeholder="Search Department..."
+                                #roleSearchInput [value]="''" autocomplete="off">
+                        </mat-form-field>
+                    </div>
+                    <mat-option [value]="null">Please Select</mat-option>
+                    <ng-container *ngFor="let deptData of filteredDepartment; trackBy: trackByFn">
+                        <mat-option [value]="deptData.departmentId">{{deptData.departmentName}}</mat-option>
+                    </ng-container>
+                </mat-select>
+                <mat-error *ngIf="addUpdateDesignationForm.get('departmentId').hasError('required')">
+                    Required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('divisionName')}}</mat-label>
+                <mat-select [formControlName]="'divisionId'" [panelClass]="'custom-select-panel'" multiple>
+                    <div class="px-3 py-2">
+                        <mat-form-field class="w-full">
+                            <input matInput (keyup)="filterDivision($event)" placeholder="Search Department..."
+                                #roleSearchInput [value]="''" autocomplete="off">
+                        </mat-form-field>
+                    </div>
+                    <mat-option [value]="null">Please Select</mat-option>
+                    <ng-container *ngFor="let division of filteredDivision; trackBy: trackByFn">
+                        <mat-option [value]="division.divisionId">{{division.divisionName}}</mat-option>
+                    </ng-container>
+                </mat-select>
+                <mat-error *ngIf="addUpdateDesignationForm.get('divisionId').hasError('required')">
+                    Required
+                </mat-error>
+            </mat-form-field>
+
         </div>
         <!-- Action Buttons -->
         <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
             <ng-container *ngIf="!updateBool">
-                <button mat-flat-button 
+                <button mat-flat-button
                     class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
-                    (click)="designationSave()" 
-                    [disabled]="this.addUpdateDesignationForm.invalid" 
-                    *transloco="let t"
-                    aria-label="{{t('submit')}}"
-                >
+                    (click)="designationSave()" [disabled]="this.addUpdateDesignationForm.invalid" *transloco="let t"
+                    aria-label="{{t('submit')}}">
                     {{t('submit')}}
                 </button>
             </ng-container>
-        
+
             <ng-container *ngIf="updateBool">
                 <button mat-flat-button
                     class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
-                    (click)="designationUpdate()" 
-                    [disabled]="this.addUpdateDesignationForm.invalid" 
-                    *transloco="let t"
-                    aria-label="{{t('update')}}"
-                >
+                    (click)="designationUpdate()" [disabled]="this.addUpdateDesignationForm.invalid" *transloco="let t"
+                    aria-label="{{t('update')}}">
                     {{t('update')}}
                 </button>
             </ng-container>
-        
+
             <button mat-stroked-button
                 class="min-w-[90px] px-6 py-2 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
-                (click)="onNoClose()" *transloco="let t"
-                aria-label="{{t('cancel')}}"
-            >
+                (click)="onNoClose()" *transloco="let t" aria-label="{{t('cancel')}}">
                 {{t('cancel')}}
             </button>
         </div>
-        
+
     </form>
 </div>

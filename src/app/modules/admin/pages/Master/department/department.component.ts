@@ -38,12 +38,12 @@ import { AddUpdateUserComponent } from "../../manage-user/add-update-user/add-up
 import { SearchUserService } from "../../manage-user/search-userlist/searchUser.service";
 import { SearchDocService } from "../../search-document/searchDoc.service";
 import { InventoryVendor } from "../../upload-document/uploadDoc.types";
-import { AddUpdatDesignationRoleComponent } from "./add-update-msdesignation/add-update-msdesignation.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { MasterService } from "../master.service";
+import { AddUpdateDepartmentComponent } from "./add-update-msdesignation/add-update-department.component";
 
 @Component({
-  selector: "app-designations",
+  selector: "app-department",
   standalone: true,
   imports: [
     NgIf,
@@ -68,10 +68,10 @@ import { MasterService } from "../master.service";
     MatPaginatorModule,
     MatSortModule,
   ],
-  templateUrl: "./designations.component.html",
-  styleUrl: "./designations.component.scss",
+  templateUrl: "./department.component.html",
+  styleUrl: "./department.component.scss",
 })
-export class DesignationsComponent implements OnInit, AfterViewInit {
+export class DepartmentComponent implements OnInit, AfterViewInit {
   searchUserListForm: UntypedFormGroup;
   @ViewChild("addcitizenInformationNgForm") addcitizenInformationNgForm: NgForm;
   formFieldHelpers: string[] = [""];
@@ -85,14 +85,12 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
   columns: any[] = [
-    { labelen: "Designation Id", labelhi: "Designation Id", property: "designationId" },
+    { labelen: "Department Id", labelhi: "Department Id", property: "departmentId" },
     {
-      labelen: "Designation Name",
-      labelhi: "Designation Name",
-      property: "designationName",
+      labelen: "Department Name",
+      labelhi: "Department Name",
+      property: "departmentName",
     },
-    { labelen: "Department Name", labelhi: "Department Name", property: "departmentName" }, 
-  { labelen: "Division Name", labelhi: "Division Name", property: "divisionName" },    
     {
       labelen: "Action",
       labelhi: "Action",
@@ -102,10 +100,8 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
   ];
 
   displayedColumns: string[] = [
-    "designationId",
-    "designationName",
-     "departmentName",
-  "divisionName",
+    "departmentId",
+    "departmentName",
     "action"
   ];
   userRoleDropdown: [];
@@ -132,7 +128,7 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
    * On init
    */
   ngOnInit(): void {
-    this.getDesignationInfo();
+    this.getDepartmentsInfo();
   }
 
   ngAfterViewInit(): void {
@@ -173,14 +169,14 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
     return item.id || index;
   }
 
-  addNewUser(data) {
-    const dialogRef = this.dialog.open(AddUpdatDesignationRoleComponent, {
+  addNewDepartments(data) {
+    const dialogRef = this.dialog.open(AddUpdateDepartmentComponent, {
       data: data,
-      width: "800px",
+      width: "400px",
     });
     dialogRef.afterClosed().subscribe((result) => {
       this._changeDetectorRef.detectChanges();
-      this.getDesignationInfo();
+      this.getDepartmentsInfo();
     });
   }
 
@@ -194,12 +190,11 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
   }
 
   editUser(row: any): void {
-    this.addNewUser(row);
+    this.addNewDepartments(row);
   }
 
-  getDesignationInfo() {
-    const divisionId =Number(sessionStorage.getItem('divisionID'));
-    this._searchUserService.getDesignationsInfo(divisionId).subscribe({
+  getDepartmentsInfo() {
+    this._masterService.getDepartments().subscribe({
       next: (response: any) => {
         console.log("response", response);
         this.dataSource = new MatTableDataSource(response);
@@ -208,16 +203,16 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  deleteDesignation(data) {
-    this._masterService.deleteDesignations(data.designationId).subscribe({
+  deleteDepartment(data) {
+    this._masterService.deleteDepartmentById(data.departmentId).subscribe({
     next: (response: any) => {
-      this._snackBar.open("Role Deleted successfully", "Close", {
+      this._snackBar.open("Department Deleted successfully", "Close", {
         duration: 3000,
         horizontalPosition: "right",
         verticalPosition: "top",
         panelClass: ["success-snackbar"],
       });
-      this.getDesignationInfo();
+      this.getDepartmentsInfo();
     },
     error: (error) => {
       this._snackBar.open(error.message || "Error creating user", "Close", {
@@ -229,17 +224,5 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
     },
   });
 
-}
-
-getDepartmentNames(row: any): string {
-  return Array.isArray(row.department)
-    ? row.department.map(dep => dep.departmentName).join(', ')
-    : '';
-}
-
-getDivisionNames(row: any): string {
-  return Array.isArray(row.division)
-    ? row.division.map(div => div.divisionName).join(', ')
-    : '';
 }
 }

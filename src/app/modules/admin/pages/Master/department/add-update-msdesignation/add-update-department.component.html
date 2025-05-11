@@ -3,7 +3,7 @@
     <div class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md"
         cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle cdkDrag>
         <div class="flex items-center">
-            <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('addDivision')}}</span>
+            <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('addDepartment')}}</span>
         </div>
         <button mat-icon-button class=" rounded-full transition-colors duration-200" (click)="onNoClose()"
             [tabIndex]="-1">
@@ -12,32 +12,13 @@
     </div>
 
     <!-- Form Content -->
-    <form [formGroup]="addUpdateDivisionForm" class="flex flex-col flex-auto p-6 overflow-y-auto">
+    <form [formGroup]="addUpdateDepartmentForm" class="flex flex-col flex-auto p-6 overflow-y-auto">
         <!-- First Row -->
         <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
             <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('divisionName')}}</mat-label>
-                <input matInput [formControlName]="'divisionName'" placeholder="Enter employee name">
-                <mat-error *ngIf="addUpdateDivisionForm.get('divisionName').hasError('required')">
-                    Required
-                </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="w-full">
                 <mat-label *transloco="let t" class="font-medium">{{t('departmentName')}}</mat-label>
-                <mat-select [formControlName]="'departmentId'" [panelClass]="'custom-select-panel'">
-                    <div class="px-3 py-2">
-                        <mat-form-field class="w-full">
-                            <input matInput (keyup)="filterDepartment($event)" placeholder="Search Department..."
-                                #roleSearchInput [value]="''" autocomplete="off">
-                        </mat-form-field>
-                    </div>
-                    <mat-option [value]="null">Please Select</mat-option>
-                    <ng-container *ngFor="let deptData of filteredDepartment; trackBy: trackByFn">
-                        <mat-option [value]="deptData.departmentId">{{deptData.departmentName}}</mat-option>
-                    </ng-container>
-                </mat-select>
-                <mat-error *ngIf="addUpdateDivisionForm.get('departmentId').hasError('required')">
+                <input matInput [formControlName]="'departmentName'" placeholder="Enter employee name">
+                <mat-error *ngIf="addUpdateDepartmentForm.get('departmentName').hasError('required')">
                     Required
                 </mat-error>
             </mat-form-field>
@@ -47,7 +28,8 @@
             <ng-container *ngIf="!updateBool">
                 <button mat-flat-button
                     class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
-                    (click)="divisionSave()" [disabled]="this.addUpdateDivisionForm.invalid" *transloco="let t">
+                    (click)="departmentSave()" [disabled]="this.addUpdateDepartmentForm.invalid" *transloco="let t"
+                    aria-label="{{t('submit')}}">
                     {{t('submit')}}
                 </button>
             </ng-container>
@@ -55,15 +37,18 @@
             <ng-container *ngIf="updateBool">
                 <button mat-flat-button
                     class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
-                    (click)="divisionUpdate()" [disabled]="this.addUpdateDivisionForm.invalid" *transloco="let t">
+                    (click)="designationUpdate()" [disabled]="this.addUpdateDepartmentForm.invalid" *transloco="let t"
+                    aria-label="{{t('update')}}">
                     {{t('update')}}
                 </button>
             </ng-container>
+
             <button mat-stroked-button
                 class="min-w-[90px] px-6 py-2 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
-                (click)="onNoClose()" *transloco="let t">
+                (click)="onNoClose()" *transloco="let t" aria-label="{{t('cancel')}}">
                 {{t('cancel')}}
             </button>
         </div>
+
     </form>
 </div>

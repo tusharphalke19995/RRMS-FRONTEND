@@ -72,6 +72,13 @@
                             <td mat-cell *matCellDef="let row"> {{row.case_no}} </td>
                         </ng-container>
 
+                           <ng-container matColumnDef="file_name">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header
+                                class="bg-primary-300 dark:bg-slate-500 text-black">File Name</th>
+                            <td mat-cell *matCellDef="let row"> {{row.file_name}} </td>
+                        </ng-container>
+
+                        
                         <ng-container matColumnDef="requested_by_full_name">
                             <th mat-header-cell *matHeaderCellDef mat-sort-header
                                 class="bg-primary-300 dark:bg-slate-500 text-black">Requested By</th>
@@ -88,12 +95,8 @@
                                 class="bg-primary-300 dark:bg-slate-500 text-black">Created At</th>
                             <td mat-cell *matCellDef="let row"> {{row.created_at}} </td>
                         </ng-container>
-                        <!-- Comments -->
-                        <ng-container matColumnDef="comments">
-                            <th mat-header-cell *matHeaderCellDef mat-sort-header
-                                class="bg-primary-300 dark:bg-slate-500 text-black">Comments</th>
-                            <td mat-cell *matCellDef="let row"> {{row.comments}} </td>
-                        </ng-container>
+                       
+                       
                         <!-- Is Approved -->
                         <ng-container matColumnDef="is_approved">
                             <th mat-header-cell *matHeaderCellDef mat-sort-header
@@ -137,6 +140,13 @@
                                 class="bg-primary-300 dark:bg-slate-500 text-black">Case No</th>
                             <td mat-cell *matCellDef="let row"> {{row.case_no}} </td>
                         </ng-container>
+
+                          <ng-container matColumnDef="file_name">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header
+                                class="bg-primary-300 dark:bg-slate-500 text-black">File Name</th>
+                            <td mat-cell *matCellDef="let row"> {{row.file_name}} </td>
+                        </ng-container>
+
 
                         <ng-container matColumnDef="requested_by_full_name">
                             <th mat-header-cell *matHeaderCellDef mat-sort-header

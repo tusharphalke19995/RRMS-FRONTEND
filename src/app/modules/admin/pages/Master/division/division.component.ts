@@ -68,6 +68,7 @@ export class DivisionComponent implements OnInit, AfterViewInit {
   columns: any[] = [
     { labelen: "Division Id", labelhi: "Division Id", property: "divisionId" },
     { labelen: "Division Name", labelhi: "Division Name", property: "divisionName" },
+    { labelen: "Department Name", labelhi: "Department Name", property: "department" },
     {
       labelen: "Action",
       labelhi: "Action",
@@ -79,6 +80,7 @@ export class DivisionComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     "divisionId",
     "divisionName",
+    "department",
     "action"
   ];
   userRoleDropdown: [];

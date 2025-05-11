@@ -83,6 +83,12 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 type : 'basic',
                 link : '/manage-master/designations',
             },
+              {
+                id   : 'departmentMng',
+                title: 'Department Management',
+                type : 'basic',
+                link : '/manage-master/department',
+            },
             {
                 id   : 'caseStatusMng',
                 title: 'Case Status Management',

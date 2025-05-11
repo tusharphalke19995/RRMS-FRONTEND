@@ -110,17 +110,16 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
       labelhi: "division name",
       property: "division_name",
     },
-    { labelen: "Comments", labelhi: "Comments", property: "comments" },
     { labelen: "Is approved", labelhi: "Is Approved", property: "is_approved" },
     { labelen: "Action", labelhi: "Action", property: "action" },
   ];
 
   displayedColumns: string[] = [
     "case_no",
+    "file_name",
     "requested_by_full_name",
     "created_at",
     "division_name",
-    "comments",
     "is_approved"
   ];
 
@@ -143,6 +142,7 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
 
   displayedColumnsApproval: string[] = [
     "case_no",
+    "file_name",
     "requested_by_full_name",
     "created_at",
     "division_name",
