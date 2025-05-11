@@ -271,6 +271,28 @@ return this._httpClient
   .pipe(catchError(this.handleError));
 }
 
+getDesignationHierachy() {
+  return this._httpClient
+    .get(apiurls.designationsHierachyAdd)
+    .pipe(catchError(this.handleError));
+}
+
+updatDesignationHierachyById(departmentId: number, data: any) {
+const url = `${apiurls.designationsHierachyAdd}/${departmentId}`; // Construct the full URL with user ID
+return this._httpClient.put(url, data,{
+    headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    })
+}).pipe(catchError(this.handleError));
+}
+
+createDesignationHierachy(data) {
+return this._httpClient
+  .post(apiurls.designationsHierachyAdd, data,)
+  .pipe(catchError(this.handleError));
+}
+
   /**
    * The error handler.
    * @param err The http error response.

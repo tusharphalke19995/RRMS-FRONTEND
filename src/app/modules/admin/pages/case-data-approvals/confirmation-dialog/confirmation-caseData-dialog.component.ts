@@ -14,11 +14,11 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import { TranslocoModule } from '@ngneat/transloco';
-import { NotificationService } from '../notification.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from '../../manage-notification/notification.service';
 
 @Component({
-  selector: 'app-confirmation-dialog',
+  selector: 'app-confirmation-caseData-dialog',
   standalone: true,
   imports: [ NgIf,
      CommonModule,
@@ -31,15 +31,15 @@ import { MatSnackBar } from '@angular/material/snack-bar';
          MatSelectModule,
          MatButtonModule,
          TranslocoModule,],
-  templateUrl: './confirmation-dialog.component.html',
-  styleUrl: './confirmation-dialog.component.scss',
+  templateUrl: './confirmation-caseData-dialog.component.html',
+  styleUrl: './confirmation-caseData-dialog.component.scss',
       encapsulation: ViewEncapsulation.None
 })
-export class ConfirmationDialogComponent {
+export class ConfirmationDialogCaseDataApprovalComponent {
   manageNotificationConfirmation:FormGroup;
   paloadApproveDenied:any;
-  payloadAppDenied: { file_id: any; division_id: number; is_approved: boolean; comments: any; };
-  constructor( private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any , private _formBuilder:FormBuilder)
+  payloadAppDenied: { upload_approval_id: any; division_id: number; is_approved: boolean; comments: any; };
+  constructor( private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ConfirmationDialogCaseDataApprovalComponent>, @Inject(MAT_DIALOG_DATA) public data: any , private _formBuilder:FormBuilder)
 {
 
 }
@@ -69,14 +69,14 @@ onApprove(status: string): void {
 
   if(status==="true"){
     this.payloadAppDenied =  {
-      file_id: this.data.id,
+      upload_approval_id: this.data.id,
       division_id: divisionID,
       is_approved:true,
       comments: remarksControl?.value || ''
     };
   }else if(status==="false"){
      this.payloadAppDenied = {
-      file_id: this.data.file.id,
+      upload_approval_id: this.data.id,
       division_id: divisionID,
       is_approved:false,
       comments: remarksControl?.value || ''

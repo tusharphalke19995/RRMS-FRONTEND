@@ -62,7 +62,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('firstName')}}</mat-label>
-                        <input matInput [formControlName]="'firstName'"  (keypress)="allowOnlyLetters($event)"  maxlength="10" placeholder="Enter First name">
+                        <input matInput [formControlName]="'firstName'" (keypress)="allowOnlyLetters($event)"
+                            maxlength="10" placeholder="Enter First name">
                         <mat-error *ngIf="addUpdateUserForm.get('firstName').hasError('required')">
                             Required
                         </mat-error>
@@ -70,7 +71,8 @@
 
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('lastName')}}</mat-label>
-                        <input matInput [formControlName]="'lastName'"  (keypress)="allowOnlyLetters($event)" maxlength="10" placeholder="Enter Last name">
+                        <input matInput [formControlName]="'lastName'" (keypress)="allowOnlyLetters($event)"
+                            maxlength="10" placeholder="Enter Last name">
                         <mat-error *ngIf="addUpdateUserForm.get('lastName').hasError('required')">
                             Required
                         </mat-error>
@@ -87,7 +89,8 @@
 
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('kgId')}}</mat-label>
-                        <input matInput [formControlName]="'kgid'" (keypress)="allowOnlyNumbers($event)" placeholder="Enter KG ID" maxlength="12" minlength="6">
+                        <input matInput [formControlName]="'kgid'" (keypress)="allowOnlyNumbers($event)"
+                            placeholder="Enter KG ID" maxlength="12" minlength="6">
                         <mat-error *ngIf="addUpdateUserForm.get('kgid').hasError('required')">
                             Required
                         </mat-error>
@@ -97,11 +100,12 @@
 
                 <!-- Second Row -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  
+
 
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('empMobileno')}}</mat-label>
-                        <input matInput [formControlName]="'mobileNo'" (keypress)="allowOnlyNumbers($event)" maxlength="10" placeholder="Enter mobile number">
+                        <input matInput [formControlName]="'mobileNo'" (keypress)="allowOnlyNumbers($event)"
+                            maxlength="10" placeholder="Enter mobile number">
                         <mat-error *ngIf="addUpdateUserForm.get('mobileNo').hasError('required')">
                             Required
                         </mat-error>
@@ -124,9 +128,87 @@
                             number and one special character
                         </mat-error>
                     </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label *transloco="let t" class="font-medium">{{t('role')}}</mat-label>
+                        <mat-select [formControlName]="'roleId'" [panelClass]="'custom-select-panel'">
+                            <div class="px-3 py-2">
+                                <mat-form-field class="w-full">
+                                    <input matInput (keyup)="filterUserRoles($event)" placeholder="Search role..."
+                                        #roleSearchInput [value]="''" autocomplete="off">
+                                </mat-form-field>
+                            </div>
+                            <mat-option [value]="null">Please Select</mat-option>
+                            <ng-container *ngFor="let roleInfo of filteredUserRoles; trackBy: trackByFn">
+                                <mat-option [value]="roleInfo.roleId">{{roleInfo.roleName}}</mat-option>
+                            </ng-container>
+                        </mat-select>
+                        <mat-error *ngIf="addUpdateUserForm.get('roleId').hasError('required')">
+                            Required
+                        </mat-error>
+                    </mat-form-field>
                 </div>
+                <div>
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label *transloco="let t" class="font-medium">{{t('designations')}}</mat-label>
+                        <mat-select [formControlName]="'designation'" [panelClass]="'custom-select-panel'"
+                            (selectionChange)="onDesignationSelect($event.value)" multiple>
+                            <div class="px-3 py-2">
+                                <mat-form-field class="w-full">
+                                    <input matInput (keyup)="filterDesignations($event)"
+                                        placeholder="Search designation..." #designationSearchInput [value]="''"
+                                        autocomplete="off">
+                                </mat-form-field>
+                            </div>
+                            <mat-option [value]="null">Please Select</mat-option>
+                            <ng-container *ngFor="let designationInfo of filteredDesignations; trackBy: trackByFn">
+                                <mat-option
+                                    [value]="designationInfo.designationId">{{designationInfo.designationName}}</mat-option>
+                            </ng-container>
+                        </mat-select>
+                        <mat-error *ngIf="addUpdateUserForm.get('designation').hasError('required')">
+                            Required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div *ngIf="selectedDesignations.length">
+                    <h2>Selected Designation Details</h2>
+                    <table mat-table [dataSource]="selectedDesignations" class="w-full mt-4">
+                        <!-- Designation Name -->
+                        <ng-container matColumnDef="designationName">
+                            <th mat-header-cell *matHeaderCellDef               class="border px-4 py-2 bg-primary-300 dark:bg-slate-500 text-black">Designation</th>
+                            <td mat-cell *matCellDef="let row">{{ row.designationName }}</td>
+                        </ng-container>
+                        <!-- Department(s) -->
+                        <ng-container matColumnDef="department">
+                            <th mat-header-cell *matHeaderCellDef               class="border px-4 py-2 bg-primary-300 dark:bg-slate-500 text-black">Department</th>
+                            <td mat-cell *matCellDef="let row">
+                                {{ getDepartmentNames(row) }}
+                            </td>
+                        </ng-container>
+                        <!-- Division(s) -->
+                        <ng-container matColumnDef="division">
+                            <th mat-header-cell *matHeaderCellDef               class="border px-4 py-2 bg-primary-300 dark:bg-slate-500 text-black">Division</th>
+                            <td mat-cell *matCellDef="let row">
+                                {{ getDivisionNames(row) }}
+                            </td>
+                        </ng-container>
+                        <!-- Superdivision(s) (if available) -->
+                        <ng-container matColumnDef="superdivision">
+                            <th mat-header-cell *matHeaderCellDef               class="border px-4 py-2 bg-primary-300 dark:bg-slate-500 text-black">Superdivision</th>
+                            <td mat-cell *matCellDef="let row">
+                                {{ getSuperdivisionNames(row) }}
+                            </td>
+                        </ng-container>
 
-
+                        <tr mat-header-row
+                            *matHeaderRowDef="['designationName', 'department', 'division', 'superdivision']"></tr>
+                        <tr mat-row
+                            *matRowDef="let row; columns: ['designationName', 'department', 'division', 'superdivision'];">
+                        </tr>
+                    </table>
+                </div>
+                <!-- 
                 <div class="overflow-x-auto">
                     <button *transloco="let t" mat-flat-button [color]="'primary'" class="min-w-[120px]"
                         (click)="addMultiplesDivision()">
@@ -135,20 +217,19 @@
                     </button>
 
                     <table mat-table [dataSource]="dataSource" matSort #sort1="matSort" class="w-full mt-[10px]">
-                        <!-- ID Column -->
+              
 
                         <ng-container matColumnDef="roleId">
                             <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Role Name</th>
                             <td mat-cell *matCellDef="let row"> {{ getRoleName(row.roleId) }} </td>
                         </ng-container>
                     
-                        <!-- Division Name Column -->
                         <ng-container matColumnDef="divisionId">
                             <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Division Name</th>
                             <td mat-cell *matCellDef="let row"> {{ getDivisionName(row.divisionId) }} </td>
                         </ng-container>
                     
-                        <!-- Designation Name Column -->
+                      
                         <ng-container matColumnDef="designationId">
                             <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Designation Name</th>
                             <td mat-cell *matCellDef="let row"> {{ getDesignationName(row.designationId) }} </td>
@@ -159,7 +240,7 @@
                             class="hover:bg-hover cursor-pointer"></tr>
                     </table>
 
-                    <!-- No data message -->
+                
                     <div *ngIf="dataSource?.data?.length === 0" class="p-8 text-center">
                         No records found
                     </div>
@@ -168,7 +249,7 @@
                     <mat-paginator #paginator1="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10"
                         showFirstLastButtons>
                     </mat-paginator>
-                </div>
+                </div> -->
 
                 <!-- Action Buttons -->
                 <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">

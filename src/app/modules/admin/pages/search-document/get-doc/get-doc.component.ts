@@ -197,12 +197,11 @@ export class GetDocComponent {
     this.fileToView = file;
   }
 
-  hasRoleInDivision(...roles: string[]): boolean {
-    const divisionID = JSON.parse(sessionStorage.getItem('divisionID') || 'null');
-    return this.authData.DivisionsRoles.some(
-      (role) => roles.includes(role.role_name) && role.division_id === divisionID
-    );
+hasRoleInDivision(...roles: string[]): boolean {
+  if (roles.includes(this.authData.Role)) {
+    return true;
   }
+}
 
   getMasterDropDown() {
     this._uploadDocumentService.getMasterDropDownData().subscribe({

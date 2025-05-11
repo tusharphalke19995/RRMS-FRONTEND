@@ -38,12 +38,12 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
-import { RouterLink } from "@angular/router";
+import { ActivatedRoute, RouterLink } from "@angular/router";
 import { TranslocoModule } from "@ngneat/transloco";
 import { MatTabsModule } from "@angular/material/tabs";
-import { DashbaordService } from "../../dashbaord/dashboard.service";
-import { CaseApproveReqDialogComponent } from "./case-approve-req-dialog/case-approve-req-dialog.component";
 import { CaseDataApprovalService } from "./case-data-approvals.service";
+import { ConfirmationDialogCaseDataApprovalComponent } from "./confirmation-dialog/confirmation-caseData-dialog.component";
+import { AuthService } from "app/core/auth/auth.service";
 
 @Component({
   selector: "app-case-data-approval",
@@ -83,11 +83,8 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   alert: { type: string; message: string };
   divisionDropdown = [];
-
-  authData = {
-    SuperAdmin: false,
-    DivisionsRoles: [],
-  };
+objectId: number;
+  authData :any;
   @ViewChild("pendingSort") pendingSort: MatSort;
   @ViewChild("pendingPaginator") pendingPaginator: MatPaginator;
   @ViewChild("approvedSort") approvedSort: MatSort;
@@ -161,6 +158,8 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
     private _snackBar: MatSnackBar,
     private _searchUserService: SearchUserService,
     public dialog: MatDialog,
+    private route: ActivatedRoute,
+    private authServcie:AuthService,
     private sharedService: SharedService,
     private _masterService: MasterService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -176,14 +175,38 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
   /**
    * On init
    */
-  ngOnInit(): void {
-    this.getCasedataUploadApprovalsData();
-    this.checkUser();
+ngOnInit(): void {
+  this.authData = this.authServcie.getAuthData();
+  this.checkUser();
+
+  this.route.queryParams.subscribe(params => {
+    if (params['object_id']) {
+      this.objectId = params['object_id'];
+      this.getApprovalsByGivenIdByNotification(this.objectId);
+    } else {
+      this.getCasedataUploadApprovalsData();
+    }
+  });
+}
+
+
+   getApprovalsByGivenIdByNotification(id) {
+    this.caseDataApprovalService.getApprovalsByGivenId(id).subscribe({
+      next: (response: any) => {
+          this.pendingReqData = Array.isArray(response) ? response : [response]
+
+        this.filterTabData();
+      },
+      error: (error) => {
+        console.error("Error fetching current users:", error);
+      },
+    });
   }
 
   getCasedataUploadApprovalsData() {
     let payLoad = {
       division_id: Number(sessionStorage.getItem("divisionID")),
+      department_id: Number(sessionStorage.getItem("departmentID")),
     };
     this.caseDataApprovalService.getCasedataUploadApprovals(payLoad).subscribe({
       next: (response: any) => {
@@ -213,7 +236,7 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
   }
 
   approvedRequest(notification: any) {
-    const dialogRef = this.dialog.open(CaseApproveReqDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogCaseDataApprovalComponent, {
       data: notification,
       width: "677px",
     });
@@ -285,13 +308,8 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
   }
 
  checkUser() {
-    const divisionID = Number(sessionStorage.getItem('divisionID'));
-    const currentDivisionRole = this.authData.DivisionsRoles.find(
-      (role) => role.division_id === divisionID
-    );
-    const currentRole = currentDivisionRole?.role_name || null;
-    const isUser = currentRole != 'User';
-    if (isUser) {
+    const isUser = this.authData.Role
+    if (isUser !="User") {
       this.displayedColumns.push('action');
     }
     console.log('isUser', isUser);

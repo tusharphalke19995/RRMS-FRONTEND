@@ -12,7 +12,9 @@ export interface UserModel {
     RoleName:string | null,
     DesignationName:string | null,
     DivisionsRoles:[],
-    SuperAdmin:boolean
+    SuperAdmin:boolean,
+    DivisionIds:[],
+    DepartmentIds:[]
   }
 @Injectable({providedIn: 'root'})
 export class AuthService
@@ -188,7 +190,9 @@ export class AuthService
                 RoleName: decodedToken.role_name,
                 DesignationName: decodedToken.designation_name,
                 DivisionsRoles:decodedToken.divisions_roles,
-                SuperAdmin:decodedToken.is_superadmin
+                SuperAdmin:decodedToken.is_superadmin,
+                DivisionIds:decodedToken.divisionIds,
+                DepartmentIds:decodedToken.departmentIds
             };
             return authData; 
         }

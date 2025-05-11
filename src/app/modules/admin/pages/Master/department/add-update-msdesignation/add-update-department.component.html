@@ -3,7 +3,14 @@
     <div class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md"
         cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle cdkDrag>
         <div class="flex items-center">
-            <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('addDepartment')}}</span>
+            <span class="text-xl font-semibold tracking-tight" *ngIf="updateBool; else addRoleTemplate">
+               <span *transloco="let t">{{ 'updateDepartment' | transloco }}</span> 
+            </span>
+            <ng-template #addRoleTemplate>
+                <span class="text-xl font-semibold tracking-tight" *transloco="let t">
+                    {{ 'addDepartment' | transloco }}
+                </span>
+            </ng-template>
         </div>
         <button mat-icon-button class=" rounded-full transition-colors duration-200" (click)="onNoClose()"
             [tabIndex]="-1">

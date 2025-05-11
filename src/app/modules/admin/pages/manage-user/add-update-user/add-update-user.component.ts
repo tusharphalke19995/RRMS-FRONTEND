@@ -52,11 +52,16 @@ import { Router } from "@angular/router";
 export class AddUpdateUserComponent {
   addUpdateUserForm: UntypedFormGroup;
   hidePassword: boolean = true;
-  userRoleDropdown = [
-   
-];
+  userRoleDropdown = [];
   divisionDropdown = [];
   designationsDropdown = [];
+  filteredUserRoles = [];
+  filteredDivisions = [];
+  filteredDesignations = [];
+
+  private roleSearchTimeout: any;
+  private divisionSearchTimeout: any;
+  private designationSearchTimeout: any;
   isLoading: boolean = false;
   alert: { type: string; message: string };
   @ViewChild("sort1") sort1: MatSort;
@@ -78,8 +83,13 @@ export class AddUpdateUserComponent {
 
   displayedColumns: string[] = ["divisionId", "roleId", "designationId"];
   divisionInfo: any;
+  departmentMeta: any[] = [];
+divisionMeta: any[] = [];
+designationMeta:any[]=[];
+ selectedDesignation: any = null;
+ selectedDesignations: any[] = [];
   constructor(
-    private router:Router,
+    private router: Router,
     private _searchUserService: SearchUserService,
     private _formBuilder: UntypedFormBuilder,
     private _snackBar: MatSnackBar,
@@ -99,9 +109,10 @@ export class AddUpdateUserComponent {
       lastName: ["", Validators.required],
 
       emailID: ["", [Validators.required, Validators.email]],
-      kgid: ["", Validators.required,MaxLengthValidator[12]],
+      kgid: ["", Validators.required, MaxLengthValidator[12]],
       mobileNo: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
-
+      roleId: ["", [Validators.required]],
+      designation: ["", [Validators.required]],
       password: [
         "",
         [
@@ -114,44 +125,8 @@ export class AddUpdateUserComponent {
     });
   }
 
-  getUserRoleDropdown() {
-    const divisionID = Number(sessionStorage.getItem("divisionID"));
-    this._searchUserService.getUserRole(divisionID).subscribe({
-      next: (response: any) => {
-        if (response) {
-          this.userRoleDropdown = response.responseData;
-        }
-      },
-      error: (error) => {},
-    });
-  }
-
-  getDivisionDropdown() {
-    const divisionId =Number(sessionStorage.getItem('divisionID'));
-    this._searchUserService.getDivision(divisionId).subscribe({
-      next: (response: any) => {
-        if (response) {
-          this.divisionDropdown = response;
-        }
-      },
-      error: (error) => {},
-    });
-  }
-
-  getDesignationsData() {
-    const divisionId =Number(sessionStorage.getItem('divisionID'));
-    this._searchUserService.getDesignationsInfo(divisionId).subscribe({
-      next: (response: any) => {
-        if (response) {
-          this.designationsDropdown = response;
-        }
-      },
-      error: (error) => {},
-    });
-  }
-
   userSave() {
-    if (this.addUpdateUserForm.valid && this.divisionInfo && this.divisionInfo.length > 0) {
+
       const data = {
         first_name: this.addUpdateUserForm.value.firstName,
         last_name: this.addUpdateUserForm.value.lastName,
@@ -159,11 +134,8 @@ export class AddUpdateUserComponent {
         kgid: this.addUpdateUserForm.value.kgid,
         mobileno: this.addUpdateUserForm.value.mobileNo,
         password: this.addUpdateUserForm.value.password,
-        divisions_roles: this.divisionInfo.map((entry) => ({
-          roleId: entry.roleId,
-          divisionId: entry.divisionId,
-          designationId: entry.designationId,
-        })),
+        roleId: this.addUpdateUserForm.value.roleId,
+        designation: this.addUpdateUserForm.value.designation,
       };
       this._searchUserService.createUser(data).subscribe({
         next: (response: any) => {
@@ -173,7 +145,7 @@ export class AddUpdateUserComponent {
             verticalPosition: "top",
             panelClass: ["success-snackbar"],
           });
-          this.router.navigateByUrl('manage-user');
+          this.router.navigateByUrl("manage-user");
         },
         error: (error) => {
           this._snackBar.open(error.message || "Error creating user", "Close", {
@@ -185,34 +157,7 @@ export class AddUpdateUserComponent {
         },
       });
     }
-    else if (!this.divisionInfo || this.divisionInfo.length === 0) {
-      this._snackBar.open("Please add at least one Division/Role/Designation.", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["error-snackbar"],
-      });
-    }
-  }
-
-  getRoleName(roleId: number): string {
-    const role = this.userRoleDropdown.find((role) => role.roleId === roleId);
-    return role ? role.roleName : "Unknown Role";
-  }
-
-  getDivisionName(divisionId: number): string {
-    const division = this.divisionDropdown.find(
-      (div) => div.divisionId === divisionId
-    );
-    return division ? division.divisionName : "Unknown Division";
-  }
-
-  getDesignationName(designationId: number): string {
-    const designation = this.designationsDropdown.find(
-      (des) => des.designationId === designationId
-    );
-    return designation ? designation.designationName : "Unknown Designation";
-  }
+  
 
   /**
    * Track by function for ngFor loops
@@ -224,22 +169,6 @@ export class AddUpdateUserComponent {
     return item.id || index;
   }
 
-  addMultiplesDivision() {
-    const dialogRef = this.dialog.open(AddMultiplesDivisionComponent, {
-      width: "750px",
-    });
-    dialogRef.afterClosed().subscribe((result: any) => {
-      if (result) {
-        // Check if result is an array of entries
-        if (Array.isArray(result)) {
-          this.divisionInfo = [...(this.divisionInfo || []), ...result]; // Append new entries
-        } else {
-          this.divisionInfo = [...(this.divisionInfo || []), result]; // Append single entry
-        }
-        this.dataSource = new MatTableDataSource(this.divisionInfo);
-      }
-    });
-  }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -256,11 +185,131 @@ export class AddUpdateUserComponent {
       event.preventDefault();
     }
   }
-  
+
   allowOnlyLetters(event: KeyboardEvent): void {
-  const char = event.key;
-  if (!/^[a-zA-Z\s]$/.test(char)) {
-    event.preventDefault();
+    const char = event.key;
+    if (!/^[a-zA-Z\s]$/.test(char)) {
+      event.preventDefault();
+    }
   }
+
+  filterUserRoles(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+
+    if (this.roleSearchTimeout) {
+      clearTimeout(this.roleSearchTimeout);
+    }
+
+    this.roleSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredUserRoles = [...this.userRoleDropdown];
+      } else {
+        this.filteredUserRoles = this.userRoleDropdown.filter((role) => {
+          const roleName = (role.roleName || "").toLowerCase();
+          return roleName.includes(searchText);
+        });
+      }
+    }, 300);
+  }
+
+  filterDivisions(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+
+    if (this.divisionSearchTimeout) {
+      clearTimeout(this.divisionSearchTimeout);
+    }
+
+    this.divisionSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredDivisions = [...this.divisionDropdown];
+      } else {
+        this.filteredDivisions = this.divisionDropdown.filter((division) => {
+          const divisionName = (division.divisionName || "").toLowerCase();
+          return divisionName.includes(searchText);
+        });
+      }
+    }, 300);
+  }
+
+  filterDesignations(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+
+    if (this.designationSearchTimeout) {
+      clearTimeout(this.designationSearchTimeout);
+    }
+
+    this.designationSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredDesignations = [...this.designationsDropdown];
+      } else {
+        this.filteredDesignations = this.designationsDropdown.filter(
+          (designation) => {
+            const designationName = (
+              designation.designationName || ""
+            ).toLowerCase();
+            return designationName.includes(searchText);
+          }
+        );
+      }
+    }, 300);
+  }
+
+  getUserRoleDropdown() {
+    const divisionID = Number(sessionStorage.getItem("divisionID"));
+    this._searchUserService.getUserRole(divisionID).subscribe({
+      next: (response: any) => {
+        if (response) {
+          this.userRoleDropdown = response.responseData;
+          this.filteredUserRoles = [...this.userRoleDropdown];
+        }
+      },
+      error: (error) => {},
+    });
+  }
+
+  getDivisionDropdown() {
+    const divisionId = Number(sessionStorage.getItem("divisionID"));
+    this._searchUserService.getDivision(divisionId).subscribe({
+      next: (response: any) => {
+        if (response) {
+          this.divisionDropdown = response;
+          this.filteredDivisions = [...this.divisionDropdown];
+        }
+      },
+      error: (error) => {},
+    });
+  }
+
+  getDesignationsData() {
+    const divisionId = Number(sessionStorage.getItem("divisionID"));
+    this._searchUserService.getDesignationsInfo(divisionId).subscribe({
+      next: (response: any) => {
+        if (response) {
+          this.designationsDropdown = response;
+          this.filteredDesignations = [...this.designationsDropdown];
+        }
+      },
+      error: (error) => {},
+    });
+  }
+
+onDesignationSelect(designationIds: number[]) {
+  this.selectedDesignations = this.designationsDropdown.filter(
+    d => designationIds.includes(d.designationId)
+  );
 }
+
+
+  getDepartmentNames(row: any): string {
+    return row.department?.map((d: any) => d.departmentName).join(', ') || '-';
+  }
+
+  getDivisionNames(row: any): string {
+    return row.division?.map((d: any) => d.divisionName).join(', ') || '-';
+  }
+
+  getSuperdivisionNames(row: any): string {
+    return row.superdivision?.map((s: any) => s.superdivisionName).join(', ') || '-';
+  }
+
 }

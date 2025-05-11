@@ -20,10 +20,11 @@ import { fuseAnimations } from "@fuse/animations";
 import { FuseAlertComponent, FuseAlertType } from "@fuse/components/alert";
 import { TranslocoModule } from "@ngneat/transloco";
 import { AuthService } from "app/core/auth/auth.service";
+import { MasterService } from "app/modules/admin/pages/Master/master.service";
 
 @Component({
   selector: "auth-division-info",
-  styleUrl: './division-ino.component.scss',
+  styleUrl: "./division-ino.component.scss",
   templateUrl: "./division-info.component.html",
   encapsulation: ViewEncapsulation.None,
   animations: fuseAnimations,
@@ -43,7 +44,7 @@ import { AuthService } from "app/core/auth/auth.service";
     MatProgressSpinnerModule,
     MatSelectModule,
     NgFor,
-    CommonModule
+    CommonModule,
   ],
 })
 export class DivisionInfoComponent implements OnInit {
@@ -55,8 +56,15 @@ export class DivisionInfoComponent implements OnInit {
   showAlert: boolean = false;
   divisionsRoles: any;
   filteredDivisions: any[] = [];
-  private divisionSearchTimeout: any;
-
+  filteredDepartment = [];
+  departmentDropdown = [];
+  filteredDivision = [];
+  departmentSearchTimeout: any;
+  divisionSearchTimeout: any;
+  divisionDropdown = [];
+  authData: any;
+  DivisionIdsUserLogin: [];
+  DepartmentIdsUserLogin: [];
   /**
    * Constructor
    */
@@ -64,8 +72,16 @@ export class DivisionInfoComponent implements OnInit {
     private _activatedRoute: ActivatedRoute,
     private _authService: AuthService,
     private _formBuilder: UntypedFormBuilder,
-    private _router: Router
-  ) {}
+    private _router: Router,
+    private masterService: MasterService
+  ) {
+    this.authData = this._authService.getAuthData();
+    console.log("this.authData.", this.authData);
+    this.DivisionIdsUserLogin = this.authData.DivisionIds;
+    this.DepartmentIdsUserLogin = this.authData.DepartmentIds;
+    console.log("this.DivisionIdsUserLogin", this.DivisionIdsUserLogin);
+    console.log("this.DepartmentIdsUserLogin", this.DepartmentIdsUserLogin);
+  }
 
   // -----------------------------------------------------------------------------------------------------
   // @ Lifecycle hooks
@@ -77,42 +93,110 @@ export class DivisionInfoComponent implements OnInit {
   ngOnInit(): void {
     // Create the form
     this.designationRoleForm = this._formBuilder.group({
-      divisionId: ["", [Validators.required]]
+      divisionId: ["", [Validators.required]],
+      departmentId: ["", [Validators.required]],
     });
-    this.divisionsRoles = this._authService.getAuthData();
-    this.filteredDivisions = [...this.divisionsRoles.DivisionsRoles];
+
+    this.getDepartmentsInfo();
+    this.getDivision();
   }
 
-  filterDivisions(event: any): void {
+  onDepartmentSelect(data: any) {
+    sessionStorage.setItem("departmentID", data);
+  }
+
+  onDivisionSelect(data: any) {
+    sessionStorage.setItem("divisionID", data);
+  }
+
+  goToDashbaord() {
+    this._router.navigateByUrl("/dashboard");
+  }
+
+  trackByFn(index: number, item: any): any {
+    return item.id || index;
+  }
+
+  filterDepartment(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
+    if (this.departmentSearchTimeout) {
+      clearTimeout(this.departmentSearchTimeout);
+    }
+
+    this.departmentSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredDepartment = [...this.departmentDropdown];
+      } else {
+        this.filteredDepartment = this.departmentDropdown.filter((role) => {
+          const roleName = (role.departmentName || "").toLowerCase();
+          return roleName.includes(searchText);
+        });
+      }
+    }, 300);
+  }
+
+  filterDivision(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+
     if (this.divisionSearchTimeout) {
       clearTimeout(this.divisionSearchTimeout);
     }
 
     this.divisionSearchTimeout = setTimeout(() => {
       if (!searchText) {
-        this.filteredDivisions = [...this.divisionsRoles.DivisionsRoles];
+        this.filteredDivision = [...this.divisionDropdown];
       } else {
-        this.filteredDivisions = this.divisionsRoles.DivisionsRoles.filter(division => {
-          const divisionName = (division.division_name || '').toLowerCase();
-          return divisionName.includes(searchText);
+        this.filteredDivision = this.divisionDropdown.filter((role) => {
+          const roleName = (role.divisionName || "").toLowerCase();
+          return roleName.includes(searchText);
         });
       }
     }, 300);
   }
 
-onStateChange(data:any)
-{
- sessionStorage.setItem('divisionID', data)
-}
+  getDepartmentsInfo() {
+    this.masterService.getDepartments().subscribe({
+      next: (response: any[]) => {
+        // Filter departments by allowed IDs
+        this.departmentDropdown = response.filter((res: any) =>
+          this.DepartmentIdsUserLogin.map(Number).includes(
+            Number(res.departmentId)
+          )
+        );
+        this.filteredDepartment = [...this.departmentDropdown];
+        // Patch if only one department
+        if (this.departmentDropdown.length === 1) {
+          const singleDeptId = this.departmentDropdown[0].departmentId;
+          this.designationRoleForm.patchValue({
+            departmentId: [singleDeptId],
+          });
+          sessionStorage.setItem("departmentID", JSON.stringify([singleDeptId]));
+        }
+      },
+      error: (error) => {},
+    });
+  }
 
-goToDashbaord(){
-  this._router.navigateByUrl("/dashboard");
-}
+  getDivision() {
+    const divisionId = Number(sessionStorage.getItem("divisionID"));
+    this.masterService.getDivision(divisionId).subscribe({
+      next: (response: any[]) => {
+        // Filter divisions by allowed IDs
+        this.divisionDropdown = response.filter((res: any) =>
+          this.DivisionIdsUserLogin.map(Number).includes(Number(res.divisionId))
+        );
+        this.filteredDivision = [...this.divisionDropdown];
 
-trackByFn(index: number, item: any): any {
-  return item.id || index;
-}
- 
+        if (this.divisionDropdown.length === 1) {
+          const singleDivId = this.divisionDropdown[0].divisionId;
+          this.designationRoleForm.patchValue({
+            divisionId: [singleDivId],
+          });
+          sessionStorage.setItem("divisionID", JSON.stringify([singleDivId]));
+        }
+      },
+      error: (error) => {},
+    });
+  }
 }

@@ -142,7 +142,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   filteredFileTypes: FileType[] = [];
   filteredDocumentTypes: DocumentType[] = [];
   filteredFileExtensions: FileType[] = [];
-  filteredCaseStatus:any [];
+  filteredCaseStatus: any[];
   private searchTimeout: any;
   private stateSearchTimeout: any;
   private districtSearchTimeout: any;
@@ -233,7 +233,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     this.onDisctrictChange(443);
     this.getUploadMetaDataFiles();
     this.getMasterDropDown();
-    
+
     // Initialize filtered arrays
     this.filteredStates = this.stateDropdown || [];
     this.filteredDistricts = this.districtDropdown || [];
@@ -272,7 +272,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       fileType: [""],
       hashTag: [""],
       docType: [""],
-      statusId:[""]
+      statusId: [""],
     });
   }
 
@@ -369,11 +369,6 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
    */
 
   getUploadMetaDataFiles(): void {
-    if (this.searchDocumentForm.value.caseType == 1) {
-      this.caseTypeFinalId = 10;
-    } else if (this.searchDocumentForm.value.caseType == 2) {
-      this.caseTypeFinalId = 20;
-    }
     let searchMetaData = {
       stateId: this.searchDocumentForm.value.stateId,
       districtId: this.searchDocumentForm.value.districtId,
@@ -382,13 +377,13 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       caseNo: this.searchDocumentForm.value.caseNo,
       caseDate: this.searchDocumentForm.value.caseDate,
       firNo: this.searchDocumentForm.value.firNo,
-      caseType: this.caseTypeFinalId,
+      caseType: this.searchDocumentForm.value.caseType,
       fileStage: this.searchDocumentForm.value.fileStage,
       fileType: this.searchDocumentForm.value.fileType,
-      division_id: Number(sessionStorage.getItem("divisionID")),
+      division_id: sessionStorage.getItem('divisionID'),
       docType: this.searchDocumentForm.value.docType,
       statusId: this.searchDocumentForm.value.statusId,
-      hashTag:this.searchDocumentForm.value.hashTag,
+      hashTag: this.searchDocumentForm.value.hashTag,
     };
 
     this._searchDocService.getUploadDocMetaData(searchMetaData).subscribe({
@@ -494,7 +489,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
 
   filterStates(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.stateSearchTimeout) {
       clearTimeout(this.stateSearchTimeout);
     }
@@ -503,8 +498,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       if (!searchText) {
         this.filteredStates = this.stateDropdown;
       } else {
-        this.filteredStates = this.stateDropdown.filter(state => {
-          const stateName = (state.stateName || '').toLowerCase();
+        this.filteredStates = this.stateDropdown.filter((state) => {
+          const stateName = (state.stateName || "").toLowerCase();
           return stateName.includes(searchText);
         });
       }
@@ -514,7 +509,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
 
   filterDistricts(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.districtSearchTimeout) {
       clearTimeout(this.districtSearchTimeout);
     }
@@ -523,8 +518,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       if (!searchText) {
         this.filteredDistricts = this.districtDropdown;
       } else {
-        this.filteredDistricts = this.districtDropdown.filter(district => {
-          const districtName = (district.districtName || '').toLowerCase();
+        this.filteredDistricts = this.districtDropdown.filter((district) => {
+          const districtName = (district.districtName || "").toLowerCase();
           return districtName.includes(searchText);
         });
       }
@@ -534,7 +529,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
 
   filterUnits(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout);
     }
@@ -543,8 +538,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       if (!searchText) {
         this.filteredUnits = this.unitsDropdown;
       } else {
-        this.filteredUnits = this.unitsDropdown.filter(unit => {
-          const unitName = (unit.unitName || '').toLowerCase();
+        this.filteredUnits = this.unitsDropdown.filter((unit) => {
+          const unitName = (unit.unitName || "").toLowerCase();
           return unitName.includes(searchText);
         });
       }
@@ -554,7 +549,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
 
   filterCaseTypes(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.caseTypeSearchTimeout) {
       clearTimeout(this.caseTypeSearchTimeout);
     }
@@ -563,8 +558,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       if (!searchText) {
         this.filteredCaseTypes = this.caseTypeDropDown;
       } else {
-        this.filteredCaseTypes = this.caseTypeDropDown.filter(caseType => {
-          const caseTypeName = (caseType.value || '').toLowerCase();
+        this.filteredCaseTypes = this.caseTypeDropDown.filter((caseType) => {
+          const caseTypeName = (caseType.value || "").toLowerCase();
           return caseTypeName.includes(searchText);
         });
       }
@@ -574,7 +569,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
 
   filterFileTypes(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.fileTypeSearchTimeout) {
       clearTimeout(this.fileTypeSearchTimeout);
     }
@@ -583,8 +578,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       if (!searchText) {
         this.filteredFileTypes = this.FileTypeDropDown;
       } else {
-        this.filteredFileTypes = this.FileTypeDropDown.filter(fileType => {
-          const fileTypeName = (fileType.value || '').toLowerCase();
+        this.filteredFileTypes = this.FileTypeDropDown.filter((fileType) => {
+          const fileTypeName = (fileType.value || "").toLowerCase();
           return fileTypeName.includes(searchText);
         });
       }
@@ -594,7 +589,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
 
   filterDocumentTypes(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.documentTypeSearchTimeout) {
       clearTimeout(this.documentTypeSearchTimeout);
     }
@@ -603,10 +598,12 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       if (!searchText) {
         this.filteredDocumentTypes = this.documentTypeDropDown;
       } else {
-        this.filteredDocumentTypes = this.documentTypeDropDown.filter(docType => {
-          const docTypeName = (docType.value || '').toLowerCase();
-          return docTypeName.includes(searchText);
-        });
+        this.filteredDocumentTypes = this.documentTypeDropDown.filter(
+          (docType) => {
+            const docTypeName = (docType.value || "").toLowerCase();
+            return docTypeName.includes(searchText);
+          }
+        );
       }
       this._changeDetectorRef.detectChanges();
     }, 300);
@@ -614,7 +611,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
 
   filterFileExtensions(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.fileExtensionSearchTimeout) {
       clearTimeout(this.fileExtensionSearchTimeout);
     }
@@ -623,10 +620,12 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       if (!searchText) {
         this.filteredFileExtensions = this.fileExtensionsDropdown;
       } else {
-        this.filteredFileExtensions = this.fileExtensionsDropdown.filter(fileExt => {
-          const fileExtName = (fileExt.value || '').toLowerCase();
-          return fileExtName.includes(searchText);
-        });
+        this.filteredFileExtensions = this.fileExtensionsDropdown.filter(
+          (fileExt) => {
+            const fileExtName = (fileExt.value || "").toLowerCase();
+            return fileExtName.includes(searchText);
+          }
+        );
       }
       this._changeDetectorRef.detectChanges();
     }, 300);
@@ -634,7 +633,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
 
   filterCaseStatus(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.caseStatusSearchTimeout) {
       clearTimeout(this.caseStatusSearchTimeout);
     }
@@ -643,8 +642,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       if (!searchText) {
         this.filteredCaseStatus = this.caseStatusDropdown;
       } else {
-        this.filteredCaseStatus = this.caseStatusDropdown.filter(status => {
-          const statusName = (status.value || '').toLowerCase();
+        this.filteredCaseStatus = this.caseStatusDropdown.filter((status) => {
+          const statusName = (status.value || "").toLowerCase();
           return statusName.includes(searchText);
         });
       }

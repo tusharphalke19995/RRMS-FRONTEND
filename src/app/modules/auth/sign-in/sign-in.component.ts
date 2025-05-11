@@ -138,19 +138,25 @@ export class AuthSignInComponent implements OnInit {
   }
   
   checkDesignationObj() {
-    this.divisionsRoles = this._authService.getAuthData();
-    sessionStorage.setItem('userID', this.divisionsRoles.UserID);
-    const rolesLength = this.divisionsRoles.DivisionsRoles.length;
-    if (rolesLength > 1) {
-      this._router.navigateByUrl("/division-selection");
-    } else {
-     
-      this.divisionsRoles.DivisionsRoles.forEach((data:any) => {
-        const divisionId = data.division_id;
-        sessionStorage.setItem('divisionID', divisionId);
-      });
-     
+    const isSuperAdmin=this._authService.getAuthData();
+    if(isSuperAdmin.SuperAdmin== true){
       this._router.navigateByUrl("/dashboard");
+    }else{
+      this._router.navigateByUrl("/division-selection");
     }
+    // this.divisionsRoles = this._authService.getAuthData();
+    // sessionStorage.setItem('userID', this.divisionsRoles.UserID);
+    // const rolesLength = this.divisionsRoles.DivisionsRoles.length;
+    // if (rolesLength > 1) {
+    //   this._router.navigateByUrl("/division-selection");
+    // } else {
+     
+    //   this.divisionsRoles.DivisionsRoles.forEach((data:any) => {
+    //     const divisionId = data.division_id;
+    //     sessionStorage.setItem('divisionID', divisionId);
+    //   });
+     
+    //   this._router.navigateByUrl("/dashboard");
+    // }
   }
 }

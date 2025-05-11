@@ -6,7 +6,7 @@
             <div class="w-20 h-20 flex items-center justify-center rounded-full bg-white mx-auto">
                 <img src="assets/images/KSPPCW-logo.png" class="object-contain w-20 h-20 " />
             </div>
-            <div class="mt-2 text-4xl  font-extrabold tracking-tight bg-gradient-to-r  text-center bg-clip-text drop-shadow-lg tracking-wider text-blue-800"   *transloco="let t">{{t('selectRole')}}</div>
+            <div class="mt-2 text-4xl  font-extrabold tracking-tight bg-gradient-to-r  text-center bg-clip-text drop-shadow-lg tracking-wider text-blue-800"   *transloco="let t">Select Department and Division</div>
               
                 <!-- Alert -->
                 <fuse-alert
@@ -26,30 +26,43 @@
                   >
     
                     <!-- Email field -->
-                    <mat-form-field  class="w-full">
-                        <mat-label *transloco="let t" class="font-medium text-white">{{t('division')}}</mat-label>
-                        <mat-select [formControlName]="'divisionId'"
-                            (selectionChange)="onStateChange($event.value)"
-                            [panelClass]="'custom-select-panel'">
-                            <div class="px-3 py-2">
-                                <mat-form-field class="w-full">
-                                    <input matInput
-                                        (keyup)="filterDivisions($event)"
-                                        placeholder="Search division..."
-                                        #divisionSearchInput
-                                        [value]="''"
-                                        autocomplete="off">
-                                </mat-form-field>
-                            </div>
-                            <mat-option [value]="null">Please Select</mat-option>
-                            <ng-container *ngFor="let data of filteredDivisions; trackBy: trackByFn">
-                                <mat-option [value]="data.division_id">{{data.division_name}}</mat-option>
-                            </ng-container>
-                        </mat-select>
-                        <mat-error *ngIf="designationRoleForm.get('divisionId').hasError('required')">
-                            Required
-                        </mat-error>
-                    </mat-form-field>
+                       <mat-form-field  class="w-full text-white">
+                <mat-label *transloco="let t" class="font-medium text-white text-xl">{{t('departmentName')}}</mat-label>
+                <mat-select [formControlName]="'departmentId'" [panelClass]="'custom-select-panel'"    (selectionChange)="onDepartmentSelect($event.value)">
+                    <div class="px-3 py-2 ">
+                        <mat-form-field class="w-full ">
+                            <input matInput (keyup)="filterDepartment($event)" placeholder="Search Department..."
+                                #roleSearchInput [value]="''" autocomplete="off">
+                        </mat-form-field>
+                    </div>
+                    <mat-option [value]="null">Please Select</mat-option>
+                    <ng-container *ngFor="let deptData of filteredDepartment; trackBy: trackByFn">
+                        <mat-option [value]="deptData.departmentId">{{deptData.departmentName}}</mat-option>
+                    </ng-container>
+                </mat-select>
+                <mat-error *ngIf="designationRoleForm.get('departmentId').hasError('required')">
+                    Required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field  class="w-full">
+                <mat-label *transloco="let t" class="font-medium text-white text-xl">{{t('divisionName')}}</mat-label>
+                <mat-select [formControlName]="'divisionId'" [panelClass]="'custom-select-panel'"  (selectionChange)="onDivisionSelect($event.value)">
+                    <div class="px-3 py-2">
+                        <mat-form-field class="w-full">
+                            <input matInput (keyup)="filterDivision($event)" placeholder="Search DivisionName..."
+                                #roleSearchInput [value]="''" autocomplete="off" class="text-white">
+                        </mat-form-field>
+                    </div>
+                    <mat-option [value]="null">Please Select</mat-option>
+                    <ng-container *ngFor="let division of filteredDivision; trackBy: trackByFn">
+                        <mat-option [value]="division.divisionId">{{division.divisionName}}</mat-option>
+                    </ng-container>
+                </mat-select>
+                <mat-error *ngIf="designationRoleForm.get('divisionId').hasError('required')">
+                    Required
+                </mat-error>
+            </mat-form-field>
 
     
                     <!-- Submit button -->

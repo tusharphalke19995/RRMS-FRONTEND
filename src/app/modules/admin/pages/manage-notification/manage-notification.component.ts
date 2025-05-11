@@ -1,4 +1,9 @@
-import { ChangeDetectorRef, Component, ViewChild, AfterViewInit } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  ViewChild,
+  AfterViewInit,
+} from "@angular/core";
 import {
   CommonModule,
   CurrencyPipe,
@@ -18,7 +23,7 @@ import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSort, MatSortModule } from "@angular/material/sort";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { TranslocoModule } from "@ngneat/transloco";
 import { SharedService } from "app/shared/shared.service";
 import { MatDialog } from "@angular/material/dialog";
@@ -53,7 +58,7 @@ import { DashbaordService } from "../../dashbaord/dashboard.service";
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
-    CommonModule
+    CommonModule,
   ],
   templateUrl: "./manage-notification.component.html",
   styleUrl: "./manage-notification.component.scss",
@@ -64,7 +69,7 @@ export class ManageNotificationComponent implements AfterViewInit {
 
   @ViewChild("sort1") sort1: MatSort;
   @ViewChild("paginator1") paginator1: MatPaginator;
-  
+
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
 
   columns: any[] = [
@@ -79,21 +84,35 @@ export class ManageNotificationComponent implements AfterViewInit {
       property: "created_at",
     },
     { labelen: "Date", labelhi: "Date", property: "message" },
-    { labelen: "classification_name", labelhi: "classification_name", property: "classification_name" },
+    {
+      labelen: "classification_name",
+      labelhi: "classification_name",
+      property: "classification_name",
+    },
     { labelen: "Read Status", labelhi: "Read Status", property: "is_read" },
     { labelen: "Action", labelhi: "Action", property: "action" },
   ];
 
-  displayedColumns: string[] = ["fileName","created_at", "message", "is_read",'classification_name', "action"];
+  displayedColumns: string[] = [
+    "requestedByDepartments",
+    "requestedByDivisions",
+    "recipientDepartments",
+    "recipientDivisions",
+    "created_at",
+    "message",
+    "is_read",
+    "action",
+  ];
   notificationInfo: any;
   constructor(
     private _dialog: MatDialog,
-    private notificationService:NotificationService,
+    private notificationService: NotificationService,
     private sharedService: SharedService,
 
     private cdr: ChangeDetectorRef,
-    private _dashbaordService:DashbaordService,
-        private _snackBar: MatSnackBar
+    private _dashbaordService: DashbaordService,
+    private _snackBar: MatSnackBar,
+    private router: Router
   ) {}
 
   /**
@@ -104,26 +123,25 @@ export class ManageNotificationComponent implements AfterViewInit {
     this.getNotificationsCount();
   }
 
-  
   getNotificationsCount() {
     const divisionID = Number(sessionStorage.getItem("divisionID"));
     this._dashbaordService.getNotificationsCount(divisionID).subscribe({
-        next: (response: any) => {
-          console.log("response Noti",response);
-          this.dataSource = new MatTableDataSource(response);
-          this.setupPagination();
-          this.cdr.detectChanges();
-        },
-        error: (error) => {
-            console.error("Error fetching latest files:", error);
-        },
+      next: (response: any[]) => {
+        const onlyRead = (response || []).filter((n) => n.is_read === false);
+        this.dataSource = new MatTableDataSource(onlyRead);
+        this.setupPagination();
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error("Error fetching latest files:", error);
+      },
     });
   }
 
   getNotificationList() {
-    this.sharedService.getnotificationData$.subscribe((userInfo: any) => {
-      this.notificationInfo = userInfo;
-      console.log(" this.notificationInfo ", this.notificationInfo);
+    this.sharedService.getnotificationData$.subscribe((userInfo: any[]) => {
+      const onlyRead = (userInfo || []).filter((n) => n.is_read === false);
+      this.notificationInfo = onlyRead;
       this.dataSource = new MatTableDataSource(this.notificationInfo);
       this.setupPagination();
       this.cdr.detectChanges();
@@ -140,18 +158,9 @@ export class ManageNotificationComponent implements AfterViewInit {
     });
   }
 
-  approvedRequest(notification: any){
-    const dialogRef = this._dialog.open(ConfirmationDialogComponent, {
-      data: notification,
-      width: "677px",
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      this.getNotificationList();
-      this.getNotificationsCount();
-      this.cdr.detectChanges();
-    });
-
-  }
+goToProcess(row: any) {
+  this.router.navigate(['upload-approval'], { queryParams: { object_id: row.object_id } });
+}
 
   ngAfterViewInit(): void {
     this.setupPagination();
@@ -163,5 +172,19 @@ export class ManageNotificationComponent implements AfterViewInit {
       this.dataSource.sort = this.sort1;
       this.cdr.detectChanges();
     }
+  }
+
+  getDepartmentNames(designationDetail: any): string {
+    if (!designationDetail?.department) return "";
+    return designationDetail.department
+      .map((d: any) => d.departmentName)
+      .join(", ");
+  }
+
+  getDivisionNames(designationDetail: any): string {
+    if (!designationDetail?.division) return "";
+    return designationDetail.division
+      .map((d: any) => d.divisionName)
+      .join(", ");
   }
 }

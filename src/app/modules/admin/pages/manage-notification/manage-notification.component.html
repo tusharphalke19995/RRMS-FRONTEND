@@ -61,16 +61,6 @@
       <table mat-table [dataSource]="dataSource" matSort #sort1="matSort" class="w-full mt-[10px]">
         <!-- ID Column -->
 
-        <ng-container matColumnDef="fileName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">File
-            Name </th>
-          <td mat-cell *matCellDef="let row">
-            <!-- (click)="viewImage(row.file)" -->
-            <mat-icon class="mr-2 align-middle text-primary" matTooltip="View File"
-            >insert_drive_file</mat-icon>
-            {{ row.file?.fileName || 'No File Name' }}
-          </td>
-        </ng-container>
         <!--First Name Column -->
         <ng-container matColumnDef="message">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">
@@ -78,18 +68,54 @@
           <td mat-cell *matCellDef="let row"> {{row.message}} </td>
         </ng-container>
 
-        <ng-container matColumnDef="classification_name">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">
-            Classification Name </th>
-          <td mat-cell *matCellDef="let row"> {{row.file.classification_name}} </td>
+
+
+        <!-- Requested By Department -->
+        <ng-container matColumnDef="requestedByDepartments">
+          <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black">
+            Requested By Departments
+          </th>
+          <td mat-cell *matCellDef="let row">
+            {{ getDepartmentNames(row.requestedBy?.designation_detail) }}
+          </td>
         </ng-container>
 
-        
+        <!-- Requested By Divisions -->
+        <ng-container matColumnDef="requestedByDivisions">
+          <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black">
+            Requested By Divisions
+          </th>
+          <td mat-cell *matCellDef="let row">
+            {{ getDivisionNames(row.requestedBy?.designation_detail) }}
+          </td>
+        </ng-container>
+
+        <!-- Recipient Department -->
+        <ng-container matColumnDef="recipientDepartments">
+          <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black">
+            Recipient Departments
+          </th>
+          <td mat-cell *matCellDef="let row">
+            {{ getDepartmentNames(row.recipient?.designation_detail) }}
+          </td>
+        </ng-container>
+
+        <!-- Recipient Divisions -->
+        <ng-container matColumnDef="recipientDivisions">
+          <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black">
+            Recipient Divisions
+          </th>
+          <td mat-cell *matCellDef="let row">
+            {{ getDivisionNames(row.recipient?.designation_detail) }}
+          </td>
+        </ng-container>
+
+
         <!--Last Name Column -->
         <ng-container matColumnDef="created_at">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">
             Created On </th>
-          <td mat-cell *matCellDef="let row"> {{row.created_at  | date:'dd-MM-yyyy'}} </td>
+          <td mat-cell *matCellDef="let row"> {{row.created_at | date:'dd-MM-yyyy'}} </td>
         </ng-container>
 
         <!-- Division Name Column -->
@@ -98,16 +124,12 @@
             Read </th>
           <td mat-cell *matCellDef="let row">
             <div class="flex justify-center gap-2">
-              <mat-icon
-              [ngClass]="{
+              <mat-icon [ngClass]="{
                 'text-blue-600': !row.is_read,
                 'text-gray-400': row.is_read
-              }"
-              matTooltip="{{ row.is_read ? t('already_read') : t('mark_as_read') }}"
-              *transloco="let t"
-            >
-              {{ row.is_read ? 'done' : 'mark_email_read' }}
-            </mat-icon>     
+              }" matTooltip="{{ row.is_read ? t('already_read') : t('mark_as_read') }}" *transloco="let t">
+                {{ row.is_read ? 'done' : 'mark_email_read' }}
+              </mat-icon>
             </div>
           </td>
         </ng-container>
@@ -118,18 +140,12 @@
           <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black"> Action </th>
           <td mat-cell *matCellDef="let row">
             <div class="flex justify-center gap-2">
-              <button 
-                mat-flat-button
-                class="min-w-[90px] px-6 py-2 rounded-full transition-colors duration-200"
+              <button mat-flat-button class="min-w-[90px] px-6 py-2 rounded-full transition-colors duration-200"
                 [ngClass]="{
                   'bg-primary-600 text-white hover:bg-primary-700': !row.is_read,
                   'bg-gray-300 text-gray-500 cursor-not-allowed': row.is_read
-                }"
-                [disabled]="row.is_read"
-                (click)="approvedRequest(row)" 
-                matTooltip="{{ row.is_read ? t('already_read') : t('perform_action') }}"
-                *transloco="let t"
-              >
+                }" [disabled]="row.is_read" (click)="goToProcess(row)"
+                matTooltip="{{ row.is_read ? t('already_read') : t('perform_action') }}" *transloco="let t">
                 {{ t('action') }}
               </button>
             </div>
@@ -150,7 +166,7 @@
         </mat-paginator>
       </div>
     </div>
-   
+
   </div>
 
   <!-- Buttons -->

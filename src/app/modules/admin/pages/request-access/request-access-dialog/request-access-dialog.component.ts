@@ -11,10 +11,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslocoModule } from '@ngneat/transloco';
 import { ConfirmationDialogComponent } from 'app/modules/admin/pages/manage-notification/confirmation-dialog/confirmation-dialog.component';
 import { NotificationService } from 'app/modules/admin/pages/manage-notification/notification.service';
-import { DashbaordService } from '../../../dashboard.service';
+import { DashbaordService } from 'app/modules/admin/dashbaord/dashboard.service';
 
 @Component({
-  selector: 'app-approve-req-dialog',
+  selector: 'app-request-access-dialog',
   standalone: true,
     imports: [ NgIf,
        CommonModule,
@@ -27,11 +27,11 @@ import { DashbaordService } from '../../../dashboard.service';
            MatSelectModule,
            MatButtonModule,
            TranslocoModule,],
-  templateUrl: './approve-req-dialog.component.html',
-  styleUrl: './approve-req-dialog.component.scss',
+  templateUrl: './request-access-dialog.component.html',
+  styleUrl: './request-access-dialog.component.scss',
      encapsulation: ViewEncapsulation.None
 })
-export class ApproveReqDialogComponent {
+export class RequestDialogComponent {
   approvalReqlForm:FormGroup;
   payloadAppDenied: {  is_approved: boolean; comments: any; };
 

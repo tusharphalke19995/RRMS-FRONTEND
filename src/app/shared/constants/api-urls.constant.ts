@@ -40,5 +40,6 @@ export const apiurls = {
    getMasterDropDown: `${environment.userApiUrl}mdm/lookup`,
    casedataUploadApprovals :`${environment.userApiUrl}casedata/upload-approvals`,
    departmentsAddUpdateDelete:`${environment.userApiUrl}mdm/departments`,
-
+   designationsHierachyAdd:`${environment.userApiUrl}mdm/designation-hierarchy`,
+    uploadApprovalsByID:`${environment.userApiUrl}casedata/upload-approvals`,
 }as const;

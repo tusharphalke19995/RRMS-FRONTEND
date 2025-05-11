@@ -31,6 +31,7 @@ import { UploadedFilesComponent } from "../pages/search-document/uploaded-files/
 import { fuseAnimations } from "@fuse/animations";
 import { SharedService } from "app/shared/shared.service";
 import { SplitTagsPipe } from "app/shared/pipes/splitTags";
+import { MasterService } from "../pages/Master/master.service";
 @Component({
   selector: "app-dashbaord",
   templateUrl: "./dashbaord.component.html",
@@ -77,6 +78,12 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   showAdminBool: boolean;
   divisionID: string;
   showChangeDivision: boolean;
+  divisionDropdown: any[];
+  DivisionIdsUserLogin: [];
+  DepartmentIdsUserLogin: [];
+  departmentDropdown: any[];
+  selectedDepartmentNames: string[] = [];
+  selectedDivisionNames: string[] = [];
   /**
    * Constructor
    */
@@ -87,11 +94,13 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     private authenticationService: AuthService,
     private _searchUserService: SearchUserService,
     private dialog: MatDialog,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private masterService: MasterService
   ) {
     this.authData = this.authenticationService.getAuthData();
-    this.divisionID = sessionStorage.getItem("divisionID");
-    this.checkDesignationObj();
+    this.DivisionIdsUserLogin = this.authData.DivisionIds;
+    this.DepartmentIdsUserLogin = this.authData.DepartmentIds;
+    // this.checkDesignationObj();
   }
 
   // -----------------------------------------------------------------------------------------------------
@@ -107,7 +116,8 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     this.getCurrentData();
     this.getNotificationsCount();
     this.getContentManagerReqForWkFlow();
-    this.getDivisionRoleData();
+    this.getDepartmentsInfo();
+    this.getDivision();
   }
 
   /**
@@ -162,21 +172,22 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     });
   }
 
-  getNotificationsCount() {
-    const divisionID = Number(sessionStorage.getItem("divisionID"));
-    this._dashbaordService.getNotificationsCount(divisionID).subscribe({
-      next: (response: any) => {
-        console.log("response Noti", response);
-        this.finalDataNotifications = response;
-        this.notificationsCount = response.length;
-        console.log("notificationsCount Noti", this.notificationsCount);
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error("Error fetching latest files:", error);
-      },
-    });
-  }
+getNotificationsCount() {
+  const divisionID = Number(sessionStorage.getItem("divisionID"));
+  this._dashbaordService.getNotificationsCount(divisionID).subscribe({
+    next: (response: any[]) => {
+      console.log("response Noti", response);
+      this.finalDataNotifications = response;
+      // Count only unread notifications
+      this.notificationsCount = response.filter(n => !n.is_read).length;
+      console.log("Unread notificationsCount Noti", this.notificationsCount);
+      this.cdr.detectChanges();
+    },
+    error: (error) => {
+      console.error("Error fetching latest files:", error);
+    },
+  });
+}
 
   viewImage(data) {
     const dialogRef = this.dialog.open(UploadedFilesComponent, {
@@ -256,15 +267,6 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     this._router.navigateByUrl("division-selection");
   }
 
-  getDivisionRoleData(): any | null {
-    const divisionId = Number(sessionStorage.getItem("divisionID"));
-    return (
-      this.authData?.DivisionsRoles?.find(
-        (role) => role.division_id === divisionId
-      ) || null
-    );
-  }
-
   checkDesignationObj() {
     if (this.authData.UserID == "1") {
       this.showAdminBool = true;
@@ -288,4 +290,36 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     if (!hashTagString) return [];
     return hashTagString.split(" ").filter((tag) => tag.trim() !== "");
   }
+  
+getDepartmentsInfo() {
+  this.masterService.getDepartments().subscribe({
+    next: (response: any[]) => {
+      this.departmentDropdown = response.filter((res: any) =>
+        this.DepartmentIdsUserLogin.map(Number).includes(Number(res.departmentId))
+      );
+      const selectedDepartmentIds = sessionStorage.getItem("departmentID");
+      const selectedDepartments = this.departmentDropdown.filter((d) =>
+        selectedDepartmentIds.includes((d.departmentId))
+      );
+      this.selectedDepartmentNames = selectedDepartments.map((d) => d.departmentName);
+    },
+    error: (error) => {},
+  });
+}
+
+getDivision() {
+  this.masterService.getDivision(Number(sessionStorage.getItem("divisionID"))).subscribe({
+    next: (response: any[]) => {
+      this.divisionDropdown = response.filter((res: any) =>
+        this.DivisionIdsUserLogin.map(Number).includes(Number(res.divisionId))
+      );
+      const selectedDivisionIds = sessionStorage.getItem("divisionID");
+      const selectedDivisions = this.divisionDropdown.filter((d) =>
+        selectedDivisionIds.includes((d.divisionId))
+      );
+      this.selectedDivisionNames = selectedDivisions.map((d) => d.divisionName);
+    },
+    error: (error) => {},
+  });
+}
 }

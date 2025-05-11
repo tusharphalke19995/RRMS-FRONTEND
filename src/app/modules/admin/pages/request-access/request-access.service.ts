@@ -6,46 +6,21 @@ import { CommonApiCallService } from 'app/shared/services/common-api-call.servic
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 
 @Injectable({providedIn: 'root'})
-export class CaseDataApprovalService
+export class RequestAccessService
 {  constructor(
     private _httpClient: HttpClient,
     private commonApiCallService: CommonApiCallService
   ) {}
 
 
-  markasreadNotificationInfo(data:any) {
-    return this._httpClient
-      .post(apiurls.markasreadNotification,data)
-      .pipe(catchError(this.handleError));
-  }
-
-getCasedataUploadApprovals(data) {
-    return this._httpClient
-      .post(apiurls.casedataUploadApprovals,data)
-      .pipe(catchError(this.handleError));
-  }
-
-  getFilesLatestData() {
-    return this._httpClient
-      .get(apiurls.getFilesLatest)
-      .pipe(catchError(this.handleError));
-  }
-
-  approveNotification(data:any){
-    return this._httpClient
-    .post(apiurls.approveFiles, data,)
-    .pipe(catchError(this.handleError));
-  }
-
-
-getApprovalsByGivenId(id: number) {
-const url = `${apiurls.uploadApprovalsByID}/${id}`; // Construct the full URL with user ID
-return this._httpClient.get(url,{
-    headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    })
-}).pipe(catchError(this.handleError));
+getContentManagerReqData(id:number) {
+  const url = `${apiurls.getContentManagerReq}=${id}`
+  return this._httpClient.get(url, {
+      headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+      })
+  }).pipe(catchError(this.handleError));
 }
 
   /**

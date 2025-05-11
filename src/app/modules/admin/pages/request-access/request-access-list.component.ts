@@ -21,12 +21,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { RouterLink } from '@angular/router';
 import { TranslocoModule } from '@ngneat/transloco';
-import { DashbaordService } from '../../dashboard.service';
-import { ApproveReqDialogComponent } from './approve-req-dialog/approve-req-dialog.component';
 import { MatTabsModule } from '@angular/material/tabs';
+import { RequestDialogComponent } from './request-access-dialog/request-access-dialog.component';
+import { RequestAccessService } from './request-access.service';
 
 @Component({
-  selector: 'app-pending-approval-list',
+  selector: 'app-request-access-list',
   standalone: true,
   imports: [
     NgIf,
@@ -52,10 +52,10 @@ import { MatTabsModule } from '@angular/material/tabs';
     MatSortModule,
     MatTabsModule
   ],
-  templateUrl: './pending-approval-list.component.html',
-  styleUrl: './pending-approval-list.component.scss'
+  templateUrl: './request-access-list.component.html',
+  styleUrl: './request-access-list.component.scss'
 })
-export class PendingApprovalListComponent implements OnInit, AfterViewInit {
+export class RequestAccessListComponent implements OnInit, AfterViewInit {
   searchUserListForm: UntypedFormGroup;
   @ViewChild("addcitizenInformationNgForm") addcitizenInformationNgForm: NgForm;
   formFieldHelpers: string[] = [""];
@@ -121,7 +121,7 @@ export class PendingApprovalListComponent implements OnInit, AfterViewInit {
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: UntypedFormBuilder,
     private _citizeninfoService: SearchDocService,
-    private dashbaordService:DashbaordService
+    private requestAccessService:RequestAccessService
   ) {}
 
   // -----------------------------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ export class PendingApprovalListComponent implements OnInit, AfterViewInit {
 
   getContentManagerReqForWkFlow() {
     const divisionID = Number(sessionStorage.getItem("divisionID"));
-    this.dashbaordService.getContentManagerReqData(divisionID).subscribe({
+    this.requestAccessService.getContentManagerReqData(divisionID).subscribe({
       next: (response: any) => {
         this.pendingReqData = response;
         this.filterTabData();
@@ -159,7 +159,7 @@ export class PendingApprovalListComponent implements OnInit, AfterViewInit {
   }
 
   approvedRequest(notification: any){
-    const dialogRef = this.dialog.open(ApproveReqDialogComponent, {
+    const dialogRef = this.dialog.open(RequestDialogComponent, {
       data: notification,
       width: "677px",
     });

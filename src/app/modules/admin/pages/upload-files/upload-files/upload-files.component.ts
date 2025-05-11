@@ -701,19 +701,16 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     return classification ? classification.value : "Unknown";
   }
 
-  getUserRoleName(): string | null {
-    const userRole = this.authData.DivisionsRoles.find(
-      (role) => role.role_name === "User"
-    );
-    // console.log("userRole",userRole)
-    return userRole ? userRole.role_name : null;
-  }
+  // getUserRoleName(): string | null {
+  //   const userRole = this.authData.DivisionsRoles.find(
+  //     (role) => role.role_name === "User"
+  //   );
+  //   // console.log("userRole",userRole)
+  //   return userRole ? userRole.role_name : null;
+  // }
 
   canRequestAccess(file: any): boolean {
-    const hasUserRole = this.authData.DivisionsRoles.some(
-      (role) => role.role_name === "User"
-    );
-  
+    const hasUserRole = this.authData.Role=== "User";
     if (!hasUserRole) {
       return false;
     }
@@ -765,16 +762,15 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     }
   }
 
-  hasRoleInDivision(...roles: string[]): boolean {
-    const divisionID = JSON.parse(sessionStorage.getItem('divisionID') || 'null');
-    return this.authData.DivisionsRoles.some(
-      (role) => roles.includes(role.role_name) && role.division_id === divisionID
-    );
-  }
 
+hasRoleInDivision(...roles: string[]): boolean {
+  if (roles.includes(this.authData.Role)) {
+    return true;
+  }
+}
   isRestrictedToView(file: any): boolean {
     const classification = file.metadata?.classification_name || file.classification_name;
-    const role = this.getUserRoleName();
+    const role =  this.authData.Role;
     const currentUserId = Number(sessionStorage.getItem('userID'));
     const uploaderUserId = file.uploaded_by || file.metadata?.uploaded_by;
     // Allow access if not confidential or user is uploader

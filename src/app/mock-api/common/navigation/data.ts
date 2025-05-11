@@ -46,10 +46,17 @@ export const defaultNavigation: FuseNavigationItem[] = [
     },
     {
         id   : 'caseApproval',
-        title: 'Case Approval',
+        title: 'Upload Approval',
         type : 'basic',
         icon : 'heroicons_outline:user',
-        link : '/caseData-approval'
+        link : '/upload-approval'
+    },
+    {
+        id   : 'reqAccess',
+        title: 'Request Access',
+        type : 'basic',
+        icon : 'heroicons_outline:user',
+        link : '/request-access'
     },
     {
         id   : 'orgMapping',
@@ -89,6 +96,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 type : 'basic',
                 link : '/manage-master/department',
             },
+              {
+                id   : 'designationHierarchy',
+                title: 'Designation Hierarchy',
+                type : 'basic',
+                link : '/manage-master/designation-hierarchy',
+            },
+           
             {
                 id   : 'caseStatusMng',
                 title: 'Case Status Management',

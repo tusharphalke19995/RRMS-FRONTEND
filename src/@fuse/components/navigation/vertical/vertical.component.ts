@@ -819,19 +819,14 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
 
     setNavigation(): void {
         const isSuperAdmin = this.authData.SuperAdmin;
-        const sessionDivisionId = Number(sessionStorage.getItem('divisionID'));
-        const currentDivisionRole = this.authData.DivisionsRoles.find(
-            role => role.division_id === sessionDivisionId
-        );
-        const currentRole = currentDivisionRole?.role_name || null;
-        const isAdmin = !currentRole || currentRole === "Admin";
+        const currentRole = this.authData.Role;
         this.navigation = this.navigation.filter(item => {
             if (isSuperAdmin) {
-                return ['master', 'orgMapping', 'userMng', 'home', 'revokeApproval','caseApproval'].includes(item.id);
-            } else if (isAdmin) {
-                return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval','caseApproval'].includes(item.id);
+                return ['master', 'orgMapping', 'userMng', 'home', 'revokeApproval','caseApproval','reqAccess'].includes(item.id);
+            } else if ( currentRole ==="Admin") {
+                return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval','caseApproval','reqAccess'].includes(item.id);
             } else if (currentRole === "ContentManager") {
-                return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval','caseApproval'].includes(item.id);
+                return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval','caseApproval','reqAccess'].includes(item.id);
             } else if (currentRole === "User") {
                 return ['searchDocument', 'home', 'uploadDocument','notification','caseApproval'].includes(item.id);
             }
