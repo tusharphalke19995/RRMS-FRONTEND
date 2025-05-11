@@ -38,4 +38,5 @@ export const apiurls = {
    casedataRevoke :`${environment.userApiUrl}casedata/revoke`,
    markasreadNotification :`${environment.userApiUrl}casedata/markasread`,
    getMasterDropDown: `${environment.userApiUrl}mdm/lookup`,
+   casedataUploadApprovals :`${environment.userApiUrl}casedata/upload-approvals`,
 }as const;

@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiurls } from 'app/shared/constants/api-urls.constant';
 import { ErrorResponseModel } from 'app/shared/models/error-model';
@@ -6,16 +6,22 @@ import { CommonApiCallService } from 'app/shared/services/common-api-call.servic
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 
 @Injectable({providedIn: 'root'})
-export class ContentManagementService
+export class CaseDataApprovalService
 {  constructor(
     private _httpClient: HttpClient,
     private commonApiCallService: CommonApiCallService
   ) {}
 
 
-  getFavouritesData() {
+  markasreadNotificationInfo(data:any) {
     return this._httpClient
-      .get(apiurls.getFavourites,)
+      .post(apiurls.markasreadNotification,data)
+      .pipe(catchError(this.handleError));
+  }
+
+getCasedataUploadApprovals(data) {
+    return this._httpClient
+      .get(apiurls.casedataUploadApprovals,data)
       .pipe(catchError(this.handleError));
   }
 
@@ -25,8 +31,12 @@ export class ContentManagementService
       .pipe(catchError(this.handleError));
   }
 
+  approveNotification(data:any){
+    return this._httpClient
+    .post(apiurls.approveFiles, data,)
+    .pipe(catchError(this.handleError));
+  }
 
-  
   /**
    * The error handler.
    * @param err The http error response.

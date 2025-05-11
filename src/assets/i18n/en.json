@@ -87,7 +87,7 @@
   "roleName": "Role Name",
   "divisionName": "Division Name",
   "activeUserList": "Active User List",
-  "approvalList": "Pending Approval List",
+  "approvalList": "Pending Approval",
   "revokeApprovalList": "Revoke Approval List",
   "latestFileList": "Latest File List",
   "favioriesFileList": "Favorites File List",
@@ -116,5 +116,6 @@
    "close":"Close",
    "request":"Request",
    "password":"Password",
-   "fileExtension":"File Extension"
+   "fileExtension":"File Extension",
+   "caseApprovalList": "Case Approval"
 }

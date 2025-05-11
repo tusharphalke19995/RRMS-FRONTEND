@@ -827,13 +827,13 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
         const isAdmin = !currentRole || currentRole === "Admin";
         this.navigation = this.navigation.filter(item => {
             if (isSuperAdmin) {
-                return ['master', 'orgMapping', 'userMng', 'home', 'revokeApproval'].includes(item.id);
+                return ['master', 'orgMapping', 'userMng', 'home', 'revokeApproval','caseApproval'].includes(item.id);
             } else if (isAdmin) {
-                return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval'].includes(item.id);
+                return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval','caseApproval'].includes(item.id);
             } else if (currentRole === "ContentManager") {
-                return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval'].includes(item.id);
+                return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval','caseApproval'].includes(item.id);
             } else if (currentRole === "User") {
-                return ['searchDocument', 'home', 'uploadDocument','notification'].includes(item.id);
+                return ['searchDocument', 'home', 'uploadDocument','notification','caseApproval'].includes(item.id);
             }
             return false;
         });
