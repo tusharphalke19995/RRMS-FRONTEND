@@ -111,7 +111,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     { labelen: "KGID", labelhi: "KGID", property: "kgid" },
     { labelen: "Mobile No", labelhi: "Mobile No", property: "mobileno" },
     { labelen: "Email ID", labelhi: "Email Id", property: "email" },
-    { labelen: "Roles", labelhi: "Roles", property: "roles" },
+    { labelen: "Roles", labelhi: "Roles", property: "designation" },
     // {
     //   labelen: "Action",
     //   labelhi: "Action",
@@ -126,13 +126,15 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     "kgid",
     "mobileno",
     "email",
-    "roles"
+    "role",
+    "designation"
   ];
 
   /**
    * Constructor
    */
   constructor(
+    private changeDetectorRefs: ChangeDetectorRef,
     private _searchUserService: SearchUserService,
     public dialog: MatDialog,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -156,12 +158,13 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     this.getDesignationsDropDownData();
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort1;
-    this.dataSource.paginator = this.paginator1;
 
-    this._changeDetectorRef.detectChanges();
+  ngAfterViewInit() {
+    if (this.dataSource) {
+      this.dataSource.paginator = this.paginator1;
+    }
   }
+
 
   /**
    * On destroy
@@ -221,7 +224,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     this.router.navigateByUrl('/manage-user/user-addUpdate')
   }
 
-  applyFilter(event: Event) {
+applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
 
@@ -239,17 +242,17 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     console.log("Delete user:", row);
   }
 
-  getUserInfo() {
+ getUserInfo() {
     const divisionID = Number(sessionStorage.getItem("divisionID"));
     this._searchUserService.getUserList(divisionID).subscribe({
       next: (response: any) => {
-        this.users = response.map(user => ({
-          ...user,
-          isExpanded: false
-      }));
         this.dataSource = new MatTableDataSource(response);
+        this.dataSource.paginator = this.paginator1; // Ensure paginator is set
+       
       },
-      error: (error) => {},
+      error: (error) => {
+        console.error('Error fetching user data:', error);
+      },
     });
   }
 
@@ -362,4 +365,9 @@ allowOnlyLetters(event: KeyboardEvent): void {
     event.preventDefault();
   }
 }
+
+ getRoleName(roleId: number): string {
+    const role = this.userRoleDropdown.find(r => r.roleId === roleId);
+    return role ? role.roleName : 'Unknown Role';
+  }
 }

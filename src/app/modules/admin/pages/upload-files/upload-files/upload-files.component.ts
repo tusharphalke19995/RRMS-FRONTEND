@@ -771,7 +771,7 @@ hasRoleInDivision(...roles: string[]): boolean {
   isRestrictedToView(file: any): boolean {
     const classification = file.metadata?.classification_name || file.classification_name;
     const role =  this.authData.Role;
-    const currentUserId = Number(sessionStorage.getItem('userID'));
+    const currentUserId =this.authData.UserID;
     const uploaderUserId = file.uploaded_by || file.metadata?.uploaded_by;
     // Allow access if not confidential or user is uploader
     if (classification !== 'Confidential') return false;
