@@ -123,13 +123,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
             }
         ],
     },
-    {
-        id   : 'revokeApproval',
-        title: 'Revoke Approval',
-        type : 'basic',
-        icon : 'heroicons_outline:chart-pie',
-        link : '/revoke-approval'
-    },
+    // {
+    //     id   : '45456',
+    //     title: 'Revoke Approval',
+    //     type : 'basic',
+    //     icon : 'heroicons_outline:chart-pie',
+    //     link : '/revoke-approval'
+    // },
 
 ];
 export const compactNavigation: FuseNavigationItem[] = [

@@ -805,11 +805,11 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
     //     const isAdmin = roles.length === 0 || roles.includes("Admin");
     //     this.navigation = this.navigation.filter(item => {
     //         if (isSuperAdmin) {
-    //             return ['Master', 'orgMapping', 'notification', 'userMng', 'home', 'revokeApproval'].includes(item.id);
+    //             return ['Master', 'orgMapping', 'notification', 'userMng', 'home'].includes(item.id);
     //         } else if (isAdmin) {
-    //            return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval'].includes(item.id);
+    //            return ['searchDocument', 'home', 'uploadDocument', 'notification'].includes(item.id);
     //         } else if (roles.includes("ContentManager")) {
-    //             return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval'].includes(item.id);
+    //             return ['searchDocument', 'home', 'uploadDocument', 'notification'].includes(item.id);
     //         } else if (roles.includes("User")) {
     //             return ['searchDocument', 'home', 'uploadDocument'].includes(item.id);
     //         }
@@ -822,11 +822,11 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
         const currentRole = this.authData.Role;
         this.navigation = this.navigation.filter(item => {
             if (isSuperAdmin) {
-                return ['master', 'orgMapping', 'userMng', 'home', 'revokeApproval','caseApproval','reqAccess'].includes(item.id);
+                return ['master', 'orgMapping', 'userMng', 'home','caseApproval','reqAccess'].includes(item.id);
             } else if ( currentRole ==="Admin") {
-                return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval','caseApproval','reqAccess'].includes(item.id);
+                return ['searchDocument', 'home', 'uploadDocument', 'notification','caseApproval','reqAccess'].includes(item.id);
             } else if (currentRole === "ContentManager") {
-                return ['searchDocument', 'home', 'uploadDocument', 'notification', 'revokeApproval','caseApproval','reqAccess'].includes(item.id);
+                return ['searchDocument', 'home', 'uploadDocument', 'notification','caseApproval','reqAccess'].includes(item.id);
             } else if (currentRole === "User") {
                 return ['searchDocument', 'home', 'uploadDocument','notification','caseApproval'].includes(item.id);
             }

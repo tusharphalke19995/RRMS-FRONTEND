@@ -259,8 +259,7 @@ getNotificationsCount() {
   }
 
   goToPendingApproval() {
-    this.sharedService.setActiveUserData(this.finalDataCaseReqPending);
-    this._router.navigateByUrl("dashboard/pending-approval-list");
+    this._router.navigateByUrl("upload-approval");
   }
 
   goToNotification() {
@@ -300,6 +299,7 @@ getNotificationsCount() {
       this.showChangeDivision = false;
     }
   }
+  
   getHashTags(hashTagString: string): string[] {
     if (!hashTagString) return [];
     return hashTagString.split(" ").filter((tag) => tag.trim() !== "");

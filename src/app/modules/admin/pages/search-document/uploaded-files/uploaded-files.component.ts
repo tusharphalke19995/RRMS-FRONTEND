@@ -48,7 +48,7 @@ export class UploadedFilesComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<UploadedFilesComponent>
   ) {
-    console.log("data",data)
+    console.log("dadsfvta",data)
     this.getCasedataSelected();
     this.getUploadMetaDataFiles();
    
@@ -61,16 +61,17 @@ export class UploadedFilesComponent {
   getCasedataSelected() {
     this.dataService.getCaseData().subscribe((caseData) => {
       this.caseMetaData = caseData;
+      console.log("this.caseMetaData",this.caseMetaData)
     });
   }
   
   getUploadMetaDataFiles(): void {
     let payload = {
-      fileHash: this.data.fileHash || this.data,
+      fileHash: this.data?.file?.fileHash || this.data?.fileHash,
       requested_to: 0,
       comments: "",
       division_id: sessionStorage.getItem('divisionID'),
-      case_id: this.caseMetaData.CaseInfoDetailsId,
+      case_id:  this.data.case_details_id || this.caseMetaData?.CaseInfoDetailsId,
     };
     this._searchDocService.filePreviewData(payload).subscribe({
       next: (res: Blob | null) => {

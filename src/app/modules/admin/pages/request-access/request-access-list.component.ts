@@ -24,6 +24,7 @@ import { TranslocoModule } from '@ngneat/transloco';
 import { MatTabsModule } from '@angular/material/tabs';
 import { RequestDialogComponent } from './request-access-dialog/request-access-dialog.component';
 import { RequestAccessService } from './request-access.service';
+import { UploadedFilesComponent } from '../search-document/uploaded-files/uploaded-files.component';
 
 @Component({
   selector: 'app-request-access-list',
@@ -69,12 +70,16 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
   @ViewChild('pendingSort') pendingSort: MatSort;
   @ViewChild('pendingPaginator') pendingPaginator: MatPaginator;
   @ViewChild('approvedSort') approvedSort: MatSort;
+    @ViewChild('deniedSort') deniedSort: MatSort;
   @ViewChild('approvedPaginator') approvedPaginator: MatPaginator;
+@ViewChild("deniedPaginator") deniedPaginator: MatPaginator;
 
   dataSource: MatTableDataSource<any>;
   selectedTab = 0;
   pendingDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
   approvedDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
+  deniedDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
+
   columns: any[] = [
 
     { labelen: "File Name", labelhi: "File Name", property: "file_name" },
@@ -92,12 +97,14 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
   ];
 
   displayedColumns: string[] = [
-    'file_name', 'comments', 'is_approved', 'requested_by', 'created_at', 'action'
+    'file_name','requested_by','reviewed_by', 'created_at','comments', 'action'
   ];
   displayedColumnsApproval: string[] = [
-    'file_name', 'comments', 'is_approved', 'requested_by', 'created_at','approved_by', 'status'
+    'file_name', 'requested_by','reviewed_by', 'created_at','approved_by','comments', 'status'
   ];
-
+ displayedColumnsDenied: string[] = [
+    'file_name', 'requested_by','reviewed_by', 'created_at','approved_by','comments', 'status'
+  ];
 
   userRoleDropdown: [];
   designationsDropdown: [];
@@ -145,11 +152,15 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
   }
 
   filterTabData() {
-    this.pendingDataSource = new MatTableDataSource(
-      (this.pendingReqData || []).filter((item: any) => !item.is_approved)
+  this.pendingDataSource = new MatTableDataSource(
+     (this.pendingReqData || []).filter((item: any) => item.status === "Pending")
     );
     this.approvedDataSource = new MatTableDataSource(
-      (this.pendingReqData || []).filter((item: any) => item.is_approved)
+     (this.pendingReqData || []).filter((item: any) => item.status === "Approved")
+    );
+    // Optionally, add a deniedDataSource if you want a separate tab for denied requests
+    this.deniedDataSource = new MatTableDataSource(
+     (this.pendingReqData || []).filter((item: any) => item.status === "Denied")
     );
     this.setupPagination();
   }
@@ -176,6 +187,10 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
     if (this.approvedDataSource) {
       this.approvedDataSource.sort = this.approvedSort;
       this.approvedDataSource.paginator = this.approvedPaginator;
+    }
+    if(this.deniedDataSource){
+      this.deniedDataSource.sort=this.deniedSort;
+       this.deniedDataSource.paginator = this.deniedPaginator;
     }
     this._changeDetectorRef.detectChanges();
   }
@@ -218,12 +233,31 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
       if (this.pendingDataSource.paginator) {
         this.pendingDataSource.paginator.firstPage();
       }
-    } else {
+    } else if(this.selectedTab === 1) {
       this.approvedDataSource.filter = filterValue.trim().toLowerCase();
       if (this.approvedDataSource.paginator) {
         this.approvedDataSource.paginator.firstPage();
       }
     }
+    else {
+      this.deniedDataSource.filter = filterValue.trim().toLowerCase();
+      if (this.deniedDataSource.paginator) {
+        this.deniedDataSource.paginator.firstPage();
+      }
+    }
   }
+
+    viewImage(data) {
+        const dialogRef = this.dialog.open(UploadedFilesComponent, {
+          data: data,
+        width: '850px', // or '100vw' for full width
+        maxWidth: '100vw',
+        height: '90vh',
+        panelClass: 'custom-dialog-class'
+      });
+        dialogRef.afterClosed().subscribe((result) => {
+          this._changeDetectorRef.detectChanges();
+        });
+      }
 }
 

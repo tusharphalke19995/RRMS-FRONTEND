@@ -38,19 +38,6 @@
                                     </div>
 
                                 </div>
-
-                                <!-- <div>
-                                    <strong>Departments:</strong>
-                                    <span *ngFor="let data of departmentNames; let last = last">
-                                        {{ data }}<span *ngIf="!last">, </span>
-                                    </span>
-                                </div>
-                                <div>
-                                    <strong>Divisions:</strong>
-                                    <span *ngFor="let name of divisionNames; let last = last">
-                                        {{ name }}<span *ngIf="!last">, </span>
-                                    </span>
-                                </div> -->
                             </ng-container>
 
                         </div>
@@ -84,6 +71,24 @@
 
 
             <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden">
+                <div class="flex items-start justify-between">
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Upload Approval</div>
+                </div>
+                <div class="flex flex-col items-center mt-2">
+                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-green-500">
+                        {{ pendingApprovalCount || 0 }} <!-- Replace with actual count -->
+                    </div>
+                    <div class="flex cursor-pointer" (click)="goToPendingApproval()">
+                        <a class="inline-flex items-center -ml-1.5 text-green-500  font-medium">
+                            <span class="ml-1">Upload Approval</span>
+                            <mat-icon class="icon-size-5 text-green-500"
+                                [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+             <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden">
                 <div class="flex items-start justify-between">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Notifications</div>
                 </div>

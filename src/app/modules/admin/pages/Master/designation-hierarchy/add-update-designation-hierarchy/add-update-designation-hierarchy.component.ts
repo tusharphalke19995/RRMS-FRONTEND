@@ -194,25 +194,6 @@ dataPatch() {
   }
 }
 
-  // filterDesignationParent(event: any): void {
-  //   const searchText = event.target.value.toLowerCase().trim();
-
-  //   if (this.designationsParentSearchTimeout) {
-  //     clearTimeout(this.designationsParentSearchTimeout);
-  //   }
-
-  //   this.designationsParentSearchTimeout = setTimeout(() => {
-  //     if (!searchText) {
-  //       this.filterDesignationsParent = [...this.designationsParentDropdown];
-  //     } else {
-  //       this.filterDesignationsParent = this.designationsParentDropdown.filter((role) => {
-  //         const roleName = (role.departmentName || "").toLowerCase();
-  //         return roleName.includes(searchText);
-  //       });
-  //     }
-  //   }, 300);
-  // }
-
   filterDesignationParent(event: any): void {
   const searchText = event.target.value.toLowerCase().trim();
 

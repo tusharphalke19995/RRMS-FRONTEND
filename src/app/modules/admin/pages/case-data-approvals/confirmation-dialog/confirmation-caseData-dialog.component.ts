@@ -92,7 +92,7 @@ onApprove(status: string): void {
         panelClass: ["success-snackbar"],
       });
       this.dialogRef.close(true);
-      this.markAsRead();
+      // this.markAsRead();
     },
     error: (error) => {
       this._snackBar.open(error.message || "Error processing request", "Close", {

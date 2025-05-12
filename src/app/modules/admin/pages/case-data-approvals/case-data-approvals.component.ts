@@ -44,6 +44,7 @@ import { MatTabsModule } from "@angular/material/tabs";
 import { CaseDataApprovalService } from "./case-data-approvals.service";
 import { ConfirmationDialogCaseDataApprovalComponent } from "./confirmation-dialog/confirmation-caseData-dialog.component";
 import { AuthService } from "app/core/auth/auth.service";
+import { UploadedFilesComponent } from "../search-document/uploaded-files/uploaded-files.component";
 
 @Component({
   selector: "app-case-data-approval",
@@ -83,17 +84,20 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   alert: { type: string; message: string };
   divisionDropdown = [];
-objectId: number;
-  authData :any;
+  objectId: number;
+  authData: any;
   @ViewChild("pendingSort") pendingSort: MatSort;
   @ViewChild("pendingPaginator") pendingPaginator: MatPaginator;
   @ViewChild("approvedSort") approvedSort: MatSort;
+   @ViewChild("deniedSort") deniedSort: MatSort;
   @ViewChild("approvedPaginator") approvedPaginator: MatPaginator;
+@ViewChild("deniedPaginator") deniedPaginator: MatPaginator;
 
   dataSource: MatTableDataSource<any>;
   selectedTab = 0;
   pendingDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
   approvedDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
+  deniedDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
   columns: any[] = [
     { labelen: "Case No", labelhi: "Case No", property: "case_no" },
     { labelen: "File Name", labelhi: "File Name", property: "file_name" },
@@ -112,12 +116,12 @@ objectId: number;
   ];
 
   displayedColumns: string[] = [
-    "case_no",
-    "file_name",
-    "requested_by_full_name",
-    "created_at",
     "division_name",
-    "is_approved"
+    "file_name",
+    "case_no",
+    "requested_by_full_name",
+    "reviewed__by_full_name",
+    "created_at",
   ];
 
   columnsApproval: any[] = [
@@ -138,19 +142,30 @@ objectId: number;
   ];
 
   displayedColumnsApproval: string[] = [
-    "case_no",
-    "file_name",
-    "requested_by_full_name",
-    "created_at",
     "division_name",
+    "file_name",
+    "case_no",
+    "requested_by_full_name",
+    "reviewed__by_full_name",
+    "created_at",
     "comments",
-    "is_approved",
+  ];
+
+
+  displayedColumnsDenied: string[] = [
+    "division_name",
+    "file_name",
+    "case_no",
+    "requested_by_full_name",
+    "reviewed__by_full_name",
+    "created_at",
+    "comments",
   ];
 
   userRoleDropdown: [];
   designationsDropdown: [];
   pendingReqData: any[] = [];
-  checkActionBool:boolean;
+  checkActionBool: boolean;
   /**
    * Constructor
    */
@@ -159,7 +174,7 @@ objectId: number;
     private _searchUserService: SearchUserService,
     public dialog: MatDialog,
     private route: ActivatedRoute,
-    private authServcie:AuthService,
+    private authServcie: AuthService,
     private sharedService: SharedService,
     private _masterService: MasterService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -175,25 +190,24 @@ objectId: number;
   /**
    * On init
    */
-ngOnInit(): void {
-  this.authData = this.authServcie.getAuthData();
-  this.checkUser();
+  ngOnInit(): void {
+    this.authData = this.authServcie.getAuthData();
+    this.checkUser();
 
-  this.route.queryParams.subscribe(params => {
-    if (params['object_id']) {
-      this.objectId = params['object_id'];
-      this.getApprovalsByGivenIdByNotification(this.objectId);
-    } else {
-      this.getCasedataUploadApprovalsData();
-    }
-  });
-}
+    this.route.queryParams.subscribe((params) => {
+      if (params["object_id"]) {
+        this.objectId = params["object_id"];
+        this.getApprovalsByGivenIdByNotification(this.objectId);
+      } else {
+        this.getCasedataUploadApprovalsData();
+      }
+    });
+  }
 
-
-   getApprovalsByGivenIdByNotification(id) {
+  getApprovalsByGivenIdByNotification(id) {
     this.caseDataApprovalService.getApprovalsByGivenId(id).subscribe({
       next: (response: any) => {
-          this.pendingReqData = Array.isArray(response) ? response : [response]
+        this.pendingReqData = Array.isArray(response) ? response : [response];
 
         this.filterTabData();
       },
@@ -224,22 +238,30 @@ ngOnInit(): void {
     const updatedData = (this.pendingReqData || []).map((item: any) => ({
       ...item,
       requested_by_full_name: `${item.requested_by_first_name} ${item.requested_by_last_name}`,
+      reviewed__by_full_name: `${item.reviewed_by_first_name} ${item.reviewed_by_last_name}`,
     }));
 
     this.pendingDataSource = new MatTableDataSource(
-      updatedData.filter((item: any) => !item.is_approved)
+      updatedData.filter((item: any) => item.status === "PENDING")
     );
     this.approvedDataSource = new MatTableDataSource(
-      updatedData.filter((item: any) => item.is_approved)
+      updatedData.filter((item: any) => item.status === "APPROVED")
+    );
+    // Optionally, add a deniedDataSource if you want a separate tab for denied requests
+    this.deniedDataSource = new MatTableDataSource(
+      updatedData.filter((item: any) => item.status === "DENIED")
     );
     this.setupPagination();
   }
 
   approvedRequest(notification: any) {
-    const dialogRef = this.dialog.open(ConfirmationDialogCaseDataApprovalComponent, {
-      data: notification,
-      width: "677px",
-    });
+    const dialogRef = this.dialog.open(
+      ConfirmationDialogCaseDataApprovalComponent,
+      {
+        data: notification,
+        width: "677px",
+      }
+    );
     dialogRef.afterClosed().subscribe((result) => {
       this.getCasedataUploadApprovalsData();
     });
@@ -257,6 +279,10 @@ ngOnInit(): void {
     if (this.approvedDataSource) {
       this.approvedDataSource.sort = this.approvedSort;
       this.approvedDataSource.paginator = this.approvedPaginator;
+    }
+     if (this.deniedDataSource) {
+      this.deniedDataSource.sort = this.deniedSort;
+      this.deniedDataSource.paginator = this.deniedPaginator;
     }
     this._changeDetectorRef.detectChanges();
   }
@@ -299,19 +325,38 @@ ngOnInit(): void {
       if (this.pendingDataSource.paginator) {
         this.pendingDataSource.paginator.firstPage();
       }
-    } else {
+    } else if(this.selectedTab === 1) {
       this.approvedDataSource.filter = filterValue.trim().toLowerCase();
       if (this.approvedDataSource.paginator) {
         this.approvedDataSource.paginator.firstPage();
       }
     }
+    else {
+      this.deniedDataSource.filter = filterValue.trim().toLowerCase();
+      if (this.deniedDataSource.paginator) {
+        this.deniedDataSource.paginator.firstPage();
+      }
+    }
   }
 
- checkUser() {
-    const isUser = this.authData.Role
-    if (isUser !="User") {
-      this.displayedColumns.push('action');
+  checkUser() {
+    const isUser = this.authData.Role;
+    if (isUser != "User") {
+      this.displayedColumns.push("action");
     }
-    console.log('isUser', isUser);
+    console.log("isUser", isUser);
+  }
+
+  viewImage(data) {
+    const dialogRef = this.dialog.open(UploadedFilesComponent, {
+      data: data,
+      width: "850px", // or '100vw' for full width
+      maxWidth: "100vw",
+      height: "90vh",
+      panelClass: "custom-dialog-class",
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      this._changeDetectorRef.detectChanges();
+    });
   }
 }
