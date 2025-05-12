@@ -97,10 +97,20 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     private sharedService: SharedService,
     private masterService: MasterService
   ) {
-    this.authData = this.authenticationService.getAuthData();
-    this.DivisionIdsUserLogin = this.authData.DivisionIds;
-    this.DepartmentIdsUserLogin = this.authData.DepartmentIds;
-    // this.checkDesignationObj();
+   this.extractDivisionAndDepartmentIds();
+  }
+
+
+  extractDivisionAndDepartmentIds(): void {
+     this.authData = this.authenticationService.getAuthData();
+    console.log("authData:", this.authData);
+
+    // Extract division and department IDs
+    this.DivisionIdsUserLogin = this.authData.Divisions.flatMap(division => division.divisionIds);
+    this.DepartmentIdsUserLogin = this.authData.Divisions.flatMap(division => division.departmentIds);
+
+    console.log("DivisionIdsUserLogin:", this.DivisionIdsUserLogin);
+    console.log("DepartmentIdsUserLogin:", this.DepartmentIdsUserLogin);
   }
 
   // -----------------------------------------------------------------------------------------------------
@@ -118,6 +128,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     this.getContentManagerReqForWkFlow();
     this.getDepartmentsInfo();
     this.getDivision();
+    this.checkDesignationObj();
   }
 
   /**
@@ -225,8 +236,11 @@ getNotificationsCount() {
   }
 
   getContentManagerReqForWkFlow() {
-    const divisionID = Number(sessionStorage.getItem("divisionID"));
-    this._dashbaordService.getContentManagerReqData(divisionID).subscribe({
+    let payload={
+       division_id : Number(sessionStorage.getItem("divisionID")),
+        department_id: Number(sessionStorage.getItem("departmentID"))
+    }
+    this._dashbaordService.getContentManagerReqData(payload).subscribe({
       next: (response: any) => {
         this.finalDataCaseReqPending = response;
         this.pendingApprovalCount = response.length;
@@ -268,17 +282,17 @@ getNotificationsCount() {
   }
 
   checkDesignationObj() {
-    if (this.authData.UserID == "1") {
+    if (this.authData.SuperAdmin == true) {
       this.showAdminBool = true;
     }
-    this.divisionsRoles = this.authenticationService.getAuthData();
-    this.divisionsRoles.DivisionsRoles.forEach((element) => {
-      if (element.role_name === "Admin") {
-        this.showAdminBool = true;
-      } else {
-        this.showAdminBool = false;
-      }
-    });
+    // this.divisionsRoles = this.authenticationService.getAuthData();
+    // this.divisionsRoles.DivisionsRoles.forEach((element) => {
+    //   if (element.role_name === "Admin") {
+    //     this.showAdminBool = true;
+    //   } else {
+    //     this.showAdminBool = false;
+    //   }
+    // });
     const rolesLength = this.divisionsRoles.DivisionsRoles.length;
     if (rolesLength > 1) {
       this.showChangeDivision = true;

@@ -75,12 +75,20 @@ export class DivisionInfoComponent implements OnInit {
     private _router: Router,
     private masterService: MasterService
   ) {
-    this.authData = this._authService.getAuthData();
-    console.log("this.authData.", this.authData);
-    this.DivisionIdsUserLogin = this.authData.DivisionIds;
-    this.DepartmentIdsUserLogin = this.authData.DepartmentIds;
-    console.log("this.DivisionIdsUserLogin", this.DivisionIdsUserLogin);
-    console.log("this.DepartmentIdsUserLogin", this.DepartmentIdsUserLogin);
+      this.extractDivisionAndDepartmentIds();
+  }
+
+
+   extractDivisionAndDepartmentIds(): void {
+     this.authData = this._authService.getAuthData();
+    console.log("authData:", this.authData);
+
+    // Extract division and department IDs
+    this.DivisionIdsUserLogin = this.authData.Divisions.flatMap(division => division.divisionIds);
+    this.DepartmentIdsUserLogin = this.authData.Divisions.flatMap(division => division.departmentIds);
+
+    console.log("DivisionIdsUserLogin:", this.DivisionIdsUserLogin);
+    console.log("DepartmentIdsUserLogin:", this.DepartmentIdsUserLogin);
   }
 
   // -----------------------------------------------------------------------------------------------------

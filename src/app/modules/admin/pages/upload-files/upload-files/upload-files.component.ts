@@ -178,6 +178,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   // canEdit: boolean = false;
   // canDelete: boolean = false;
   selectedIndexes = new Set<number>();
+  userLoginId: any;
   // fileStageDropDown=[{value:"Enquiry",fileStageName:"Enquiry"},
   //   {value:"I/O",fileStageName:"I/O"},
   //   {value:"Crime",fileStageName:"Crime"}
@@ -709,21 +710,21 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   //   return userRole ? userRole.role_name : null;
   // }
 
-  canRequestAccess(file: any): boolean {
-    const hasUserRole = this.authData.Role=== "User";
-    if (!hasUserRole) {
-      return false;
-    }
-  
-    const classification = file.metadata?.classification_name || file.classification_name;
-  
-    return (
-      classification === "Confidential" &&
-      !file.is_request_raised &&
-      !file.is_access_request_approved &&
-      file.uploaded_by !== this.finalUserID
-    );
-  }
+  // canRequestAccess(file: any): boolean {
+  //   const hasUserRole = this.authData.Role=== "User";
+  //   if (!hasUserRole) {
+  //     return false;
+  //   }
+  //    const classification = this.getFileClassificationNameById(file.classification);
+  //    console.log("classification",)
+  //   return (
+  //     classification === "Confidential" &&
+  //     !file.is_request_raised &&
+  //     !file.is_access_request_approved &&
+  //     file.uploaded_by !== this.finalUserID
+    
+  //   );
+  // }
   
   
 
@@ -769,17 +770,13 @@ hasRoleInDivision(...roles: string[]): boolean {
   }
 }
   isRestrictedToView(file: any): boolean {
-    const classification = file.metadata?.classification_name || file.classification_name;
+
+    const classification = this.getFileClassificationNameById(file.classification);
     const role =  this.authData.Role;
-    const currentUserId =this.authData.UserID;
+    const currentUserId =this.finalUserID;
     const uploaderUserId = file.uploaded_by || file.metadata?.uploaded_by;
-    // Allow access if not confidential or user is uploader
     if (classification !== 'Confidential') return false;
-  
-    // Allow uploader to view their own confidential files
     if (currentUserId === uploaderUserId) return false;
-  
-    // Restrict if User, not uploader, and access is not approved
     return role === 'User' && !file.is_access_request_approved;
   }
 
@@ -806,5 +803,53 @@ hasRoleInDivision(...roles: string[]): boolean {
     this._changeDetectorRef.detectChanges();
   }
 
+canRequestAccess(file: any): boolean {
+  const hasUserRole = this.authData.Role === "User";
+  if (!hasUserRole) {
+    return false;
+  }
+  const classification = this.getFileClassificationNameById(file.classification);
+  // Only allow request if not already raised or approved, and not uploader
+  return (
+    classification === "Confidential" &&
+    !file.is_request_raised &&
+    !file.is_access_request_approved &&
+    file.uploaded_by !== this.finalUserID
+  );
+}
+
+getAccessStatus(file: any): string {
+  const classification = this.getFileClassificationNameById(file.classification);
+
+  // Only show access status for Confidential files
+  if (classification !== "Confidential") {
+    return "";
+  }
+  if (file.uploaded_by === this.finalUserID) {
+    return "";
+  }
+
+  // Show "Request Sent" if a request is raised and file is approved, but access is not approved
+  if (file.is_request_raised && file.is_approved && !file.is_access_request_approved) {
+    return "Request Sent";
+  }
+  // Show "Request Sent" if access is approved but file is not yet approved and request is not raised
+  if (file.is_access_request_approved && !file.is_approved && !file.is_request_raised) {
+    return "Request Sent";
+  }
+  // Show "Already Raised" if request is raised, not approved, and file is not approved
+  if (file.is_request_raised && !file.is_access_request_approved && !file.is_approved) {
+    return "Already Raised";
+  }
+  // Show "Request Access" if eligible
+  if (this.canRequestAccess(file)) {
+    return "Request Access";
+  }
+  // Show "Access Approved" if file is approved
+  if (file.is_approved && file.is_access_request_approved) {
+    return "Access Approved";
+  }
+  return "";
+}
   
 }

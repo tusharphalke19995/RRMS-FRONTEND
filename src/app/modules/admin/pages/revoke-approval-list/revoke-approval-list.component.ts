@@ -135,8 +135,11 @@ export class RevokeApprovalListComponent implements OnInit, AfterViewInit {
   }
 
   getContentManagerReqForWkFlow() {
-    const divisionID = Number(sessionStorage.getItem("divisionID"));
-    this.dashbaordService.getContentManagerReqData(divisionID).subscribe({
+   let payload={
+       division_id : Number(sessionStorage.getItem("divisionID")),
+        department_id: Number(sessionStorage.getItem("departmentID"))
+    }
+    this.dashbaordService.getContentManagerReqData(payload).subscribe({
       next: (response: any) => {
         this.pendingReqData = response;
         this.filterTabData();

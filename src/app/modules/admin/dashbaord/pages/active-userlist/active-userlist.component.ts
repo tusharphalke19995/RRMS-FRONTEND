@@ -80,7 +80,7 @@ export class ActiveUserlistComponent implements OnInit, AfterViewInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   alert: { type: string; message: string };
   divisionDropdown = [];
-
+ userRoleDropdown = [];
   @ViewChild("sort1") sort1: MatSort;
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
@@ -104,9 +104,10 @@ export class ActiveUserlistComponent implements OnInit, AfterViewInit {
     "email",
     "mobileno",
     "kgid",
-   "roles",
+   "role",
+   "designation"
   ];
-  userRoleDropdown: [];
+
   designationsDropdown: [];
   activeUserData: any;
   /**
@@ -132,6 +133,7 @@ export class ActiveUserlistComponent implements OnInit, AfterViewInit {
    */
   ngOnInit(): void {
     this.getActiveUserList();
+    this.getUserRoleDropdown();
   }
 
   getActiveUserList() {
@@ -182,6 +184,25 @@ export class ActiveUserlistComponent implements OnInit, AfterViewInit {
    */
   trackByFn(index: number, item: any): any {
     return item.id || index;
+  }
+
+  getUserRoleDropdown() {
+    const divisionID = Number(sessionStorage.getItem('divisionID'));
+    this._searchUserService.getUserRole(divisionID).subscribe({
+      next: (response: any) => {
+        if (response) {
+          this.userRoleDropdown = response.responseData;
+          
+        }
+      },
+      error: (error) => {},
+    });
+  }
+
+
+   getRoleName(roleId: number): string {
+    const role = this.userRoleDropdown.find(r => r.roleId === roleId);
+    return role ? role.roleName : 'Unknown Role';
   }
 
   applyFilter(event: Event) {

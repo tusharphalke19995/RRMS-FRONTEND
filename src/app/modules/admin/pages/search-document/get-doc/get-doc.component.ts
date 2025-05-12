@@ -104,7 +104,7 @@ export class GetDocComponent {
     this.getCasedataSelected();
     this.getMasterDropDown()
     this.getFilesCheck();
-    this.finalUserID=Number(sessionStorage.getItem('userID'))
+    this.finalUserID =  this.authData.UserID;
   }
 
   getFilesWithMetadataSelected() {

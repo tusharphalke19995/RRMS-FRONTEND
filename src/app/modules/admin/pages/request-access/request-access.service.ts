@@ -13,9 +13,9 @@ export class RequestAccessService
   ) {}
 
 
-getContentManagerReqData(id:number) {
-  const url = `${apiurls.getContentManagerReq}=${id}`
-  return this._httpClient.get(url, {
+getContentManagerReqData(data:any) {
+  const url = `${apiurls.getContentManagerReq}`
+  return this._httpClient.post(url,data,{
       headers: new HttpHeaders({
           'Content-Type': 'application/json',
           'Accept': 'application/json'

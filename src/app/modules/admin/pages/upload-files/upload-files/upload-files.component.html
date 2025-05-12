@@ -83,9 +83,12 @@
               <button *transloco="let t" mat-flat-button [color]="'primary'" class="min-w-[90px]"
                 (click)="getAccessModalUser(file)">
                 <mat-icon class="icon-size-5 mr-2" [svgIcon]="'heroicons_solid:plus'"></mat-icon>
-                {{t('reqAccess')}}
+              <span>{{ getAccessStatus(file) }}</span>
               </button>
             </div>
+            <div *ngIf="!canRequestAccess(file)">
+  <span>{{ getAccessStatus(file) }}</span>
+</div>
             <button mat-icon-button color="primary" (click)="openSelectedFileModal(file)" type="button">
               <mat-icon>edit</mat-icon>
             </button>

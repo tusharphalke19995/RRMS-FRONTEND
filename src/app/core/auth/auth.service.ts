@@ -14,7 +14,8 @@ export interface UserModel {
     DivisionsRoles:[],
     SuperAdmin:boolean,
     DivisionIds:[],
-    DepartmentIds:[]
+    DepartmentIds:[],
+    Divisions:[]
   }
 @Injectable({providedIn: 'root'})
 export class AuthService
@@ -192,7 +193,8 @@ export class AuthService
                 DivisionsRoles:decodedToken.divisions_roles,
                 SuperAdmin:decodedToken.is_superadmin,
                 DivisionIds:decodedToken.divisionIds,
-                DepartmentIds:decodedToken.departmentIds
+                DepartmentIds:decodedToken.departmentIds,
+                Divisions:decodedToken.divisions
             };
             return authData; 
         }

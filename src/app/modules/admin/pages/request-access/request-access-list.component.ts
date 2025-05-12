@@ -50,6 +50,7 @@ import { RequestAccessService } from './request-access.service';
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    CommonModule,
     MatTabsModule
   ],
   templateUrl: './request-access-list.component.html',
@@ -83,14 +84,6 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
     { labelen: "Action", labelhi: "Action", property: "action" }
   ];
 
-  displayedColumns: string[] = [
-    "file_name",
-    "created_at",
-    "comments",
-    "is_approved",
-    "action"
-  ];
-
   columnsApproval: any[] = [
     { labelen: "File Name", labelhi: "File Name", property: "file_name" },
     { labelen: "Created At", labelhi: "Created At", property: "created_at" },
@@ -98,11 +91,11 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
     { labelen: "Is approved", labelhi: "Is Approved", property: "is_approved" },
   ];
 
+  displayedColumns: string[] = [
+    'file_name', 'comments', 'is_approved', 'requested_by', 'created_at', 'action'
+  ];
   displayedColumnsApproval: string[] = [
-    "file_name",
-    "created_at",
-    "comments",
-    "is_approved"
+    'file_name', 'comments', 'is_approved', 'requested_by', 'created_at','approved_by', 'status'
   ];
 
 
@@ -136,8 +129,11 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
   }
 
   getContentManagerReqForWkFlow() {
-    const divisionID = Number(sessionStorage.getItem("divisionID"));
-    this.requestAccessService.getContentManagerReqData(divisionID).subscribe({
+    let payload={
+       division_id : Number(sessionStorage.getItem("divisionID")),
+        department_id: Number(sessionStorage.getItem("departmentID"))
+    }
+    this.requestAccessService.getContentManagerReqData(payload).subscribe({
       next: (response: any) => {
         this.pendingReqData = response;
         this.filterTabData();

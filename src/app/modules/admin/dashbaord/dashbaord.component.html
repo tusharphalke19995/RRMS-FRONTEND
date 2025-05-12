@@ -18,24 +18,27 @@
                                         class="text-xl md:text-2xl font-semibold tracking-tight leading-7 md:leading-snug">
                                         {{ t('welcome-back') }}, {{ authData.UserName }}!
                                     </h3>
+                                    <div *ngIf="!showAdminBool">
 
-                                    <p class="text-md md:text-lg text-gray-600">
-                                        <strong>Role:</strong> {{ authData.Role }}
-                                    </p>
+                                        <p class="text-md md:text-lg text-gray-600">
+                                            <strong>Role:</strong> {{ authData.Role }}
+                                        </p>
+                                        <div>
+                                            <strong>Departments:</strong>
+                                            <span *ngFor="let name of selectedDepartmentNames; let last = last">
+                                                {{ name }}<span *ngIf="!last">, </span>
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <strong>Divisions:</strong>
+                                            <span *ngFor="let name of selectedDivisionNames; let last = last">
+                                                {{ name }}<span *ngIf="!last">, </span>
+                                            </span>
+                                        </div>
+                                    </div>
 
                                 </div>
-                                <div>
-                                    <strong>Departments:</strong>
-                                    <span *ngFor="let name of selectedDepartmentNames; let last = last">
-                                        {{ name }}<span *ngIf="!last">, </span>
-                                    </span>
-                                </div>
-                                <div>
-                                    <strong>Divisions:</strong>
-                                    <span *ngFor="let name of selectedDivisionNames; let last = last">
-                                        {{ name }}<span *ngIf="!last">, </span>
-                                    </span>
-                                </div>
+
                                 <!-- <div>
                                     <strong>Departments:</strong>
                                     <span *ngFor="let data of departmentNames; let last = last">
@@ -79,7 +82,7 @@
                 </div>
             </div>
 
-        
+
             <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden">
                 <div class="flex items-start justify-between">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Notifications</div>
