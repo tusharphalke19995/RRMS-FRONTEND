@@ -32,6 +32,7 @@ import { fuseAnimations } from "@fuse/animations";
 import { SharedService } from "app/shared/shared.service";
 import { SplitTagsPipe } from "app/shared/pipes/splitTags";
 import { MasterService } from "../pages/Master/master.service";
+import { CaseDataApprovalService } from "../pages/case-data-approvals/case-data-approvals.service";
 @Component({
   selector: "app-dashbaord",
   templateUrl: "./dashbaord.component.html",
@@ -74,6 +75,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   notificationsCount: number = 0;
   finalDataNotifications: any;
   finalDataCaseReqPending: any;
+    finalDataUpladReqPending: any;
   divisionsRoles: any;
   showAdminBool: boolean;
   divisionID: string;
@@ -84,6 +86,8 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   departmentDropdown: any[];
   selectedDepartmentNames: string[] = [];
   selectedDivisionNames: string[] = [];
+  pendingReqAccessCount: any;
+  pendingUploadReqCount:number;
   /**
    * Constructor
    */
@@ -91,6 +95,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private _dashbaordService: DashbaordService,
     private _router: Router,
+      private caseDataApprovalService: CaseDataApprovalService,
     private authenticationService: AuthService,
     private _searchUserService: SearchUserService,
     private dialog: MatDialog,
@@ -129,6 +134,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     this.getDepartmentsInfo();
     this.getDivision();
     this.checkDesignationObj();
+    this.getCasedataUploadApprovalsData();
   }
 
   /**
@@ -224,7 +230,7 @@ getNotificationsCount() {
     this._dashbaordService.getCurrentUsers().subscribe({
       next: (response: any) => {
         this.currentUserData = response;
-        this.pendingApprovalCount = response.pendingApprovalCount;
+       
 
         console.log("currentUserData:", this.currentUserData);
         this.cdr.detectChanges();
@@ -242,8 +248,10 @@ getNotificationsCount() {
     }
     this._dashbaordService.getContentManagerReqData(payload).subscribe({
       next: (response: any) => {
-        this.finalDataCaseReqPending = response;
-        this.pendingApprovalCount = response.length;
+        this.finalDataCaseReqPending = response.filter((a=>a.status==="pending"))
+        
+        this.pendingReqAccessCount = this.finalDataCaseReqPending.length;
+
         this.cdr.detectChanges();
       },
       error: (error) => {
@@ -258,7 +266,11 @@ getNotificationsCount() {
     this._router.navigateByUrl("dashboard/active-user-list");
   }
 
-  goToPendingApproval() {
+  goToPendingReqAccess() {
+    this._router.navigateByUrl("request-access");
+  }
+
+    goToUploadReqAccess() {
     this._router.navigateByUrl("upload-approval");
   }
 
@@ -336,4 +348,23 @@ getDivision() {
     error: (error) => {},
   });
 }
+
+  getCasedataUploadApprovalsData() {
+    let payLoad = {
+      division_id: Number(sessionStorage.getItem("divisionID")),
+      department_id: Number(sessionStorage.getItem("departmentID")),
+    };
+    this.caseDataApprovalService.getCasedataUploadApprovals(payLoad).subscribe({
+      next: (response: any) => {
+        this.finalDataUpladReqPending = response.filter((a=>a.status=="PENDING"))
+        
+        this.pendingUploadReqCount = this.finalDataUpladReqPending.length;
+
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error("Error fetching current users:", error);
+      },
+    });
+  }
 }

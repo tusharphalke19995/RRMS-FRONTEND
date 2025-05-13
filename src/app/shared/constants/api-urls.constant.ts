@@ -44,5 +44,6 @@ export const apiurls = {
     uploadApprovalsByID:`${environment.userApiUrl}casedata/upload-approvals`,
     sendReminder: (id: number | string) => `${environment.userApiUrl}casedata/requests/${id}/send-reminder`,
   withdrawRequest: (id: number | string) => `${environment.userApiUrl}casedata/withdraw-access-requests/${id}`,
-
+ sendReminderPendingApproval: (id: number | string) => `${environment.userApiUrl}casedata/upload-approval/${id}/send-reminder`,
+  withdrawPendingApproval: (id: number | string) => `${environment.userApiUrl}casedata/withdraw-upload-approval/${id}`,
 }as const;

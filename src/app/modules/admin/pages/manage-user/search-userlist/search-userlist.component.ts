@@ -121,8 +121,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   ];
 
   displayedColumns: string[] = [
-    "first_name",
-    "last_name",
+    "full_name",
     "kgid",
     "mobileno",
     "email",

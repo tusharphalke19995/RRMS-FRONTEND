@@ -45,6 +45,7 @@ import { CaseDataApprovalService } from "./case-data-approvals.service";
 import { ConfirmationDialogCaseDataApprovalComponent } from "./confirmation-dialog/confirmation-caseData-dialog.component";
 import { AuthService } from "app/core/auth/auth.service";
 import { UploadedFilesComponent } from "../search-document/uploaded-files/uploaded-files.component";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @Component({
   selector: "app-case-data-approval",
@@ -72,6 +73,7 @@ import { UploadedFilesComponent } from "../search-document/uploaded-files/upload
     MatPaginatorModule,
     MatSortModule,
     MatTabsModule,
+    MatTooltipModule
   ],
   templateUrl: "./case-data-approvals.component.html",
 })
@@ -121,7 +123,8 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
     "case_no",
     "requested_by_full_name",
     "reviewed__by_full_name",
-    "created_at",
+     "created_at",
+    "action",
   ];
 
   columnsApproval: any[] = [
@@ -192,7 +195,6 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
    */
   ngOnInit(): void {
     this.authData = this.authServcie.getAuthData();
-    this.checkUser();
 
     this.route.queryParams.subscribe((params) => {
       if (params["object_id"]) {
@@ -339,13 +341,6 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  checkUser() {
-    const isUser = this.authData.Role;
-    if (isUser != "User") {
-      this.displayedColumns.push("action");
-    }
-    console.log("isUser", isUser);
-  }
 
   viewImage(data) {
     const dialogRef = this.dialog.open(UploadedFilesComponent, {
@@ -358,5 +353,51 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe((result) => {
       this._changeDetectorRef.detectChanges();
     });
+  }
+
+    withdrawRequest(data: any) {
+      this.caseDataApprovalService.withdrawAccessUploadApproval(data.id).subscribe({
+    next: (response: any) => {
+      this.getCasedataUploadApprovalsData();
+      this._snackBar.open("Withdraw Access Request successfully", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["success-snackbar"],
+      });   
+     
+    },
+    error: (error) => {
+      this._snackBar.open(error.message || "Error creating user", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["error-snackbar"],
+      });
+    },
+  });
+  }
+
+  sendReminder(data: any) {
+     this.caseDataApprovalService.sendReminderUploadApproval(data.id).subscribe({
+    next: (response: any) => {
+      this.getCasedataUploadApprovalsData();
+      this._snackBar.open("Reminder Send successfully", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["success-snackbar"],
+      });   
+  
+    },
+    error: (error:any) => {
+      this._snackBar.open(error.error || "Reminder already sent recently. can send a reminder again next day.", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["error-snackbar"],
+      });
+    },
+  });
   }
 }

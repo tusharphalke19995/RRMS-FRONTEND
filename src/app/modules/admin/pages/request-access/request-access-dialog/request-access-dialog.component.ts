@@ -34,7 +34,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 })
 export class RequestDialogComponent {
   approvalReqlForm:FormGroup;
-  payloadAppDenied: {  is_approved: boolean; comments: any; end_date:string};
+  payloadAppDenied: {  is_approved: boolean; comments: any;start_date:string; end_date:string};
 
   constructor( private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any , private _formBuilder:FormBuilder,
   private dashbaordService:DashbaordService
@@ -55,40 +55,64 @@ ngOnInit(): void {
 initiateForm() {
   this.approvalReqlForm = this._formBuilder.group({
     remarks: [""],
+    start_date:[""],
     end_date:[""]
   });
 }
 
 
+  getDateOnly(dateString: string): string {
+  if (!dateString) return '';
+  if (typeof dateString === 'string' && dateString.includes('T')) {
+    return dateString.split('T')[0];
+  }
+  return dateString;
+}
 
 approveRequestData(status: string): void {
   const remarksControl = this.approvalReqlForm.get('remarks');
- const endDateControl = this.approvalReqlForm.get('end_date');
+  const startDateControl = this.approvalReqlForm.get('start_date');
+  const endDateControl = this.approvalReqlForm.get('end_date');
   remarksControl?.clearValidators();
-  remarksControl?.updateValueAndValidity();
-  
-if(status==="true"){
-  this.payloadAppDenied =  {
-    is_approved:true,
-    comments: remarksControl?.value || '',
-    end_date:endDateControl?.value || '',
-  };
-}else {
-   this.payloadAppDenied = {
-    is_approved:false,
-    comments: remarksControl?.value || '',
-    end_date:endDateControl?.value || '',
-  };
-}
+  startDateControl?.clearValidators();
+  endDateControl?.clearValidators();
 
-  this.dashbaordService.fileAccessByRequestid(this.data.id,this.payloadAppDenied).subscribe({
+  if (status === "true") {
+    remarksControl?.setValidators([Validators.required]);
+    startDateControl?.setValidators([Validators.required]);
+    endDateControl?.setValidators([Validators.required]);
+  } else {
+    remarksControl?.clearValidators();
+    startDateControl?.clearValidators();
+    endDateControl?.clearValidators();
+  }
+  remarksControl?.updateValueAndValidity();
+  startDateControl?.updateValueAndValidity();
+  endDateControl?.updateValueAndValidity();
+  if (status === "true" && this.approvalReqlForm.invalid) {
+    this._snackBar.open("Access is Open ended. Do you confirm the end date?", "Close", {
+      duration: 3000,
+      horizontalPosition: "right",
+      verticalPosition: "top",
+      panelClass: ["error-snackbar"],
+    });
+    return;
+  }
+  this.payloadAppDenied = {
+    is_approved: status === "true",
+    comments: remarksControl?.value || '',
+    start_date: this.getDateOnly(startDateControl?.value),
+    end_date: this.getDateOnly(endDateControl?.value),
+  };
+
+  this.dashbaordService.fileAccessByRequestid(this.data.id, this.payloadAppDenied).subscribe({
     next: (response: any) => {
       this._snackBar.open("Request Approved successfully", "Close", {
         duration: 3000,
         horizontalPosition: "right",
         verticalPosition: "top",
         panelClass: ["success-snackbar"],
-      });   
+      });
       this.dialogRef.close(true);
     },
     error: (error) => {

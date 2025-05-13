@@ -822,7 +822,7 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
         const currentRole = this.authData.Role;
         this.navigation = this.navigation.filter(item => {
             if (isSuperAdmin) {
-                return ['master', 'orgMapping', 'userMng', 'home','caseApproval','reqAccess'].includes(item.id);
+                return ['master', 'orgMapping', 'userMng', 'home'].includes(item.id);
             } else if ( currentRole ==="Admin") {
                 return ['searchDocument', 'home', 'uploadDocument', 'notification','caseApproval','reqAccess'].includes(item.id);
             } else if (currentRole === "ContentManager") {

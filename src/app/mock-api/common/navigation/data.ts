@@ -71,6 +71,32 @@ export const defaultNavigation: FuseNavigationItem[] = [
         type    : 'collapsable',
         icon    : 'heroicons_outline:information-circle',
         children: [
+             {
+                id   : 'departmentMng',
+                title: 'Department Management',
+                type : 'basic',
+                link : '/manage-master/department',
+            },
+             {
+                id   : 'divisionMng',
+                title: 'Division Management',
+                type : 'basic',
+                link : '/manage-master/division',
+            },
+ {
+                id   : 'designationMng',
+                title: 'Designation Management',
+                type : 'basic',
+                link : '/manage-master/designations',
+            },
+
+              {
+                id   : 'designationHierarchy',
+                title: 'Designation Hierarchy',
+                type : 'basic',
+                link : '/manage-master/designation-hierarchy',
+            },
+           
             {
                 id        : 'roleMng',
                 title     : 'Role Management',
@@ -78,30 +104,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link      : '/manage-master/role',
                 exactMatch: true,
             },
-            {
-                id   : 'divisionMng',
-                title: 'Division Management',
-                type : 'basic',
-                link : '/manage-master/division',
-            },
-            {
-                id   : 'designationMng',
-                title: 'Designation Management',
-                type : 'basic',
-                link : '/manage-master/designations',
-            },
-              {
-                id   : 'departmentMng',
-                title: 'Department Management',
-                type : 'basic',
-                link : '/manage-master/department',
-            },
-              {
-                id   : 'designationHierarchy',
-                title: 'Designation Hierarchy',
-                type : 'basic',
-                link : '/manage-master/designation-hierarchy',
-            },
+           
            
             {
                 id   : 'caseStatusMng',

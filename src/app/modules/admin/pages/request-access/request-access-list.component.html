@@ -123,7 +123,7 @@
                                 <ng-container *ngIf="authData.Role === 'Admin' || authData.Role === 'ContentManager'">
 
                                     <div (click)="approvedRequest(row)" class="cursor-pointer">
-                                        <mat-icon color="primary">check_circle</mat-icon>
+                                        <mat-icon color="primary" matTooltip="Action">check_circle</mat-icon>
                                     </div>
 
                                 </ng-container>

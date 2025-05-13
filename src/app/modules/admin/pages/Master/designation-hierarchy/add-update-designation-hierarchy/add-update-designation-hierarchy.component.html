@@ -33,7 +33,7 @@
   >
     <!-- First Row -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <mat-form-field appearance="outline" class="w-full">
+      <!-- <mat-form-field appearance="outline" class="w-full">
         <mat-label *transloco="let t" class="font-medium">{{
           t("officierDesignations")
         }}</mat-label>
@@ -113,6 +113,92 @@
           *ngIf="
             addUpdateDesignationHierachyForm
               .get('designationChildId')
+              .hasError('required')
+          "
+        >
+          Required
+        </mat-error>
+      </mat-form-field> -->
+           <mat-form-field appearance="outline" class="w-full">
+        <mat-label *transloco="let t" class="font-medium">{{
+          t("officierDesignations")
+        }}</mat-label>
+        <mat-select
+          [formControlName]="'designationChildId'"
+          [panelClass]="'custom-select-panel'"
+          (selectionChange)="onDesignationSelect($event.value)"
+        >
+          <div class="px-3 py-2">
+            <mat-form-field class="w-full">
+              <input
+                matInput
+                (keyup)="filterDesignationDataChild($event)"
+                placeholder="Search Department..."
+                #roleSearchInput
+                [value]="''"
+                autocomplete="off"
+              />
+            </mat-form-field>
+          </div>
+          <mat-option [value]="null">Please Select</mat-option>
+          <ng-container
+            *ngFor="
+             let designationDataChild of filterDesignationschild;
+              trackBy: trackByFn
+            "
+          >
+            <mat-option [value]="designationDataChild.designationId">{{
+              designationDataChild.designationName
+            }}</mat-option>
+          </ng-container>
+        </mat-select>
+        <mat-error
+          *ngIf="
+            addUpdateDesignationHierachyForm
+              .get('designationChildId')
+              .hasError('required')
+          "
+        >
+          Required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label *transloco="let t" class="font-medium">{{
+          t("supervisorDesignations")
+        }}</mat-label>
+        <mat-select
+          [formControlName]="'designationParentId'"
+          [panelClass]="'custom-select-panel'"
+        >
+          <div class="px-3 py-2">
+            <mat-form-field class="w-full">
+              <input
+                matInput
+                (keyup)="filterDesignationParent($event)"
+                placeholder="Search Department..."
+                #roleSearchInput
+                [value]="''"
+                autocomplete="off"
+              />
+            </mat-form-field>
+          </div>
+          <mat-option [value]="null">Please Select</mat-option>
+          <ng-container
+            *ngFor="
+             let designationDataParent of filterDesignationsParent;
+              trackBy: trackByFn
+            "
+          >
+            <mat-option [value]="designationDataParent.designationId">{{
+              designationDataParent.designationName
+            }}</mat-option>
+          </ng-container>
+        </mat-select>
+        <mat-error
+          *ngIf="
+            addUpdateDesignationHierachyForm
+              .get('designationParentId')
               .hasError('required')
           "
         >

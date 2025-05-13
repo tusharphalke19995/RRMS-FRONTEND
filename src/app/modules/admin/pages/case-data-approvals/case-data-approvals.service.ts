@@ -48,6 +48,14 @@ return this._httpClient.get(url,{
 }).pipe(catchError(this.handleError));
 }
 
+sendReminderUploadApproval(requestId: number): Observable<any> {
+    return this._httpClient.post(apiurls.sendReminderPendingApproval(requestId), {});
+  }
+
+  withdrawAccessUploadApproval(requestId: number): Observable<any> {
+    return this._httpClient.post(apiurls.withdrawPendingApproval(requestId), {});
+  }
+
   /**
    * The error handler.
    * @param err The http error response.
