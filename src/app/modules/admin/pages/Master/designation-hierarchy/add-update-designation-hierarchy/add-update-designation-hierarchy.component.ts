@@ -129,7 +129,7 @@ designationHierachyUpdate() {
     };
 
     this.masterService
-      .updateDesignations(this.data.designationId, updatePayload)
+      .updatDesignationHierachyById(updatePayload)
       .subscribe({
         next: (response: any) => {
           this._snackBar.open("Designations updated successfully", "Close", {

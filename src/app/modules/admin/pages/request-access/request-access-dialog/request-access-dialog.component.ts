@@ -12,6 +12,7 @@ import { TranslocoModule } from '@ngneat/transloco';
 import { ConfirmationDialogComponent } from 'app/modules/admin/pages/manage-notification/confirmation-dialog/confirmation-dialog.component';
 import { NotificationService } from 'app/modules/admin/pages/manage-notification/notification.service';
 import { DashbaordService } from 'app/modules/admin/dashbaord/dashboard.service';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-request-access-dialog',
@@ -26,14 +27,14 @@ import { DashbaordService } from 'app/modules/admin/dashbaord/dashboard.service'
            MatInputModule,
            MatSelectModule,
            MatButtonModule,
-           TranslocoModule,],
+           TranslocoModule,MatDatepickerModule],
   templateUrl: './request-access-dialog.component.html',
   styleUrl: './request-access-dialog.component.scss',
      encapsulation: ViewEncapsulation.None
 })
 export class RequestDialogComponent {
   approvalReqlForm:FormGroup;
-  payloadAppDenied: {  is_approved: boolean; comments: any; };
+  payloadAppDenied: {  is_approved: boolean; comments: any; end_date:string};
 
   constructor( private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any , private _formBuilder:FormBuilder,
   private dashbaordService:DashbaordService
@@ -54,6 +55,7 @@ ngOnInit(): void {
 initiateForm() {
   this.approvalReqlForm = this._formBuilder.group({
     remarks: [""],
+    end_date:[""]
   });
 }
 
@@ -61,17 +63,21 @@ initiateForm() {
 
 approveRequestData(status: string): void {
   const remarksControl = this.approvalReqlForm.get('remarks');
+ const endDateControl = this.approvalReqlForm.get('end_date');
   remarksControl?.clearValidators();
   remarksControl?.updateValueAndValidity();
+  
 if(status==="true"){
   this.payloadAppDenied =  {
     is_approved:true,
-    comments: remarksControl?.value || ''
+    comments: remarksControl?.value || '',
+    end_date:endDateControl?.value || '',
   };
 }else {
    this.payloadAppDenied = {
     is_approved:false,
-    comments: remarksControl?.value || ''
+    comments: remarksControl?.value || '',
+    end_date:endDateControl?.value || '',
   };
 }
 

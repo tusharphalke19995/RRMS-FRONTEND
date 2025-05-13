@@ -105,8 +105,8 @@ export class DesignationHierarchyComponent implements OnInit, AfterViewInit {
   ];
 
   displayedColumns: string[] = [
+      "child_designation_name",
     "parent_designation_name",
-    "child_designation_name",
     "action",
   ];
   userRoleDropdown: [];

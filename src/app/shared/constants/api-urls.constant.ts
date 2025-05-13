@@ -42,4 +42,7 @@ export const apiurls = {
    departmentsAddUpdateDelete:`${environment.userApiUrl}mdm/departments`,
    designationsHierachyAdd:`${environment.userApiUrl}mdm/designation-hierarchy`,
     uploadApprovalsByID:`${environment.userApiUrl}casedata/upload-approvals`,
+    sendReminder: (id: number | string) => `${environment.userApiUrl}casedata/requests/${id}/send-reminder`,
+  withdrawRequest: (id: number | string) => `${environment.userApiUrl}casedata/withdraw-access-requests/${id}`,
+
 }as const;

@@ -124,9 +124,9 @@
   "request": "Request",
   "password": "Password",
   "fileExtension": "File Extension",
-  "caseApprovalList": "Upload Approval",
+  "caseApprovalList": "Upload Requests",
   "departmentName": "Department Name",
-  "reqAcces": "Request Access",
+  "reqAcces": "Access Requests",
   "designationHierarchy": "Designation Hierarchy",
   "addHierarchy": "Add Designation Hierarchy",
     "updateHierarchy": "Update Designation Hierarchy",
@@ -135,5 +135,6 @@
   "addFileClassification":"Add File Classification",
     "updateFileClassification":"Update File Classification",
     "addFileType ":"Add File Type",
-        "updateFileType ":"Update File Type"
+        "updateFileType ":"Update File Type",
+          "endDate": "EndDate"
 }

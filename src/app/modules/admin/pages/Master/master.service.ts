@@ -277,8 +277,8 @@ getDesignationHierachy() {
     .pipe(catchError(this.handleError));
 }
 
-updatDesignationHierachyById(departmentId: number, data: any) {
-const url = `${apiurls.designationsHierachyAdd}/${departmentId}`; // Construct the full URL with user ID
+updatDesignationHierachyById(data: any) {
+const url = `${apiurls.designationsHierachyAdd}`; // Construct the full URL with user ID
 return this._httpClient.put(url, data,{
     headers: new HttpHeaders({
         'Content-Type': 'application/json',

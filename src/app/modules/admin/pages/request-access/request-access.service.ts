@@ -23,6 +23,14 @@ getContentManagerReqData(data:any) {
   }).pipe(catchError(this.handleError));
 }
 
+
+sendReminder(requestId: number): Observable<any> {
+    return this._httpClient.post(apiurls.sendReminder(requestId), {});
+  }
+
+  withdrawAccessRequest(requestId: number): Observable<any> {
+    return this._httpClient.post(apiurls.withdrawRequest(requestId), {});
+  }
   /**
    * The error handler.
    * @param err The http error response.

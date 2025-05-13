@@ -46,14 +46,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
     },
     {
         id   : 'caseApproval',
-        title: 'Upload Approval',
+        title: 'Upload Requests',
         type : 'basic',
         icon : 'heroicons_outline:user',
         link : '/upload-approval'
     },
     {
         id   : 'reqAccess',
-        title: 'Request Access',
+        title: 'Access Requests',
         type : 'basic',
         icon : 'heroicons_outline:user',
         link : '/request-access'
