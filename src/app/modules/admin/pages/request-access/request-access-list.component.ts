@@ -45,6 +45,7 @@ import { RequestDialogComponent } from "./request-access-dialog/request-access-d
 import { RequestAccessService } from "./request-access.service";
 import { UploadedFilesComponent } from "../search-document/uploaded-files/uploaded-files.component";
 import { AuthService, UserModel } from "app/core/auth/auth.service";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @Component({
   selector: "app-request-access-list",
@@ -73,6 +74,7 @@ import { AuthService, UserModel } from "app/core/auth/auth.service";
     MatSortModule,
     CommonModule,
     MatTabsModule,
+    MatTooltipModule
   ],
   templateUrl: "./request-access-list.component.html",
   styleUrl: "./request-access-list.component.scss",

@@ -112,18 +112,17 @@
                             <td mat-cell *matCellDef="let row">
                                 <!-- For User -->
                                 <ng-container *ngIf="authData.Role === 'User'">
-
-                                    <div (click)="withdrawRequest(row)" class="cursor-pointer">
-                                        <mat-icon color="warn">undo</mat-icon>
-                                    </div>
-                                    <div (click)="sendReminder(row)" class="cursor-pointer">
-                                        <mat-icon color="primary">notifications_active</mat-icon>
+                                    <div class="flex items-center gap-2">
+                                        <mat-icon color="warn" class="cursor-pointer hover:bg-red-100 rounded-full transition"
+                                            (click)="withdrawRequest(row)"  matTooltip="Withdraw">undo</mat-icon>
+                                        <mat-icon color="primary" class="cursor-pointer hover:bg-blue-100 rounded-full transition"
+                                            (click)="sendReminder(row)"  matTooltip="Send Reminder">notifications_active</mat-icon>
                                     </div>
                                 </ng-container>
                                 <!-- For Admin or Content Manager -->
                                 <ng-container *ngIf="authData.Role === 'Admin' || authData.Role === 'ContentManager'">
 
-                                    <div (click)="approvedRequest(row)"  class="cursor-pointer">
+                                    <div (click)="approvedRequest(row)" class="cursor-pointer">
                                         <mat-icon color="primary">check_circle</mat-icon>
                                     </div>
 

@@ -90,7 +90,7 @@ interface FileWithMetadata extends CustomFile {
     MatSelectModule,
     MatCardModule,
     MatDialogModule,
-    MatCheckboxModule
+    MatCheckboxModule,
   ],
   templateUrl: "./upload-files.component.html",
   styleUrls: ["./upload-files.component.scss"],
@@ -110,7 +110,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   @Input() ClassificationTypeDropDown: any[] = [];
   @Input() DocumentTypeDropDown: any[] = [];
   @Input() FileTypeDropDown: any[] = [];
-  @Input() masterData:any;
+  @Input() masterData: any;
   @Output() formReady = new EventEmitter<FormGroup>();
   @Output() filesSelected = new EventEmitter<IVerificationFileUploadModel[]>();
   // @ViewChildren(UploadDocsComponent) childGames!: QueryList<UploadDocsComponent>;
@@ -124,7 +124,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   filesSlected: any[] = [];
   @Input() formGroup: FormGroup;
   @Input() filesDataSearch: any[] = [];
-  @Input() finalUserID:number;
+  @Input() finalUserID: number;
   isUploadInProgress = false;
   isSaveDraftInProgress = false;
   openUploadDialog = false;
@@ -201,7 +201,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       fileType: ["", Validators.required],
       classification: ["", Validators.required],
       hashTag: [""],
-      documentType:["",Validators.required]
+      documentType: ["", Validators.required],
     });
   }
 
@@ -359,21 +359,21 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     this.metadataForm.reset();
 
     // If file has existing metadata, populate the form
-    if (file.metadata || file ) {
-      this.metadataForm.patchValue(file.metadata|| file);
-      this.onFileTypeChangeEdit(file)
+    if (file.metadata || file) {
+      this.metadataForm.patchValue(file.metadata || file);
+      this.onFileTypeChangeEdit(file);
     }
-    
+
     // Set default subject if none exists
-    if (!this.metadataForm.get('subject').value) {
+    if (!this.metadataForm.get("subject").value) {
       this.metadataForm.patchValue({
-        subject: `${this.crimeNo}_${file.name || file.fileName}`
+        subject: `${this.crimeNo}_${file.name || file.fileName}`,
       });
     }
 
     if (this.checkGetFile) {
       this.metadataForm.patchValue({
-        subject: `${this.crimeNo}_${file.name || file.fileName}`
+        subject: `${this.crimeNo}_${file.name || file.fileName}`,
       });
     }
 
@@ -389,26 +389,26 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   openMetadataForSelected(): void {
     // Reset the metadata form
     this.metadataForm.reset();
-    
+
     // If multiple files are selected, create a dynamic subject
     if (this.selectedIndexes.size > 0) {
       // For both "Edit All" and "Edit Selected" cases, we'll use the first file's name
       const firstFileIndex = Array.from(this.selectedIndexes)[0];
       const firstFile = this.selectedFiles[firstFileIndex];
-      
+
       if (firstFile) {
         this.metadataForm.patchValue({
-          subject: `${this.crimeNo}_${firstFile.name || firstFile.fileName}`
+          subject: `${this.crimeNo}_${firstFile.name || firstFile.fileName}`,
         });
       }
 
       // Force change detection
       this._changeDetectorRef.detectChanges();
     }
-    
+
     // Open the metadata modal
     this.openFileModal = true;
-    
+
     // Clear the fileToEdit since we're applying to multiple files
     this.fileToEdit = null;
   }
@@ -420,47 +420,51 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     if (file.subject) {
       return file.subject;
     }
-    return file.name || file.fileName || '';
+    return file.name || file.fileName || "";
   }
 
   submitMetadata(): void {
     if (this.metadataForm.valid) {
       const metadata = this.metadataForm.value;
-  
+
       // If only one file, always apply metadata
       if (this.selectedFiles.length === 1) {
-        this.selectedFiles[0].metadata = { 
-          ...this.selectedFiles[0].metadata, 
+        this.selectedFiles[0].metadata = {
+          ...this.selectedFiles[0].metadata,
           ...metadata,
-          subject: `${this.crimeNo}_${this.selectedFiles[0].name || this.selectedFiles[0].fileName}`
+          subject: `${this.crimeNo}_${
+            this.selectedFiles[0].name || this.selectedFiles[0].fileName
+          }`,
         };
-      } 
+      }
       // If checkboxes are selected, apply to those files
       else if (this.selectedIndexes.size > 0) {
-        this.selectedIndexes.forEach(index => {
+        this.selectedIndexes.forEach((index) => {
           const file = this.selectedFiles[index];
           if (file) {
             // Apply metadata with individual file's subject
-            file.metadata = { 
-              ...file.metadata, 
+            file.metadata = {
+              ...file.metadata,
               ...metadata,
-              subject: `${this.crimeNo}_${file.name || file.fileName}`
+              subject: `${this.crimeNo}_${file.name || file.fileName}`,
             };
           }
         });
-      } 
+      }
       // If no checkboxes are selected, apply to the file for which modal was opened
       else if (this.fileToEdit) {
-        const file = this.selectedFiles.find(f => f === this.fileToEdit || f.name === this.fileToEdit.name);
+        const file = this.selectedFiles.find(
+          (f) => f === this.fileToEdit || f.name === this.fileToEdit.name
+        );
         if (file) {
-          file.metadata = { 
-            ...file.metadata, 
+          file.metadata = {
+            ...file.metadata,
             ...metadata,
-            subject: `${this.crimeNo}_${file.name || file.fileName}`
+            subject: `${this.crimeNo}_${file.name || file.fileName}`,
           };
         }
       }
-  
+
       this._snackBar.open("Metadata added successfully", "Close", {
         duration: 3000,
         horizontalPosition: "right",
@@ -581,11 +585,11 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   viewImage(data) {
     const dialogRef = this.dialog.open(UploadedFilesComponent, {
       data: data,
-    width: '850px', // or '100vw' for full width
-    maxWidth: '100vw',
-    height: '90vh',
-    panelClass: 'custom-dialog-class'
-  });
+      width: "850px", // or '100vw' for full width
+      maxWidth: "100vw",
+      height: "90vh",
+      panelClass: "custom-dialog-class",
+    });
     dialogRef.afterClosed().subscribe((result) => {
       this._changeDetectorRef.detectChanges();
     });
@@ -609,51 +613,55 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   markUnFavourite(data: any) {
-    const divisionID = Number(sessionStorage.getItem('divisionID'))
-    this._uploadDocumentService.markAsUnFavourite(data.fileId,divisionID).subscribe({
-      next: (response: any) => {
-        this._snackBar.open("Mark As Un Favourite successfully", "Close", {
-          duration: 3000,
-          horizontalPosition: "right",
-          verticalPosition: "top",
-          panelClass: ["success-snackbar"],
-        });
-        this._router.navigateByUrl("search-document");
-        this.selectedFiles = [];
-      },
-      error: (error) => {
-        this._snackBar.open(error.message || "Error creating user", "Close", {
-          duration: 3000,
-          horizontalPosition: "right",
-          verticalPosition: "top",
-          panelClass: ["error-snackbar"],
-        });
-      },
-    });
+    const divisionID = Number(sessionStorage.getItem("divisionID"));
+    this._uploadDocumentService
+      .markAsUnFavourite(data.fileId, divisionID)
+      .subscribe({
+        next: (response: any) => {
+          this._snackBar.open("Mark As Un Favourite successfully", "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["success-snackbar"],
+          });
+          this._router.navigateByUrl("search-document");
+          this.selectedFiles = [];
+        },
+        error: (error) => {
+          this._snackBar.open(error.message || "Error creating user", "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["error-snackbar"],
+          });
+        },
+      });
   }
 
   markFavourite(data: any) {
-    const divisionID = Number(sessionStorage.getItem('divisionID'))
-    this._uploadDocumentService.markAsFavourite(data.fileId,divisionID).subscribe({
-      next: (response: any) => {
-        this._snackBar.open("Mark As Favourite successfully", "Close", {
-          duration: 3000,
-          horizontalPosition: "right",
-          verticalPosition: "top",
-          panelClass: ["success-snackbar"],
-        });
-        this._router.navigateByUrl("search-document");
-        this.selectedFiles = [];
-      },
-      error: (error) => {
-        this._snackBar.open(error.message || "Error creating user", "Close", {
-          duration: 3000,
-          horizontalPosition: "right",
-          verticalPosition: "top",
-          panelClass: ["error-snackbar"],
-        });
-      },
-    });
+    const divisionID = Number(sessionStorage.getItem("divisionID"));
+    this._uploadDocumentService
+      .markAsFavourite(data.fileId, divisionID)
+      .subscribe({
+        next: (response: any) => {
+          this._snackBar.open("Mark As Favourite successfully", "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["success-snackbar"],
+          });
+          this._router.navigateByUrl("search-document");
+          this.selectedFiles = [];
+        },
+        error: (error) => {
+          this._snackBar.open(error.message || "Error creating user", "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["error-snackbar"],
+          });
+        },
+      });
   }
 
   onHashTagKeyUp(event: KeyboardEvent): void {
@@ -684,14 +692,17 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       data: data,
     });
     dialogRef.afterClosed().subscribe((result) => {
+      if (result === true) {
+        data.is_request_raised = true;
+        data.is_access_request_approved = false;
+        data.is_approved = false;
+      }
       this._changeDetectorRef.detectChanges();
     });
   }
 
   getFileTypeNameById(fileTypeId: number): string {
-    const type = this.DocumentTypeDropDown?.find(
-      (t) => t.id === fileTypeId
-    );
+    const type = this.DocumentTypeDropDown?.find((t) => t.id === fileTypeId);
     return type ? type.value : "Unknown";
   }
 
@@ -722,14 +733,12 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   //     !file.is_request_raised &&
   //     !file.is_access_request_approved &&
   //     file.uploaded_by !== this.finalUserID
-    
+
   //   );
   // }
-  
-  
 
   hasRole(...roles: string[]): boolean {
-    return this.authData.DivisionsRoles.some(role =>
+    return this.authData.DivisionsRoles.some((role) =>
       roles.includes(role.role_name)
     );
   }
@@ -763,93 +772,97 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     }
   }
 
-
-hasRoleInDivision(...roles: string[]): boolean {
-  if (roles.includes(this.authData.Role)) {
-    return true;
+  hasRoleInDivision(...roles: string[]): boolean {
+    if (roles.includes(this.authData.Role)) {
+      return true;
+    }
   }
-}
   isRestrictedToView(file: any): boolean {
-
-    const classification = this.getFileClassificationNameById(file.classification);
-    const role =  this.authData.Role;
-    const currentUserId =this.finalUserID;
+    const classification = this.getFileClassificationNameById(
+      file.classification
+    );
+    const role = this.authData.Role;
+    const currentUserId = this.finalUserID;
     const uploaderUserId = file.uploaded_by || file.metadata?.uploaded_by;
-    if (classification !== 'Confidential') return false;
+    if (classification !== "Confidential") return false;
     if (currentUserId === uploaderUserId) return false;
-    return role === 'User' && !file.is_access_request_approved;
+    return role === "User" && !file.is_access_request_approved;
   }
 
   onFileTypeChangeEdit(data) {
     if (data.documentType == 3) {
       this.DocumentTypeDropDown = this.masterData.CaseFiles;
-      
     } else if (data.documentType == 4) {
       this.DocumentTypeDropDown = this.masterData.Correspondence;
-
     }
     this._changeDetectorRef.detectChanges();
   }
-
 
   onFileTypeChange(data) {
     if (data.value == 3) {
       this.DocumentTypeDropDown = this.masterData.CaseFiles;
-      
     } else if (data.value == 4) {
       this.DocumentTypeDropDown = this.masterData.Correspondence;
-
     }
     this._changeDetectorRef.detectChanges();
   }
 
-canRequestAccess(file: any): boolean {
-  const hasUserRole = this.authData.Role === "User";
-  if (!hasUserRole) {
-    return false;
+  canRequestAccess(file: any): boolean {
+    const hasUserRole = this.authData.Role === "User";
+    if (!hasUserRole) {
+      return false;
+    }
+    const classification = this.getFileClassificationNameById(
+      file.classification
+    );
+    // Only allow request if not already raised or approved, and not uploader
+    return (
+      classification === "Confidential" &&
+      !file.is_request_raised &&
+      !file.is_access_request_approved &&
+      file.uploaded_by !== this.finalUserID
+    );
   }
-  const classification = this.getFileClassificationNameById(file.classification);
-  // Only allow request if not already raised or approved, and not uploader
-  return (
-    classification === "Confidential" &&
-    !file.is_request_raised &&
-    !file.is_access_request_approved &&
-    file.uploaded_by !== this.finalUserID
-  );
-}
 
-getAccessStatus(file: any): string {
-  const classification = this.getFileClassificationNameById(file.classification);
+  getAccessStatus(file: any): string {
+    const classification = this.getFileClassificationNameById(
+      file.classification
+    );
 
-  // Only show access status for Confidential files
-  if (classification !== "Confidential") {
+    // Only show access status for Confidential files
+    if (classification !== "Confidential") {
+      return "";
+    }
+    if (file.uploaded_by === this.finalUserID) {
+      return "";
+    }
+    if (
+      file.is_request_raised &&
+      file.is_approved &&
+      !file.is_access_request_approved
+    ) {
+      return "Request Sent";
+    }
+    if (
+      file.is_access_request_approved &&
+      !file.is_approved &&
+      !file.is_request_raised
+    ) {
+      return "Request Sent";
+    }
+    if (
+      file.is_request_raised &&
+      !file.is_access_request_approved &&
+      !file.is_approved
+    ) {
+      return "Already Raised";
+    }
+    if (this.canRequestAccess(file)) {
+      return "Request Access";
+    }
+    if (file.is_approved && file.is_access_request_approved) {
+      return "Access Approved";
+    }
     return "";
   }
-  if (file.uploaded_by === this.finalUserID) {
-    return "";
-  }
-
-  // Show "Request Sent" if a request is raised and file is approved, but access is not approved
-  if (file.is_request_raised && file.is_approved && !file.is_access_request_approved) {
-    return "Request Sent";
-  }
-  // Show "Request Sent" if access is approved but file is not yet approved and request is not raised
-  if (file.is_access_request_approved && !file.is_approved && !file.is_request_raised) {
-    return "Request Sent";
-  }
-  // Show "Already Raised" if request is raised, not approved, and file is not approved
-  if (file.is_request_raised && !file.is_access_request_approved && !file.is_approved) {
-    return "Already Raised";
-  }
-  // Show "Request Access" if eligible
-  if (this.canRequestAccess(file)) {
-    return "Request Access";
-  }
-  // Show "Access Approved" if file is approved
-  if (file.is_approved && file.is_access_request_approved) {
-    return "Access Approved";
-  }
-  return "";
-}
-  
 }

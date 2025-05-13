@@ -174,17 +174,25 @@ goToProcess(row: any) {
     }
   }
 
-  getDepartmentNames(designationDetail: any): string {
-    if (!designationDetail?.department) return "";
-    return designationDetail.department
-      .map((d: any) => d.departmentName)
-      .join(", ");
-  }
+getDepartmentNames(designationDetail: any): string {
+  if (!Array.isArray(designationDetail)) return "";
+  // Collect all department arrays from each designation
+  const departments = designationDetail
+    .flatMap((d: any) => d.department || [])
+    .map((dept: any) => dept.departmentName);
+  // Remove duplicates
+  const uniqueDepartments = Array.from(new Set(departments));
+  return uniqueDepartments.join(", ");
+}
 
-  getDivisionNames(designationDetail: any): string {
-    if (!designationDetail?.division) return "";
-    return designationDetail.division
-      .map((d: any) => d.divisionName)
-      .join(", ");
-  }
+getDivisionNames(designationDetail: any): string {
+  if (!Array.isArray(designationDetail)) return "";
+  // Collect all division arrays from each designation
+  const divisions = designationDetail
+    .flatMap((d: any) => d.division || [])
+    .map((div: any) => div.divisionName);
+  // Remove duplicates
+  const uniqueDivisions = Array.from(new Set(divisions));
+  return uniqueDivisions.join(", ");
+}
 }
