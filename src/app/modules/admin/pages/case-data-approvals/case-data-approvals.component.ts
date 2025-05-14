@@ -46,6 +46,7 @@ import { ConfirmationDialogCaseDataApprovalComponent } from "./confirmation-dial
 import { AuthService } from "app/core/auth/auth.service";
 import { UploadedFilesComponent } from "../search-document/uploaded-files/uploaded-files.component";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { UpdateFileMetadataComponent } from "./update-file-metadata/update-file-metadata.component";
 
 @Component({
   selector: "app-case-data-approval",
@@ -269,6 +270,18 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
     });
   }
 
+openEditFileModal(file: any) {
+  const dialogRef = this.dialog.open(UpdateFileMetadataComponent , {
+    width: '610px',
+    data: { file },
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      this.getCasedataUploadApprovalsData();
+    }
+  });
+}
   ngAfterViewInit(): void {
     this.setupPagination();
   }

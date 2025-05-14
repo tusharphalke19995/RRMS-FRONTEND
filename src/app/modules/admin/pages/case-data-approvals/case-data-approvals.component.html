@@ -131,6 +131,10 @@
                       (click)="approvedRequest(row)" matTooltip="Action" *transloco="let t">
                       {{ t("action") }}
                     </button>
+
+                    <button mat-icon-button color="primary" (click)="openEditFileModal(row.file)" type="button">
+                      <mat-icon>edit</mat-icon>
+                    </button>
                   </div>
                 </ng-container>
               </td>
