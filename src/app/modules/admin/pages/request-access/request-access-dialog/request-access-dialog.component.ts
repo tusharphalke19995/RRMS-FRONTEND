@@ -61,12 +61,22 @@ initiateForm() {
 }
 
 
-  getDateOnly(dateString: string): string {
-  if (!dateString) return '';
-  if (typeof dateString === 'string' && dateString.includes('T')) {
-    return dateString.split('T')[0];
+getDateOnly(dateInput: any): string {
+  if (!dateInput) return '';
+  if (typeof dateInput === 'string' && dateInput.includes('T')) {
+    return dateInput.split('T')[0];
   }
-  return dateString;
+  if (dateInput instanceof Date) {
+    return dateInput.toISOString().split('T')[0];
+  }
+  if (typeof dateInput === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
+    return dateInput;
+  }
+  const d = new Date(dateInput);
+  if (!isNaN(d.getTime())) {
+    return d.toISOString().split('T')[0];
+  }
+  return '';
 }
 
 approveRequestData(status: string): void {
@@ -90,7 +100,7 @@ approveRequestData(status: string): void {
   startDateControl?.updateValueAndValidity();
   endDateControl?.updateValueAndValidity();
   if (status === "true" && this.approvalReqlForm.invalid) {
-    this._snackBar.open("Access is Open ended. Do you confirm the end date?", "Close", {
+    this._snackBar.open("Is it mandatory to provide remarks, start date, and end date when a user approves a request?", "Close", {
       duration: 3000,
       horizontalPosition: "right",
       verticalPosition: "top",

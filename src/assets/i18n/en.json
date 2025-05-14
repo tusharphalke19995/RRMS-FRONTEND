@@ -137,5 +137,6 @@
         "updateFileType ":"Update File Type",
           "endDate": "EndDate",
          "revokeMsg" :"File will be accessed within this period start date and end date",
-         "updateFileMetadata":"Update File Metadata"
+         "updateFileMetadata":"Update File Metadata",
+         "revokeDate":"Revoke Date"
 }
