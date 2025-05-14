@@ -81,13 +81,13 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   divisionID: string;
   showChangeDivision: boolean;
   divisionDropdown: any[];
-  DivisionIdsUserLogin: [];
-  DepartmentIdsUserLogin: [];
   departmentDropdown: any[];
   selectedDepartmentNames: string[] = [];
   selectedDivisionNames: string[] = [];
   pendingReqAccessCount: any;
   pendingUploadReqCount:number;
+  DivisionIdsUserLogin: any;
+  DepartmentIdsUserLogin: any;
   /**
    * Constructor
    */
@@ -103,19 +103,6 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     private masterService: MasterService
   ) {
    this.extractDivisionAndDepartmentIds();
-  }
-
-
-  extractDivisionAndDepartmentIds(): void {
-     this.authData = this.authenticationService.getAuthData();
-    console.log("authData:", this.authData);
-
-    // Extract division and department IDs
-    this.DivisionIdsUserLogin = this.authData.Divisions.flatMap(division => division.divisionIds);
-    this.DepartmentIdsUserLogin = this.authData.Divisions.flatMap(division => division.departmentIds);
-
-    console.log("DivisionIdsUserLogin:", this.DivisionIdsUserLogin);
-    console.log("DepartmentIdsUserLogin:", this.DepartmentIdsUserLogin);
   }
 
   // -----------------------------------------------------------------------------------------------------
@@ -295,21 +282,7 @@ getNotificationsCount() {
   checkDesignationObj() {
     if (this.authData.SuperAdmin == true) {
       this.showAdminBool = true;
-    }
-    // this.divisionsRoles = this.authenticationService.getAuthData();
-    // this.divisionsRoles.DivisionsRoles.forEach((element) => {
-    //   if (element.role_name === "Admin") {
-    //     this.showAdminBool = true;
-    //   } else {
-    //     this.showAdminBool = false;
-    //   }
-    // });
-    const rolesLength = this.divisionsRoles.DivisionsRoles.length;
-    if (rolesLength > 1) {
-      this.showChangeDivision = true;
-    } else {
-      this.showChangeDivision = false;
-    }
+    }  
   }
   
   getHashTags(hashTagString: string): string[] {
@@ -366,5 +339,24 @@ getDivision() {
         console.error("Error fetching current users:", error);
       },
     });
+  }
+
+    extractDivisionAndDepartmentIds(): void {
+    this.authData = this.authenticationService.getAuthData();
+    this.DivisionIdsUserLogin = this.authData.Divisions.flatMap(division => division.divisionIds);
+    this.DepartmentIdsUserLogin = this.authData.Divisions.flatMap(division => division.departmentIds);
+    
+    if (this.DivisionIdsUserLogin.length === 1) {
+      this.showChangeDivision = true;   
+    } else {
+     this.showChangeDivision = true;
+     
+    }
+  
+    if (this.DepartmentIdsUserLogin.length === 1) {
+      this.showChangeDivision = false;
+    } else {
+      this.showChangeDivision = true;
+    }
   }
 }

@@ -18,7 +18,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { fuseAnimations } from "@fuse/animations";
 import { FuseAlertComponent, FuseAlertType } from "@fuse/components/alert";
-import { AuthService } from "app/core/auth/auth.service";
+import { AuthService, UserModel } from "app/core/auth/auth.service";
 
 @Component({
   selector: "auth-sign-in",
@@ -51,6 +51,9 @@ export class AuthSignInComponent implements OnInit {
   signInForm: UntypedFormGroup;
   showAlert: boolean = false;
   divisionsRoles:any;
+  authData:any;
+    DivisionIdsUserLogin: any;
+  DepartmentIdsUserLogin: any;
   /**
    * Constructor
    */
@@ -138,25 +141,35 @@ export class AuthSignInComponent implements OnInit {
   }
   
   checkDesignationObj() {
-    const isSuperAdmin=this._authService.getAuthData();
-    if(isSuperAdmin.SuperAdmin== true){
-      this._router.navigateByUrl("/dashboard");
-    }else{
+    this.extractDivisionAndDepartmentIds();
+    const divisionCount = this.DivisionIdsUserLogin?.length || 0;
+    const departmentCount = this.DepartmentIdsUserLogin?.length || 0;
+
+    if (divisionCount > 1 || departmentCount > 1) {
       this._router.navigateByUrl("/division-selection");
+    } else {
+      this._router.navigateByUrl("/dashboard");
     }
-    // this.divisionsRoles = this._authService.getAuthData();
-    // sessionStorage.setItem('userID', this.divisionsRoles.UserID);
-    // const rolesLength = this.divisionsRoles.DivisionsRoles.length;
-    // if (rolesLength > 1) {
-    //   this._router.navigateByUrl("/division-selection");
-    // } else {
-     
-    //   this.divisionsRoles.DivisionsRoles.forEach((data:any) => {
-    //     const divisionId = data.division_id;
-    //     sessionStorage.setItem('divisionID', divisionId);
-    //   });
-     
-    //   this._router.navigateByUrl("/dashboard");
-    // }
   }
+
+  extractDivisionAndDepartmentIds(): void {
+    this.authData = this._authService.getAuthData();
+    this.DivisionIdsUserLogin = this.authData.Divisions.flatMap(division => division.divisionIds);
+    this.DepartmentIdsUserLogin = this.authData.Divisions.flatMap(division => division.departmentIds);
+
+    // Store divisionID
+    if (this.DivisionIdsUserLogin.length === 1) {
+      sessionStorage.setItem("divisionID", String(this.DivisionIdsUserLogin[0]));
+    } else {
+      sessionStorage.setItem("divisionID", JSON.stringify(this.DivisionIdsUserLogin));
+    }
+
+    // Store departmentID
+    if (this.DepartmentIdsUserLogin.length === 1) {
+      sessionStorage.setItem("departmentID", String(this.DepartmentIdsUserLogin[0]));
+    } else {
+      sessionStorage.setItem("departmentID", JSON.stringify(this.DepartmentIdsUserLogin));
+    }
+  }
+
 }
