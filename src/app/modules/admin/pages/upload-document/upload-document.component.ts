@@ -200,14 +200,14 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       unitsId: ["",[Validators.required]],
       office: ["", [Validators.required]],
       letterNo: ["", [Validators.required]],
-      caseNo: [""],
+      caseNo: ["", [Validators.required]],
       caseType: ["", [Validators.required]],
       firNo: ["", [Validators.required]],
       author: ["", [Validators.required]],
       toAddr: ["", [Validators.required]],
       caseDate: [""],
-      statusId:[""],
-      yearId:[""]
+      statusId:["", [Validators.required]],
+      yearId:["", [Validators.required]]
     });
   }
 

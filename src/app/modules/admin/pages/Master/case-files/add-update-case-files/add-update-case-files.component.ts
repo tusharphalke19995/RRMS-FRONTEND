@@ -70,7 +70,7 @@ export class AddUpdateCaseFilesTypeComponent {
       const data = {
         caseFileName: this.addUpdateCaseFilesForm.value.caseFileName,
       };
-      this.masterService.createFileClassification(data).subscribe({
+      this.masterService.createCaseFiles(data).subscribe({
         next: (response: any) => {
           this._snackBar.open("Case File created successfully", "Close", {
             duration: 3000,
@@ -97,7 +97,7 @@ export class AddUpdateCaseFilesTypeComponent {
       const data = {
         caseFileName: this.addUpdateCaseFilesForm.value.caseFileName,
       };
-        this.masterService.updateCaseFilesById(this.data.fileTypeId,data).subscribe({
+        this.masterService.updateCaseFilesById(this.data.caseFileId,data).subscribe({
         next: (response: any) => {
           this._snackBar.open("Case File  Updated successfully", "Close", {
             duration: 3000,

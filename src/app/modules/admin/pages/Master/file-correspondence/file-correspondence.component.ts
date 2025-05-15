@@ -166,7 +166,7 @@ export class FileCorrespondenceComponent implements OnInit {
   }
 
   deleteSelectedFileCorrespondence(data) {
-        this._masterService.deleteCorrespondenceFilesById(data.fileTypeId).subscribe({
+        this._masterService.deleteCorrespondenceFilesById(data.corrId).subscribe({
         next: (response: any) => {
           this._snackBar.open("File Correspondence Deleted successfully", "Close", {
             duration: 3000,

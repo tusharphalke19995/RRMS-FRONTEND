@@ -164,7 +164,7 @@ export class CaseFilesComponent implements OnInit {
   }
 
   deleteSelectedCaseFiles(data) {
-        this._masterService.deleteCaseFilesById(data.fileTypeId).subscribe({
+        this._masterService.deleteCaseFilesById(data.caseFileId).subscribe({
         next: (response: any) => {
           this._snackBar.open("Case File Deleted successfully", "Close", {
             duration: 3000,

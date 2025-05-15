@@ -176,7 +176,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     },
     { labelen: "Name", labelhi: "Last Name", property: "firNo" },
     { labelen: "Case No", labelhi: "Case No", property: "caseNo" },
-    { labelen: "Case Type", labelhi: "Case Type", property: "caseType" },
+    { labelen: "Case Type", labelhi: "Case Type", property: "caseTypeName" },
 
     { labelen: "Case Date", labelhi: "Case Date", property: "caseDate" },
     { labelen: "Letter No", labelhi: "Letter No", property: "letterNo" },
@@ -194,7 +194,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     "unitName",
     "firNo",
     "caseNo",
-    "caseType",
+    "caseTypeName",
     "caseDate",
     "letterNo",
     "action",
@@ -317,7 +317,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
           (districts: any) => {
             this.districtDropdown = districts.responseData as District[];
             this.filteredDistricts = [...this.districtDropdown];
-            this.searchDocumentForm.get("districtId")?.setValue(443);
+            // this.searchDocumentForm.get("districtId")?.setValue(443)
             this._changeDetectorRef.detectChanges();
           },
           (error) => {

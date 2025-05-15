@@ -70,9 +70,9 @@ export class AddUpdateFileCorrespondenceComponent {
       const data = {
         corrFileName: this.addUpdateFileCorrespondence.value.corrFileName,
       };
-      this.masterService.createFileType(data).subscribe({
+      this.masterService.createCorrespondenceFilesdata(data).subscribe({
         next: (response: any) => {
-          this._snackBar.open("File Type created successfully", "Close", {
+          this._snackBar.open("Correspondence Files  created successfully", "Close", {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
@@ -97,9 +97,9 @@ export class AddUpdateFileCorrespondenceComponent {
       const data = {
         corrFileName: this.addUpdateFileCorrespondence.value.corrFileName,
       };
-        this.masterService.updateFilesTypeById(this.data.fileTypeId,data).subscribe({
+        this.masterService.updateCorrespondenceFilesById(this.data.corrId,data).subscribe({
         next: (response: any) => {
-          this._snackBar.open("File Type Updated successfully", "Close", {
+          this._snackBar.open("Correspondence Files Updated successfully", "Close", {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
