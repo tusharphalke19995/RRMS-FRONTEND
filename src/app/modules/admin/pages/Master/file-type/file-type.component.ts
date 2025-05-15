@@ -64,7 +64,6 @@ export class FileTypeComponent implements OnInit {
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
   columns: any[] = [
-    { labelen: "File Type Id", labelhi: "File Type Id", property: "fileTypeId" },
     { labelen: "File Type Name", labelhi: "File Type Name", property: "fileTypeName" },
     {
       labelen: "Action",
@@ -75,7 +74,6 @@ export class FileTypeComponent implements OnInit {
   ];
 
   displayedColumns: string[] = [
-    "fileTypeId",
     "fileTypeName",
    "action",
   ];

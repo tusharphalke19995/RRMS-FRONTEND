@@ -66,7 +66,6 @@ export class RoleComponent implements OnInit {
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
   columns: any[] = [
-    { labelen: "Role Id", labelhi: "Role Id", property: "roleId" },
     { labelen: "Role Name", labelhi: "Role Name", property: "roleName" },
     {
       labelen: "Action",
@@ -77,7 +76,6 @@ export class RoleComponent implements OnInit {
   ];
 
   displayedColumns: string[] = [
-    "roleId",
     "roleName",
     "action",
   ];

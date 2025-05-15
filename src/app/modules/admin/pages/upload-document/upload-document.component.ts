@@ -212,11 +212,6 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Citizen Feedback Create
-   */
-  saveCitizenFeedback(): void {}
-
-  /**
    * Clear the form
    */
   clearForm(): void {
@@ -318,12 +313,30 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     });
   }
 
+getDateOnly(dateInput: any): string {
+  if (!dateInput) return '';
+  if (typeof dateInput === 'string' && dateInput.includes('T')) {
+    return dateInput.split('T')[0];
+  }
+  if (dateInput instanceof Date) {
+    return dateInput.toISOString().split('T')[0];
+  }
+  if (typeof dateInput === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
+    return dateInput;
+  }
+  const d = new Date(dateInput);
+  if (!isNaN(d.getTime())) {
+    return d.toISOString().split('T')[0];
+  }
+  return '';
+}
+
   sumbitUpload() {
     if (this.isSubmitting) return;
     
     this.isSubmitting = true;
     this._changeDetectorRef.detectChanges();
-
+    const caseDate = this.getDateOnly(this.uploadDocumentForm.value.caseDate);
     let uploadMetaData = {
       stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
       districtId: this.uploadDocumentForm.value.districtId,
@@ -331,7 +344,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       Office: this.uploadDocumentForm.value.office,
       letterNo: this.uploadDocumentForm.value.letterNo,
       caseNo: this.uploadDocumentForm.value.caseNo,
-      caseDate: this.uploadDocumentForm.value.caseDate || "",
+      caseDate: caseDate || null,
       caseType: this.uploadDocumentForm.value.caseType,
       firNo: this.uploadDocumentForm.value.firNo,
       author: this.uploadDocumentForm.value.author,

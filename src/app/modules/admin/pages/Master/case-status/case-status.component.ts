@@ -64,7 +64,6 @@ export class CaseStatusComponent implements OnInit {
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
   columns: any[] = [
-    { labelen: "Status Id", labelhi: "Status Id", property: "statusId" },
     { labelen: "Status Name", labelhi: "Status Name", property: "statusName" },    
     {
       labelen: "Action",
@@ -75,7 +74,6 @@ export class CaseStatusComponent implements OnInit {
   ];
 
   displayedColumns: string[] = [
-    "statusId",
     "statusName",
     "action"
   ];

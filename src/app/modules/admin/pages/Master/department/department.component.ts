@@ -85,7 +85,6 @@ export class DepartmentComponent implements OnInit, AfterViewInit {
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
   columns: any[] = [
-    { labelen: "Department Id", labelhi: "Department Id", property: "departmentId" },
     {
       labelen: "Department Name",
       labelhi: "Department Name",
@@ -100,7 +99,6 @@ export class DepartmentComponent implements OnInit, AfterViewInit {
   ];
 
   displayedColumns: string[] = [
-    "departmentId",
     "departmentName",
     "action"
   ];

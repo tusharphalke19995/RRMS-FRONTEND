@@ -1,4 +1,5 @@
 import {
+  CommonModule,
   CurrencyPipe,
   NgClass,
   NgFor,
@@ -112,6 +113,7 @@ interface CaseStatus {
     MatPaginatorModule,
     MatSortModule,
     UploadFilesComponent,
+    CommonModule
   ],
 })
 export class SearchDocumentComponent implements OnInit, OnDestroy {
