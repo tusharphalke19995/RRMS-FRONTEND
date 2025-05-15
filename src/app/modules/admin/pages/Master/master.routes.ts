@@ -14,14 +14,7 @@ export default [
         path     : 'role',
         component: RoleComponent
     },
-    {
-        path     : 'division',
-        component: DivisionComponent
-    },
-    {
-        path     : 'designations',
-        component: DesignationsComponent
-    },
+   
     {
         path     : 'case-status',
         component: CaseStatusComponent
@@ -34,12 +27,4 @@ export default [
         path     : 'file-type',
         component: FileTypeComponent
     },
-    {
-        path:'department',
-        component:DepartmentComponent
-    },
-     {
-        path:'designation-hierarchy',
-        component:DesignationHierarchyComponent
-    }
 ] as Routes;
