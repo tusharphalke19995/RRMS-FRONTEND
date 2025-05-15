@@ -39,12 +39,23 @@
                 </div>
             </div>
             <!-- Title -->
-            <div class="mt-2">
+            <!-- <div class="mt-2">
                 <ng-container *transloco="let t">
                     <div class="text-3xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
                         {{t('addUser')}}</div>
                 </ng-container>
-            </div>
+            </div> -->
+
+            <div class="flex items-center">
+            <span class="text-xl font-semibold tracking-tight" *ngIf="updateBool; else addRoleTemplate">
+                <span *transloco="let t">{{ t('updateUser') }}</span>
+            </span>
+            <ng-template #addRoleTemplate>
+                <span class="text-xl font-semibold tracking-tight" *transloco="let t">
+                    {{t ('addUser') }}
+                </span>
+            </ng-template>
+        </div>
         </div>
 
 

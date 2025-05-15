@@ -134,9 +134,16 @@
   "addFileClassification":"Add File Classification",
     "updateFileClassification":"Update File Classification",
     "addFileType ":"Add File Type",
-        "updateFileType ":"Update File Type",
+        "updateFileType":"Update File Type",
           "endDate": "EndDate",
          "revokeMsg" :"File will be accessed within this period start date and end date",
          "updateFileMetadata":"Update File Metadata",
-         "revokeDate":"Revoke Date"
+         "revokeDate":"Revoke Date",
+         "caseFileName":"Case FileName",
+             "addCaseFile":"Add Case Files",
+        "updateCaseFile":"Update Case Files",
+         "addFileCorrespondence":"Add File Correspondence",
+        "updateFileCorrespondence":"Update File Correspondence",
+        "corrFileName":"Correspondence File Name",
+        "updateUser":"Update User"
 }

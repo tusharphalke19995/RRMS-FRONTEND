@@ -13,6 +13,9 @@ import { DOCUMENT } from "@angular/common";
       private caseSubject: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
       public caseData$: Observable<any[]> = this.caseSubject.asObservable();
 
+        private userSubject: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
+      public userData$: Observable<any[]> = this.userSubject.asObservable();
+
       
       private activeUserSubject: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
       activeUserData$: Observable<any[]> = this.activeUserSubject.asObservable();
@@ -95,6 +98,14 @@ import { DOCUMENT } from "@angular/common";
 
       setPendingApprovalData(data: any[]) {
         this.pendingReqSubject.next(data);
+      }
+
+      setUserData(data: any[]) {
+        this.userSubject.next(data);
+      }
+ 
+      getUserData(): Observable<any[]> {
+        return this.userData$; 
       }
 
   }

@@ -38,6 +38,7 @@ import { InventoryVendor } from "../../upload-document/uploadDoc.types";
 import { MatDialog } from "@angular/material/dialog";
 import { AddUpdateUserComponent } from "../add-update-user/add-update-user.component";
 import { SearchUserService } from "./searchUser.service";
+import { SharedService } from "app/shared/shared.service";
 
 interface Role {
   roleId: number;
@@ -112,12 +113,12 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     { labelen: "Mobile No", labelhi: "Mobile No", property: "mobileno" },
     { labelen: "Email ID", labelhi: "Email Id", property: "email" },
     { labelen: "Roles", labelhi: "Roles", property: "designation" },
-    // {
-    //   labelen: "Action",
-    //   labelhi: "Action",
-    //   property: "action",
-    //   isAction: true,
-    // },
+    {
+      labelen: "Action",
+      labelhi: "Action",
+      property: "action",
+      isAction: true,
+    },
   ];
 
   displayedColumns: string[] = [
@@ -126,13 +127,15 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     "mobileno",
     "email",
     "role",
-    "designation"
+    "designation",
+    "action"
   ];
 
   /**
    * Constructor
    */
   constructor(
+    private sharedService:SharedService,
     private changeDetectorRefs: ChangeDetectorRef,
     private _searchUserService: SearchUserService,
     public dialog: MatDialog,
@@ -220,6 +223,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
   }
 
   addNewUser(data) {
+    this.sharedService.setUserData(data);
     this.router.navigateByUrl('/manage-user/user-addUpdate')
   }
 

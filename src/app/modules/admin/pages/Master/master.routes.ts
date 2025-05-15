@@ -7,6 +7,8 @@ import { FileClassificationComponent } from './file-classification/file-classifi
 import { CaseStatusComponent } from './case-status/case-status.component';
 import { DepartmentComponent } from './department/department.component';
 import { DesignationHierarchyComponent } from './designation-hierarchy/designations-hierarchy.component';
+import { CaseFilesComponent } from './case-files/case-files.component';
+import { FileCorrespondenceComponent } from './file-correspondence/file-correspondence.component';
 
 
 export default [
@@ -27,4 +29,12 @@ export default [
         path     : 'file-type',
         component: FileTypeComponent
     },
+    {
+        path:'case-files',
+        component:CaseFilesComponent
+    },
+    {
+        path:'file-Correspondence',
+        component:FileCorrespondenceComponent
+    }
 ] as Routes;

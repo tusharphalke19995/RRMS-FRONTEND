@@ -130,6 +130,20 @@ export const defaultNavigation: FuseNavigationItem[] = [
         type: "basic",
         link: "/manage-master/file-type",
       },
+{
+        id: "caseFiles",
+        title: "Case File Management",
+        type: "basic",
+        link: "/manage-master/case-files",
+      },
+      {
+        id: "filesCorrespondence",
+        title: "File Correspondence  Management",
+        type: "basic",
+        link: "/manage-master/file-Correspondence",
+      },
+      
+      
     ],
   },
   // {

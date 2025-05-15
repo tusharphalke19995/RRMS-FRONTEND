@@ -42,6 +42,8 @@ export const apiurls = {
    departmentsAddUpdateDelete:`${environment.userApiUrl}mdm/departments`,
    designationsHierachyAdd:`${environment.userApiUrl}mdm/designation-hierarchy`,
     uploadApprovalsByID:`${environment.userApiUrl}casedata/upload-approvals`,
+   caseFiles:`${environment.userApiUrl}mdm/caseFiles`,
+   correspondenceFiles:`${environment.userApiUrl}mdm/correspondenceFiles`,
     sendReminder: (id: number | string) => `${environment.userApiUrl}casedata/requests/${id}/send-reminder`,
   withdrawRequest: (id: number | string) => `${environment.userApiUrl}casedata/withdraw-access-requests/${id}`,
  sendReminderPendingApproval: (id: number | string) => `${environment.userApiUrl}casedata/upload-approval/${id}/send-reminder`,
