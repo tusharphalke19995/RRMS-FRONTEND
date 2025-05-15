@@ -49,6 +49,7 @@ import { AuthService } from "app/core/auth/auth.service";
 import { MasterService } from "../../Master/master.service";
 import { ContentManagerDialogComponent } from "../component/content-manager-dialog/content-manager-dialog.component";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { ImagePreviewDailogComponent } from "../component/image-preview-dailog/image-preview-dailog.component";
 // import { saveAs } from 'file-saver';
 
 interface CustomFile extends File {
@@ -91,6 +92,7 @@ interface FileWithMetadata extends CustomFile {
     MatCardModule,
     MatDialogModule,
     MatCheckboxModule,
+    CommonModule
   ],
   templateUrl: "./upload-files.component.html",
   styleUrls: ["./upload-files.component.scss"],
@@ -183,6 +185,8 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   //   {value:"I/O",fileStageName:"I/O"},
   //   {value:"Crime",fileStageName:"Crime"}
   // ]
+  previewUrl: string | null = null;
+  previewType: 'image' | 'video' | 'audio' | 'pdf' | 'other' = 'other';
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -583,7 +587,9 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   viewImage(data) {
-    const dialogRef = this.dialog.open(UploadedFilesComponent, {
+    if(this.checkGetFile ===true)
+{
+const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
       data: data,
       width: "850px", // or '100vw' for full width
       maxWidth: "100vw",
@@ -593,6 +599,19 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     dialogRef.afterClosed().subscribe((result) => {
       this._changeDetectorRef.detectChanges();
     });
+} else{
+const dialogRef = this.dialog.open(UploadedFilesComponent, {
+      data: data,
+      width: "850px", // or '100vw' for full width
+      maxWidth: "100vw",
+      height: "90vh",
+      panelClass: "custom-dialog-class",
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      this._changeDetectorRef.detectChanges();
+    });
+}   
+
   }
 
   // checkPermissions() {
