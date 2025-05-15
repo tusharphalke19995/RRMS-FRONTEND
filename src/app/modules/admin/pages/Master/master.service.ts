@@ -359,6 +359,27 @@ export class MasterService {
       .pipe(catchError(this.handleError));
   }
 
+
+  designationsFilterByDepartmentId(id:number) {
+    const url = `${apiurls.designationsFilterByDepartmentId}=${id}`; 
+    return this._httpClient.get(url, {
+    }).pipe(catchError(this.handleError));
+}
+
+
+  divisionsFilterByDepartmentId(id:number) {
+    const url = `${apiurls.divisionsFilterByDepartmentId}=${id}`; 
+    return this._httpClient.get(url, {
+    }).pipe(catchError(this.handleError));
+}
+
+  designationsFilterByDivisionId(id:number) {
+    const url = `${apiurls.designationsFilterByDivisionId}=${id}`; 
+    return this._httpClient.get(url, {
+    }).pipe(catchError(this.handleError));
+}
+
+
   /**
    * The error handler.
    * @param err The http error response.

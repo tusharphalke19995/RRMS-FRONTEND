@@ -65,10 +65,12 @@ export class DivisionInfoComponent implements OnInit {
   authData: any;
   DivisionIdsUserLogin: [];
   DepartmentIdsUserLogin: [];
+  finalSelectedDeptId: any;
   /**
    * Constructor
    */
   constructor(
+
     private _activatedRoute: ActivatedRoute,
     private _authService: AuthService,
     private _formBuilder: UntypedFormBuilder,
@@ -106,10 +108,11 @@ export class DivisionInfoComponent implements OnInit {
     });
 
     this.getDepartmentsInfo();
-    this.getDivision();
+    // this.getDivision();
   }
 
   onDepartmentSelect(data: any) {
+    this.getdivisionsFilterByDepartmentId(data)
     sessionStorage.setItem("departmentID", data);
   }
 
@@ -207,4 +210,27 @@ export class DivisionInfoComponent implements OnInit {
       error: (error) => {},
     });
   }
+
+   getdivisionsFilterByDepartmentId(dpeptID) {
+    this.masterService.divisionsFilterByDepartmentId(dpeptID).subscribe({
+      next: (response: any) => {
+        this.divisionDropdown = response.filter((res: any) =>
+          this.DivisionIdsUserLogin.map(Number).includes(Number(res.divisionId))
+        );
+        this.filteredDivision = [...this.divisionDropdown];
+
+        if (this.divisionDropdown.length === 1) {
+          const singleDivId = this.divisionDropdown[0].divisionId;
+          this.designationRoleForm.patchValue({
+            divisionId: [singleDivId],
+          });
+          sessionStorage.setItem("divisionID", JSON.stringify([singleDivId]));
+        }
+      },
+      error: (error) => {
+        console.error("Error fetching favorites:", error);
+      },
+    });
+  }
+
 }
