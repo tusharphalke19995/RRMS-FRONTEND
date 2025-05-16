@@ -153,6 +153,10 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   private documentTypeSearchTimeout: any;
   private fileExtensionSearchTimeout: any;
   private caseStatusSearchTimeout: any;
+    filteredYears: { yearId: number; yearName: number }[] = [];
+     filteredToYears: { yearId: number; yearName: number }[] = [];
+  private yearSearchTimeout: any;
+  private yearToSearchTimeout: any;
   dataShow = [
     {
       id: 1,
@@ -192,10 +196,11 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     "unitName",
     "caseTypeName",
     "firNo",
+    "year",
     "caseNo",
-    "caseDate",
-    "letterNo",
+    // "caseTypeName",
     "action",
+  
   ];
 
   caseTypeDropDown: CaseType[] = [];
@@ -206,6 +211,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   caseStatusDropdown: any = [];
   caseTypeFinalId: number;
   masterData: any;
+   yearDropDown: { yearId: number; yearName: number }[] = [];
+   yearToDropDown: { yearId: number; yearName: number }[] = [];
   /**
    * Constructor
    */
@@ -228,11 +235,14 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.initForm();
+      this.getYear();
+      this.getYearTo();
     this.getUserStateDropdown();
     this.onStateChange(16);
     this.onDisctrictChange(443);
     this.getUploadMetaDataFiles();
     this.getMasterDropDown();
+  
 
     // Initialize filtered arrays
     this.filteredStates = this.stateDropdown || [];
@@ -243,6 +253,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     this.filteredDocumentTypes = this.documentTypeDropDown || [];
     this.filteredFileExtensions = this.fileExtensionsDropdown || [];
     this.filteredCaseStatus = this.caseStatusDropdown || [];
+      this.filteredYears = [...this.yearDropDown];
+        this.filteredToYears = [...this.yearToDropDown];
   }
 
   /**
@@ -273,7 +285,10 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       hashTag: [""],
       docType: [""],
       statusId: [""],
-      fileExt:[""]
+      fileExt:[""],
+      classification:[""],
+      yearId:[""],
+      yearIdTo:[""]
     });
   }
 
@@ -365,6 +380,20 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       });
   }
 
+  getYear(){
+     for (let year = 2025; year >= 1990; year--) {
+      this.yearDropDown.push({ yearId: year, yearName: year });
+      this.yearToDropDown.push({ yearId: year, yearName: year })
+    }
+  }
+
+  getYearTo(){
+     for (let year = 2025; year >= 1990; year--) {
+      this.yearToDropDown.push({ yearId: year, yearName: year })
+    }
+  }
+
+
   /**
    * Get Upload MetaData Files
    */
@@ -387,6 +416,9 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       fileExt:this.searchDocumentForm.value.fileExt,
       author:this.searchDocumentForm.value.author,
       toAddr:this.searchDocumentForm.value.toAddr,
+      classification:this.searchDocumentForm.value.classification,
+      fromYear:this.searchDocumentForm.value.yearId,
+       toYear:this.searchDocumentForm.value.yearIdTo
     };
 
     this._searchDocService.getUploadDocMetaData(searchMetaData).subscribe({
@@ -648,6 +680,46 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
         this.filteredCaseStatus = this.caseStatusDropdown.filter((status) => {
           const statusName = (status.value || "").toLowerCase();
           return statusName.includes(searchText);
+        });
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
+  }
+
+  filterYears(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.yearSearchTimeout) {
+      clearTimeout(this.yearSearchTimeout);
+    }
+
+    this.yearSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredYears = [...this.yearDropDown];
+      } else {
+        this.filteredYears = this.yearDropDown.filter(year => {
+          const yearName = year.yearName.toString().toLowerCase();
+          return yearName.includes(searchText);
+        });
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
+  }
+
+   filterToYears(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.yearToSearchTimeout) {
+      clearTimeout(this.yearToSearchTimeout);
+    }
+
+    this.yearToSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredToYears = [...this.yearToDropDown];
+      } else {
+        this.filteredToYears = this.yearToDropDown.filter(year => {
+          const yearName = year.yearName.toString().toLowerCase();
+          return yearName.includes(searchText);
         });
       }
       this._changeDetectorRef.detectChanges();
