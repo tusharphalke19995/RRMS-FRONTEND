@@ -527,7 +527,10 @@ export class UploadFilesComponent implements OnInit, OnChanges {
 
     // Add additional validation if needed
     // Example: file type validation
-    const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+    const allowedTypes = [ 'image/jpeg', 'image/png','audio/mpeg',
+        'video/mp4', 'application/pdf',
+        'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
     if (!allowedTypes.includes(file.type)) {
       file.validationErrors.push("Invalid file type");
       this._snackBar.open("Invalid file type", "Close", {

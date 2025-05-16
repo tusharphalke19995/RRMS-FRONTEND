@@ -40,6 +40,8 @@ export class UploadedFilesComponent {
   fileInfo: string[] = [];
   imageFiles: string[] = [];
   pdfFiles: string[] = [];
+  audioFiles: string[] = [];
+  videoFiles: string[] = [];
   caseMetaData: any;
   constructor(
     private sanitizer: DomSanitizer,
@@ -78,14 +80,21 @@ export class UploadedFilesComponent {
         if (res) {
           const fileUrl = URL.createObjectURL(res);
           const fileType = res.type;
-          if (fileType.startsWith("image")) {
-            this.imageFiles.push(fileUrl);
-          } else if (fileType === "application/pdf") {
-            this.pdfFiles.push(fileUrl);
-          }
+         
+        if (fileType.startsWith('image/')) {
+          this.imageFiles.push(fileUrl);
+        } else if (fileType === 'application/pdf') {
+          this.pdfFiles.push(fileUrl);
+        } else if (fileType.startsWith('audio/')) {
+          this.audioFiles.push(fileUrl);
+        } else if (fileType.startsWith('video/')) {
+          this.videoFiles.push(fileUrl);
         } else {
-          console.error("No file data received");
+          console.warn('Unsupported file type:', fileType);
         }
+      } else {
+        console.error('No file data received');
+      }
       },
       error: (error) => {
         console.error("Error fetching file preview:", error);
