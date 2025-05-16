@@ -143,37 +143,9 @@
                                 </mat-error>
                             </mat-form-field>
                         </td>
-
                        
-                        <td><mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('office')}}</mat-label>
-                                <input matInput matInput [formControlName]="'office'" maxlength="30" (keypress)="allowOnlyLetters($event)">
-                                <mat-error *ngIf="uploadDocumentForm.get('office').hasError('required')">
-                                    Required
-                                </mat-error>
-                            </mat-form-field>
-
-                        </td>
-                       
-
-              
-                       
-                    </tr>
-                </table>
-
-                <table class="example-full-width" cellspacing="0">
-                    <tr>
-                        <td><mat-form-field appearance="outline" class="example-full-width">
-                            <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('letterNo')}}</mat-label>
-                            <input matInput matInput [formControlName]="'letterNo'" [required]="true" >
-                            <mat-error *ngIf="uploadDocumentForm.get('letterNo').hasError('required')">
-                                Required
-                            </mat-error>
-                        </mat-form-field>
-                        </td>
-                        
                         <td>
-                            <mat-form-field appearance="outline" class="example-full-width">
+                             <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{t('caseType')}}</mat-label>
                                 <mat-select [formControlName]="'caseType'"  (selectionChange)="onCaseTypeChange($event)"
                                     [panelClass]="'custom-select-panel'">
@@ -197,60 +169,23 @@
                                 </mat-error>
                             </mat-form-field>
                         </td>
-                       
-
-                        <td><mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('location')}}</mat-label>
-                                <input matInput matInput [formControlName]="'toAddr'" maxlength="100" [required]="true" (keypress)="allowOnlyLetters($event)">
-                                <mat-error *ngIf="uploadDocumentForm.get('toAddr').hasError('required')">
-                                    Required 
-                                </mat-error>
-                            </mat-form-field>
-
-                        </td>
-                        <td><mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('author')}}</mat-label>
-                                <input matInput matInput [formControlName]="'author'" [required]="true" maxlength="20" (keypress)="allowOnlyLetters($event)">
-                                <mat-error *ngIf="uploadDocumentForm.get('author').hasError('required')">
-                                    Required
-                                </mat-error>
-                            </mat-form-field>
-
-                        </td>
-                      
                     </tr>
                 </table>
 
                 <table class="example-full-width" cellspacing="0">
-
                     <tr>
                         <td>
-                            <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('year')}}</mat-label>
-                                <mat-select [formControlName]="'yearId'" (selectionChange)="onYearChange($event.value)"
-                                    [panelClass]="'custom-select-panel'">
-                                    <div class="px-3 py-2">
-                                        <mat-form-field class="w-full">
-                                            <input matInput
-                                                (keyup)="filterYears($event)"
-                                                placeholder="Search year..."
-                                                #yearSearchInput
-                                                [value]="''"
-                                                autocomplete="off">
-                                        </mat-form-field>
-                                    </div>
-                                    <mat-option [value]="null">Please Select</mat-option>
-                                    <ng-container *ngFor="let yrData of filteredYears; trackBy: trackByFn">
-                                        <mat-option [value]="yrData.yearId">{{yrData.yearName}}</mat-option>
-                                    </ng-container>
-                                </mat-select>
-                                <mat-error *ngIf="uploadDocumentForm.get('yearId').hasError('required')">
+                             <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('firNo')}}</mat-label>
+                                <input (input)="generateCrimeNo()" matInput matInput maxlength="4" [formControlName]="'firNo'"
+                                    [required]="true"  (keypress)="allowOnlyNumbers($event)">
+                                <mat-error *ngIf="uploadDocumentForm.get('firNo').hasError('required')">
                                     Required
                                 </mat-error>
                             </mat-form-field>
                         </td>
                         <td>
-                            <mat-form-field appearance="outline" class="example-full-width">
+                             <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{t('caseStatus')}}</mat-label>
                                 <mat-select [formControlName]="'statusId'"
                                     [panelClass]="'custom-select-panel'">
@@ -274,19 +209,85 @@
                                 </mat-error>
                             </mat-form-field>
                         </td>
-                       
-                       
-                        <td><mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('firNo')}}</mat-label>
-                                <input (input)="generateCrimeNo()" matInput matInput maxlength="4" [formControlName]="'firNo'"
-                                    [required]="true"  (keypress)="allowOnlyNumbers($event)">
-                                <mat-error *ngIf="uploadDocumentForm.get('firNo').hasError('required')">
+                        <td>
+                           <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('year')}}</mat-label>
+                                <mat-select [formControlName]="'yearId'" (selectionChange)="onYearChange($event.value)"
+                                    [panelClass]="'custom-select-panel'">
+                                    <div class="px-3 py-2">
+                                        <mat-form-field class="w-full">
+                                            <input matInput
+                                                (keyup)="filterYears($event)"
+                                                placeholder="Search year..."
+                                                #yearSearchInput
+                                                [value]="''"
+                                                autocomplete="off">
+                                        </mat-form-field>
+                                    </div>
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let yrData of filteredYears; trackBy: trackByFn">
+                                        <mat-option [value]="yrData.yearId">{{yrData.yearName}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                                <mat-error *ngIf="uploadDocumentForm.get('yearId').hasError('required')">
                                     Required
                                 </mat-error>
                             </mat-form-field>
-
                         </td>
+                       
 
+                        <td>
+                            <mat-form-field appearance="outline"  class="col-md-3">
+                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('registerDate')}}</mat-label>
+                                <input matInput [matDatepicker]="picker1" [placeholder]="'Choose a date'"
+                                    [formControlName]="'caseDate'">
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="example-full-width" cellspacing="0">
+                    <tr>
+                        <td>
+                            <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('office')}}</mat-label>
+                                <input matInput matInput [formControlName]="'office'" maxlength="30" (keypress)="allowOnlyLetters($event)">
+                                <mat-error *ngIf="uploadDocumentForm.get('office').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field appearance="outline" class="example-full-width">
+                            <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('letterNo')}}</mat-label>
+                            <input matInput matInput [formControlName]="'letterNo'" [required]="true" >
+                            <mat-error *ngIf="uploadDocumentForm.get('letterNo').hasError('required')">
+                                Required
+                            </mat-error>
+                        </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('location')}}</mat-label>
+                                <input matInput matInput [formControlName]="'toAddr'" maxlength="100" [required]="true" (keypress)="allowOnlyLetters($event)">
+                                <mat-error *ngIf="uploadDocumentForm.get('toAddr').hasError('required')">
+                                    Required 
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            
+                            <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('author')}}</mat-label>
+                                <input matInput matInput [formControlName]="'author'" [required]="true" maxlength="20" (keypress)="allowOnlyLetters($event)">
+                                <mat-error *ngIf="uploadDocumentForm.get('author').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+                           
+                        </td>
                         <!-- <td>
                     <tr>
 
@@ -296,28 +297,23 @@
                         </mat-form-field>
                     </tr>
                     </td> -->
-
-                    <td><mat-form-field appearance="outline"  class="example-full-width" >
-                        <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('caseNo')}}</mat-label>
-                        <input matInput matInput [formControlName]="'caseNo'">
-                        <mat-error *ngIf="uploadDocumentForm.get('caseNo').hasError('required')">
-                            Required
-                        </mat-error>
-                    </mat-form-field>
              
                     </tr>
                 </table>
 
                 <table class="example-full-width" cellspacing="0">
 
-        
-                        <mat-form-field appearance="outline"  class="col-md-3">
-                            <mat-label *transloco="let t" class="font-medium example-full-width">{{t('registerDate')}}</mat-label>
-                            <input matInput [matDatepicker]="picker1" [placeholder]="'Choose a date'"
-                                [formControlName]="'caseDate'">
-                            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-                            <mat-datepicker #picker1></mat-datepicker>
-                        </mat-form-field>
+                    <tr>
+                         <td><mat-form-field appearance="outline"  class="col-md-3" >
+                        <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('caseNo')}}</mat-label>
+                        <input matInput matInput [formControlName]="'caseNo'">
+                        <mat-error *ngIf="uploadDocumentForm.get('caseNo').hasError('required')">
+                            Required
+                        </mat-error>
+                    </mat-form-field>
+                    </td>
+                    </tr>
+                        
                    
                 </table>
 

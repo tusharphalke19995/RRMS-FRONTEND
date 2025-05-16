@@ -156,7 +156,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   ) {
     this.authData = this.authenticationService.getAuthData();
     this.dataService.setFileBoolean(true);
-    for (let year = 2025; year >= 1980; year--) {
+    for (let year = 2025; year >= 1990; year--) {
       this.yearDropDown.push({ yearId: year, yearName: year });
     }
   }

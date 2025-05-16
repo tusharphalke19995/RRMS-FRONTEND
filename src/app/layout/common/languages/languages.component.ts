@@ -19,10 +19,10 @@ import { take } from 'rxjs';
 export class LanguagesComponent implements OnInit, OnDestroy
 {
     flagCodes: any;
-    availableLangs: AvailableLangs = [
-        { id: 'en', label: 'English' },
-        { id: 'kn', label: 'ಕನ್ನಡ' } // Kannada
-    ];
+    // availableLangs: AvailableLangs = [
+    //     { id: 'en', label: 'English' },
+    //     { id: 'kn', label: 'ಕನ್ನಡ' } // Kannada
+    // ]; --commented by gayatri
     activeLang: string;
 
     /**
@@ -46,7 +46,7 @@ export class LanguagesComponent implements OnInit, OnDestroy
     ngOnInit(): void
     {
         // Get the available languages from transloco
-        this.availableLangs = this._translocoService.getAvailableLangs();
+        // this.availableLangs = this._translocoService.getAvailableLangs();
 
         // Subscribe to language changes
         this._translocoService.langChanges$.subscribe((activeLang) =>
