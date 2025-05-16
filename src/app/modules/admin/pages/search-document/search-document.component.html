@@ -241,7 +241,7 @@
                         <td>
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-label *transloco="let t">{{t('fileExtension')}}</mat-label>
-                                <mat-select formControlName="docType" [panelClass]="'custom-select-panel'">
+                                <mat-select formControlName="fileExt" [panelClass]="'custom-select-panel'">
                                     <div class="px-3 py-2">
                                         <mat-form-field class="w-full">
                                             <input matInput (keyup)="filterFileExtensions($event)"
@@ -251,10 +251,10 @@
                                     </div>
                                     <mat-option [value]="null">Please Select</mat-option>
                                     <ng-container *ngFor="let fileType of filteredFileExtensions">
-                                        <mat-option [value]="fileType.id">{{ fileType.value }}</mat-option>
+                                        <mat-option [value]="fileType.value">{{ fileType.value }}</mat-option>
                                     </ng-container>
                                 </mat-select>
-                                <mat-error *ngIf="searchDocumentForm.get('docType').hasError('required')">
+                                <mat-error *ngIf="searchDocumentForm.get('fileExt').hasError('required')">
                                     Required
                                 </mat-error>
                             </mat-form-field>
@@ -284,7 +284,7 @@
                         <td><mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium">{{t('author')}}</mat-label>
                                 <input matInput matInput [formControlName]="'author'"
-                                    (keypress)="allowOnlyLetters($event)" maxlength="10">
+                                    (keypress)="allowOnlyLetters($event)" maxlength="100">
                                 <mat-error *ngIf="searchDocumentForm.get('author').hasError('required')">
                                     Required
                                 </mat-error>
@@ -310,7 +310,7 @@
                         </td>
                         <td><mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium">{{t('location')}}</mat-label>
-                                <input matInput matInput [formControlName]="'toAddr'" maxlength="4">
+                                <input matInput matInput [formControlName]="'toAddr'" maxlength="100">
                                 <mat-error *ngIf="searchDocumentForm.get('toAddr').hasError('required')">
                                     Required
                                 </mat-error>

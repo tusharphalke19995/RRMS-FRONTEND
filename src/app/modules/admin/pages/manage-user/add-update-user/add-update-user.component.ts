@@ -119,10 +119,11 @@ export class AddUpdateUserComponent {
           emailID: this.userData.email,
           kgid: this.userData.kgid,
           mobileNo: this.userData.mobileno,
-          designation: this.userData.designation_detail.designationId,
+          designation: this.userData.designation_detail[0]?.designationId,
           roleId: this.userData.roleId,
         });
-        this.addUpdateUserForm.value.kgid.disable();
+        this.onDesignationSelect(this.userData.designation_detail[0]?.designationId);
+        this.addUpdateUserForm.get('kgid')?.disable();
       }
 
     });

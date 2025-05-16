@@ -275,6 +275,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       hashTag: [""],
       docType: [""],
       statusId: [""],
+      fileExt:[""]
     });
   }
 
@@ -380,12 +381,14 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       caseDate: this.searchDocumentForm.value.caseDate,
       firNo: this.searchDocumentForm.value.firNo,
       caseType: this.searchDocumentForm.value.caseType,
-      fileStage: this.searchDocumentForm.value.fileStage,
-      fileType: this.searchDocumentForm.value.fileType,
+      fileType: this.searchDocumentForm.value.fileStage,
       division_id: sessionStorage.getItem('divisionID'),
       docType: this.searchDocumentForm.value.docType,
-      statusId: this.searchDocumentForm.value.statusId,
+      caseStatus: this.searchDocumentForm.value.statusId,
       hashTag: this.searchDocumentForm.value.hashTag,
+      fileExt:this.searchDocumentForm.value.fileExt,
+      author:this.searchDocumentForm.value.author,
+      toAddr:this.searchDocumentForm.value.toAddr,
     };
 
     this._searchDocService.getUploadDocMetaData(searchMetaData).subscribe({

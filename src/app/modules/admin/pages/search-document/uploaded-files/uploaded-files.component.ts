@@ -71,7 +71,7 @@ export class UploadedFilesComponent {
       requested_to: 0,
       comments: "",
       division_id: sessionStorage.getItem('divisionID'),
-      case_id:  this.data.case_details_id || this.caseMetaData?.CaseInfoDetailsId,
+      case_id:  this.data?.case_details_id || this.caseMetaData?.CaseInfoDetailsId || this.data?.caseInfoDetailsId,
     };
     this._searchDocService.filePreviewData(payload).subscribe({
       next: (res: Blob | null) => {

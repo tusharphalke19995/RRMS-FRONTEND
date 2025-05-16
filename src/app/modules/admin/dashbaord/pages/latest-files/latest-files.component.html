@@ -74,7 +74,7 @@
                         <mat-icon
                           class="mr-2 align-middle text-primary"
                           matTooltip="View File"
-                          (click)="viewImage(row)">insert_drive_file</mat-icon>
+                          (click)="viewImage(row.file)">insert_drive_file</mat-icon>
                         {{ row.fileName }}
                       </td>
                 </ng-container>
@@ -101,17 +101,17 @@
 
 
                 <!-- Mobile Column -->
-                <ng-container matColumnDef="fileType">
+                <ng-container matColumnDef="filetypeName">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header
                         class="bg-primary-300 dark:bg-slate-500 text-black">File Type </th>
-                    <td mat-cell *matCellDef="let row"> {{row.filetype_name}} </td>
+                    <td mat-cell *matCellDef="let row"> {{row.filetypeName}} </td>
                 </ng-container>
 
                 <!-- Mobile Column -->
-                <ng-container matColumnDef="classification">
+                <ng-container matColumnDef="classificationName">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header
                         class="bg-primary-300 dark:bg-slate-500 text-black">Classification </th>
-                    <td mat-cell *matCellDef="let row"> {{row.classification_name}} </td>
+                    <td mat-cell *matCellDef="let row"> {{row.classificationName}} </td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-hover cursor-pointer"></tr>

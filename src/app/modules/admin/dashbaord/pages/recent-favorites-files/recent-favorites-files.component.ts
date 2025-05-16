@@ -87,8 +87,8 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
     "fileName",
     "hashTag",
     "subject",
-    "fileType",
-    "classification"
+    "filetypeName",
+    "classificationName"
   ];
   userRoleDropdown: [];
   designationsDropdown: [];

@@ -86,8 +86,8 @@ export class LatestFilesComponent implements OnInit, AfterViewInit {
     "fileName",
     "hashTag",
     "subject",
-    "fileType",
-    "classification"
+    "filetypeName",
+    "classificationName"
   ];
   userRoleDropdown: [];
   designationsDropdown: [];

@@ -282,6 +282,7 @@ getNotificationsCount() {
   checkDesignationObj() {
     if (this.authData.SuperAdmin == true) {
       this.showAdminBool = true;
+      this.showChangeDivision=false;
     }  
   }
   
