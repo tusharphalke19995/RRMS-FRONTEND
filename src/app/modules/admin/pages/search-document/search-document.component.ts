@@ -167,8 +167,6 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
   columns: any[] = [
-    { labelen: "State", labelhi: "State", property: "stateName" },
-    { labelen: "District", labelhi: "District", property: "districtName" },
     {
       labelen: "Police Station",
       labelhi: "Police Station",
@@ -189,12 +187,12 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   ];
 
   displayedColumns: string[] = [
-    "stateName",
-    "districtName",
+    // "stateName",
+    // "districtName",
     "unitName",
+    "caseTypeName",
     "firNo",
     "caseNo",
-    "caseTypeName",
     "caseDate",
     "letterNo",
     "action",
