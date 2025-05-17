@@ -401,7 +401,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
         showMore: true,
       };
     }
-    return { truncatedText: text, showMore: false };
+    return { truncatedTextLatestFiles: text, showMore: false };
   }
 
   toggleDetailsLatestFiles(rowIndex: number, event: Event): void {
