@@ -142,8 +142,8 @@
                                     <div class="favorite-card py-3" [@fadeIn]>
                                         <div class="favorite-card-header">
                                             <div class="file-info">
-                                                <div class="file-name" (click)="viewImage(favoritesItem.file)">
-                                                    <mat-icon class="cursor-pointer">{{
+                                                <div class="file-name" >
+                                                    <mat-icon class="cursor-pointer" (click)="viewImage(favoritesItem.file)">{{
                                                         'insert_drive_file' }}</mat-icon>
                                                     <!-- <span class="ml-1.2">{{
                                                         favoritesItem.file.fileName }}</span> -->
@@ -219,8 +219,8 @@
                                         <div class="favorite-card-header">
                                             <div class="file-info">
                                                 <div class="file-name"
-                                                    (click)="viewImageLatesFilesList(latestFileItem)"> <mat-icon
-                                                        class="cursor-pointer">{{
+                                                   > <mat-icon
+                                                        class="cursor-pointer"  (click)="viewImageLatesFilesList(latestFileItem)">{{
                                                         'insert_drive_file' }}</mat-icon>
                                                     <!-- <span class="ml-1.2">{{
                                                         latestFileItem.fileName }}</span> -->
