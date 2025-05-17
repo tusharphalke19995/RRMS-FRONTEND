@@ -88,7 +88,7 @@
                 </div>
             </div>
 
-              <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden" *ngIf="!showAdminBool">
+            <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden" *ngIf="!showAdminBool">
                 <div class="flex items-start justify-between">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">File Approvals</div>
                 </div>
@@ -106,7 +106,7 @@
                 </div>
             </div>
 
-             <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden" *ngIf="!showAdminBool">
+            <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden" *ngIf="!showAdminBool">
                 <div class="flex items-start justify-between">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Notifications</div>
                 </div>
@@ -142,10 +142,22 @@
                                     <div class="favorite-card py-3" [@fadeIn]>
                                         <div class="favorite-card-header">
                                             <div class="file-info">
-                                                <div class="file-name" (click)="viewImage(favoritesItem.file)"> <mat-icon class="cursor-pointer">{{
+                                                <div class="file-name" (click)="viewImage(favoritesItem.file)">
+                                                    <mat-icon class="cursor-pointer">{{
                                                         'insert_drive_file' }}</mat-icon>
-                                                    <span class="ml-1.2">{{
-                                                        favoritesItem.file.fileName }}</span>
+                                                    <!-- <span class="ml-1.2">{{
+                                                        favoritesItem.file.fileName }}</span> -->
+                                                    <span *ngIf="!isExpanded[i]" class="details">
+                                                        {{ truncateText(favoritesItem.file.fileName, 10).truncatedText
+                                                        }}
+                                                        <a href="#" class="text-yellow-500"
+                                                            (click)="toggleDetails(i, $event)">Show More</a>
+                                                    </span>
+                                                    <span *ngIf="isExpanded[i]" class="details">
+                                                        {{ favoritesItem.file.fileName }}
+                                                        <a href="#" class="text-yellow-500"
+                                                            (click)="toggleDetails(i, $event)">Show Less</a>
+                                                    </span>
                                                 </div>
 
                                                 <div class="added-at"> <mat-icon class="icon-size-5 text-hint"
@@ -206,10 +218,25 @@
                                     <div class="favorite-card py-3" [@fadeIn]>
                                         <div class="favorite-card-header">
                                             <div class="file-info">
-                                                <div class="file-name" (click)="viewImageLatesFilesList(latestFileItem)"> <mat-icon class="cursor-pointer">{{
+                                                <div class="file-name"
+                                                    (click)="viewImageLatesFilesList(latestFileItem)"> <mat-icon
+                                                        class="cursor-pointer">{{
                                                         'insert_drive_file' }}</mat-icon>
-                                                    <span class="ml-1.2">{{
-                                                        latestFileItem.fileName }}</span>
+                                                    <!-- <span class="ml-1.2">{{
+                                                        latestFileItem.fileName }}</span> -->
+
+                                                    <span *ngIf="!isExpandedFileLatest[i]" class="details">
+                                                        {{ truncateTextLatestFiles(latestFileItem.fileName,
+                                                        10).truncatedTextLatestFiles
+                                                        }}
+                                                        <a href="#" class="text-yellow-500"
+                                                            (click)="toggleDetailsLatestFiles(i, $event)">Show More</a>
+                                                    </span>
+                                                    <span *ngIf="isExpandedFileLatest[i]" class="details">
+                                                        {{latestFileItem.fileName }}
+                                                        <a href="#" class="text-yellow-500"
+                                                            (click)="toggleDetailsLatestFiles(i, $event)">Show Less</a>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>

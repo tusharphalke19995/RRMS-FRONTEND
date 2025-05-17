@@ -63,7 +63,7 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   alert: { type: string; message: string };
   divisionDropdown = [];
-
+  isExpanded: boolean[] = []
   @ViewChild("sort1") sort1: MatSort;
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
@@ -205,6 +205,21 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
         if (!hashTagString) return [];
         return hashTagString.split(' ').filter(tag => tag.trim() !== '');
       }
+
+        truncateText(text: string, limit: number): any {
+    if (text.length > limit) {
+      return {
+        truncatedText: text.substring(0, limit) + "...",
+        showMore: true,
+      };
+    }
+    return { truncatedText: text, showMore: false };
+  }
+
+  toggleDetails(rowIndex: number, event: Event): void {
+    event.preventDefault();
+    this.isExpanded[rowIndex] = !this.isExpanded[rowIndex];
+  }
     
 }
 

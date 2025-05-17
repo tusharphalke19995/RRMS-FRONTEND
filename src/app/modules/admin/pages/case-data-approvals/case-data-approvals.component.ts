@@ -79,6 +79,8 @@ import { UpdateFileMetadataComponent } from "./update-file-metadata/update-file-
   templateUrl: "./case-data-approvals.component.html",
 })
 export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
+    isExpanded: boolean[] = [];
+    isExpandedCaseNo: boolean[] = [];
   searchUserListForm: UntypedFormGroup;
   @ViewChild("addcitizenInformationNgForm") addcitizenInformationNgForm: NgForm;
   formFieldHelpers: string[] = [""];
@@ -413,4 +415,34 @@ openEditFileModal(file: any) {
     },
   });
   }
+  
+truncateText(text: string, limit: number): any {
+  if (text.length > limit) {
+    return {
+      truncatedText: text.substring(0, limit) + '...',
+      showMore: true
+    };
+  }
+  return { truncatedText: text, showMore: false };
+}
+
+toggleDetails(rowIndex: number, event: Event): void {
+  event.preventDefault();
+  this.isExpanded[rowIndex] = !this.isExpanded[rowIndex];
+}
+
+truncateTextCaseNo(text: string, limit: number): any {
+  if (text.length > limit) {
+    return {
+      truncatedTextCaseNo: text.substring(0, limit) + '...',
+      showMore: true
+    };
+  }
+  return { truncatedText: text, showMore: false };
+}
+
+toggleDetailsCaseNo(rowIndex: number, event: Event): void {
+  event.preventDefault();
+  this.isExpandedCaseNo[rowIndex] = !this.isExpandedCaseNo[rowIndex];
+}
 }

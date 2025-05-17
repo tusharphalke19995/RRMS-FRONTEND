@@ -75,7 +75,7 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   notificationsCount: number = 0;
   finalDataNotifications: any;
   finalDataCaseReqPending: any;
-    finalDataUpladReqPending: any;
+  finalDataUpladReqPending: any;
   divisionsRoles: any;
   showAdminBool: boolean;
   divisionID: string;
@@ -85,9 +85,11 @@ export class DashbaordComponent implements OnInit, OnDestroy {
   selectedDepartmentNames: string[] = [];
   selectedDivisionNames: string[] = [];
   pendingReqAccessCount: any;
-  pendingUploadReqCount:number;
+  pendingUploadReqCount: number;
   DivisionIdsUserLogin: any;
   DepartmentIdsUserLogin: any;
+  isExpanded: boolean[] = [];
+  isExpandedFileLatest: boolean[] = [];
   /**
    * Constructor
    */
@@ -95,14 +97,14 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private _dashbaordService: DashbaordService,
     private _router: Router,
-      private caseDataApprovalService: CaseDataApprovalService,
+    private caseDataApprovalService: CaseDataApprovalService,
     private authenticationService: AuthService,
     private _searchUserService: SearchUserService,
     private dialog: MatDialog,
     private sharedService: SharedService,
     private masterService: MasterService
   ) {
-   this.extractDivisionAndDepartmentIds();
+    this.extractDivisionAndDepartmentIds();
   }
 
   // -----------------------------------------------------------------------------------------------------
@@ -176,22 +178,22 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     });
   }
 
-getNotificationsCount() {
-  const divisionID = Number(sessionStorage.getItem("divisionID"));
-  this._dashbaordService.getNotificationsCount(divisionID).subscribe({
-    next: (response: any[]) => {
-      console.log("response Noti", response);
-      this.finalDataNotifications = response;
-      // Count only unread notifications
-      this.notificationsCount = response.filter(n => !n.is_read).length;
-      console.log("Unread notificationsCount Noti", this.notificationsCount);
-      this.cdr.detectChanges();
-    },
-    error: (error) => {
-      console.error("Error fetching latest files:", error);
-    },
-  });
-}
+  getNotificationsCount() {
+    const divisionID = Number(sessionStorage.getItem("divisionID"));
+    this._dashbaordService.getNotificationsCount(divisionID).subscribe({
+      next: (response: any[]) => {
+        console.log("response Noti", response);
+        this.finalDataNotifications = response;
+        // Count only unread notifications
+        this.notificationsCount = response.filter((n) => !n.is_read).length;
+        console.log("Unread notificationsCount Noti", this.notificationsCount);
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error("Error fetching latest files:", error);
+      },
+    });
+  }
 
   viewImage(data) {
     const dialogRef = this.dialog.open(UploadedFilesComponent, {
@@ -217,7 +219,6 @@ getNotificationsCount() {
     this._dashbaordService.getCurrentUsers().subscribe({
       next: (response: any) => {
         this.currentUserData = response;
-       
 
         console.log("currentUserData:", this.currentUserData);
         this.cdr.detectChanges();
@@ -229,14 +230,16 @@ getNotificationsCount() {
   }
 
   getContentManagerReqForWkFlow() {
-    let payload={
-       division_id : Number(sessionStorage.getItem("divisionID")),
-        department_id: Number(sessionStorage.getItem("departmentID"))
-    }
+    let payload = {
+      division_id: Number(sessionStorage.getItem("divisionID")),
+      department_id: Number(sessionStorage.getItem("departmentID")),
+    };
     this._dashbaordService.getContentManagerReqData(payload).subscribe({
       next: (response: any) => {
-        this.finalDataCaseReqPending = response.filter((a=>a.status==="pending"))
-        
+        this.finalDataCaseReqPending = response.filter(
+          (a) => a.status === "pending"
+        );
+
         this.pendingReqAccessCount = this.finalDataCaseReqPending.length;
 
         this.cdr.detectChanges();
@@ -257,7 +260,7 @@ getNotificationsCount() {
     this._router.navigateByUrl("request-access");
   }
 
-    goToUploadReqAccess() {
+  goToUploadReqAccess() {
     this._router.navigateByUrl("upload-approval");
   }
 
@@ -282,46 +285,56 @@ getNotificationsCount() {
   checkDesignationObj() {
     if (this.authData.SuperAdmin == true) {
       this.showAdminBool = true;
-      this.showChangeDivision=false;
-    }  
+      this.showChangeDivision = false;
+    }
   }
-  
+
   getHashTags(hashTagString: string): string[] {
     if (!hashTagString) return [];
     return hashTagString.split(" ").filter((tag) => tag.trim() !== "");
   }
-  
-getDepartmentsInfo() {
-  this.masterService.getDepartments().subscribe({
-    next: (response: any[]) => {
-      this.departmentDropdown = response.filter((res: any) =>
-        this.DepartmentIdsUserLogin.map(Number).includes(Number(res.departmentId))
-      );
-      const selectedDepartmentIds = sessionStorage.getItem("departmentID");
-      const selectedDepartments = this.departmentDropdown.filter((d) =>
-        selectedDepartmentIds.includes((d.departmentId))
-      );
-      this.selectedDepartmentNames = selectedDepartments.map((d) => d.departmentName);
-    },
-    error: (error) => {},
-  });
-}
 
-getDivision() {
-  this.masterService.getDivision(Number(sessionStorage.getItem("divisionID"))).subscribe({
-    next: (response: any[]) => {
-      this.divisionDropdown = response.filter((res: any) =>
-        this.DivisionIdsUserLogin.map(Number).includes(Number(res.divisionId))
-      );
-      const selectedDivisionIds = sessionStorage.getItem("divisionID");
-      const selectedDivisions = this.divisionDropdown.filter((d) =>
-        selectedDivisionIds.includes((d.divisionId))
-      );
-      this.selectedDivisionNames = selectedDivisions.map((d) => d.divisionName);
-    },
-    error: (error) => {},
-  });
-}
+  getDepartmentsInfo() {
+    this.masterService.getDepartments().subscribe({
+      next: (response: any[]) => {
+        this.departmentDropdown = response.filter((res: any) =>
+          this.DepartmentIdsUserLogin.map(Number).includes(
+            Number(res.departmentId)
+          )
+        );
+        const selectedDepartmentIds = sessionStorage.getItem("departmentID");
+        const selectedDepartments = this.departmentDropdown.filter((d) =>
+          selectedDepartmentIds.includes(d.departmentId)
+        );
+        this.selectedDepartmentNames = selectedDepartments.map(
+          (d) => d.departmentName
+        );
+      },
+      error: (error) => {},
+    });
+  }
+
+  getDivision() {
+    this.masterService
+      .getDivision(Number(sessionStorage.getItem("divisionID")))
+      .subscribe({
+        next: (response: any[]) => {
+          this.divisionDropdown = response.filter((res: any) =>
+            this.DivisionIdsUserLogin.map(Number).includes(
+              Number(res.divisionId)
+            )
+          );
+          const selectedDivisionIds = sessionStorage.getItem("divisionID");
+          const selectedDivisions = this.divisionDropdown.filter((d) =>
+            selectedDivisionIds.includes(d.divisionId)
+          );
+          this.selectedDivisionNames = selectedDivisions.map(
+            (d) => d.divisionName
+          );
+        },
+        error: (error) => {},
+      });
+  }
 
   getCasedataUploadApprovalsData() {
     let payLoad = {
@@ -330,8 +343,10 @@ getDivision() {
     };
     this.caseDataApprovalService.getCasedataUploadApprovals(payLoad).subscribe({
       next: (response: any) => {
-        this.finalDataUpladReqPending = response.filter((a=>a.status=="PENDING"))
-        
+        this.finalDataUpladReqPending = response.filter(
+          (a) => a.status == "PENDING"
+        );
+
         this.pendingUploadReqCount = this.finalDataUpladReqPending.length;
 
         this.cdr.detectChanges();
@@ -342,22 +357,55 @@ getDivision() {
     });
   }
 
-    extractDivisionAndDepartmentIds(): void {
+  extractDivisionAndDepartmentIds(): void {
     this.authData = this.authenticationService.getAuthData();
-    this.DivisionIdsUserLogin = this.authData.Divisions.flatMap(division => division.divisionIds);
-    this.DepartmentIdsUserLogin = this.authData.Divisions.flatMap(division => division.departmentIds);
-    
+    this.DivisionIdsUserLogin = this.authData.Divisions.flatMap(
+      (division) => division.divisionIds
+    );
+    this.DepartmentIdsUserLogin = this.authData.Divisions.flatMap(
+      (division) => division.departmentIds
+    );
+
     if (this.DivisionIdsUserLogin.length === 1) {
-      this.showChangeDivision = true;   
+      this.showChangeDivision = true;
     } else {
-     this.showChangeDivision = true;
-     
+      this.showChangeDivision = true;
     }
-  
+
     if (this.DepartmentIdsUserLogin.length === 1) {
       this.showChangeDivision = false;
     } else {
       this.showChangeDivision = true;
     }
+  }
+
+  truncateText(text: string, limit: number): any {
+    if (text.length > limit) {
+      return {
+        truncatedText: text.substring(0, limit) + "...",
+        showMore: true,
+      };
+    }
+    return { truncatedText: text, showMore: false };
+  }
+
+  toggleDetails(rowIndex: number, event: Event): void {
+    event.preventDefault();
+    this.isExpanded[rowIndex] = !this.isExpanded[rowIndex];
+  }
+
+  truncateTextLatestFiles(text: string, limit: number): any {
+    if (text.length > limit) {
+      return {
+        truncatedTextLatestFiles: text.substring(0, limit) + "...",
+        showMore: true,
+      };
+    }
+    return { truncatedText: text, showMore: false };
+  }
+
+  toggleDetailsLatestFiles(rowIndex: number, event: Event): void {
+    event.preventDefault();
+    this.isExpandedFileLatest[rowIndex] = !this.isExpandedFileLatest[rowIndex];
   }
 }

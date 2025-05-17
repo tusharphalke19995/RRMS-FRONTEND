@@ -65,10 +65,9 @@
                 <!-- ID Column -->
 
                 <!-- KGID Column -->
-                <ng-container matColumnDef="fileName">
+                <!-- <ng-container matColumnDef="fileName">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header
                         class="bg-primary-300 dark:bg-slate-500 text-black">File Name </th>
-                    <!-- <td mat-cell *matCellDef="let row"> {{row.file.fileName}} </td> -->
                     <td mat-cell *matCellDef="let row">
                         <mat-icon
                           class="mr-2 align-middle text-primary"
@@ -76,7 +75,27 @@
                           (click)="viewImage(row)">insert_drive_file</mat-icon>
                         {{ row.file.fileName }}
                       </td>
-                </ng-container>
+                </ng-container> -->
+
+                <ng-container matColumnDef="fileName">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header
+                                class="bg-primary-300 dark:bg-slate-500 text-black">
+                                File Name
+                            </th>
+                            <td mat-cell *matCellDef="let row; let i = index">
+                                <mat-icon class="mr-2 align-middle text-primary" matTooltip="View File"
+                                    (click)="viewImage(row)">insert_drive_file</mat-icon>
+
+                                <span *ngIf="!isExpanded[i]" class="details">
+                                    {{ truncateText(row.file.fileName, 10).truncatedText }}
+                                    <a href="#" class="text-yellow-500" (click)="toggleDetails(i, $event)">Show More</a>
+                                </span>
+                                <span *ngIf="isExpanded[i]" class="details">
+                                    {{  row.file.fileName }}
+                                    <a href="#" class="text-yellow-500" (click)="toggleDetails(i, $event)">Show Less</a>
+                                </span>
+                            </td>
+                        </ng-container>
 
                 <ng-container matColumnDef="hashTag">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header

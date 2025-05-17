@@ -47,6 +47,7 @@ export const apiurls = {
   designationsFilterByDepartmentId: `${environment.userApiUrl}mdm/designations?departmentId`,
   divisionsFilterByDepartmentId: `${environment.userApiUrl}mdm/divisions?departmentId`,
   designationsFilterByDivisionId: `${environment.userApiUrl}mdm/designations?divisionId`,
+  updateFileDataById: `${environment.userApiUrl}casedata/updateFileData`,
 
   sendReminder: (id: number | string) =>
     `${environment.userApiUrl}casedata/requests/${id}/send-reminder`,

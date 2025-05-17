@@ -128,7 +128,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     "email",
     "role",
     "designation",
-    "action"
+    // "action"
   ];
 
   /**

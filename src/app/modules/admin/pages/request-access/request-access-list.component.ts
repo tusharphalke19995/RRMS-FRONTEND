@@ -74,7 +74,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     MatSortModule,
     CommonModule,
     MatTabsModule,
-    MatTooltipModule
+    MatTooltipModule,
   ],
   templateUrl: "./request-access-list.component.html",
   styleUrl: "./request-access-list.component.scss",
@@ -88,7 +88,9 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   alert: { type: string; message: string };
   divisionDropdown = [];
-
+  isExpanded: boolean[] = [];
+  isExpandedAppvd: boolean[] = [];
+  isExpandedDenied: boolean[] = [];
   @ViewChild("pendingSort") pendingSort: MatSort;
   @ViewChild("pendingPaginator") pendingPaginator: MatPaginator;
   @ViewChild("approvedSort") approvedSort: MatSort;
@@ -307,49 +309,97 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
   }
 
   withdrawRequest(data: any) {
-      this.requestAccessService.withdrawAccessRequest(data.id).subscribe({
-    next: (response: any) => {
-      this.getContentManagerReqForWkFlow();
-      this._snackBar.open("Withdraw Access Request successfully", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["success-snackbar"],
-      });   
-     
-    },
-    error: (error) => {
-      this._snackBar.open(error.message || "Error creating user", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["error-snackbar"],
-      });
-    },
-  });
+    this.requestAccessService.withdrawAccessRequest(data.id).subscribe({
+      next: (response: any) => {
+        this.getContentManagerReqForWkFlow();
+        this._snackBar.open("Withdraw Access Request successfully", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["success-snackbar"],
+        });
+      },
+      error: (error) => {
+        this._snackBar.open(error.message || "Error creating user", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["error-snackbar"],
+        });
+      },
+    });
   }
 
   sendReminder(data: any) {
-    console.log("data",data)
-     this.requestAccessService.sendReminder(data.id).subscribe({
-    next: (response: any) => {
-      this.getContentManagerReqForWkFlow();
-      this._snackBar.open("Reminder Send successfully", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["success-snackbar"],
-      });   
-  
-    },
-    error: (error:any) => {
-      this._snackBar.open(error.error || "Reminder already sent recently. can send a reminder again next day.", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["error-snackbar"],
-      });
-    },
-  });
+    console.log("data", data);
+    this.requestAccessService.sendReminder(data.id).subscribe({
+      next: (response: any) => {
+        this.getContentManagerReqForWkFlow();
+        this._snackBar.open("Reminder Send successfully", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["success-snackbar"],
+        });
+      },
+      error: (error: any) => {
+        this._snackBar.open(
+          error.error ||
+            "Reminder already sent recently. can send a reminder again next day.",
+          "Close",
+          {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["error-snackbar"],
+          }
+        );
+      },
+    });
+  }
+
+  truncateText(text: string, limit: number): any {
+    if (text.length > limit) {
+      return {
+        truncatedText: text.substring(0, limit) + "...",
+        showMore: true,
+      };
+    }
+    return { truncatedText: text, showMore: false };
+  }
+
+  toggleDetails(rowIndex: number, event: Event): void {
+    event.preventDefault();
+    this.isExpanded[rowIndex] = !this.isExpanded[rowIndex];
+  }
+
+  truncateTextAppvd(text: string, limit: number): any {
+    if (text.length > limit) {
+      return {
+        truncatedTextAppvd: text.substring(0, limit) + "...",
+        showMore: true,
+      };
+    }
+    return { truncatedTextAppvd: text, showMore: false };
+  }
+
+  toggleDetailsAppvd(rowIndex: number, event: Event): void {
+    event.preventDefault();
+    this.isExpandedAppvd[rowIndex] = !this.isExpandedAppvd[rowIndex];
+  }
+
+  truncateTextDeny(text: string, limit: number): any {
+    if (text.length > limit) {
+      return {
+        truncatedTextDeny: text.substring(0, limit) + "...",
+        showMore: true,
+      };
+    }
+    return { truncatedTextDeny: text, showMore: false };
+  }
+
+  toggleDetailsDeny(rowIndex: number, event: Event): void {
+    event.preventDefault();
+    this.isExpandedDenied[rowIndex] = !this.isExpandedDenied[rowIndex];
   }
 }
