@@ -65,9 +65,6 @@ export class UpdateFileMetadataComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.getMasterDropDown();
-    if (this.data) {
-      this.patchForm(this.data);
-    }
   }
 
   initForm() {
@@ -90,7 +87,7 @@ export class UpdateFileMetadataComponent implements OnInit {
       classification: data.file.classification || null,
       hashTag: data.file.hashTag || "",
     });
-    this.onFileTypeChange(data.file.fileType);
+    this.onFileTypeChange(data.file.documentType);
   }
 
   updateMetadata() {
@@ -139,6 +136,10 @@ export class UpdateFileMetadataComponent implements OnInit {
         this.masterData = response;
         this.ClassificationTypeDropDown = response.ClassificationType;
         this.FileTypeDropDown = response.FileType;
+       
+      if (this.data) {
+        this.patchForm(this.data);
+      }
       },
       error: (error) => {},
     });
@@ -158,14 +159,17 @@ export class UpdateFileMetadataComponent implements OnInit {
     this.dialogRef.close(false);
   }
 
-  onFileTypeChange(data: any): void {
-    console.log("fileType", data);
-    if (data === 3 || data.value) {
-      this.DocumentTypeDropDown = this.masterData?.CaseFiles;
-    } else if (data === 4 || data.value) {
-      this.DocumentTypeDropDown = this.masterData?.Correspondence;
-    } else {
-      this.DocumentTypeDropDown = [];
-    }
+  onFileTypeChange(fileTypeId: number): void {
+    console.log("fileTypeId",fileTypeId)
+  if (!this.masterData) return;
+
+  if (fileTypeId === 3) {
+    this.DocumentTypeDropDown = this.masterData?.CaseFiles;
+  } else if (fileTypeId === 4) {
+    this.DocumentTypeDropDown = this.masterData?.Correspondence;
+  } else {
+    this.DocumentTypeDropDown = [];
   }
+}
+
 }
