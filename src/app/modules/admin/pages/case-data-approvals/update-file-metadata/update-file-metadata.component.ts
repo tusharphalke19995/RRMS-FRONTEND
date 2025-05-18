@@ -21,6 +21,7 @@ import { TranslocoModule } from "@ngneat/transloco";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { UploadDocumentService } from "../../upload-document/uploadDoc.service";
 import { CaseDataApprovalService } from "../case-data-approvals.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
 // import { FileMetadataService } from 'path-to-your-service';
 // import { MatDialogRef } from '@angular/material/dialog';
 
@@ -52,11 +53,11 @@ export class UpdateFileMetadataComponent implements OnInit {
   DocumentTypeDropDown: any[] = [];
   @Input() fileToEdit: any;
   masterData: any;
-
   constructor(
     public dialogRef: MatDialogRef<UpdateFileMetadataComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private fb: FormBuilder,
+    private _snackBar: MatSnackBar,
     private _uploadDocumentService: UploadDocumentService,
     private caseDataApprovalService: CaseDataApprovalService
   ) {}
@@ -66,7 +67,6 @@ export class UpdateFileMetadataComponent implements OnInit {
     this.getMasterDropDown();
     if (this.data) {
       this.patchForm(this.data);
-      this.getMasterDropDown();
     }
   }
 
@@ -90,7 +90,7 @@ export class UpdateFileMetadataComponent implements OnInit {
       classification: data.file.classification || null,
       hashTag: data.file.hashTag || "",
     });
-    this.onFileTypeChange(data.file.documentType);
+    this.onFileTypeChange(data.file.fileType);
   }
 
   updateMetadata() {
@@ -102,11 +102,18 @@ export class UpdateFileMetadataComponent implements OnInit {
       hashTag: this.metadataForm.value.hashTag,
     };
     this.caseDataApprovalService
-      .updateFileDataById(this.fileToEdit?.id,payload)
+      .updateFileDataById(this.data?.file?.fileId, payload)
       .subscribe({
         next: (res) => {
           this.isSubmitting = false;
-           this.dialogRef.close(true);
+          this.dialogRef.close(true);
+
+          this._snackBar.open(" File details updated successfully", "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["success-snackbar"],
+          });
         },
         error: (err) => {
           this.isSubmitting = false;
@@ -151,11 +158,14 @@ export class UpdateFileMetadataComponent implements OnInit {
     this.dialogRef.close(false);
   }
 
-  onFileTypeChange(data) {
-    if (data.value || data == 3) {
-      this.DocumentTypeDropDown = this.masterData.CaseFiles;
-    } else if (data.value || data == 4) {
-      this.DocumentTypeDropDown = this.masterData.Correspondence;
+  onFileTypeChange(data: any): void {
+    console.log("fileType", data);
+    if (data === 3 || data.value) {
+      this.DocumentTypeDropDown = this.masterData?.CaseFiles;
+    } else if (data === 4 || data.value) {
+      this.DocumentTypeDropDown = this.masterData?.Correspondence;
+    } else {
+      this.DocumentTypeDropDown = [];
     }
   }
 }
