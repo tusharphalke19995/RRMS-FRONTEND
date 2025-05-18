@@ -33,6 +33,7 @@ import { SharedService } from "app/shared/shared.service";
 import { SplitTagsPipe } from "app/shared/pipes/splitTags";
 import { MasterService } from "../pages/Master/master.service";
 import { CaseDataApprovalService } from "../pages/case-data-approvals/case-data-approvals.service";
+import { MatTooltipModule } from "@angular/material/tooltip";
 @Component({
   selector: "app-dashbaord",
   templateUrl: "./dashbaord.component.html",
@@ -56,6 +57,7 @@ import { CaseDataApprovalService } from "../pages/case-data-approvals/case-data-
     CurrencyPipe,
     CommonModule,
     UploadedFilesComponent,
+    MatTooltipModule
   ],
 })
 export class DashbaordComponent implements OnInit, OnDestroy {
@@ -379,33 +381,5 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     }
   }
 
-  truncateText(text: string, limit: number): any {
-    if (text.length > limit) {
-      return {
-        truncatedText: text.substring(0, limit) + "...",
-        showMore: true,
-      };
-    }
-    return { truncatedText: text, showMore: false };
-  }
-
-  toggleDetails(rowIndex: number, event: Event): void {
-    event.preventDefault();
-    this.isExpanded[rowIndex] = !this.isExpanded[rowIndex];
-  }
-
-  truncateTextLatestFiles(text: string, limit: number): any {
-    if (text.length > limit) {
-      return {
-        truncatedTextLatestFiles: text.substring(0, limit) + "...",
-        showMore: true,
-      };
-    }
-    return { truncatedText: text, showMore: false };
-  }
-
-  toggleDetailsLatestFiles(rowIndex: number, event: Event): void {
-    event.preventDefault();
-    this.isExpandedFileLatest[rowIndex] = !this.isExpandedFileLatest[rowIndex];
-  }
+ 
 }

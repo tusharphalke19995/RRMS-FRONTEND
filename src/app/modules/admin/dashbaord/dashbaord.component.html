@@ -145,19 +145,8 @@
                                                 <div class="file-name" (click)="viewImage(favoritesItem.file)">
                                                     <mat-icon class="cursor-pointer">{{
                                                         'insert_drive_file' }}</mat-icon>
-                                                    <!-- <span class="ml-1.2">{{
-                                                        favoritesItem.file.fileName }}</span> -->
-                                                    <span *ngIf="!isExpanded[i]" class="details">
-                                                        {{ truncateText(favoritesItem.file.fileName, 10).truncatedText
-                                                        }}
-                                                        <a href="#" class="text-yellow-500"
-                                                            (click)="toggleDetails(i, $event)">Show More</a>
-                                                    </span>
-                                                    <span *ngIf="isExpanded[i]" class="details">
-                                                        {{ favoritesItem.file.fileName }}
-                                                        <a href="#" class="text-yellow-500"
-                                                            (click)="toggleDetails(i, $event)">Show Less</a>
-                                                    </span>
+                                                    <span class="text-primary-500 cursor-pointer" matTooltip="View File">{{
+                                                        favoritesItem.file.fileName }}</span>
                                                 </div>
 
                                                 <div class="added-at"> <mat-icon class="icon-size-5 text-hint"
@@ -222,21 +211,8 @@
                                                     (click)="viewImageLatesFilesList(latestFileItem)"> <mat-icon
                                                         class="cursor-pointer">{{
                                                         'insert_drive_file' }}</mat-icon>
-                                                    <!-- <span class="ml-1.2">{{
-                                                        latestFileItem.fileName }}</span> -->
-
-                                                    <span *ngIf="!isExpandedFileLatest[i]" class="details">
-                                                        {{ truncateTextLatestFiles(latestFileItem.fileName,
-                                                        10).truncatedTextLatestFiles
-                                                        }}
-                                                        <a href="#" class="text-yellow-500"
-                                                            (click)="toggleDetailsLatestFiles(i, $event)">Show More</a>
-                                                    </span>
-                                                    <span *ngIf="isExpandedFileLatest[i]" class="details">
-                                                        {{latestFileItem.fileName }}
-                                                        <a href="#" class="text-yellow-500"
-                                                            (click)="toggleDetailsLatestFiles(i, $event)">Show Less</a>
-                                                    </span>
+                                                    <span class="text-primary-500 cursor-pointer" matTooltip="View File">{{
+                                                        latestFileItem.fileName }}</span>
                                                 </div>
                                             </div>
                                         </div>

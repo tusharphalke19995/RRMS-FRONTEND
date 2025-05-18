@@ -42,6 +42,7 @@ import { InventoryVendor } from "app/modules/admin/pages/upload-document/uploadD
 import { SharedService } from "app/shared/shared.service";
 import { Subject } from "rxjs";
 import { UploadedFilesComponent } from "app/modules/admin/pages/search-document/uploaded-files/uploaded-files.component";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @Component({
   selector: "app-latest-files",
@@ -68,6 +69,7 @@ import { UploadedFilesComponent } from "app/modules/admin/pages/search-document/
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    MatTooltipModule
   ],
   templateUrl: "./latest-files.component.html",
   styleUrl: "./latest-files.component.scss",

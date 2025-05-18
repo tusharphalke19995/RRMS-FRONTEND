@@ -23,6 +23,7 @@ import { SharedService } from 'app/shared/shared.service';
 import { Subject } from 'rxjs';
 import { DashbaordService } from '../../dashboard.service';
 import { UploadedFilesComponent } from 'app/modules/admin/pages/search-document/uploaded-files/uploaded-files.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-recent-favorites-files',
@@ -49,6 +50,7 @@ import { UploadedFilesComponent } from 'app/modules/admin/pages/search-document/
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    MatTooltipModule
   ],
   templateUrl: './recent-favorites-files.component.html',
   styleUrl: './recent-favorites-files.component.scss',
