@@ -25,7 +25,7 @@
                             [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
                         <ng-container *transloco="let t">
                             <span class="ml-1 text-secondary">
-                                {{t('favioriesFileList')}}</span>
+                               Email Domain Mangement</span>
                         </ng-container>
                     </div>
 
@@ -39,13 +39,23 @@
                 </div>
             </div>
             <!-- Title -->
-
+        
             <div class="mt-2 flex items-center justify-between">
                 <ng-container *transloco="let t">
                     <div class="text-3xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                        {{t('favioriesFileList')}}
+                        Email Domain Mangement
                     </div>
                 </ng-container>
+                
+                <!-- Add User button -->
+                <button 
+                        mat-flat-button 
+                        [color]="'primary'"
+                        class="min-w-[120px]"
+                        (click)="addEmail()">
+                    <mat-icon class="icon-size-5 mr-2" [svgIcon]="'heroicons_solid:plus'"></mat-icon>
+                  Add Email Domain
+                </button>
             </div>
         </div>
 
@@ -58,71 +68,46 @@
             <fuse-alert class="mb-8" *ngIf="alert" [type]="alert.type" [showIcon]="false">
                 {{alert.message}}
             </fuse-alert>
-
         </div>
         <div class="overflow-x-auto">
             <table mat-table [dataSource]="dataSource" matSort #sort1="matSort" class="w-full mt-[10px]">
                 <!-- ID Column -->
-
-                <!-- KGID Column -->
-                <!-- <ng-container matColumnDef="fileName">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black">File Name </th>
-                    <td mat-cell *matCellDef="let row">
-                        <mat-icon
-                          class="mr-2 align-middle text-primary"
-                          matTooltip="View File"
-                          (click)="viewImage(row)">insert_drive_file</mat-icon>
-                        {{ row.file.fileName }}
-                      </td>
+               
+                <!--First Name Column -->
+                <!-- <ng-container matColumnDef="statusId">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Status Id</th>
+                    <td mat-cell *matCellDef="let row"> {{row.statusId}} </td>
                 </ng-container> -->
 
-                <ng-container matColumnDef="fileName">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black">
-                        File Name
-                    </th>
-                    <td mat-cell *matCellDef="let row; let i = index" (click)="viewImage(row)">
-                        <mat-icon class="mr-2 align-middle text-primary"
-                            matTooltip="View File">insert_drive_file</mat-icon>
+    
 
-                        <span class="text-primary-500 hover:underline" matTooltip="View File">{{
-                            row.file.fileName }}</span>
-                    </td>
+                  <!-- Role Column -->
+                  <ng-container matColumnDef="statusName">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black"> Email Domain Name </th>
+                    <td mat-cell *matCellDef="let row"> {{row.statusName}} </td>
                 </ng-container>
 
-                <ng-container matColumnDef="hashTag">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black">Hash Tag </th>
+    
+
+                <!-- Action Column -->
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black"> Action </th>
                     <td mat-cell *matCellDef="let row">
-                        <div class="custom-tag-list">
-                            <span *ngFor="let tag of getHashTags(row.file.hashTag)" class="custom-tag">{{tag}}</span>
+                        <div class="flex justify-center gap-2">
+                            <button mat-icon-button color="primary" (click)="updateEmailDomain(row)" matTooltip="Edit">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                            <button mat-icon-button color="warn" (click)="deleteEmailDomain(row)" matTooltip="Edit">
+                                <mat-icon>delete</mat-icon>
+                            </button>
                         </div>
+                        
                     </td>
                 </ng-container>
 
-                <ng-container matColumnDef="subject">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black"> Subject </th>
-                    <td mat-cell *matCellDef="let row"> {{row.file.subject}} </td>
-                </ng-container>
-
-
-                <!-- Mobile Column -->
-                <ng-container matColumnDef="filetypeName">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black">File Type </th>
-                    <td mat-cell *matCellDef="let row"> {{row.file.filetypeName}} </td>
-                </ng-container>
-
-                <!-- Mobile Column -->
-                <ng-container matColumnDef="classificationName">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black">Classification </th>
-                    <td mat-cell *matCellDef="let row"> {{row.file.classificationName}} </td>
-                </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-hover cursor-pointer"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                    class="hover:bg-hover cursor-pointer"></tr>
             </table>
 
             <!-- No data message -->
@@ -131,8 +116,10 @@
             </div>
         </div>
         <div class="flex justify-end w-full dark:bg-gray-800 bg-card">
-            <mat-paginator #paginator1="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10"
-                showFirstLastButtons>
+            <mat-paginator #paginator1="matPaginator" 
+                           [pageSizeOptions]="[5, 10, 25, 100]" 
+                           [pageSize]="10"
+                           showFirstLastButtons>
             </mat-paginator>
         </div>
     </div>

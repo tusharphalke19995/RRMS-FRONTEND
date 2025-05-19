@@ -74,7 +74,7 @@
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('firstName')}}</mat-label>
                         <input matInput [formControlName]="'firstName'" (keypress)="allowOnlyLetters($event)"
-                            maxlength="10" placeholder="Enter First name">
+                            maxlength="10" placeholder="Enter First name" [disabled]="isView">
                         <mat-error *ngIf="addUpdateUserForm.get('firstName').hasError('required')">
                             Required
                         </mat-error>
@@ -83,7 +83,7 @@
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('lastName')}}</mat-label>
                         <input matInput [formControlName]="'lastName'" (keypress)="allowOnlyLetters($event)"
-                            maxlength="10" placeholder="Enter Last name">
+                            maxlength="10" placeholder="Enter Last name"  [disabled]="isView">
                         <mat-error *ngIf="addUpdateUserForm.get('lastName').hasError('required')">
                             Required
                         </mat-error>
@@ -92,7 +92,7 @@
 
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('userEmail')}}</mat-label>
-                        <input matInput [formControlName]="'emailID'" placeholder="Enter email">
+                        <input matInput [formControlName]="'emailID'" placeholder="Enter email"  [disabled]="isView">
                         <mat-error *ngIf="addUpdateUserForm.get('emailID').hasError('required')">
                             Required
                         </mat-error>
@@ -101,7 +101,7 @@
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('kgId')}}</mat-label>
                         <input matInput [formControlName]="'kgid'" (keypress)="allowOnlyNumbers($event)"
-                            placeholder="Enter KG ID" maxlength="12" minlength="6">
+                            placeholder="Enter KG ID" maxlength="12" minlength="6"  [disabled]="isView">
                         <mat-error *ngIf="addUpdateUserForm.get('kgid').hasError('required')">
                             Required
                         </mat-error>
@@ -116,7 +116,7 @@
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('empMobileno')}}</mat-label>
                         <input matInput [formControlName]="'mobileNo'" (keypress)="allowOnlyNumbers($event)"
-                            maxlength="10" placeholder="Enter mobile number">
+                            maxlength="10" placeholder="Enter mobile number"  [disabled]="isView">
                         <mat-error *ngIf="addUpdateUserForm.get('mobileNo').hasError('required')">
                             Required
                         </mat-error>
@@ -126,7 +126,7 @@
                     <mat-form-field appearance="outline" class="w-full" *ngIf="!updateBool">
                         <mat-label *transloco="let t" class="font-medium">{{t('password')}}</mat-label>
                         <input matInput [type]="hidePassword ? 'password' : 'text'" [formControlName]="'password'"
-                            placeholder="Enter password">
+                            placeholder="Enter password"  [disabled]="isView">
                         <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword"
                             [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword" type="button">
                             <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
@@ -142,7 +142,7 @@
 
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('role')}}</mat-label>
-                        <mat-select [formControlName]="'roleId'" [panelClass]="'custom-select-panel'">
+                        <mat-select [formControlName]="'roleId'" [panelClass]="'custom-select-panel'"  [disabled]="isView">
                             <div class="px-3 py-2">
                                 <mat-form-field class="w-full">
                                     <input matInput (keyup)="filterUserRoles($event)" placeholder="Search role..."
@@ -163,8 +163,8 @@
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{t('designations')}}</mat-label>
                         <mat-select [formControlName]="'designation'" [panelClass]="'custom-select-panel'"
-                            (selectionChange)="onDesignationSelect($event.value)" multiple>
-                            <div class="px-3 py-2">
+                            (selectionChange)="onDesignationSelect($event.value)" multiple  [disabled]="isView">
+                            <div class="px-3 py-2" >
                                 <mat-form-field class="w-full">
                                     <input matInput (keyup)="filterDesignations($event)"
                                         placeholder="Search designation..." #designationSearchInput [value]="''"
@@ -264,11 +264,17 @@
 
                 <!-- Action Buttons -->
                 <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
-                    <button mat-flat-button
+                    <button mat-flat-button *ngIf="!updateBool"
                         class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
-                        (click)="userSave()" [disabled]="this.addUpdateUserForm.invalid" *transloco="let t">
-                        {{t('submit')}}
+                        (click)="userSave()" [disabled]="this.addUpdateUserForm.invalid">
+                        Submit
                     </button>
+                      <button mat-flat-button *ngIf="updateBool"
+                        class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
+                        (click)="userUpdate()" [disabled]="isView">
+                      Update
+                    </button>
+                    
                     <!-- <button mat-stroked-button
                     class="min-w-[90px] px-6 py-2 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                     (click)="onNoClose()" *transloco="let t" >

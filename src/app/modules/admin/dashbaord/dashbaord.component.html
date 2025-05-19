@@ -72,7 +72,7 @@
 
             <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden" *ngIf="!showAdminBool">
                 <div class="flex items-start justify-between">
-                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Access Approvals</div>
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Access Status</div>
                 </div>
                 <div class="flex flex-col items-center mt-2">
                     <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-green-500">
@@ -80,7 +80,7 @@
                     </div>
                     <div class="flex cursor-pointer" (click)="goToPendingReqAccess()">
                         <a class="inline-flex items-center -ml-1.5 text-green-500  font-medium">
-                            <span class="ml-1">Access Approvals</span>
+                            <span class="ml-1">Access Status</span>
                             <mat-icon class="icon-size-5 text-green-500"
                                 [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
                         </a>
@@ -90,7 +90,7 @@
 
             <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden" *ngIf="!showAdminBool">
                 <div class="flex items-start justify-between">
-                    <div class="text-lg font-medium tracking-tight leading-6 truncate">File Approvals</div>
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Upload Status</div>
                 </div>
                 <div class="flex flex-col items-center mt-2">
                     <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-gray-600">
@@ -98,7 +98,7 @@
                     </div>
                     <div class="flex cursor-pointer" (click)="goToUploadReqAccess()">
                         <a class="inline-flex items-center -ml-1.5 text-gray-600  font-medium">
-                            <span class="ml-1">File Approvals</span>
+                            <span class="ml-1">Upload Status</span>
                             <mat-icon class="icon-size-5 text-gray-600"
                                 [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
                         </a>
@@ -145,7 +145,7 @@
                                                 <div class="file-name" (click)="viewImage(favoritesItem.file)">
                                                     <mat-icon class="cursor-pointer">{{
                                                         'insert_drive_file' }}</mat-icon>
-                                                    <span class="text-primary-500 cursor-pointer" matTooltip="View File">{{
+                                                    <span class="text-primary-500  hover:underline cursor-pointer" matTooltip="View File">{{
                                                         favoritesItem.file.fileName }}</span>
                                                 </div>
 
@@ -188,8 +188,8 @@
                         </div>
                         <ng-template #noData>
                             <!-- <p class="text-center text-gray-500">No data available</p> -->
-                            <img class="text-center noDataImg"
-                                src="../../../../assets/images/others/Nodataavailable.svg" alt="">
+                            <img class="text-center"
+                                src="../../../../assets/images/others/nodata.jpg" alt="">
                         </ng-template>
                     </div>
 
@@ -211,7 +211,7 @@
                                                     (click)="viewImageLatesFilesList(latestFileItem)"> <mat-icon
                                                         class="cursor-pointer">{{
                                                         'insert_drive_file' }}</mat-icon>
-                                                    <span class="text-primary-500 cursor-pointer" matTooltip="View File">{{
+                                                    <span class="text-primary-500  hover:underline cursor-pointer" matTooltip="View File">{{
                                                         latestFileItem.fileName }}</span>
                                                 </div>
                                             </div>

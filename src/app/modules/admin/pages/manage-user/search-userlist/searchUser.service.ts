@@ -25,6 +25,22 @@ export class SearchUserService {
       .pipe(catchError(this.handleError));
   }
 
+  searchUser(data){
+   return this._httpClient.post(apiurls.searchUsers,data,)
+      .pipe(catchError(this.handleError));
+  }
+
+
+  updateUserById(userId: number, data: any) {
+    const url = `${apiurls.updateUserById}${userId}`; // Construct the full URL with user ID
+    return this._httpClient.patch(url, data, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
+
   getUserList(id:number) {
     const url = `${apiurls.getUsers}=${id}`; 
     return this._httpClient.get(url, {

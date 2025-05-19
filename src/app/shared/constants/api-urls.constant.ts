@@ -8,7 +8,7 @@ export const apiurls = {
   getDistrictByStateId: `${environment.userApiUrl}mdm/districts/`,
   getState: `${environment.userApiUrl}mdm/states?division_id`,
   geDistrictByState: `${environment.userApiUrl}api/districts/`,
-  updateRoleByRoleId: `${environment.userApiUrl}users/update-user/`,
+  updateUserById: `${environment.userApiUrl}users/update-user/`,
   getDesignations: `${environment.userApiUrl}mdm/designations`,
   userLogin: `${environment.userApiUrl}users/login`,
   getUnitsByDistictId: `${environment.userApiUrl}mdm/units/`,
@@ -48,6 +48,7 @@ export const apiurls = {
   divisionsFilterByDepartmentId: `${environment.userApiUrl}mdm/divisions?departmentId`,
   designationsFilterByDivisionId: `${environment.userApiUrl}mdm/designations?divisionId`,
   updateFileDataById: `${environment.userApiUrl}casedata/updateFileData`,
+  searchUsers: `${environment.userApiUrl}users/search-users`,
 
   sendReminder: (id: number | string) =>
     `${environment.userApiUrl}casedata/requests/${id}/send-reminder`,

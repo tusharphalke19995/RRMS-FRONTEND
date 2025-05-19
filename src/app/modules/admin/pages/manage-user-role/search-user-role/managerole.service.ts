@@ -25,7 +25,7 @@ export class ManageroleService {
   // }
 
   updateRole(userId: number, data: any) {
-    const url = `${apiurls.updateRoleByRoleId}${userId}/`; // Construct the full URL with user ID
+    const url = `${apiurls.updateUserById}${userId}/`; // Construct the full URL with user ID
     return this._httpClient.patch(url, data, {
         headers: new HttpHeaders({
             'Content-Type': 'application/json',

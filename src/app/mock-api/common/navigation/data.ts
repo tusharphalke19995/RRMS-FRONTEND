@@ -23,13 +23,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
     icon: "heroicons_outline:magnifying-glass",
     link: "/search-document",
   },
-  {
-    id: "userMng",
-    title: "User Management",
-    type: "basic",
-    icon: "heroicons_outline:user-circle",
-    link: "/manage-user",
-  },
+  // {
+  //   id: "userMng",
+  //   title: "User Management",
+  //   type: "basic",
+  //   icon: "heroicons_outline:user-circle",
+  //   link: "/manage-user",
+  // },
   // {
   //     id   : 'roleMng',
   //     title: 'Role Management',
@@ -104,13 +104,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
     type: "collapsable",
     icon: "heroicons_outline:information-circle",
     children: [
-      {
-        id: "roleMng",
-        title: "Role Management",
-        type: "basic",
-        link: "/manage-master/role",
-        exactMatch: true,
-      },
+      // {
+      //   id: "roleMng",
+      //   title: "Role Management",
+      //   type: "basic",
+      //   link: "/manage-master/role",
+      //   exactMatch: true,
+      // },
 
       {
         id: "caseStatusMng",
@@ -118,19 +118,19 @@ export const defaultNavigation: FuseNavigationItem[] = [
         type: "basic",
         link: "/manage-master/case-status",
       },
-      {
-        id: "fileClassificationMng",
-        title: "File Classification Management",
-        type: "basic",
-        link: "/manage-master/file-classification",
-      },
+      // {
+      //   id: "fileClassificationMng",
+      //   title: "File Classification Management",
+      //   type: "basic",
+      //   link: "/manage-master/file-classification",
+      // },
       {
         id: "fileTypeMng",
         title: "File Type Management",
         type: "basic",
         link: "/manage-master/file-type",
       },
-{
+      {
         id: "caseFiles",
         title: "Case File Management",
         type: "basic",
@@ -142,8 +142,46 @@ export const defaultNavigation: FuseNavigationItem[] = [
         type: "basic",
         link: "/manage-master/file-Correspondence",
       },
-      
-      
+      {
+        id: "smtpSetting",
+        title: "SMTP Management",
+        type: "basic",
+        link: "/manage-master/smtp-setting",
+      },
+      {
+        id: "emailDomain",
+        title: "Email Domain Management",
+        type: "basic",
+        link: "/manage-master/email-domain-mng",
+      },
+    ],
+  },
+   {
+    id: "userMng",
+    title: "User Management",
+    type: "collapsable",
+    icon: "heroicons_outline:information-circle",
+    children: [
+      {
+        id: "activeUser",
+        title: "Active User",
+        type: "basic",
+        link: "/manage-user/active-user",
+      },
+     
+      {
+        id: "archcivedUser",
+        title: "Archive User",
+        type: "basic",
+        link: "/manage-user/archived-users",
+      },
+     
+      {
+        id: "resetPassword",
+        title: "Reset Password",
+        type: "basic",
+        link: "/manage-userr/file-Correspondence",
+      }
     ],
   },
   // {

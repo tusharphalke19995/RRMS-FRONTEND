@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, ViewChild, ViewEncapsulation } from "@angular/core";
+import { ChangeDetectorRef, Component, ViewChild, ViewEncapsulation } from "@angular/core";
 import {
   FormsModule,
   MaxLengthValidator,
@@ -91,24 +91,41 @@ export class AddUpdateUserComponent {
   selectedDesignations: any[] = [];
   userData: any;
   updateBool: boolean = false;
+  isView:boolean;
   constructor(
     private router: Router,
     private _searchUserService: SearchUserService,
     private _formBuilder: UntypedFormBuilder,
     private _snackBar: MatSnackBar,
     public dialog: MatDialog,
+     private cdr: ChangeDetectorRef,
     private sharedService: SharedService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.initiateForm();
+      this.getUserDataPatch();
+      this.checkViewBoolean();
     this.getUserRoleDropdown();
     this.getDivisionDropdown();
     this.getDesignationsData();
-    this.getUserDataPatch();
+  
   }
 
+
+   checkViewBoolean() {
+    this.sharedService.getUserBoolean().subscribe((res) => {
+      console.log("res",res);
+      if(res===true){
+       this.isView = true;
+        this.addUpdateUserForm.get("firstName")?.disable();
+         this.addUpdateUserForm.get("lastName")?.disable();
+      }
+    });
+  }
+  
   getUserDataPatch() {
+    this.isView = false;
     this.sharedService.getUserData().subscribe((data) => {
       if (data) {
         this.updateBool = true;
@@ -119,26 +136,34 @@ export class AddUpdateUserComponent {
           emailID: this.userData.email,
           kgid: this.userData.kgid,
           mobileNo: this.userData.mobileno,
-          designation: this.userData.designation_detail[0]?.designationId,
+          designation: this.userData.designation_detail?.map(
+            (d) => d.designationId
+          ),
           roleId: this.userData.roleId,
         });
-        this.onDesignationSelect(this.userData.designation_detail[0]?.designationId);
-        this.addUpdateUserForm.get('kgid')?.disable();
+        setTimeout(() => {
+           this.onDesignationSelect(
+          this.userData.designation_detail?.map((d) => d.designationId)
+        );
+        }, 3000);
+       
+        this.addUpdateUserForm.get("kgid")?.disable();
+        this.addUpdateUserForm.get("emailID")?.disable();
+        this.addUpdateUserForm.get("mobileNo")?.disable();
+          this.cdr.detectChanges();
       }
-
     });
   }
 
   initiateForm() {
     this.addUpdateUserForm = this._formBuilder.group({
-      firstName: ["", Validators.required],
-      lastName: ["", Validators.required],
-
+      firstName: ["", [Validators.required]],
+      lastName: ["", [Validators.required]],
       emailID: ["", [Validators.required, Validators.email]],
       kgid: ["", Validators.required, MaxLengthValidator[12]],
       mobileNo: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
       roleId: ["", [Validators.required]],
-      designation: ["", [Validators.required]],
+      designation: [[], [Validators.required]],
       password: [
         "",
         [
@@ -152,7 +177,6 @@ export class AddUpdateUserComponent {
   }
 
   userSave() {
-
     const data = {
       first_name: this.addUpdateUserForm.value.firstName,
       last_name: this.addUpdateUserForm.value.lastName,
@@ -171,7 +195,7 @@ export class AddUpdateUserComponent {
           verticalPosition: "top",
           panelClass: ["success-snackbar"],
         });
-        this.router.navigateByUrl("manage-user");
+        this.router.navigateByUrl("manage-user/active-user");
       },
       error: (error) => {
         this._snackBar.open(error.message || "Error creating user", "Close", {
@@ -184,7 +208,6 @@ export class AddUpdateUserComponent {
     });
   }
 
-
   /**
    * Track by function for ngFor loops
    *
@@ -194,7 +217,6 @@ export class AddUpdateUserComponent {
   trackByFn(index: number, item: any): any {
     return item.id || index;
   }
-
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -289,7 +311,7 @@ export class AddUpdateUserComponent {
           this.filteredUserRoles = [...this.userRoleDropdown];
         }
       },
-      error: (error) => { },
+      error: (error) => {},
     });
   }
 
@@ -302,7 +324,7 @@ export class AddUpdateUserComponent {
           this.filteredDivisions = [...this.divisionDropdown];
         }
       },
-      error: (error) => { },
+      error: (error) => {},
     });
   }
 
@@ -315,27 +337,72 @@ export class AddUpdateUserComponent {
           this.filteredDesignations = [...this.designationsDropdown];
         }
       },
-      error: (error) => { },
+      error: (error) => {},
     });
   }
 
+  // onDesignationSelect(designationIds: number[]) {
+  //   this.selectedDesignations = this.designationsDropdown.filter(
+  //     d => designationIds.includes(d.designationId)
+  //   );
+  // }
+
   onDesignationSelect(designationIds: number[]) {
-    this.selectedDesignations = this.designationsDropdown.filter(
-      d => designationIds.includes(d.designationId)
+    if (!Array.isArray(designationIds)) {
+      designationIds = [designationIds];
+    }
+
+    this.selectedDesignations = this.designationsDropdown.filter((d) =>
+      designationIds.includes(d.designationId)
     );
+    console.log("selectedDesignations",this.selectedDesignations)
+    this.cdr.detectChanges();
   }
 
-
   getDepartmentNames(row: any): string {
-    return row.department?.map((d: any) => d.departmentName).join(', ') || '-';
+    return row.department?.map((d: any) => d.departmentName).join(", ") || "-";
   }
 
   getDivisionNames(row: any): string {
-    return row.division?.map((d: any) => d.divisionName).join(', ') || '-';
+    return row.division?.map((d: any) => d.divisionName).join(", ") || "-";
   }
 
   getSuperdivisionNames(row: any): string {
-    return row.superdivision?.map((s: any) => s.superdivisionName).join(', ') || '-';
+    return (
+      row.superdivision?.map((s: any) => s.superdivisionName).join(", ") || "-"
+    );
   }
 
+  userUpdate() {
+    const data = {
+      id:this.userData.id,
+      first_name: this.addUpdateUserForm.value.firstName,
+      last_name: this.addUpdateUserForm.value.lastName,
+      email:  this.userData.email,
+      kgid: this.userData.kgid,
+      mobileno:  this.userData.mobileno,
+      password: this.userData.password,
+      roleId: this.addUpdateUserForm.value.roleId,
+      designation: this.addUpdateUserForm.value.designation,
+    };
+    this._searchUserService.updateUserById(this.userData.kgid,data).subscribe({
+      next: (response: any) => {
+        this._snackBar.open("User Updated successfully", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["success-snackbar"],
+        });
+        this.router.navigateByUrl("manage-user/active-user");
+      },
+      error: (error) => {
+        this._snackBar.open(error.message || "Error creating user", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["error-snackbar"],
+        });
+      },
+    });
+  }
 }

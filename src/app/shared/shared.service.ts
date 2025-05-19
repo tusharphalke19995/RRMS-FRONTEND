@@ -38,6 +38,9 @@ import { DOCUMENT } from "@angular/common";
 
       private getFilesBoolean: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true); // Initialize with a default value
       public getfiles$: Observable<boolean> = this.getFilesBoolean.asObservable();
+
+       private setUserViewBoolean: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+      public getUserViewBoolean$: Observable<boolean> = this.setUserViewBoolean.asObservable();
     
 
       constructor(private _httpClient: HttpClient, @Inject(DOCUMENT) private document) {
@@ -107,5 +110,15 @@ import { DOCUMENT } from "@angular/common";
       getUserData(): Observable<any[]> {
         return this.userData$; 
       }
+
+
+       setUserBoolean(boolean) {
+        this.setUserViewBoolean.next(boolean);
+      }
+ 
+      getUserBoolean(): Observable<boolean> {
+        return this.getUserViewBoolean$; 
+      }
+
 
   }

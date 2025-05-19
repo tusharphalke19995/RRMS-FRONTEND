@@ -1,24 +1,24 @@
 import {
-  NgIf,
-  NgFor,
-  NgTemplateOutlet,
-  NgClass,
-  CurrencyPipe,
-} from "@angular/common";
-import {
+  AfterViewInit,
   ChangeDetectorRef,
   Component,
-  ViewChild,
   OnInit,
-  AfterViewInit,
+  ViewChild,
 } from "@angular/core";
+import {
+  CommonModule,
+  CurrencyPipe,
+  NgClass,
+  NgFor,
+  NgIf,
+  NgTemplateOutlet,
+} from "@angular/common";
 import {
   ReactiveFormsModule,
   FormsModule,
   NgForm,
   UntypedFormBuilder,
   UntypedFormGroup,
-  Validators,
 } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatRippleModule } from "@angular/material/core";
@@ -29,25 +29,17 @@ import { MatInputModule } from "@angular/material/input";
 import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSort, MatSortModule } from "@angular/material/sort";
-import { MatTableModule, MatTableDataSource } from "@angular/material/table";
+import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { Router, RouterLink } from "@angular/router";
 import { TranslocoModule } from "@ngneat/transloco";
+import { MatDialog } from "@angular/material/dialog";
+import { SharedService } from "app/shared/shared.service";
 import { Subject } from "rxjs";
 import { SearchDocService } from "../../search-document/searchDoc.service";
 import { InventoryVendor } from "../../upload-document/uploadDoc.types";
-import { MatDialog } from "@angular/material/dialog";
-import { AddUpdateUserComponent } from "../add-update-user/add-update-user.component";
-import { SearchUserService } from "./searchUser.service";
-import { SharedService } from "app/shared/shared.service";
-import { MatSnackBar } from "@angular/material/snack-bar";
+import { SearchUserService } from "../search-userlist/searchUser.service";
 import { MasterService } from "../../Master/master.service";
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-
-interface Department {
-  departmentId: number;
-  departmentName: string;
-}
-
+import { MatSnackBar } from "@angular/material/snack-bar";
 interface Role {
   roleId: number;
   roleName: string;
@@ -58,13 +50,18 @@ interface Division {
   divisionName: string;
 }
 
+interface Department {
+  departmentId: number;
+  departmentName: string;
+}
+
+
 interface Designation {
   designationId: number;
   designationName: string;
 }
-
 @Component({
-  selector: "app-search-userlist",
+  selector: "app-archived-users",
   standalone: true,
   imports: [
     NgIf,
@@ -88,12 +85,11 @@ interface Designation {
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
-    MatSlideToggleModule
   ],
-  templateUrl: "./search-userlist.component.html",
-  styleUrl: "./search-userlist.component.scss",
+  templateUrl: "./archived-users.component.html",
+  styleUrl: "./archived-users.component.scss",
 })
-export class SearchUserlistComponent implements OnInit, AfterViewInit {
+export class ArchivedUsersComponent implements OnInit, AfterViewInit {
   searchUserListForm: UntypedFormGroup;
   @ViewChild("addcitizenInformationNgForm") addcitizenInformationNgForm: NgForm;
   formFieldHelpers: string[] = [""];
@@ -124,12 +120,12 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     { labelen: "Mobile No", labelhi: "Mobile No", property: "mobileno" },
     { labelen: "Email ID", labelhi: "Email Id", property: "email" },
     { labelen: "Roles", labelhi: "Roles", property: "designation" },
-    {
-      labelen: "Action",
-      labelhi: "Action",
-      property: "action",
-      isAction: true,
-    },
+    // {
+    //   labelen: "Action",
+    //   labelhi: "Action",
+    //   property: "action",
+    //   isAction: true,
+    // },
   ];
 
   displayedColumns: string[] = [
@@ -139,7 +135,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     "email",
     "role",
     "designation",
-    "action"
+    // "action"
   ];
 
   /**
@@ -234,14 +230,6 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
 
   addNewUser(data) {
     this.sharedService.setUserData(data);
-      this.sharedService.setUserBoolean(false);
-    this.router.navigateByUrl('/manage-user/user-addUpdate')
-  }
-
-
-  viewUser(data) {
-    this.sharedService.setUserData(data);
-    this.sharedService.setUserBoolean(true);
     this.router.navigateByUrl('/manage-user/user-addUpdate')
   }
 
@@ -448,38 +436,4 @@ searcUserBySelectedParameter(){
     });
 }
   
-
-toggleUserStatus(user: any): void {
-  const updatedStatus = !user.active;
-
-  const payload = {
-    id: user.id,
-    active: updatedStatus
-  };
-
-  // this._searchUserService.updateUserById(user.id, payload).subscribe({
-  //   next: () => {
-  //     user.active = updatedStatus;
-  //     this._snackBar.open(
-  //       `User ${updatedStatus ? 'activated' : 'deactivated'} successfully.`,
-  //       'Close',
-  //       {
-  //         duration: 3000,
-  //         horizontalPosition: 'right',
-  //         verticalPosition: 'top',
-  //         panelClass: ['success-snackbar']
-  //       }
-  //     );
-  //   },
-  //   error: () => {
-  //     this._snackBar.open('Failed to update user status.', 'Close', {
-  //       duration: 3000,
-  //       horizontalPosition: 'right',
-  //       verticalPosition: 'top',
-  //       panelClass: ['error-snackbar']
-  //     });
-  //   }
-  // });
-}
-
 }

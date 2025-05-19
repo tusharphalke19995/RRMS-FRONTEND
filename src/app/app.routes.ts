@@ -34,6 +34,7 @@ export const appRoutes: Route[] = [
             {path: 'reset-password', loadChildren: () => import('app/modules/auth/reset-password/reset-password.routes')},
             {path: 'sign-in', loadChildren: () => import('app/modules/auth/sign-in/sign-in.routes')},
             {path: 'sign-up', loadChildren: () => import('app/modules/auth/sign-up/sign-up.routes')},
+             {path: 'sign-out', loadChildren: () => import('app/modules/auth/sign-out/sign-out.routes')},
         ]
     },
 
@@ -48,7 +49,6 @@ export const appRoutes: Route[] = [
         },
         children: [
             {path: 'division-selection', loadChildren: () => import('app/modules/auth/division-info/division-info.routes')},
-            {path: 'sign-out', loadChildren: () => import('app/modules/auth/sign-out/sign-out.routes')},
             {path: 'unlock-session', loadChildren: () => import('app/modules/auth/unlock-session/unlock-session.routes')}
         ]
     },
@@ -86,6 +86,7 @@ export const appRoutes: Route[] = [
             {path: 'manage-notification', loadChildren: () => import('app/modules/admin/pages/manage-notification/notification.routes')},
             {path: 'manage-master', loadChildren: () => import('app/modules/admin/pages/Master/master.routes')},
             {path: 'revoke-approval', loadChildren: () => import('app/modules/admin/pages/revoke-approval-list/revoke-approval.routes')},
+            {path: 'user-details', loadChildren: () => import('app/modules/admin/pages/user-details/user-info/user-info.routes')},
         ]
     }
 ];

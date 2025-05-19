@@ -118,4 +118,8 @@ export class UserComponent implements OnInit, OnDestroy {
     localStorage.clear();
     sessionStorage.clear();
   }
+
+  goToUSer(){
+  this._router.navigate(["/user-details"]);
+  }
 }

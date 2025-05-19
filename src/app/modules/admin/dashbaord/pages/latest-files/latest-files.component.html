@@ -88,7 +88,7 @@
                     <td mat-cell *matCellDef="let row; let i = index" (click)="viewImage(row.file)">
                         <mat-icon class="mr-2 align-middle text-primary"
                             matTooltip="View File">insert_drive_file</mat-icon>
-                        <span class="text-primary-500" matTooltip="View File">{{
+                        <span class="text-primary-500 hover:underline" matTooltip="View File">{{
                             row.fileName }}</span>
                     </td>
                 </ng-container>
