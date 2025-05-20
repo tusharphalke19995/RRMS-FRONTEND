@@ -274,8 +274,8 @@
                             <button mat-icon-button color="primary" (click)="viewUser(row)" matTooltip="View">
                                 <mat-icon>visibility</mat-icon>
                             </button>
-                            <mat-slide-toggle [checked]="row.active" (change)="toggleUserStatus(row)" class="mt-2" color="primary"
-                                matTooltip="{{ row.active ? 'Deactivate' : 'Activate' }}">
+                            <mat-slide-toggle [checked]="row.is_active" (change)="toggleUserStatus(row)" class="mt-2" color="primary"
+                                matTooltip="{{ row.is_active ? 'Deactivate' : 'Activate' }}">
                             </mat-slide-toggle>
                         </div>
                     </td>

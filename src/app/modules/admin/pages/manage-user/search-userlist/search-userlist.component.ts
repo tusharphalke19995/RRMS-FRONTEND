@@ -450,7 +450,7 @@ searcUserBySelectedParameter(){
   
 
 toggleUserStatus(user: any): void {
-  const updatedStatus = !user.active;
+  const updatedStatus = !user.is_active;
 
   const payload = {
     id: user.id,
