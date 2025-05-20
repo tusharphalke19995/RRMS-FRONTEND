@@ -744,6 +744,31 @@ const dialogRef = this.dialog.open(UploadedFilesComponent, {
     return classification ? classification.value : "Unknown";
   }
 
+   getFolderNameById(id: number): string {
+    this.updateDocumentTypes(id);
+    const folderName = this.FileTypeDropDown?.find(
+      (c) => c.id === id
+    );
+    return folderName ? folderName.value : "Unknown";
+  }
+
+   getDocNameById(id: number): string {
+    const docName = this.DocumentTypeDropDown?.find(
+      (c) => c.id === id
+    );
+    return docName ? docName.value : "Unknown";
+  }
+
+  updateDocumentTypes(folderId: number): void {
+  if (folderId === 3) {
+    this.DocumentTypeDropDown = this.masterData?.CaseFiles;
+  } else if (folderId === 4) {
+    this.DocumentTypeDropDown = this.masterData?.Correspondence;
+  } else {
+    this.DocumentTypeDropDown = [];
+  }
+}
+
   // getUserRoleName(): string | null {
   //   const userRole = this.authData.DivisionsRoles.find(
   //     (role) => role.role_name === "User"
