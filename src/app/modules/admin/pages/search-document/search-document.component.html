@@ -432,7 +432,7 @@
                 <ng-container matColumnDef="firNo">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header
                         class="bg-primary-300 dark:bg-slate-500 text-black">FIR No</th>
-                    <td mat-cell *matCellDef="let row"> {{row.firNo}} </td>
+                    <td mat-cell *matCellDef="let row"> {{row.firNo}} /{{row.year}}</td>
                 </ng-container>
 
                 <!-- KGID Column -->
@@ -441,16 +441,6 @@
                         class="bg-primary-300 dark:bg-slate-500 text-black"> Case No </th>
                     <td mat-cell *matCellDef="let row"> {{row.caseNo}} </td>
                 </ng-container>
-
-
-
-                <ng-container matColumnDef="year">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        class="bg-primary-300 dark:bg-slate-500 text-black"> Year</th>
-                    <td mat-cell *matCellDef="let row"> {{row.year}} </td>
-                </ng-container>
-
-
 
                 <!-- <ng-container matColumnDef="letterNo">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header

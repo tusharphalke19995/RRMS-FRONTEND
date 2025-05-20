@@ -196,7 +196,6 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     "unitName",
     "caseTypeName",
     "firNo",
-    "year",
     "caseNo",
     // "caseTypeName",
     "action",
