@@ -32,7 +32,7 @@ import { MatSort, MatSortModule } from "@angular/material/sort";
 import { MatTableModule, MatTableDataSource } from "@angular/material/table";
 import { Router, RouterLink } from "@angular/router";
 import { TranslocoModule } from "@ngneat/transloco";
-import { Subject } from "rxjs";
+import { debounceTime, distinctUntilChanged, Subject } from "rxjs";
 import { SearchDocService } from "../../search-document/searchDoc.service";
 import { InventoryVendor } from "../../upload-document/uploadDoc.types";
 import { MatDialog } from "@angular/material/dialog";
@@ -167,7 +167,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
    */
   ngOnInit(): void {
     this.initForm();
-    this.getUserInfo();
+    this.getApiCall();
     this.getUserRoleDropdown();
     this.getDivisionDropdown();
     this.getDesignationsDropDownData();
@@ -481,5 +481,13 @@ toggleUserStatus(user: any): void {
   //   }
   // });
 }
+
+getApiCall() {
+    this.searchUserListForm.valueChanges
+      .pipe(debounceTime(400), distinctUntilChanged())
+      .subscribe(() => {
+        this.searcUserBySelectedParameter();
+      });
+  }
 
 }

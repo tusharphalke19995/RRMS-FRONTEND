@@ -30,7 +30,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { fuseAnimations } from "@fuse/animations";
 import { FuseConfirmationService } from "@fuse/services/confirmation";
-import { Subject } from "rxjs";
+import { debounceTime, distinctUntilChanged, Subject } from "rxjs";
 import { MatDividerModule } from "@angular/material/divider";
 import { TranslocoModule } from "@ngneat/transloco";
 import { Router, RouterLink } from "@angular/router";
@@ -113,7 +113,7 @@ interface CaseStatus {
     MatPaginatorModule,
     MatSortModule,
     UploadFilesComponent,
-    CommonModule
+    CommonModule,
   ],
 })
 export class SearchDocumentComponent implements OnInit, OnDestroy {
@@ -153,8 +153,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   private documentTypeSearchTimeout: any;
   private fileExtensionSearchTimeout: any;
   private caseStatusSearchTimeout: any;
-    filteredYears: { yearId: number; yearName: number }[] = [];
-     filteredToYears: { yearId: number; yearName: number }[] = [];
+  filteredYears: { yearId: number; yearName: number }[] = [];
+  filteredToYears: { yearId: number; yearName: number }[] = [];
   private yearSearchTimeout: any;
   private yearToSearchTimeout: any;
   dataShow = [
@@ -200,7 +200,6 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     "caseNo",
     // "caseTypeName",
     "action",
-  
   ];
 
   caseTypeDropDown: CaseType[] = [];
@@ -211,8 +210,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   caseStatusDropdown: any = [];
   caseTypeFinalId: number;
   masterData: any;
-   yearDropDown: { yearId: number; yearName: number }[] = [];
-   yearToDropDown: { yearId: number; yearName: number }[] = [];
+  yearDropDown: { yearId: number; yearName: number }[] = [];
+  yearToDropDown: { yearId: number; yearName: number }[] = [];
   /**
    * Constructor
    */
@@ -235,14 +234,13 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.initForm();
-      this.getYear();
-      this.getYearTo();
+    this.getYear();
+    this.getYearTo();
     this.getUserStateDropdown();
     this.onStateChange(16);
     this.onDisctrictChange(443);
-    this.getUploadMetaDataFiles();
     this.getMasterDropDown();
-  
+    this.getApiCall();
 
     // Initialize filtered arrays
     this.filteredStates = this.stateDropdown || [];
@@ -253,8 +251,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     this.filteredDocumentTypes = this.documentTypeDropDown || [];
     this.filteredFileExtensions = this.fileExtensionsDropdown || [];
     this.filteredCaseStatus = this.caseStatusDropdown || [];
-      this.filteredYears = [...this.yearDropDown];
-        this.filteredToYears = [...this.yearToDropDown];
+    this.filteredYears = [...this.yearDropDown];
+    this.filteredToYears = [...this.yearToDropDown];
   }
 
   /**
@@ -285,10 +283,10 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       hashTag: [""],
       docType: [""],
       statusId: [""],
-      fileExt:[""],
-      classification:[""],
-      yearId:[""],
-      yearIdTo:[""]
+      fileExt: [""],
+      classification: [""],
+      yearId: [""],
+      yearIdTo: [""],
     });
   }
 
@@ -351,13 +349,13 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
         console.log("response", response);
         this.stateDropdown = response.responseData as State[];
         this.filteredStates = [...this.stateDropdown];
-        this.stateDropdown.forEach((element: State) => {
-          if (element.stateId == 16) {
-            this.searchDocumentForm.patchValue({
-              stateId: element.stateId,
-            });
-          }
-        });
+        // this.stateDropdown.forEach((element: State) => {
+        //   if (element.stateId == 16) {
+        //     this.searchDocumentForm.patchValue({
+        //       stateId: element.stateId,
+        //     });
+        //   }
+        // });
         this._changeDetectorRef.detectChanges();
       },
       error: (error) => {},
@@ -380,19 +378,18 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       });
   }
 
-  getYear(){
-     for (let year = 2025; year >= 1990; year--) {
+  getYear() {
+    for (let year = 2025; year >= 1990; year--) {
       this.yearDropDown.push({ yearId: year, yearName: year });
-      this.yearToDropDown.push({ yearId: year, yearName: year })
+      this.yearToDropDown.push({ yearId: year, yearName: year });
     }
   }
 
-  getYearTo(){
-     for (let year = 2025; year >= 1990; year--) {
-      this.yearToDropDown.push({ yearId: year, yearName: year })
+  getYearTo() {
+    for (let year = 2025; year >= 1990; year--) {
+      this.yearToDropDown.push({ yearId: year, yearName: year });
     }
   }
-
 
   /**
    * Get Upload MetaData Files
@@ -409,16 +406,16 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       firNo: this.searchDocumentForm.value.firNo,
       caseType: this.searchDocumentForm.value.caseType,
       fileType: this.searchDocumentForm.value.fileStage,
-      division_id: sessionStorage.getItem('divisionID'),
+      division_id: sessionStorage.getItem("divisionID"),
       docType: this.searchDocumentForm.value.docType,
       caseStatus: this.searchDocumentForm.value.statusId,
       hashTag: this.searchDocumentForm.value.hashTag,
-      fileExt:this.searchDocumentForm.value.fileExt,
-      author:this.searchDocumentForm.value.author,
-      toAddr:this.searchDocumentForm.value.toAddr,
-      classification:this.searchDocumentForm.value.classification,
-      fromYear:this.searchDocumentForm.value.yearId,
-       toYear:this.searchDocumentForm.value.yearIdTo
+      fileExt: this.searchDocumentForm.value.fileExt,
+      author: this.searchDocumentForm.value.author,
+      toAddr: this.searchDocumentForm.value.toAddr,
+      classification: this.searchDocumentForm.value.classification,
+      fromYear: this.searchDocumentForm.value.yearId,
+      toYear: this.searchDocumentForm.value.yearIdTo,
     };
 
     this._searchDocService.getUploadDocMetaData(searchMetaData).subscribe({
@@ -509,20 +506,20 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       error: (error) => {},
     });
   }
-onHashTagKeyUp(event: KeyboardEvent): void {
-  if (event.key === " ") {
-    const hashTagControl = this.searchDocumentForm.get("hashTag");
-    let hashTagValue = hashTagControl?.value || "";
-    const words = hashTagValue
-      .split(" ")
-      .filter(word => word.trim() !== "") 
-    .map(word => word.startsWith("#") ? word : `#${word}`)
+  onHashTagKeyUp(event: KeyboardEvent): void {
+    if (event.key === " ") {
+      const hashTagControl = this.searchDocumentForm.get("hashTag");
+      let hashTagValue = hashTagControl?.value || "";
+      const words = hashTagValue
+        .split(" ")
+        .filter((word) => word.trim() !== "")
+        .map((word) => (word.startsWith("#") ? word : `#${word}`));
 
-    const updatedHashTag = words.join(" ");
+      const updatedHashTag = words.join(" ");
 
-    hashTagControl?.setValue(updatedHashTag + " ");
+      hashTagControl?.setValue(updatedHashTag + " ");
+    }
   }
-}
 
   filterStates(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
@@ -690,7 +687,7 @@ onHashTagKeyUp(event: KeyboardEvent): void {
 
   filterYears(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.yearSearchTimeout) {
       clearTimeout(this.yearSearchTimeout);
     }
@@ -699,7 +696,7 @@ onHashTagKeyUp(event: KeyboardEvent): void {
       if (!searchText) {
         this.filteredYears = [...this.yearDropDown];
       } else {
-        this.filteredYears = this.yearDropDown.filter(year => {
+        this.filteredYears = this.yearDropDown.filter((year) => {
           const yearName = year.yearName.toString().toLowerCase();
           return yearName.includes(searchText);
         });
@@ -708,9 +705,9 @@ onHashTagKeyUp(event: KeyboardEvent): void {
     }, 300);
   }
 
-   filterToYears(event: any): void {
+  filterToYears(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.yearToSearchTimeout) {
       clearTimeout(this.yearToSearchTimeout);
     }
@@ -719,7 +716,7 @@ onHashTagKeyUp(event: KeyboardEvent): void {
       if (!searchText) {
         this.filteredToYears = [...this.yearToDropDown];
       } else {
-        this.filteredToYears = this.yearToDropDown.filter(year => {
+        this.filteredToYears = this.yearToDropDown.filter((year) => {
           const yearName = year.yearName.toString().toLowerCase();
           return yearName.includes(searchText);
         });
@@ -729,14 +726,22 @@ onHashTagKeyUp(event: KeyboardEvent): void {
   }
 
   generateFIRNo(): void {
-  const firControl = this.searchDocumentForm.get('firNo');
-  if (firControl) {
-    let value = firControl.value;
-    value = value?.replace(/\D/g, '');
-    if (value && value.length < 4) {
-      value = value.padStart(4, '0');
-      firControl.setValue(value, { emitEvent: false });
+    const firControl = this.searchDocumentForm.get("firNo");
+    if (firControl) {
+      let value = firControl.value;
+      value = value?.replace(/\D/g, "");
+      if (value && value.length < 4) {
+        value = value.padStart(4, "0");
+        firControl.setValue(value, { emitEvent: false });
+      }
     }
   }
-}
+
+  getApiCall() {
+    this.searchDocumentForm.valueChanges
+      .pipe(debounceTime(400), distinctUntilChanged())
+      .subscribe(() => {
+        this.getUploadMetaDataFiles();
+      });
+  }
 }

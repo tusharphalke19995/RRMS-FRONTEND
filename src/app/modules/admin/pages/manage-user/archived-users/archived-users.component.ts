@@ -34,7 +34,7 @@ import { Router, RouterLink } from "@angular/router";
 import { TranslocoModule } from "@ngneat/transloco";
 import { MatDialog } from "@angular/material/dialog";
 import { SharedService } from "app/shared/shared.service";
-import { Subject } from "rxjs";
+import { debounceTime, distinctUntilChanged, Subject } from "rxjs";
 import { SearchDocService } from "../../search-document/searchDoc.service";
 import { InventoryVendor } from "../../upload-document/uploadDoc.types";
 import { SearchUserService } from "../search-userlist/searchUser.service";
@@ -163,7 +163,7 @@ export class ArchivedUsersComponent implements OnInit, AfterViewInit {
    */
   ngOnInit(): void {
     this.initForm();
-    this.getUserInfo();
+    this.getApiCall();
     this.getUserRoleDropdown();
     this.getDivisionDropdown();
     this.getDesignationsDropDownData();
@@ -436,4 +436,11 @@ searcUserBySelectedParameter(){
     });
 }
   
+getApiCall() {
+    this.searchUserListForm.valueChanges
+      .pipe(debounceTime(400), distinctUntilChanged())
+      .subscribe(() => {
+        this.searcUserBySelectedParameter();
+      });
+  }
 }
