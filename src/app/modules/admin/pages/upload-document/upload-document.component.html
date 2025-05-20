@@ -177,7 +177,7 @@
                         <td>
                              <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('firNo')}}</mat-label>
-                                <input (input)="generateCrimeNo()" matInput matInput maxlength="4" [formControlName]="'firNo'"
+                                <input (blur)="generateFIRNo()" matInput matInput maxlength="4" [formControlName]="'firNo'"
                                     [required]="true"  (keypress)="allowOnlyNumbers($event)">
                                 <mat-error *ngIf="uploadDocumentForm.get('firNo').hasError('required')">
                                     Required

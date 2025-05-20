@@ -509,18 +509,20 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       error: (error) => {},
     });
   }
+onHashTagKeyUp(event: KeyboardEvent): void {
+  if (event.key === " ") {
+    const hashTagControl = this.searchDocumentForm.get("hashTag");
+    let hashTagValue = hashTagControl?.value || "";
+    const words = hashTagValue
+      .split(" ")
+      .filter(word => word.trim() !== "") 
+    .map(word => word.startsWith("#") ? word : `#${word}`)
 
-  onHashTagKeyUp(event: KeyboardEvent): void {
-    if (event.key === " ") {
-      const hashTagControl = this.searchDocumentForm.get("hashTag");
-      const hashTagValue = hashTagControl.value;
-      const words = hashTagValue
-        .split(" ")
-        .map((word) => (word.startsWith("#") ? word : `#${word}`));
-      const updatedHashTag = words.join(" ");
-      hashTagControl.setValue(updatedHashTag);
-    }
+    const updatedHashTag = words.join(" ");
+
+    hashTagControl?.setValue(updatedHashTag + " ");
   }
+}
 
   filterStates(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
@@ -725,4 +727,16 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.detectChanges();
     }, 300);
   }
+
+  generateFIRNo(): void {
+  const firControl = this.searchDocumentForm.get('firNo');
+  if (firControl) {
+    let value = firControl.value;
+    value = value?.replace(/\D/g, '');
+    if (value && value.length < 4) {
+      value = value.padStart(4, '0');
+      firControl.setValue(value, { emitEvent: false });
+    }
+  }
+}
 }

@@ -140,6 +140,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   masterData: any;
   isSubmitting: boolean = false;
   checkFileSatus: boolean;
+  finalFIRValue: any;
   // selectedFiles: any;
   /**
    * Constructor
@@ -429,10 +430,10 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     const districtId = this.uploadDocumentForm.get("districtId")?.value;
     const unitId = this.uploadDocumentForm.get("unitsId")?.value;
     const yearId = this.uploadDocumentForm.get("yearId")?.value;
-    const firNo = this.uploadDocumentForm.get("firNo")?.value;
-    if (districtId && unitId != null && yearId && firNo) {
+    // const firNo = this.uploadDocumentForm.get("firNo")?.value;
+    if (districtId && unitId != null && yearId && this.finalFIRValue) {
       const paddedUnitId = String(unitId).padStart(4, "0");
-      this.crimeNo = `${this.caseTypeFinalId}${districtId}${paddedUnitId}${yearId}${firNo}`;
+      this.crimeNo = `${this.caseTypeFinalId}${districtId}${paddedUnitId}${yearId}${this.finalFIRValue}`;
       this.uploadDocumentForm.get("caseNo")?.setValue(this.crimeNo);
     }
   }
@@ -630,4 +631,18 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     }, 300);
   }
   
+  generateFIRNo(): void {
+  const firControl = this.uploadDocumentForm.get('firNo');
+  if (firControl) {
+    let value = firControl.value;
+    value = value?.replace(/\D/g, '');
+    if (value && value.length < 4) {
+      value = value.padStart(4, '0');
+      firControl.setValue(value, { emitEvent: false });
+    }
+    this.finalFIRValue =value
+  }
+   this.generateCrimeNo();
+}
+
 }

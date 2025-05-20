@@ -127,7 +127,7 @@
                         <td>
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-label *transloco="let t" class="font-medium">{{t('firNo')}}</mat-label>
-                                <input matInput [formControlName]="'firNo'" placeholder="Enter employee name"
+                                <input matInput [formControlName]="'firNo'" (blur)="generateFIRNo()" placeholder="Enter employee name"
                                     maxlength="4" (keypress)="allowOnlyNumbers($event)">
                                 <mat-error *ngIf="searchDocumentForm.get('firNo').hasError('required')">
                                     Required

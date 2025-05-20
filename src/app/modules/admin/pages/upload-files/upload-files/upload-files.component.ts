@@ -693,16 +693,19 @@ const dialogRef = this.dialog.open(UploadedFilesComponent, {
   }
 
   onHashTagKeyUp(event: KeyboardEvent): void {
-    if (event.key === " ") {
-      const hashTagControl = this.metadataForm.get("hashTag");
-      const hashTagValue = hashTagControl.value;
-      const words = hashTagValue
-        .split(" ")
-        .map((word) => (word.startsWith("#") ? word : `#${word}`));
-      const updatedHashTag = words.join(" ");
-      hashTagControl.setValue(updatedHashTag);
-    }
+  if (event.key === " ") {
+    const hashTagControl = this.metadataForm.get("hashTag");
+    let hashTagValue = hashTagControl?.value || "";
+    const words = hashTagValue
+      .split(" ")
+      .filter(word => word.trim() !== "") 
+      .map(word => word.startsWith("#") ? word : `#${word}`)
+
+    const updatedHashTag = words.join(" ");
+
+    hashTagControl?.setValue(updatedHashTag + " ");
   }
+}
 
   formatTags(tags: string): string[] {
     if (!tags) {

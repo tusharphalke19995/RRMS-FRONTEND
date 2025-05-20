@@ -120,17 +120,20 @@ export class UpdateFileMetadataComponent implements OnInit {
       });
   }
 
-  onHashTagKeyUp(event: KeyboardEvent): void {
-    if (event.key === " ") {
-      const hashTagControl = this.metadataForm.get("hashTag");
-      const hashTagValue = hashTagControl.value;
-      const words = hashTagValue
-        .split(" ")
-        .map((word) => (word.startsWith("#") ? word : `#${word}`));
-      const updatedHashTag = words.join(" ");
-      hashTagControl.setValue(updatedHashTag);
-    }
+onHashTagKeyUp(event: KeyboardEvent): void {
+  if (event.key === " ") {
+    const hashTagControl = this.metadataForm.get("hashTag");
+    let hashTagValue = hashTagControl?.value || "";
+    const words = hashTagValue
+      .split(" ")
+      .filter(word => word.trim() !== "") 
+      .map(word => word.startsWith("#") ? word : `#${word}`)
+
+    const updatedHashTag = words.join(" ");
+
+    hashTagControl?.setValue(updatedHashTag + " ");
   }
+}
 
   getMasterDropDown() {
     this._uploadDocumentService.getMasterDropDownData().subscribe({
