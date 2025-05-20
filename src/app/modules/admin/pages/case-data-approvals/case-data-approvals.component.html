@@ -23,7 +23,7 @@
             <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
             <ng-container *transloco="let t">
               <span class="ml-1 text-secondary">
-                {{ t("caseApprovalList") }}</span>
+                  Upload Status</span>
             </ng-container>
           </div>
         </div>
@@ -37,9 +37,9 @@
       <!-- Title -->
 
       <div class="mt-2 flex items-center justify-between">
-        <ng-container *transloco="let t">
+        <ng-container>
           <div class="text-3xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-            {{ t("caseApprovalList") }}
+              Upload Status
           </div>
         </ng-container>
       </div>
@@ -120,9 +120,9 @@
                 <ng-container *ngIf="authData.Role === 'User'">
                   <div class="flex items-center gap-2">
                     <mat-icon color="warn" class="cursor-pointer hover:bg-red-100 rounded-full transition"
-                      (click)="withdrawRequest(row)" matTooltip="Withdraw">undo</mat-icon>
+                      (click)="withdrawRequestDetails(row)" matTooltip="Withdraw">undo</mat-icon>
                     <mat-icon color="primary" class="cursor-pointer hover:bg-blue-100 rounded-full transition"
-                      (click)="sendReminder(row)" matTooltip="Send Reminder">notifications_active</mat-icon>
+                      (click)="sendReminderRequestDetails(row)" matTooltip="Send Reminder">notifications_active</mat-icon>
                   </div>
                 </ng-container>
                 <!-- For Admin or Content Manager -->

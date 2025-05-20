@@ -30,8 +30,8 @@
                     </div>
 
                 </div>
-                <div class="flex sm:hidden">
-                    <a class="inline-flex items-center -ml-1.5 text-secondary font-medium">
+                <div class="flex" (click)="goToUserList()">
+                    <a class="inline-flex items-center -ml-1.5 text-secondary font-medium cursor-pointer"  >
                         <mat-icon class="icon-size-5 text-secondary"
                             [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
                         <span class="ml-1">Back</span>

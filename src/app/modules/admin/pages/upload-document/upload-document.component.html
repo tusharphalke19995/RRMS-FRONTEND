@@ -184,31 +184,7 @@
                                 </mat-error>
                             </mat-form-field>
                         </td>
-                        <td>
-                             <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('caseStatus')}}</mat-label>
-                                <mat-select [formControlName]="'statusId'"
-                                    [panelClass]="'custom-select-panel'">
-                                    <div class="px-3 py-2">
-                                        <mat-form-field class="w-full">
-                                            <input matInput
-                                                (keyup)="filterCaseStatus($event)"
-                                                placeholder="Search case status..."
-                                                #caseStatusSearchInput
-                                                [value]="''"
-                                                autocomplete="off">
-                                        </mat-form-field>
-                                    </div>
-                                    <mat-option [value]="null">Please Select</mat-option>
-                                    <ng-container *ngFor="let caseStatus of filteredCaseStatus; trackBy: trackByFn">
-                                        <mat-option [value]="caseStatus.id">{{caseStatus.value}}</mat-option>
-                                    </ng-container>
-                                </mat-select>
-                                <mat-error *ngIf="uploadDocumentForm.get('statusId').hasError('required')">
-                                    Required
-                                </mat-error>
-                            </mat-form-field>
-                        </td>
+                      
                         <td>
                            <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{t('year')}}</mat-label>
@@ -237,12 +213,38 @@
                        
 
                         <td>
-                            <mat-form-field appearance="outline"  class="col-md-3">
+                            <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{t('registerDate')}}</mat-label>
                                 <input matInput [matDatepicker]="picker1" [placeholder]="'Choose a date'"
                                     [formControlName]="'caseDate'">
                                 <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
                                 <mat-datepicker #picker1></mat-datepicker>
+                            </mat-form-field>
+                        </td>
+
+                          <td>
+                             <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('caseStatus')}}</mat-label>
+                                <mat-select [formControlName]="'statusId'"
+                                    [panelClass]="'custom-select-panel'">
+                                    <div class="px-3 py-2">
+                                        <mat-form-field class="w-full">
+                                            <input matInput
+                                                (keyup)="filterCaseStatus($event)"
+                                                placeholder="Search case status..."
+                                                #caseStatusSearchInput
+                                                [value]="''"
+                                                autocomplete="off">
+                                        </mat-form-field>
+                                    </div>
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let caseStatus of filteredCaseStatus; trackBy: trackByFn">
+                                        <mat-option [value]="caseStatus.id">{{caseStatus.value}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                                <mat-error *ngIf="uploadDocumentForm.get('statusId').hasError('required')">
+                                    Required
+                                </mat-error>
                             </mat-form-field>
                         </td>
                     </tr>
@@ -306,7 +308,7 @@
                     <tr>
                          <td><mat-form-field appearance="outline"  class="col-md-3" >
                         <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('caseNo')}}</mat-label>
-                        <input matInput matInput [formControlName]="'caseNo'">
+                        <input matInput matInput [formControlName]="'caseNo'" readonly class="dark:bg-gray-600">
                         <mat-error *ngIf="uploadDocumentForm.get('caseNo').hasError('required')">
                             Required
                         </mat-error>
@@ -322,7 +324,7 @@
                 </div>
 
                 <app-upload-files (filesWithMetadataSelected)="onFilesWithMetadataSelected($event)"
-                    [DocumentTypeDropDown]="DocumentTypeDropDown" [crimeNo]="crimeNo" [FileTypeDropDown]="FileTypeDropDown" [ClassificationTypeDropDown]="ClassificationTypeDropDown" [masterData]="masterData">
+                    [DocumentTypeDropDown]="DocumentTypeDropDown" [crimeNo]="crimeNo" [FileTypeDropDown]="FileTypeDropDown" [ClassificationTypeDropDown]="ClassificationTypeDropDown" [masterData]="masterData" [checkFileSatus]="checkFileSatus">
                 </app-upload-files>
 
                 <div class="flex items-center justify-end py-3">

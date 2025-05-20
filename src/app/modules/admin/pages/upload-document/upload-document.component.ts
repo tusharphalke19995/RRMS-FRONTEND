@@ -97,7 +97,7 @@ interface CaseStatus {
     MatButtonModule,
     MatSelectModule,
     MatDatepickerModule,
-    UploadFilesComponent
+    UploadFilesComponent,
   ],
 })
 export class UploadDocumentComponent implements OnInit, OnDestroy {
@@ -106,7 +106,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   uploadDocumentForm: UntypedFormGroup;
   @ViewChild("addcitizenfeedbackNgForm") addcitizenfeedbackNgForm: NgForm;
   maxFileSize = 10737418240;
-  crimeNo: string = '';
+  crimeNo: string = "";
   isLoading: boolean = false;
   formFieldHelpers: string[] = [""];
   vendors: InventoryVendor[];
@@ -139,6 +139,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   caseTypeFinalId: number;
   masterData: any;
   isSubmitting: boolean = false;
+  checkFileSatus: boolean;
   // selectedFiles: any;
   /**
    * Constructor
@@ -148,11 +149,10 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     private _formBuilder: UntypedFormBuilder,
     private _uploadDocumentService: UploadDocumentService,
     private _snackBar: MatSnackBar,
-    private dataService:SharedService,
+    private dataService: SharedService,
     private _router: Router,
-    private _masterService:MasterService,
-    private authenticationService:AuthService
-
+    private _masterService: MasterService,
+    private authenticationService: AuthService
   ) {
     this.authData = this.authenticationService.getAuthData();
     this.dataService.setFileBoolean(true);
@@ -175,7 +175,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.onStateChange(16);
     this.onDisctrictChange(443);
     this.getMasterDropDown();
-    
+
     // Initialize filtered arrays
     this.filteredStates = this.stateDropdown || [];
     this.filteredDistricts = this.districtDropdown || [];
@@ -197,7 +197,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.uploadDocumentForm = this._formBuilder.group({
       stateIDInfo: ["", [Validators.required]],
       districtId: ["", [Validators.required]],
-      unitsId: ["",[Validators.required]],
+      unitsId: ["", [Validators.required]],
       office: ["", [Validators.required]],
       letterNo: ["", [Validators.required]],
       caseNo: ["", [Validators.required]],
@@ -206,8 +206,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       author: ["", [Validators.required]],
       toAddr: ["", [Validators.required]],
       caseDate: [""],
-      statusId:["", [Validators.required]],
-      yearId:["", [Validators.required]]
+      statusId: ["", [Validators.required]],
+      yearId: ["", [Validators.required]],
     });
   }
 
@@ -219,13 +219,15 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.addcitizenfeedbackNgForm.resetForm();
   }
 
-  onFilesWithMetadataSelected(data: { files: FileWithMetadata[], metadata: any[] }) {
+  onFilesWithMetadataSelected(data: {
+    files: FileWithMetadata[];
+    metadata: any[];
+  }) {
     this.selectedFiles = data.files; // Update the selected files
     this.selectedMetadata = data.metadata; // Update the metadata
-    console.log('Files selected:', this.selectedFiles); // Log for debugging
-    console.log('Metadata selected:', this.selectedMetadata); // Log for debugging
+    console.log("Files selected:", this.selectedFiles); // Log for debugging
+    console.log("Metadata selected:", this.selectedMetadata); // Log for debugging
   }
-
 
   /**
    * Track by function for ngFor loops
@@ -242,18 +244,20 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   filterDropDownData(event) {}
 
   getUserDistrictDropdown() {
-    const divisionId =Number(sessionStorage.getItem("divisionID"));
-    this._uploadDocumentService.geDistrictByStateData(16,divisionId).subscribe({
-      next: (response: any) => {
-        console.log("response", response);
-        this.districtDropdown = response.responseData;
-      },
-      error: (error) => {},
-    });
+    const divisionId = Number(sessionStorage.getItem("divisionID"));
+    this._uploadDocumentService
+      .geDistrictByStateData(16, divisionId)
+      .subscribe({
+        next: (response: any) => {
+          console.log("response", response);
+          this.districtDropdown = response.responseData;
+        },
+        error: (error) => {},
+      });
   }
 
   getUserStateDropdown() {
-    const divisionId = Number(sessionStorage.getItem('divisionID'));
+    const divisionId = Number(sessionStorage.getItem("divisionID"));
 
     this._uploadDocumentService.getState(divisionId).subscribe({
       next: (response: any) => {
@@ -273,22 +277,23 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     });
   }
 
-
   onStateChange(stateId: number): void {
     this.generateCrimeNo();
     if (stateId) {
       const divisionId = Number(sessionStorage.getItem("divisionID"));
-      this._uploadDocumentService.geDistrictByStateData(stateId, divisionId).subscribe(
-        (districts: any) => {
-          this.districtDropdown = districts.responseData as District[];
-          this.filteredDistricts = [...this.districtDropdown];
-          this.uploadDocumentForm.get("districtId")?.setValue(443);
-          this._changeDetectorRef.detectChanges();
-        },
-        (error) => {
-          console.error("Error fetching districts:", error);
-        }
-      );
+      this._uploadDocumentService
+        .geDistrictByStateData(stateId, divisionId)
+        .subscribe(
+          (districts: any) => {
+            this.districtDropdown = districts.responseData as District[];
+            this.filteredDistricts = [...this.districtDropdown];
+            this.uploadDocumentForm.get("districtId")?.setValue(443);
+            this._changeDetectorRef.detectChanges();
+          },
+          (error) => {
+            console.error("Error fetching districts:", error);
+          }
+        );
     } else {
       this.districtDropdown = [];
       this.filteredDistricts = [];
@@ -296,44 +301,49 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }
 
   onDisctrictChange(stateId: number): void {
-    const divisionId = Number(sessionStorage.getItem('divisionID'));
-    this._uploadDocumentService.getUnitsByDistictIdData(stateId, divisionId).subscribe({
-      next: (response: any) => {
-        if (response.statusCode == 200) {
-          this.unitsDropdown = response.responseData;
-          this.filteredUnits = [...this.unitsDropdown];
+    const divisionId = Number(sessionStorage.getItem("divisionID"));
+    this._uploadDocumentService
+      .getUnitsByDistictIdData(stateId, divisionId)
+      .subscribe({
+        next: (response: any) => {
+          if (response.statusCode == 200) {
+            this.unitsDropdown = response.responseData;
+            this.filteredUnits = [...this.unitsDropdown];
+            this._changeDetectorRef.detectChanges();
+          }
+        },
+        error: (error) => {
+          this.unitsDropdown = [];
+          this.filteredUnits = [];
           this._changeDetectorRef.detectChanges();
-        }
-      },
-      error: (error) => {
-        this.unitsDropdown = [];
-        this.filteredUnits = [];
-        this._changeDetectorRef.detectChanges();
-      },
-    });
+        },
+      });
   }
 
-getDateOnly(dateInput: any): string {
-  if (!dateInput) return '';
-  if (typeof dateInput === 'string' && dateInput.includes('T')) {
-    return dateInput.split('T')[0];
+  getDateOnly(dateInput: any): string {
+    if (!dateInput) return "";
+    if (typeof dateInput === "string" && dateInput.includes("T")) {
+      return dateInput.split("T")[0];
+    }
+    if (dateInput instanceof Date) {
+      return dateInput.toISOString().split("T")[0];
+    }
+    if (
+      typeof dateInput === "string" &&
+      /^\d{4}-\d{2}-\d{2}$/.test(dateInput)
+    ) {
+      return dateInput;
+    }
+    const d = new Date(dateInput);
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().split("T")[0];
+    }
+    return "";
   }
-  if (dateInput instanceof Date) {
-    return dateInput.toISOString().split('T')[0];
-  }
-  if (typeof dateInput === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
-    return dateInput;
-  }
-  const d = new Date(dateInput);
-  if (!isNaN(d.getTime())) {
-    return d.toISOString().split('T')[0];
-  }
-  return '';
-}
 
   sumbitUpload() {
     if (this.isSubmitting) return;
-    
+
     this.isSubmitting = true;
     this._changeDetectorRef.detectChanges();
     const caseDate = this.getDateOnly(this.uploadDocumentForm.value.caseDate);
@@ -354,34 +364,40 @@ getDateOnly(dateInput: any): string {
     };
     const formData = new FormData();
     formData.append("caseDetails", JSON.stringify(uploadMetaData));
-    const fileDetailsArray = this.selectedFiles.map(file => ({
+    const fileDetailsArray = this.selectedFiles.map((file) => ({
       fileId: null,
-      hashTag: file.metadata.hashTag ? file.metadata.hashTag.split(',').map(tag => tag.trim()).join(',') : '', 
-      subject: file.metadata.subject || '', 
-      classification: file.metadata.classification || '', 
-      fileType: file.metadata.fileType || '',
-      documentType: file.metadata.documentType || '',
+      hashTag: file.metadata.hashTag
+        ? file.metadata.hashTag
+            .split(",")
+            .map((tag) => tag.trim())
+            .join(",")
+        : "",
+      subject: file.metadata.subject || "",
+      classification: file.metadata.classification || "",
+      fileType: file.metadata.fileType || "",
+      documentType: file.metadata.documentType || "",
     }));
     formData.append("fileDetails", JSON.stringify(fileDetailsArray));
 
     this.selectedFiles.forEach((file) => {
-      const newFileName = this.uploadDocumentForm.value.caseNo + '_' + (file.name);
+      const newFileName =
+        this.uploadDocumentForm.value.caseNo + "_" + file.name;
       const newFile = new File([file], newFileName, { type: file.type });
-      formData.append('Files', newFile);
-      formData.append('division_id', sessionStorage.getItem('divisionID'));
+      formData.append("Files", newFile);
+      formData.append("division_id", sessionStorage.getItem("divisionID"));
     });
 
     this._uploadDocumentService.uploadDocument(formData).subscribe({
       next: (response: any) => {
-        this._snackBar.open("File Upload successfully", "Close", {
+        this._snackBar.open("Case Details saved successfully", "Close", {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
           panelClass: ["success-snackbar"],
         });
         this.addcitizenfeedbackNgForm.resetForm();
-        this._router.navigateByUrl("search-document");
-        this.selectedFiles = [];
+        // this._router.navigateByUrl("search-document");
+        this.resetSelectedFiles();
       },
       error: (error) => {
         this._snackBar.open(error.message || "Error creating user", "Close", {
@@ -394,29 +410,40 @@ getDateOnly(dateInput: any): string {
       complete: () => {
         this.isSubmitting = false;
         this._changeDetectorRef.detectChanges();
-      }
+      },
     });
   }
-     
+
+  resetSelectedFiles() {
+    this.checkFileSatus = true;
+    const defaultStateId = 16;
+    this.uploadDocumentForm.patchValue({
+      stateIDInfo: defaultStateId,
+    });
+    this.uploadDocumentForm.get("districtId")?.setValue(443);
+    this.selectedFiles = [];
+    this.selectedMetadata = [];
+  }
+
   generateCrimeNo(): void {
-    const districtId = this.uploadDocumentForm.get('districtId')?.value;
-    const unitId = this.uploadDocumentForm.get('unitsId')?.value;
-    const yearId = this.uploadDocumentForm.get('yearId')?.value;
-    const firNo = this.uploadDocumentForm.get('firNo')?.value;
+    const districtId = this.uploadDocumentForm.get("districtId")?.value;
+    const unitId = this.uploadDocumentForm.get("unitsId")?.value;
+    const yearId = this.uploadDocumentForm.get("yearId")?.value;
+    const firNo = this.uploadDocumentForm.get("firNo")?.value;
     if (districtId && unitId != null && yearId && firNo) {
-      const paddedUnitId = String(unitId).padStart(4, '0');
+      const paddedUnitId = String(unitId).padStart(4, "0");
       this.crimeNo = `${this.caseTypeFinalId}${districtId}${paddedUnitId}${yearId}${firNo}`;
-      this.uploadDocumentForm.get('caseNo')?.setValue(this.crimeNo);
+      this.uploadDocumentForm.get("caseNo")?.setValue(this.crimeNo);
     }
   }
 
-  onCaseTypeChange(event:any) {
-    this.selectedFCaseType =event.value;
+  onCaseTypeChange(event: any) {
+    this.selectedFCaseType = event.value;
     if (this.selectedFCaseType == 1) {
       this.caseTypeFinalId = 10;
     } else if (this.selectedFCaseType == 2) {
-      this.caseTypeFinalId= 20;
-    }    
+      this.caseTypeFinalId = 20;
+    }
     this.generateCrimeNo();
   }
 
@@ -440,14 +467,13 @@ getDateOnly(dateInput: any): string {
     }
   }
 
-allowOnlyLetters(event: KeyboardEvent): void {
-  const char = event.key;
-  if (!/^[a-zA-Z\s]$/.test(char)) {
-    event.preventDefault();
+  allowOnlyLetters(event: KeyboardEvent): void {
+    const char = event.key;
+    if (!/^[a-zA-Z\s]$/.test(char)) {
+      event.preventDefault();
+    }
   }
-}
 
-  
   get canSubmit(): boolean {
     if (this.isSubmitting) return false;
     if (this.uploadDocumentForm.invalid) return false;
@@ -482,11 +508,11 @@ allowOnlyLetters(event: KeyboardEvent): void {
       },
       error: (error) => {},
     });
-  } 
-  
+  }
+
   filterStates(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.stateSearchTimeout) {
       clearTimeout(this.stateSearchTimeout);
     }
@@ -495,8 +521,8 @@ allowOnlyLetters(event: KeyboardEvent): void {
       if (!searchText) {
         this.filteredStates = this.stateDropdown;
       } else {
-        this.filteredStates = this.stateDropdown.filter(state => {
-          const stateName = (state.stateName || '').toLowerCase();
+        this.filteredStates = this.stateDropdown.filter((state) => {
+          const stateName = (state.stateName || "").toLowerCase();
           return stateName.includes(searchText);
         });
       }
@@ -506,7 +532,7 @@ allowOnlyLetters(event: KeyboardEvent): void {
 
   filterDistricts(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.districtSearchTimeout) {
       clearTimeout(this.districtSearchTimeout);
     }
@@ -515,8 +541,8 @@ allowOnlyLetters(event: KeyboardEvent): void {
       if (!searchText) {
         this.filteredDistricts = this.districtDropdown;
       } else {
-        this.filteredDistricts = this.districtDropdown.filter(district => {
-          const districtName = (district.districtName || '').toLowerCase();
+        this.filteredDistricts = this.districtDropdown.filter((district) => {
+          const districtName = (district.districtName || "").toLowerCase();
           return districtName.includes(searchText);
         });
       }
@@ -526,7 +552,7 @@ allowOnlyLetters(event: KeyboardEvent): void {
 
   filterUnits(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout);
     }
@@ -535,8 +561,8 @@ allowOnlyLetters(event: KeyboardEvent): void {
       if (!searchText) {
         this.filteredUnits = this.unitsDropdown;
       } else {
-        this.filteredUnits = this.unitsDropdown.filter(unit => {
-          const unitName = (unit.unitName || '').toLowerCase();
+        this.filteredUnits = this.unitsDropdown.filter((unit) => {
+          const unitName = (unit.unitName || "").toLowerCase();
           return unitName.includes(searchText);
         });
       }
@@ -546,7 +572,7 @@ allowOnlyLetters(event: KeyboardEvent): void {
 
   filterCaseTypes(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.caseTypeSearchTimeout) {
       clearTimeout(this.caseTypeSearchTimeout);
     }
@@ -555,8 +581,8 @@ allowOnlyLetters(event: KeyboardEvent): void {
       if (!searchText) {
         this.filteredCaseTypes = this.caseTypeDropDown;
       } else {
-        this.filteredCaseTypes = this.caseTypeDropDown.filter(caseType => {
-          const caseTypeName = (caseType.value || '').toLowerCase();
+        this.filteredCaseTypes = this.caseTypeDropDown.filter((caseType) => {
+          const caseTypeName = (caseType.value || "").toLowerCase();
           return caseTypeName.includes(searchText);
         });
       }
@@ -566,7 +592,7 @@ allowOnlyLetters(event: KeyboardEvent): void {
 
   filterCaseStatus(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.caseStatusSearchTimeout) {
       clearTimeout(this.caseStatusSearchTimeout);
     }
@@ -575,8 +601,8 @@ allowOnlyLetters(event: KeyboardEvent): void {
       if (!searchText) {
         this.filteredCaseStatus = this.caseStatusDropdown;
       } else {
-        this.filteredCaseStatus = this.caseStatusDropdown.filter(status => {
-          const statusName = (status.value || '').toLowerCase();
+        this.filteredCaseStatus = this.caseStatusDropdown.filter((status) => {
+          const statusName = (status.value || "").toLowerCase();
           return statusName.includes(searchText);
         });
       }
@@ -586,7 +612,7 @@ allowOnlyLetters(event: KeyboardEvent): void {
 
   filterYears(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.yearSearchTimeout) {
       clearTimeout(this.yearSearchTimeout);
     }
@@ -595,7 +621,7 @@ allowOnlyLetters(event: KeyboardEvent): void {
       if (!searchText) {
         this.filteredYears = [...this.yearDropDown];
       } else {
-        this.filteredYears = this.yearDropDown.filter(year => {
+        this.filteredYears = this.yearDropDown.filter((year) => {
           const yearName = year.yearName.toString().toLowerCase();
           return yearName.includes(searchText);
         });
@@ -603,4 +629,5 @@ allowOnlyLetters(event: KeyboardEvent): void {
       this._changeDetectorRef.detectChanges();
     }, 300);
   }
+  
 }

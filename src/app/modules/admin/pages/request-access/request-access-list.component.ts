@@ -46,6 +46,8 @@ import { RequestAccessService } from "./request-access.service";
 import { UploadedFilesComponent } from "../search-document/uploaded-files/uploaded-files.component";
 import { AuthService, UserModel } from "app/core/auth/auth.service";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { DialogService } from "../common/dialog.service";
+import { CommonDialogComponent } from "../common/common-dialog/common-dialog.component";
 
 @Component({
   selector: "app-request-access-list",
@@ -149,10 +151,13 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
   userRoleDropdown: [];
   designationsDropdown: [];
   pendingReqData: any[] = [];
+  selectedRequestId: any;
+  selectedRequestIdReminder: any;
   /**
    * Constructor
    */
   constructor(
+    private dialogService: DialogService,
     private _snackBar: MatSnackBar,
     private _searchUserService: SearchUserService,
     public dialog: MatDialog,
@@ -308,54 +313,95 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
     });
   }
 
-  withdrawRequest(data: any) {
-    this.requestAccessService.withdrawAccessRequest(data.id).subscribe({
-      next: (response: any) => {
-        this.getContentManagerReqForWkFlow();
-        this._snackBar.open("Withdraw Access Request successfully", "Close", {
-          duration: 3000,
-          horizontalPosition: "right",
-          verticalPosition: "top",
-          panelClass: ["success-snackbar"],
-        });
+  openConfirmationDialogWithdraw(): void {
+    const dialogRef = this.dialog.open(CommonDialogComponent, {
+      width: "700px",
+      data: {
+        title: "Confirm Action",
+        message:
+          "You are about to withdraw the request. This action will delete the filles from the system. Are you sure?",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
       },
-      error: (error) => {
-        this._snackBar.open(error.message || "Error creating user", "Close", {
-          duration: 3000,
-          horizontalPosition: "right",
-          verticalPosition: "top",
-          panelClass: ["error-snackbar"],
-        });
-      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        console.log("User confirmed the action");
+        this.withdrawRequest();
+      } else {
+        console.log("User cancelled the action");
+      }
     });
   }
 
-  sendReminder(data: any) {
-    console.log("data", data);
-    this.requestAccessService.sendReminder(data.id).subscribe({
-      next: (response: any) => {
-        this.getContentManagerReqForWkFlow();
-        this._snackBar.open("Reminder Send successfully", "Close", {
-          duration: 3000,
-          horizontalPosition: "right",
-          verticalPosition: "top",
-          panelClass: ["success-snackbar"],
-        });
-      },
-      error: (error: any) => {
-        this._snackBar.open(
-          error.error ||
-            "Reminder already sent recently. can send a reminder again next day.",
-          "Close",
-          {
-            duration: 3000,
-            horizontalPosition: "right",
-            verticalPosition: "top",
-            panelClass: ["error-snackbar"],
-          }
-        );
+  openConfirmationDialogReminder(): void {
+    const dialogRef = this.dialog.open(CommonDialogComponent, {
+      width: "700px",
+      data: {
+        title: "Confirm Action",
+        message:
+          "Are you sure you want to send a reminder to your superior for approval?",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
       },
     });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        console.log("User confirmed the action");
+        this.sendReminder();
+      } else {
+        console.log("User cancelled the action");
+      }
+    });
+  }
+
+  withdrawRequestDetails(data: any) {
+    this.selectedRequestId = data.id;
+    this.openConfirmationDialogWithdraw();
+  }
+
+  sendReminderRequestDetails(data: any) {
+    this.selectedRequestIdReminder = data.id;
+    this.openConfirmationDialogReminder();
+  }
+
+  withdrawRequest() {
+    this.requestAccessService
+      .withdrawAccessRequest(this.selectedRequestId)
+      .subscribe({
+        next: (response: any) => {
+          this.getContentManagerReqForWkFlow();
+          this.dialogService.openSuccessDialog(
+            "Success",
+            "Withdraw Access Request successfully"
+          );
+        },
+        error: (error) => {
+          this.dialogService.openErrorDialog("Error", "Something Went Wrong");
+        },
+      });
+  }
+
+  sendReminder() {
+    this.requestAccessService
+      .sendReminder(this.selectedRequestIdReminder)
+      .subscribe({
+        next: (response: any) => {
+          this.getContentManagerReqForWkFlow();
+          this.dialogService.openSuccessDialog(
+            "Success",
+            "Reminder Send successfully"
+          );
+        },
+        error: (error: any) => {
+          this.dialogService.openErrorDialog(
+            "Error",
+            "Reminder already sent recently. can send a reminder again next day."
+          );
+        },
+      });
   }
 
   truncateText(text: string, limit: number): any {

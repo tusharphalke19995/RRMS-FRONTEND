@@ -118,6 +118,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   // @ViewChildren(UploadDocsComponent) childGames!: QueryList<UploadDocsComponent>;
   @Input() loadingVisible: boolean;
   @Input() isCheckModalConfirmaion: boolean;
+  @Input()  checkFileSatus: boolean;
   loading$ = new BehaviorSubject<boolean>(false);
   files = {
     selectedFiles: [] as IFileUploadModel[],
@@ -245,6 +246,11 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     }
     this.showTextNoData = !this.filesData?.length;
     this.selectedFiles = this.getfiles;
+    if(this.checkFileSatus == true){
+       this.metadataForm.reset();
+        this.selectedFiles=[];
+        this.filesWithMetadataSelected.emit({ files: [], metadata: [] });
+    }
   }
 
   patchData(formData: any) {

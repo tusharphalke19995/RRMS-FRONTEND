@@ -150,6 +150,8 @@ export class AddUpdateUserComponent {
         this.addUpdateUserForm.get("kgid")?.disable();
         this.addUpdateUserForm.get("emailID")?.disable();
         this.addUpdateUserForm.get("mobileNo")?.disable();
+          this.addUpdateUserForm.get("firstName")?.disable();
+            this.addUpdateUserForm.get("lastName")?.disable();
           this.cdr.detectChanges();
       }
     });
@@ -376,12 +378,12 @@ export class AddUpdateUserComponent {
   userUpdate() {
     const data = {
       id:this.userData.id,
-      first_name: this.addUpdateUserForm.value.firstName,
-      last_name: this.addUpdateUserForm.value.lastName,
-      email:  this.userData.email,
-      kgid: this.userData.kgid,
-      mobileno:  this.userData.mobileno,
-      password: this.userData.password,
+      // first_name: this.addUpdateUserForm.value.firstName,
+      // last_name: this.addUpdateUserForm.value.lastName,
+      // email:  this.userData.email,
+      // kgid: this.userData.kgid,
+      // mobileno:  this.userData.mobileno,
+      // password: this.userData.password,
       roleId: this.addUpdateUserForm.value.roleId,
       designation: this.addUpdateUserForm.value.designation,
     };
@@ -404,5 +406,9 @@ export class AddUpdateUserComponent {
         });
       },
     });
+  }
+
+  goToUserList(){
+    this.router.navigateByUrl('/manage-user/active-user');
   }
 }

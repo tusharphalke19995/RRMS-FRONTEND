@@ -97,6 +97,8 @@ export class UpdateFileMetadataComponent implements OnInit {
       classification: this.metadataForm.value.classification,
       documentType: this.metadataForm.value.documentType,
       hashTag: this.metadataForm.value.hashTag,
+      fileType: this.metadataForm.value.fileType,
+      subject: this.metadataForm.value.subject,
     };
     this.caseDataApprovalService
       .updateFileDataById(this.data?.file?.fileId, payload)
@@ -136,10 +138,10 @@ export class UpdateFileMetadataComponent implements OnInit {
         this.masterData = response;
         this.ClassificationTypeDropDown = response.ClassificationType;
         this.FileTypeDropDown = response.FileType;
-       
-      if (this.data) {
-        this.patchForm(this.data);
-      }
+
+        if (this.data) {
+          this.patchForm(this.data);
+        }
       },
       error: (error) => {},
     });
@@ -160,16 +162,15 @@ export class UpdateFileMetadataComponent implements OnInit {
   }
 
   onFileTypeChange(fileTypeId: number): void {
-    console.log("fileTypeId",fileTypeId)
-  if (!this.masterData) return;
+    console.log("fileTypeId", fileTypeId);
+    if (!this.masterData) return;
 
-  if (fileTypeId === 3) {
-    this.DocumentTypeDropDown = this.masterData?.CaseFiles;
-  } else if (fileTypeId === 4) {
-    this.DocumentTypeDropDown = this.masterData?.Correspondence;
-  } else {
-    this.DocumentTypeDropDown = [];
+    if (fileTypeId === 3) {
+      this.DocumentTypeDropDown = this.masterData?.CaseFiles;
+    } else if (fileTypeId === 4) {
+      this.DocumentTypeDropDown = this.masterData?.Correspondence;
+    } else {
+      this.DocumentTypeDropDown = [];
+    }
   }
-}
-
 }

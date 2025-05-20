@@ -47,6 +47,8 @@ import { AuthService } from "app/core/auth/auth.service";
 import { UploadedFilesComponent } from "../search-document/uploaded-files/uploaded-files.component";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { UpdateFileMetadataComponent } from "./update-file-metadata/update-file-metadata.component";
+import { CommonDialogComponent } from "../common/common-dialog/common-dialog.component";
+import { DialogService } from "../common/dialog.service";
 
 @Component({
   selector: "app-case-data-approval",
@@ -74,13 +76,13 @@ import { UpdateFileMetadataComponent } from "./update-file-metadata/update-file-
     MatPaginatorModule,
     MatSortModule,
     MatTabsModule,
-    MatTooltipModule
+    MatTooltipModule,
   ],
   templateUrl: "./case-data-approvals.component.html",
 })
 export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
-    isExpanded: boolean[] = [];
-    isExpandedCaseNo: boolean[] = [];
+  isExpanded: boolean[] = [];
+  isExpandedCaseNo: boolean[] = [];
   searchUserListForm: UntypedFormGroup;
   @ViewChild("addcitizenInformationNgForm") addcitizenInformationNgForm: NgForm;
   formFieldHelpers: string[] = [""];
@@ -94,9 +96,9 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
   @ViewChild("pendingSort") pendingSort: MatSort;
   @ViewChild("pendingPaginator") pendingPaginator: MatPaginator;
   @ViewChild("approvedSort") approvedSort: MatSort;
-   @ViewChild("deniedSort") deniedSort: MatSort;
+  @ViewChild("deniedSort") deniedSort: MatSort;
   @ViewChild("approvedPaginator") approvedPaginator: MatPaginator;
-@ViewChild("deniedPaginator") deniedPaginator: MatPaginator;
+  @ViewChild("deniedPaginator") deniedPaginator: MatPaginator;
 
   dataSource: MatTableDataSource<any>;
   selectedTab = 0;
@@ -126,7 +128,7 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
     "case_no",
     "requested_by_full_name",
     "reviewed__by_full_name",
-     "created_at",
+    "created_at",
     "action",
   ];
 
@@ -157,7 +159,6 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
     "comments",
   ];
 
-
   displayedColumnsDenied: string[] = [
     "division_name",
     "file_name",
@@ -172,10 +173,13 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
   designationsDropdown: [];
   pendingReqData: any[] = [];
   checkActionBool: boolean;
+  selectedRequestId: any;
+  selectedRequestIdReminder: any;
   /**
    * Constructor
    */
   constructor(
+    private dialogService:DialogService,
     private _snackBar: MatSnackBar,
     private _searchUserService: SearchUserService,
     public dialog: MatDialog,
@@ -272,18 +276,18 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
     });
   }
 
-openEditFileModal(file: any) {
-  const dialogRef = this.dialog.open(UpdateFileMetadataComponent , {
-    width: '610px',
-    data: { file },
-  });
+  openEditFileModal(file: any) {
+    const dialogRef = this.dialog.open(UpdateFileMetadataComponent, {
+      width: "610px",
+      data: { file },
+    });
 
-  dialogRef.afterClosed().subscribe(result => {
-    if (result) {
-      this.getCasedataUploadApprovalsData();
-    }
-  });
-}
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.getCasedataUploadApprovalsData();
+      }
+    });
+  }
   ngAfterViewInit(): void {
     this.setupPagination();
   }
@@ -297,7 +301,7 @@ openEditFileModal(file: any) {
       this.approvedDataSource.sort = this.approvedSort;
       this.approvedDataSource.paginator = this.approvedPaginator;
     }
-     if (this.deniedDataSource) {
+    if (this.deniedDataSource) {
       this.deniedDataSource.sort = this.deniedSort;
       this.deniedDataSource.paginator = this.deniedPaginator;
     }
@@ -313,18 +317,7 @@ openEditFileModal(file: any) {
     this._unsubscribeAll.complete();
   }
 
-  /**
-   * Clear the form
-   */
-  clearForm(): void {
-    // Reset the form
-    this.addcitizenInformationNgForm.resetForm();
-  }
-
-  SelectDataCase(value) {}
-
-  filterDropDownData(event) {}
-
+  
   /**
    * Track by function for ngFor loops
    *
@@ -342,20 +335,18 @@ openEditFileModal(file: any) {
       if (this.pendingDataSource.paginator) {
         this.pendingDataSource.paginator.firstPage();
       }
-    } else if(this.selectedTab === 1) {
+    } else if (this.selectedTab === 1) {
       this.approvedDataSource.filter = filterValue.trim().toLowerCase();
       if (this.approvedDataSource.paginator) {
         this.approvedDataSource.paginator.firstPage();
       }
-    }
-    else {
+    } else {
       this.deniedDataSource.filter = filterValue.trim().toLowerCase();
       if (this.deniedDataSource.paginator) {
         this.deniedDataSource.paginator.firstPage();
       }
     }
   }
-
 
   viewImage(data) {
     const dialogRef = this.dialog.open(UploadedFilesComponent, {
@@ -370,50 +361,87 @@ openEditFileModal(file: any) {
     });
   }
 
-    withdrawRequest(data: any) {
-      this.caseDataApprovalService.withdrawAccessUploadApproval(data.id).subscribe({
-    next: (response: any) => {
-      this.getCasedataUploadApprovalsData();
-      this._snackBar.open("Withdraw Access Request successfully", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["success-snackbar"],
-      });   
-     
-    },
-    error: (error) => {
-      this._snackBar.open(error.message || "Error creating user", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["error-snackbar"],
-      });
-    },
-  });
+  openConfirmationDialogWithdraw(): void {
+    const dialogRef = this.dialog.open(CommonDialogComponent, {
+      width: "700px",
+      data: {
+        title: "Confirm Action",
+        message:
+          "You are about to withdraw the request. This action will delete the filles from the system. Are you sure?",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        console.log("User confirmed the action");
+        this.withdrawRequest();
+      } else {
+        console.log("User cancelled the action");
+      }
+    });
   }
 
-  sendReminder(data: any) {
-     this.caseDataApprovalService.sendReminderUploadApproval(data.id).subscribe({
-    next: (response: any) => {
-      this.getCasedataUploadApprovalsData();
-      this._snackBar.open("Reminder Send successfully", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["success-snackbar"],
-      });   
-  
-    },
-    error: (error:any) => {
-      this._snackBar.open(error.error || "Reminder already sent recently. can send a reminder again next day.", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["error-snackbar"],
-      });
-    },
-  });
+  openConfirmationDialogReminder(): void {
+    const dialogRef = this.dialog.open(CommonDialogComponent, {
+      width: "700px",
+      data: {
+        title: "Confirm Action",
+        message:
+          "Are you sure you want to send a reminder to your superior for approval?",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        console.log("User confirmed the action");
+        this.sendReminder();
+      } else {
+        console.log("User cancelled the action");
+      }
+    });
   }
 
+  withdrawRequestDetails(data: any) {
+    this.selectedRequestId = data.id;
+    this.openConfirmationDialogWithdraw();
+  }
+
+  sendReminderRequestDetails(data: any) {
+    this.selectedRequestIdReminder = data.id;
+    this.openConfirmationDialogReminder();
+  }
+
+  withdrawRequest() {
+    this.caseDataApprovalService
+      .withdrawAccessUploadApproval(this.selectedRequestId)
+      .subscribe({
+        next: (response: any) => {
+          this.getCasedataUploadApprovalsData();
+        this.dialogService.openSuccessDialog('Success','Withdraw Access Request successfully');
+        },
+        error: (error) => {
+        this.dialogService.openErrorDialog('Error','Something Went Wrong');
+
+        },
+      });
+  }
+
+  sendReminder() {
+    this.caseDataApprovalService
+      .sendReminderUploadApproval(this.selectedRequestIdReminder)
+      .subscribe({
+        next: (response: any) => {
+          this.getCasedataUploadApprovalsData();
+        this.dialogService.openSuccessDialog('Success','Reminder Send successfully');
+
+        },
+        error: (error: any) => {
+        this.dialogService.openErrorDialog('Error','Reminder already sent recently. can send a reminder again next day.');
+        },
+      });
+  }
 }
