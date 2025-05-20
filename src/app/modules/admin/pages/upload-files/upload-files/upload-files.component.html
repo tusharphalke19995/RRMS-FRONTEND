@@ -12,8 +12,7 @@
         <mat-icon>cloud_upload</mat-icon>
         <span *transloco="let t">{{t('uploadSupportingFiles')}}</span>
       </button>
-      <input #fileInput type="file" class="hidden-input" (change)="onFileChange($event)" [multiple]="true"
-        accept="image/*,audio/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,'audio/mpeg',
+      <input #fileInput type="file" class="hidden-input" (change)="onFileChange($event)" [multiple]="true" accept="image/*,audio/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,'audio/mpeg',
         'video/mp4'" />
       <span class="selected-file-name" *ngIf="selectedFiles.length > 0">
         {{ selectedFiles.length }} file(s) selected
@@ -22,7 +21,7 @@
 
     <!-- File Size Info -->
     <div class="file-size-info" *ngIf="checkGetFile">
-     Supported formats include: PDF, MP3, MP4, DOC, DOCX, XLS, XLSX, and various image formats
+      Supported formats include: PDF, MP3, MP4, DOC, DOCX, XLS, XLSX, and various image formats
     </div>
 
     <!-- Select All Checkbox (only if more than one file) -->
@@ -54,13 +53,16 @@
               </mat-checkbox>
             </div>
 
-            <mat-icon (click)="!isRestrictedToView(file) && viewImage(file)" [ngClass]="{
+            <div (click)="!isRestrictedToView(file) && viewImage(file)" [ngClass]="{
                 'cursor-pointer text-green-500': file.metadata && !isRestrictedToView(file),
                 'cursor-not-allowed text-gray-500': isRestrictedToView(file)
-              }">
-              {{ file.metadata ? 'check_circle' : 'insert_drive_file' }}
-            </mat-icon>
-            <span class="ml-2">{{crimeNo}}_{{ file.name || file.fileName}}</span>
+              }" matTooltip="View File">
+              <mat-icon matTooltip="View File">
+                {{ file.metadata ? 'check_circle' : 'insert_drive_file' }}
+              </mat-icon>
+              <span class="ml-2 text-primary-500 hover:underline cursor-pointer" matTooltip="View File">{{crimeNo}}_{{ file.name || file.fileName}}</span>
+            </div>
+
             <span class="ml-2 text-sm text-gray-500" *ngIf="checkGetFile">
               ({{ (file.size / 1024).toFixed(1) }} KB)
             </span>
@@ -84,12 +86,12 @@
               <button *transloco="let t" mat-flat-button [color]="'primary'" class="min-w-[90px]"
                 (click)="getAccessModalUser(file)">
                 <mat-icon class="icon-size-5 mr-2" [svgIcon]="'heroicons_solid:plus'"></mat-icon>
-              <span>{{ getAccessStatus(file) }}</span>
+                <span>{{ getAccessStatus(file) }}</span>
               </button>
             </div>
             <div *ngIf="!canRequestAccess(file)">
-  <span>{{ getAccessStatus(file) }}</span>
-</div>
+              <span>{{ getAccessStatus(file) }}</span>
+            </div>
             <button mat-icon-button color="primary" (click)="openSelectedFileModal(file)" type="button">
               <mat-icon>edit</mat-icon>
             </button>
