@@ -73,17 +73,19 @@
         <!-- Requested By Department -->
         <ng-container matColumnDef="requestedByDepartments">
           <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black">
-            Requested By Departments
+            Request From
           </th>
           <td mat-cell *matCellDef="let row">
-            {{ getDepartmentNames(row.requestedBy?.designation_detail) }}
+          
+             {{ row.requestedBy?.first_name }} {{ row.requestedBy?.last_name }}
+
           </td>
         </ng-container>
 
         <!-- Requested By Divisions -->
         <ng-container matColumnDef="requestedByDivisions">
           <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black">
-            Requested By Divisions
+            Request  Division
           </th>
           <td mat-cell *matCellDef="let row">
             {{ getDivisionNames(row.requestedBy?.designation_detail) }}
@@ -93,20 +95,21 @@
         <!-- Recipient Department -->
         <ng-container matColumnDef="recipientDepartments">
           <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black">
-            Recipient Departments
+           Owner of the Document
           </th>
           <td mat-cell *matCellDef="let row">
-            {{ getDepartmentNames(row.recipient?.designation_detail) }}
+         
+              {{ row.recipient?.first_name }} {{ row.recipient?.last_name }}
           </td>
         </ng-container>
 
         <!-- Recipient Divisions -->
         <ng-container matColumnDef="recipientDivisions">
           <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black">
-            Recipient Divisions
+           Requested For
           </th>
           <td mat-cell *matCellDef="let row">
-            {{ getDivisionNames(row.recipient?.designation_detail) }}
+            <!-- {{ getDivisionNames(row.recipient?.designation_detail) }} -->
           </td>
         </ng-container>
 

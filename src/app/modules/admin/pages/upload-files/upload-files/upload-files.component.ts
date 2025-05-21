@@ -188,6 +188,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   // ]
   previewUrl: string | null = null;
   previewType: 'image' | 'video' | 'audio' | 'pdf' | 'other' = 'other';
+  showEditUserUpload: boolean;
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -488,6 +489,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   onFileChange(event: any) {
+    this.showEditUserUpload =  true;
     const files: FileList = event.target.files;
 
     if (files.length > 0) {

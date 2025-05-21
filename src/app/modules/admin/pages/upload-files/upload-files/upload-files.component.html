@@ -102,7 +102,7 @@
             <div *ngIf="!canRequestAccess(file)">
               <span>{{ getAccessStatus(file) }}</span>
             </div>
-            <button mat-icon-button color="primary" (click)="openSelectedFileModal(file)" type="button">
+            <button mat-icon-button color="primary" (click)="openSelectedFileModal(file)" type="button" *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin') || showEditUserUpload">
               <mat-icon>edit</mat-icon>
             </button>
             <button mat-icon-button color="warn" (click)="removeFile(i)" type="button" *ngIf="checkGetFile">
