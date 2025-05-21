@@ -367,7 +367,7 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
       data: {
         title: "Confirm Action",
         message:
-          "You are about to withdraw the request. This action will delete the filles from the system. Are you sure?",
+          "You are about to withdraw the request. This action will delete the files from the system. Are you sure?",
         confirmButtonText: "Yes",
         cancelButtonText: "No",
       },

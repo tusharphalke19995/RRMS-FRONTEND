@@ -50,6 +50,7 @@ onCancel(): void {
 
 ngOnInit(): void {
   this.initiateForm();
+  this.patchTodayDate();
 }
 
 initiateForm() {
@@ -58,6 +59,11 @@ initiateForm() {
     start_date:[""],
     end_date:[""]
   });
+}
+
+patchTodayDate() {
+  const today = new Date();
+  this.approvalReqlForm.patchValue({ start_date: today });
 }
 
 
@@ -88,10 +94,12 @@ approveRequestData(status: string): void {
   endDateControl?.clearValidators();
 
   if (status === "true") {
-    remarksControl?.setValidators([Validators.required]);
     startDateControl?.setValidators([Validators.required]);
     endDateControl?.setValidators([Validators.required]);
-  } else {
+  } else if (status === "false") {
+    remarksControl?.setValidators([Validators.required]);
+  }
+   else {
     remarksControl?.clearValidators();
     startDateControl?.clearValidators();
     endDateControl?.clearValidators();
@@ -100,19 +108,30 @@ approveRequestData(status: string): void {
   startDateControl?.updateValueAndValidity();
   endDateControl?.updateValueAndValidity();
   if (status === "true" && this.approvalReqlForm.invalid) {
-    this._snackBar.open("Is it mandatory to provide remarks, start date, and end date when a user approves a request?", "Close", {
+    this._snackBar.open("Is it mandatory to provide start date, and end date when a user approves a request?", "Close", {
       duration: 3000,
       horizontalPosition: "right",
       verticalPosition: "top",
       panelClass: ["error-snackbar"],
     });
     return;
-  }
+  } 
+   else if (status === "false" && this.approvalReqlForm.invalid) {
+    this._snackBar.open("Is it mandatory to provide remarks, Deny a request?", "Close", {
+      duration: 3000,
+      horizontalPosition: "right",
+      verticalPosition: "top",
+      panelClass: ["error-snackbar"],
+    });
+    return;
+  } 
+  
+  else 
   this.payloadAppDenied = {
     is_approved: status === "true",
     comments: remarksControl?.value || '',
-    start_date: this.getDateOnly(startDateControl?.value),
-    end_date: this.getDateOnly(endDateControl?.value),
+    start_date: this.getDateOnly(startDateControl?.value) || null,
+    end_date: this.getDateOnly(endDateControl?.value) || null,
   };
 
   this.dashbaordService.fileAccessByRequestid(this.data.id, this.payloadAppDenied).subscribe({

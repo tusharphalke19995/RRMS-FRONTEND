@@ -1,6 +1,6 @@
 import { Component,Inject,ViewEncapsulation} from '@angular/core';
 import { CommonModule, NgIf } from '@angular/common';
-import { ReactiveFormsModule, FormsModule, FormGroup, FormBuilder } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -48,8 +48,8 @@ this.getCasedataSelected();
 
   initiateForm() {
     this.contentMangerListForm = this._formBuilder.group({
-      contentMangId: [""],
-      remarks: [""],
+      contentMangId: ["",[Validators.required]],
+      remarks: ["",[Validators.required]],
     });
   }
 
