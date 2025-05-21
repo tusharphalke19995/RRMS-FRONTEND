@@ -139,7 +139,7 @@ export class AddUpdateUserComponent {
           designation: this.userData.designation_detail?.map(
             (d) => d.designationId
           ),
-          roleId: this.userData.roleId,
+          roleId: this.userData.roleId || this.userData.role,
         });
         setTimeout(() => {
            this.onDesignationSelect(

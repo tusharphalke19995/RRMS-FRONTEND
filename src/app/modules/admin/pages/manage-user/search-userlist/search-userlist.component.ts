@@ -451,35 +451,34 @@ searcUserBySelectedParameter(){
 
 toggleUserStatus(user: any): void {
   const updatedStatus = !user.is_active;
-
   const payload = {
-    id: user.id,
-    active: updatedStatus
+    isActive: updatedStatus
   };
 
-  // this._searchUserService.updateUserById(user.id, payload).subscribe({
-  //   next: () => {
-  //     user.active = updatedStatus;
-  //     this._snackBar.open(
-  //       `User ${updatedStatus ? 'activated' : 'deactivated'} successfully.`,
-  //       'Close',
-  //       {
-  //         duration: 3000,
-  //         horizontalPosition: 'right',
-  //         verticalPosition: 'top',
-  //         panelClass: ['success-snackbar']
-  //       }
-  //     );
-  //   },
-  //   error: () => {
-  //     this._snackBar.open('Failed to update user status.', 'Close', {
-  //       duration: 3000,
-  //       horizontalPosition: 'right',
-  //       verticalPosition: 'top',
-  //       panelClass: ['error-snackbar']
-  //     });
-  //   }
-  // });
+  this._searchUserService.updateUserById(user.kgid, payload).subscribe({
+    next: () => {
+      user.is_active = updatedStatus;
+      this._snackBar.open(
+        `User ${updatedStatus ? 'activated' : 'deactivated'} successfully.`,
+        'Close',
+        {
+          duration: 3000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+          panelClass: ['success-snackbar']
+        }
+      );
+      this.searcUserBySelectedParameter();
+    },
+    error: () => {
+      this._snackBar.open('Failed to update user status.', 'Close', {
+        duration: 3000,
+        horizontalPosition: 'right',
+        verticalPosition: 'top',
+        panelClass: ['error-snackbar']
+      });
+    }
+  });
 }
 
 getApiCall() {

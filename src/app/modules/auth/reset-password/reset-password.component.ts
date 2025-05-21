@@ -74,33 +74,37 @@ export class ResetPasswordComponent implements OnInit {
   ngOnInit(): void {
     // Create the form
     this.resetPasswordForm = this._formBuilder.group({
-      currentPassword: [
-        "",
-        [
-          Validators.required,
-          // Validators.pattern(
-          //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-          // ),
-        ],
-      ],
-      newPassword: [
-        "",
-        [
-          Validators.required,
-          // Validators.pattern(
-          //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-          // ),
-        ],
-      ],
-       confirmPassword: [
-        "",
-        [
-          Validators.required,
-          // Validators.pattern(
-          //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-          // ),
-        ],
-      ],
+      // currentPassword: [
+      //   "",
+      //   [
+      //     Validators.required,
+      //     // Validators.pattern(
+      //     //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+      //     // ),
+      //   ],
+      // ],
+      // newPassword: [
+      //   "",
+      //   [
+      //     Validators.required,
+      //     // Validators.pattern(
+      //     //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+      //     // ),
+      //   ],
+      // ],
+      //  confirmPassword: [
+      //   "",
+      //   [
+      //     Validators.required,
+      //     // Validators.pattern(
+      //     //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+      //     // ),
+      //   ],
+      // ],
+       firstName: ["", [Validators.required]],
+      lastName: ["", [Validators.required]],
+      emailID: ["", [Validators.required, Validators.email]],
+      mobileNo: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
     });
   }
 
@@ -185,6 +189,13 @@ export class ResetPasswordComponent implements OnInit {
       sessionStorage.setItem("departmentID", String(this.DepartmentIdsUserLogin[0]));
     } else {
       sessionStorage.setItem("departmentID", JSON.stringify(this.DepartmentIdsUserLogin));
+    }
+  }
+  
+  allowOnlyLetters(event: KeyboardEvent): void {
+    const char = event.key;
+    if (!/^[a-zA-Z\s]$/.test(char)) {
+      event.preventDefault();
     }
   }
 

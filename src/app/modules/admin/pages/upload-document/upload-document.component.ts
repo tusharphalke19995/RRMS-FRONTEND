@@ -141,6 +141,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   isSubmitting: boolean = false;
   checkFileSatus: boolean;
   finalFIRValue: any;
+  patchDetailsfiles: any[] = [];
+  caseMetaData: any;
   // selectedFiles: any;
   /**
    * Constructor
@@ -176,7 +178,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.onStateChange(16);
     this.onDisctrictChange(443);
     this.getMasterDropDown();
-
+    this.getCasedataSelected();
+    this.getFilesWithMetadataSelected();
     // Initialize filtered arrays
     this.filteredStates = this.stateDropdown || [];
     this.filteredDistricts = this.districtDropdown || [];
@@ -645,4 +648,42 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
    this.generateCrimeNo();
 }
 
+ getFilesWithMetadataSelected() {
+    this.dataService.getFilesData().subscribe((files) => {
+     this.patchDetailsfiles =files;
+    })
+     
+  }
+  
+  getCasedataSelected() {
+    this.dataService.getCaseData().subscribe((caseData) => {
+      this.caseMetaData = caseData;
+      console.log("caseMetaData", this.caseMetaData );
+      if(this.caseMetaData){
+       this.dataPatch(this.caseMetaData);
+      }
+    });
+  }
+
+  dataPatch(data){
+    if (data) {
+      const uploadDataPach = data;
+      this.uploadDocumentForm.patchValue({
+        stateIDInfo: uploadDataPach.stateId,
+        yearId: uploadDataPach.year,
+        districtId: uploadDataPach.districtId,
+        unitsId: uploadDataPach.unitId,
+        office: uploadDataPach.Office,
+        caseDate: uploadDataPach.caseDate,
+        caseNo: uploadDataPach.caseNo,
+        firNo: uploadDataPach.firNo,
+        letterNo: uploadDataPach.letterNo,
+        caseType: Number(uploadDataPach.caseType),
+        author: uploadDataPach.author,
+        toAddr: uploadDataPach.toAddr,
+         statusId: uploadDataPach.caseStatus,
+      });
+     
+    }
+  }
 }

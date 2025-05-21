@@ -55,7 +55,6 @@ interface Department {
   departmentName: string;
 }
 
-
 interface Designation {
   designationId: number;
   designationName: string;
@@ -103,7 +102,7 @@ export class ArchivedUsersComponent implements OnInit, AfterViewInit {
   filteredUserRoles: Role[] = [];
   designationsDropdown: Designation[] = [];
   filteredDesignations: Designation[] = [];
-   userDeparmentDropdown: Department[] = [];
+  userDeparmentDropdown: Department[] = [];
   filteredUserDeparment: Department[] = [];
   private roleSearchTimeout: any;
   private divisionSearchTimeout: any;
@@ -142,16 +141,16 @@ export class ArchivedUsersComponent implements OnInit, AfterViewInit {
    * Constructor
    */
   constructor(
-      private _snackBar: MatSnackBar,
-    private sharedService:SharedService,
+    private _snackBar: MatSnackBar,
+    private sharedService: SharedService,
     private changeDetectorRefs: ChangeDetectorRef,
     private _searchUserService: SearchUserService,
     public dialog: MatDialog,
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: UntypedFormBuilder,
     private _citizeninfoService: SearchDocService,
-    private router:Router,
-    private _masterService :MasterService
+    private router: Router,
+    private _masterService: MasterService
   ) {}
 
   // -----------------------------------------------------------------------------------------------------
@@ -170,13 +169,11 @@ export class ArchivedUsersComponent implements OnInit, AfterViewInit {
     this.getDepartmentsInfo();
   }
 
-
   ngAfterViewInit() {
     if (this.dataSource) {
       this.dataSource.paginator = this.paginator1;
     }
   }
-
 
   /**
    * On destroy
@@ -189,17 +186,15 @@ export class ArchivedUsersComponent implements OnInit, AfterViewInit {
 
   initForm() {
     this.searchUserListForm = this._formBuilder.group({
-      departmentId:[""],
+      departmentId: [""],
       divisionId: [""],
       designationId: [""],
-      mobileNo:[""],
-      firstName:[""],
-      lastName:[""],
-       kgid: [""],
+      mobileNo: [""],
+      firstName: [""],
+      lastName: [""],
+      kgid: [""],
     });
   }
-
-
 
   /**
    * Update the Citizen Feedback
@@ -217,7 +212,6 @@ export class ArchivedUsersComponent implements OnInit, AfterViewInit {
     this.searchUserListForm.reset();
   }
 
-
   /**
    * Track by function for ngFor loops
    *
@@ -230,10 +224,10 @@ export class ArchivedUsersComponent implements OnInit, AfterViewInit {
 
   addNewUser(data) {
     this.sharedService.setUserData(data);
-    this.router.navigateByUrl('/manage-user/user-addUpdate')
+    this.router.navigateByUrl("/manage-user/user-addUpdate");
   }
 
-applyFilter(event: Event) {
+  applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
 
@@ -251,23 +245,25 @@ applyFilter(event: Event) {
     console.log("Delete user:", row);
   }
 
- getUserInfo() {
+  getUserInfo() {
     const divisionID = Number(sessionStorage.getItem("divisionID"));
     this._searchUserService.getUserList(divisionID).subscribe({
       next: (response: any) => {
-        this.dataSource = new MatTableDataSource(response);
-        this.dataSource.paginator = this.paginator1; // Ensure paginator is set
-       
+        const filteredData = response.filter(
+          (item: any) => item.is_active == false
+        );
+        this.dataSource = new MatTableDataSource(filteredData);
+        this.dataSource.paginator = this.paginator1;
       },
       error: (error) => {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
       },
     });
   }
 
   filterUserRoles(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.roleSearchTimeout) {
       clearTimeout(this.roleSearchTimeout);
     }
@@ -276,8 +272,8 @@ applyFilter(event: Event) {
       if (!searchText) {
         this.filteredUserRoles = [...this.userRoleDropdown];
       } else {
-        this.filteredUserRoles = this.userRoleDropdown.filter(role => {
-          const roleName = (role.roleName || '').toLowerCase();
+        this.filteredUserRoles = this.userRoleDropdown.filter((role) => {
+          const roleName = (role.roleName || "").toLowerCase();
           return roleName.includes(searchText);
         });
       }
@@ -286,7 +282,7 @@ applyFilter(event: Event) {
 
   filterDivisions(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.divisionSearchTimeout) {
       clearTimeout(this.divisionSearchTimeout);
     }
@@ -295,8 +291,8 @@ applyFilter(event: Event) {
       if (!searchText) {
         this.filteredDivisions = [...this.divisionDropdown];
       } else {
-        this.filteredDivisions = this.divisionDropdown.filter(division => {
-          const divisionName = (division.divisionName || '').toLowerCase();
+        this.filteredDivisions = this.divisionDropdown.filter((division) => {
+          const divisionName = (division.divisionName || "").toLowerCase();
           return divisionName.includes(searchText);
         });
       }
@@ -305,7 +301,7 @@ applyFilter(event: Event) {
 
   filterDesignations(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.designationSearchTimeout) {
       clearTimeout(this.designationSearchTimeout);
     }
@@ -314,17 +310,21 @@ applyFilter(event: Event) {
       if (!searchText) {
         this.filteredDesignations = [...this.designationsDropdown];
       } else {
-        this.filteredDesignations = this.designationsDropdown.filter(designation => {
-          const designationName = (designation.designationName || '').toLowerCase();
-          return designationName.includes(searchText);
-        });
+        this.filteredDesignations = this.designationsDropdown.filter(
+          (designation) => {
+            const designationName = (
+              designation.designationName || ""
+            ).toLowerCase();
+            return designationName.includes(searchText);
+          }
+        );
       }
     }, 300);
   }
 
   filterDepartment(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
-    
+
     if (this.departmentSearchTimeout) {
       clearTimeout(this.departmentSearchTimeout);
     }
@@ -333,16 +333,18 @@ applyFilter(event: Event) {
       if (!searchText) {
         this.filteredUserDeparment = [...this.userDeparmentDropdown];
       } else {
-        this.filteredUserDeparment = this.userDeparmentDropdown.filter(dept => {
-          const deptName = (dept.departmentName || '').toLowerCase();
-          return deptName.includes(searchText);
-        });
+        this.filteredUserDeparment = this.userDeparmentDropdown.filter(
+          (dept) => {
+            const deptName = (dept.departmentName || "").toLowerCase();
+            return deptName.includes(searchText);
+          }
+        );
       }
     }, 300);
   }
 
   getUserRoleDropdown() {
-    const divisionID = Number(sessionStorage.getItem('divisionID'));
+    const divisionID = Number(sessionStorage.getItem("divisionID"));
     this._searchUserService.getUserRole(divisionID).subscribe({
       next: (response: any) => {
         if (response) {
@@ -355,7 +357,7 @@ applyFilter(event: Event) {
   }
 
   getDivisionDropdown() {
-    const divisionId = Number(sessionStorage.getItem('divisionID'));
+    const divisionId = Number(sessionStorage.getItem("divisionID"));
     this._searchUserService.getDivision(divisionId).subscribe({
       next: (response: any) => {
         if (response) {
@@ -368,7 +370,7 @@ applyFilter(event: Event) {
   }
 
   getDesignationsDropDownData() {
-    const divisionId = Number(sessionStorage.getItem('divisionID'));
+    const divisionId = Number(sessionStorage.getItem("divisionID"));
     this._searchUserService.getDesignationsInfo(divisionId).subscribe({
       next: (response: any) => {
         if (response) {
@@ -380,16 +382,15 @@ applyFilter(event: Event) {
     });
   }
 
-   getDepartmentsInfo() {
+  getDepartmentsInfo() {
     this._masterService.getDepartments().subscribe({
       next: (response: any) => {
-         this.userDeparmentDropdown = response;
-          this.filteredUserDeparment = [...this.userDeparmentDropdown];
+        this.userDeparmentDropdown = response;
+        this.filteredUserDeparment = [...this.userDeparmentDropdown];
       },
       error: (error) => {},
     });
   }
-
 
   allowOnlyNumbers(event: KeyboardEvent): void {
     const charCode = event.key.charCodeAt(0);
@@ -398,31 +399,34 @@ applyFilter(event: Event) {
     }
   }
 
-allowOnlyLetters(event: KeyboardEvent): void {
-  const char = event.key;
-  if (!/^[a-zA-Z\s]$/.test(char)) {
-    event.preventDefault();
-  }
-}
-
- getRoleName(roleId: number): string {
-    const role = this.userRoleDropdown.find(r => r.roleId === roleId);
-    return role ? role.roleName : 'Unknown Role';
+  allowOnlyLetters(event: KeyboardEvent): void {
+    const char = event.key;
+    if (!/^[a-zA-Z\s]$/.test(char)) {
+      event.preventDefault();
+    }
   }
 
-searcUserBySelectedParameter(){
-   const data = {
+  getRoleName(roleId: number): string {
+    const role = this.userRoleDropdown.find((r) => r.roleId === roleId);
+    return role ? role.roleName : "Unknown Role";
+  }
+
+  searcUserBySelectedParameter() {
+    const data = {
       firstName: this.searchUserListForm.value.firstName,
       lastName: this.searchUserListForm.value.lastName,
       kgid: this.searchUserListForm.value.kgid,
       mobileNo: this.searchUserListForm.value.mobileNo,
-     departmentId: this.searchUserListForm.value.departmentId,
+      departmentId: this.searchUserListForm.value.departmentId,
       designationId: this.searchUserListForm.value.designationId,
       divisionId: this.searchUserListForm.value.divisionId,
     };
     this._searchUserService.searchUser(data).subscribe({
       next: (response: any) => {
-        this.dataSource = new MatTableDataSource(response);
+         const filteredData = response.filter(
+          (item: any) => item.is_active == false
+        );
+        this.dataSource = new MatTableDataSource(filteredData);
         this.dataSource.paginator = this.paginator1;
       },
       error: (error) => {
@@ -434,9 +438,9 @@ searcUserBySelectedParameter(){
         });
       },
     });
-}
-  
-getApiCall() {
+  }
+
+  getApiCall() {
     this.searchUserListForm.valueChanges
       .pipe(debounceTime(400), distinctUntilChanged())
       .subscribe(() => {

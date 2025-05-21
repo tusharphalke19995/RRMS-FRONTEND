@@ -323,7 +323,7 @@
                     <div>Files/Documents</div>
                 </div>
 
-                <app-upload-files (filesWithMetadataSelected)="onFilesWithMetadataSelected($event)"
+                <app-upload-files [getfiles]="patchDetailsfiles" (filesWithMetadataSelected)="onFilesWithMetadataSelected($event)"
                     [DocumentTypeDropDown]="DocumentTypeDropDown" [crimeNo]="crimeNo" [FileTypeDropDown]="FileTypeDropDown" [ClassificationTypeDropDown]="ClassificationTypeDropDown" [masterData]="masterData" [checkFileSatus]="checkFileSatus">
                 </app-upload-files>
 

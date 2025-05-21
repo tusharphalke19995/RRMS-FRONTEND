@@ -77,7 +77,8 @@
               <span class="font-semibold">Case No: <span class="font-light">{{ caseMetaData.caseNo }}</span></span>
             </div>
             <div class="flex flex-col">
-              <span class="font-semibold">Case Type: <span class="font-light">{{ caseMetaData.caseTypeName }}</span></span>
+              <span class="font-semibold">Case Type: <span class="font-light">{{ caseMetaData.caseTypeName
+                  }}</span></span>
 
             </div>
 
@@ -107,13 +108,24 @@
         </ng-container>
       </div>
       <div *ngIf="showRequestConent">
-        <p class="text-center text-3xl text-primary-500  font-extrabold">The data will appear only after the Content Manager has approved the request.</p>
+        <p class="text-center text-3xl text-primary-500  font-extrabold">The data will appear only after the Content
+          Manager has approved the request.</p>
       </div>
-      <app-upload-files [getfiles]="files" (filesWithMetadataSelected)="onFilesWithMetadataSelectedUpdate($event)" [ClassificationTypeDropDown]="fileClassificationDropDown" [FileTypeDropDown]="fileTypesDropDown" [finalUserID]="finalUserID" [masterData]="masterData">
+      <div class="mr-3 flex items-center justify-end py-2">
+        <button *transloco="let t" mat-flat-button [color]="'primary'" class="min-w-[120px]" (click)="goToAddDoc()">
+          <mat-icon class="icon-size-5 mr-2" [svgIcon]="'heroicons_solid:plus'"></mat-icon>
+          Add Documents
+        </button>
+      </div>
+     
+      <app-upload-files [getfiles]="files" (filesWithMetadataSelected)="onFilesWithMetadataSelectedUpdate($event)"
+        [ClassificationTypeDropDown]="fileClassificationDropDown" [FileTypeDropDown]="fileTypesDropDown"
+        [finalUserID]="finalUserID" [masterData]="masterData">
       </app-upload-files>
 
 
-      <div class="flex items-center justify-end py-2"   *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin')">
+      <div class="flex items-center justify-end py-2"
+        *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin')">
         <button *transloco="let t" class="mr-3" mat-flat-button [color]="'primary'" (click)="updateUploadedFile()">
           {{t('Update')}}
         </button>
@@ -128,11 +140,7 @@
       <div class="document-viewer-container" *ngIf="fileToView">
         <img *ngIf="isImage(fileToView)" [src]="fileToView.url" class="document-image" alt="Document Image" />
         <ng-container *ngIf="isPdf(fileToView)">
-          <iframe
-            class="document-pdf"
-            [src]="fileToView.url | safeUrl"
-            frameborder="0"
-            allowfullscreen>
+          <iframe class="document-pdf" [src]="fileToView.url | safeUrl" frameborder="0" allowfullscreen>
           </iframe>
         </ng-container>
       </div>

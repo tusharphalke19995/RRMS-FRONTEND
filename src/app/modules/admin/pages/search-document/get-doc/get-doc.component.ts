@@ -214,4 +214,7 @@ hasRoleInDivision(...roles: string[]): boolean {
     });
   } 
 
+  goToAddDoc(){
+    this._router.navigateByUrl('upload-document');
+  }
 }
