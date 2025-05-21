@@ -87,6 +87,7 @@ export class UserInfoComponent implements OnInit {
     this.getDepartmentsInfo();
   }
 
+  
   extractDivisionAndDepartmentIds(): void {
     this.authData = this.authenticationService.getAuthData();
     console.log(" this.authData ", this.authData  )
