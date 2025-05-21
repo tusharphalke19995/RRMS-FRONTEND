@@ -111,7 +111,7 @@
         <p class="text-center text-3xl text-primary-500  font-extrabold">The data will appear only after the Content
           Manager has approved the request.</p>
       </div>
-      <div class="mr-3 flex items-center justify-end py-2">
+      <div class="mr-3 flex items-center justify-end py-2"  *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin')">
         <button *transloco="let t" mat-flat-button [color]="'primary'" class="min-w-[120px]" (click)="goToAddDoc()">
           <mat-icon class="icon-size-5 mr-2" [svgIcon]="'heroicons_solid:plus'"></mat-icon>
           Add Documents
