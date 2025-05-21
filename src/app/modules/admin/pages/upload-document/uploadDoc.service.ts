@@ -5,13 +5,16 @@ import { BehaviorSubject, catchError, filter, map, Observable, of, switchMap, ta
 import { ErrorResponseModel } from 'app/shared/models/error-model';
 import { apiurls } from 'app/shared/constants/api-urls.constant';
 import { CommonApiCallService } from 'app/shared/services/common-api-call.service';
+import { FileWithMetadata } from '../upload-files/model/upload-files.models';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class UploadDocumentService {
-
+private fileData: FileWithMetadata[] = [];
+  private caseData: any;
+  isPatch: boolean;
  /**
      * Constructor
      */
@@ -63,6 +66,12 @@ getUnitsByDistictIdData(
     return this.commonApiCallService.post(apiurls.uploadInfo, data).pipe(catchError(this.handleError));
   }
 
+
+    updateCaseDetailsByIdData(id: number,data:FormData) {
+       const url = `${apiurls.updateCaseDetailsById}/${id}/upload`;
+    return this.commonApiCallService.post(url,data).pipe(catchError(this.handleError));
+  }
+  
   getMasterDropDownData() {
     return this.commonApiCallService.get(apiurls.getMasterDropDown).pipe(catchError(this.handleError));
   }
@@ -103,6 +112,21 @@ getUnitsByDistictIdData(
     );
   }
 
+   setState(files: FileWithMetadata[], caseData: any, isPatch:boolean) {
+    this.fileData = files;
+    this.caseData = caseData;
+    this.isPatch = isPatch
+  }
+
+  getStateData() {
+    return { files: this.fileData, caseData: this.caseData, isPatch: this.isPatch };
+  }
+
+  clearState() {
+    this.fileData = [];
+    this.caseData = null;
+    this.isPatch=false;
+  }
   
    /**
     * The error handler.

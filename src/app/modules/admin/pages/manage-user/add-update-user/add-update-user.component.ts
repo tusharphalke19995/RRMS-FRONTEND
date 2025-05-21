@@ -1,5 +1,10 @@
 import { CommonModule } from "@angular/common";
-import { ChangeDetectorRef, Component, ViewChild, ViewEncapsulation } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  ViewChild,
+  ViewEncapsulation,
+} from "@angular/core";
 import {
   FormsModule,
   MaxLengthValidator,
@@ -91,39 +96,37 @@ export class AddUpdateUserComponent {
   selectedDesignations: any[] = [];
   userData: any;
   updateBool: boolean = false;
-  isView:boolean;
+  isView: boolean;
   constructor(
     private router: Router,
     private _searchUserService: SearchUserService,
     private _formBuilder: UntypedFormBuilder,
     private _snackBar: MatSnackBar,
     public dialog: MatDialog,
-     private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef,
     private sharedService: SharedService
   ) {}
 
   ngOnInit(): void {
     this.initiateForm();
-      this.getUserDataPatch();
-      this.checkViewBoolean();
+    this.getUserDataPatch();
+    this.checkViewBoolean();
     this.getUserRoleDropdown();
     this.getDivisionDropdown();
     this.getDesignationsData();
-  
   }
 
-
-   checkViewBoolean() {
+  checkViewBoolean() {
     this.sharedService.getUserBoolean().subscribe((res) => {
-      console.log("res",res);
-      if(res===true){
-       this.isView = true;
+      console.log("res", res);
+      if (res === true) {
+        this.isView = true;
         this.addUpdateUserForm.get("firstName")?.disable();
-         this.addUpdateUserForm.get("lastName")?.disable();
+        this.addUpdateUserForm.get("lastName")?.disable();
       }
     });
   }
-  
+
   getUserDataPatch() {
     this.isView = false;
     this.sharedService.getUserData().subscribe((data) => {
@@ -142,17 +145,17 @@ export class AddUpdateUserComponent {
           roleId: this.userData.roleId || this.userData.role,
         });
         setTimeout(() => {
-           this.onDesignationSelect(
-          this.userData.designation_detail?.map((d) => d.designationId)
-        );
+          this.onDesignationSelect(
+            this.userData.designation_detail?.map((d) => d.designationId)
+          );
         }, 3000);
-       
+
         this.addUpdateUserForm.get("kgid")?.disable();
         this.addUpdateUserForm.get("emailID")?.disable();
         this.addUpdateUserForm.get("mobileNo")?.disable();
-          this.addUpdateUserForm.get("firstName")?.disable();
-            this.addUpdateUserForm.get("lastName")?.disable();
-          this.cdr.detectChanges();
+        this.addUpdateUserForm.get("firstName")?.disable();
+        this.addUpdateUserForm.get("lastName")?.disable();
+        this.cdr.detectChanges();
       }
     });
   }
@@ -357,7 +360,7 @@ export class AddUpdateUserComponent {
     this.selectedDesignations = this.designationsDropdown.filter((d) =>
       designationIds.includes(d.designationId)
     );
-    console.log("selectedDesignations",this.selectedDesignations)
+    console.log("selectedDesignations", this.selectedDesignations);
     this.cdr.detectChanges();
   }
 
@@ -377,7 +380,7 @@ export class AddUpdateUserComponent {
 
   userUpdate() {
     const data = {
-      id:this.userData.id,
+      id: this.userData.id,
       // first_name: this.addUpdateUserForm.value.firstName,
       // last_name: this.addUpdateUserForm.value.lastName,
       // email:  this.userData.email,
@@ -387,7 +390,7 @@ export class AddUpdateUserComponent {
       roleId: this.addUpdateUserForm.value.roleId,
       designation: this.addUpdateUserForm.value.designation,
     };
-    this._searchUserService.updateUserById(this.userData.kgid,data).subscribe({
+    this._searchUserService.updateUserById(this.userData.kgid, data).subscribe({
       next: (response: any) => {
         this._snackBar.open("User Updated successfully", "Close", {
           duration: 3000,
@@ -408,7 +411,7 @@ export class AddUpdateUserComponent {
     });
   }
 
-  goToUserList(){
-    this.router.navigateByUrl('/manage-user/active-user');
+  goToUserList() {
+    this.router.navigateByUrl("/manage-user/active-user");
   }
 }
