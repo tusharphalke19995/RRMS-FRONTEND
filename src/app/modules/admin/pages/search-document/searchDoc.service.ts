@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { take } from 'lodash';
 import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
 import { InventoryProduct } from '../upload-document/uploadDoc.types';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { CommonApiCallService } from 'app/shared/services/common-api-call.service';
 import { apiurls } from 'app/shared/constants/api-urls.constant';
 import { ErrorResponseModel } from 'app/shared/models/error-model';
@@ -29,6 +29,15 @@ export class SearchDocService {
     );
   }
 
+    updateCaseDetailsByIdData(id: number, data: any) {
+      const url = `${apiurls.updateCaseDetailsById}${id}`;
+      return this._httpClient.patch(url, data, {
+          headers: new HttpHeaders({
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+          })
+      }).pipe(catchError(this.handleError));
+  }
 
    createProduct() 
    {

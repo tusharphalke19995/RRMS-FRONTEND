@@ -29,6 +29,7 @@ import { UploadDocumentService } from "../../upload-document/uploadDoc.service";
 import { FileWithMetadata } from "../../upload-files/model/upload-files.models";
 import { AuthService } from "app/core/auth/auth.service";
 import { MasterService } from "../../Master/master.service";
+import { SearchDocService } from "../searchDoc.service";
 
 @Component({
   selector: "app-get-doc",
@@ -92,7 +93,8 @@ export class GetDocComponent {
     private _snackBar: MatSnackBar,
     private _router: Router,
     private _masterService:MasterService,
-    private authenticationService:AuthService
+    private authenticationService:AuthService,
+    private searchDocService:SearchDocService
   ) {
     this.authData = this.authenticationService.getAuthData();
   
@@ -161,8 +163,8 @@ export class GetDocComponent {
     this.selectedFiles.forEach((file) => {
       formData.append(`Files`, file);
     });
-    this._uploadDocumentService
-      .updateUploadedDoc(this.caseMetaData.CaseInfoDetailsId, formData)
+    this.searchDocService
+      .updateCaseDetailsByIdData(this.caseMetaData.CaseInfoDetailsId, formData)
       .subscribe({
         next: (response: any) => {
           this._snackBar.open("File Updated successfully", "Close", {
