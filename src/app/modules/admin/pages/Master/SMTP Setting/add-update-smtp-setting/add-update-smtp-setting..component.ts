@@ -1,34 +1,44 @@
-import { Component, Inject, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { TranslocoModule } from '@ngneat/transloco';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MasterService } from '../../master.service';
+import { Component, Inject, ViewEncapsulation } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import {
+  ReactiveFormsModule,
+  FormsModule,
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  Validators,
+} from "@angular/forms";
+import { MatButtonModule } from "@angular/material/button";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from "@angular/material/dialog";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatIconModule } from "@angular/material/icon";
+import { MatInputModule } from "@angular/material/input";
+import { MatSelectModule } from "@angular/material/select";
+import { TranslocoModule } from "@ngneat/transloco";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { MasterService } from "../../master.service";
 
 @Component({
-  selector: 'add-update-smtp-setting',
+  selector: "add-update-smtp-setting",
   standalone: true,
-   imports: [
-     CommonModule,
-     ReactiveFormsModule,
-     MatDialogModule,
-     MatIconModule,
-     FormsModule,
-     MatFormFieldModule,
-     MatInputModule,
-     MatSelectModule,
-     MatButtonModule,
-     TranslocoModule,
-   ],
-   encapsulation: ViewEncapsulation.None,
-  templateUrl: './add-update-smtp-setting.component.html',
-  styleUrl: './add-update-smtp-setting.component.scss'
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatIconModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    TranslocoModule,
+  ],
+  encapsulation: ViewEncapsulation.None,
+  templateUrl: "./add-update-smtp-setting.component.html",
+  styleUrl: "./add-update-smtp-setting.component.scss",
 })
 export class AddUpdateSMTPSettingComponent {
   SMTPSettingForm: UntypedFormGroup;
@@ -36,8 +46,9 @@ export class AddUpdateSMTPSettingComponent {
   userRoleDropdown = [];
   divisionDropdown = [];
   designationsDropdown = [];
-  updateBool:boolean=false;
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, 
+  updateBool: boolean = false;
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: any,
     private masterService: MasterService,
     private _formBuilder: UntypedFormBuilder,
     public dialogRef: MatDialogRef<AddUpdateSMTPSettingComponent>,
@@ -45,16 +56,20 @@ export class AddUpdateSMTPSettingComponent {
   ) {}
 
   ngOnInit(): void {
-    this.initiateForm();  
-    if(this.data){
-        this.updateBool= true;
+    this.initiateForm();
+    if (this.data) {
+      this.updateBool = true;
       this.dataPatch();
-    }    
+    }
   }
 
   initiateForm() {
     this.SMTPSettingForm = this._formBuilder.group({
-      statusName: ["", Validators.required],
+      smtpServerName: ["", Validators.required],
+      portNo: ["", Validators.required],
+      encryption: ["", Validators.required],
+      username: ["", Validators.required],
+      password: ["", Validators.required],
     });
   }
 
@@ -67,11 +82,15 @@ export class AddUpdateSMTPSettingComponent {
   saveSMTPSetting() {
     if (this.SMTPSettingForm.valid) {
       const data = {
-        statusName: this.SMTPSettingForm.value.statusName,
+        smtpServerName: this.SMTPSettingForm.value.statusName,
+        portNo: this.SMTPSettingForm.value.statusName,
+        encryption: this.SMTPSettingForm.value.statusName,
+        username: this.SMTPSettingForm.value.statusName,
+        password: this.SMTPSettingForm.value.statusName,
       };
-      this.masterService.createCaseStatus(data).subscribe({
+      this.masterService.createSMTP(data).subscribe({
         next: (response: any) => {
-          this._snackBar.open("Case Status Created Successfully", "Close", {
+          this._snackBar.open("SMTP Created Successfully", "Close", {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
@@ -94,11 +113,15 @@ export class AddUpdateSMTPSettingComponent {
   updateSMTPSetting() {
     if (this.SMTPSettingForm.valid) {
       const data = {
-        statusName: this.SMTPSettingForm.value.statusName,
+           smtpServerName: this.SMTPSettingForm.value.statusName,
+        portNo: this.SMTPSettingForm.value.statusName,
+        encryption: this.SMTPSettingForm.value.statusName,
+        username: this.SMTPSettingForm.value.statusName,
+        password: this.SMTPSettingForm.value.statusName,
       };
-        this.masterService.updateCaseStatusById(this.data.statusId,data).subscribe({
+      this.masterService.updateSMTPById(this.data.smtpId, data).subscribe({
         next: (response: any) => {
-          this._snackBar.open("Case Status Updated successfully", "Close", {
+          this._snackBar.open("SMTP Updated successfully", "Close", {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
@@ -128,7 +151,7 @@ export class AddUpdateSMTPSettingComponent {
     return item.id || index;
   }
 
-  dataPatch(){
+  dataPatch() {
     if (this.data) {
       const userData = this.data;
       this.SMTPSettingForm.patchValue({

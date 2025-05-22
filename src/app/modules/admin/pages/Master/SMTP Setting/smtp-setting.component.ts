@@ -167,7 +167,7 @@ export class SMTPSettingComponent implements OnInit {
   }
 
   getCaseStatusInfo() {
-    this._masterService.getCaseStatus().subscribe({
+    this._masterService.getSMTP().subscribe({
       next: (response: any) => {
         console.log("response", response);
         this.dataSource = new MatTableDataSource(response);
@@ -177,9 +177,9 @@ export class SMTPSettingComponent implements OnInit {
   }
 
   deleteSMTPSetting(data) {
-        this._masterService.deleteCaseFilesById(data.statusId).subscribe({
+        this._masterService.deleteSMTPById(data.statusId).subscribe({
         next: (response: any) => {
-          this._snackBar.open("Case Status Deleted successfully", "Close", {
+          this._snackBar.open("SMTP Deleted successfully", "Close", {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",

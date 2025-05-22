@@ -380,6 +380,41 @@ export class MasterService {
 }
 
 
+
+
+  getSMTP() {
+    return this._httpClient
+      .get(apiurls.manageSMTP)
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteSMTPById(id: number) {
+    const url = `${apiurls.manageSMTP}/${id}`; 
+    return this._httpClient.delete(url, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      })
+    }).pipe(catchError(this.handleError));
+  }
+
+  updateSMTPById(id: number, data: any) {
+    const url = `${apiurls.manageSMTP}/${id}`; 
+    return this._httpClient.put(url, data, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      })
+    }).pipe(catchError(this.handleError));
+  }
+
+
+  createSMTP(data) {
+    return this._httpClient
+      .post(apiurls.manageSMTP, data,)
+      .pipe(catchError(this.handleError));
+  }
+
   /**
    * The error handler.
    * @param err The http error response.

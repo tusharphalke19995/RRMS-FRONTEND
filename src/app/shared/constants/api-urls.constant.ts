@@ -44,6 +44,7 @@ export const apiurls = {
   uploadApprovalsByID: `${environment.userApiUrl}casedata/upload-approvals`,
   caseFiles: `${environment.userApiUrl}mdm/caseFiles`,
   correspondenceFiles: `${environment.userApiUrl}mdm/correspondenceFiles`,
+  manageSMTP:`${environment.userApiUrl}mdm/smtp`,
   designationsFilterByDepartmentId: `${environment.userApiUrl}mdm/designations?departmentId`,
   divisionsFilterByDepartmentId: `${environment.userApiUrl}mdm/divisions?departmentId`,
   designationsFilterByDivisionId: `${environment.userApiUrl}mdm/designations?divisionId`,
