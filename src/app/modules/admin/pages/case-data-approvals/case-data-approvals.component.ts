@@ -202,15 +202,18 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
    */
   ngOnInit(): void {
     this.authData = this.authServcie.getAuthData();
-
-    this.route.queryParams.subscribe((params) => {
-      if (params["object_id"]) {
-        this.objectId = params["object_id"];
-        this.getApprovalsByGivenIdByNotification(this.objectId);
-      } else {
-        this.getCasedataUploadApprovalsData();
+   
+     this.route.queryParams.subscribe(params => {
+      const tab = params['selectedTab'];
+      const objectId = params['object_id'];
+      if (tab !== undefined) {
+        this.selectedTab = Number(tab); 
+       this.getApprovalsByGivenIdByNotification(objectId);
+      }else{
+     this.getCasedataUploadApprovalsData();
       }
     });
+  
   }
 
   getApprovalsByGivenIdByNotification(id) {

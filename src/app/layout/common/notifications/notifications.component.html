@@ -70,10 +70,9 @@
     
                         <!-- Actions -->
                         <div class="relative flex flex-col my-5 mr-6 ml-2">
-    
+      <!-- [matTooltip]="notification.is_read ? 'Mark as unread' : 'Mark as read'" -->
                             <button class="w-6 h-6 min-h-6" mat-icon-button 
-                                [matTooltip]="notification.is_read ? 'Mark as unread' : 'Mark as read'">
-    
+                              >
                                 <mat-icon class="icon-size-4 text-primary-600">
                                     {{ notification.is_read ? 'done' : 'mark_email_unread' }}
                                 </mat-icon>
@@ -106,7 +105,7 @@
                                 [src]="notification.image" [alt]="'Notification image'">
                         </ng-container>
                         <!-- Title, description & time -->
-                        <div class="flex flex-col flex-auto">
+                        <div class="flex flex-col flex-auto cursor-pointer" (click)="goToProcess(notification)">
                             <ng-container *ngIf="notification.title">
                                 <div class="font-semibold line-clamp-1" [innerHTML]="notification.title"></div>
                             </ng-container>

@@ -33,6 +33,7 @@
         "jquery": "^3.7.1",
         "lodash-es": "4.17.21",
         "luxon": "3.4.4",
+        "ng2-pdf-viewer": "^10.0.0",
         "ngx-quill": "24.0.2",
         "ngx-slick-carousel": "^15.0.0",
         "perfect-scrollbar": "1.5.5",

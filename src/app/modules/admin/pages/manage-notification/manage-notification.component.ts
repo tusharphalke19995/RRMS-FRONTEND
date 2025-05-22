@@ -127,8 +127,8 @@ export class ManageNotificationComponent implements AfterViewInit {
     const divisionID = Number(sessionStorage.getItem("divisionID"));
     this._dashbaordService.getNotificationsCount(divisionID).subscribe({
       next: (response: any[]) => {
-        const onlyRead = (response || []).filter((n) => n.is_read === false);
-        this.dataSource = new MatTableDataSource(onlyRead);
+        // const onlyRead = (response || []).filter((n) => n.is_read === false);
+        this.dataSource = new MatTableDataSource(response);
         this.setupPagination();
         this.cdr.detectChanges();
       },
@@ -158,9 +158,23 @@ export class ManageNotificationComponent implements AfterViewInit {
     });
   }
 
-goToProcess(row: any) {
-  this.router.navigate(['upload-approval'], { queryParams: { object_id: row.object_id } });
-}
+// goToProcess(row: any) {
+//   this.router.navigate(['upload-approval'], { queryParams: { object_id: row.object_id } });
+// }
+
+goToProcess(row: any): void {
+    const url = new URL(row.redirect_url, window.location.origin); // Safely parse URL
+    const tab = url.searchParams.get('tab');
+    let selectedTab = 0;
+    if (tab === 'approved') {
+      selectedTab = 1;
+    } else if (tab === 'denied') {
+      selectedTab = 2;
+    }
+    this.router.navigate(['upload-approval'], {
+      queryParams: { object_id: row.object_id, selectedTab: selectedTab }
+    });
+  }
 
   ngAfterViewInit(): void {
     this.setupPagination();

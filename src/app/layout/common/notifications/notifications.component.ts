@@ -287,9 +287,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     let count = 0;
 
     if (this.notificationsData && this.notificationsData.length) {
-      count = this.notificationsData.filter(
-        (notification) => !notification.is_read
-      ).length;
+      count = this.notificationsData.filter((n) => !n.is_read).length;
     }
 
     this.unreadCount = count;
@@ -306,7 +304,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
               new Date(b.created_at).getTime() -
               new Date(a.created_at).getTime()
           )
-          .slice(0, 3);
+          .slice(0, 5);
 
         this._calculateUnreadCount();
         this._changeDetectorRef.detectChanges();
@@ -319,7 +317,22 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     });
   }
 
+  goToProcess(row: any): void {
+    const url = new URL(row.redirect_url, window.location.origin); // Safely parse URL
+    const tab = url.searchParams.get('tab');
+    let selectedTab = 0;
+    if (tab === 'approved') {
+      selectedTab = 1;
+    } else if (tab === 'denied') {
+      selectedTab = 2;
+    }
+    this.router.navigate(['upload-approval'], {
+      queryParams: { object_id: row.object_id, selectedTab: selectedTab }
+    });
+  }
+
+
   goToAllNotifications() {
-    this.router.navigateByUrl("manage-notification");
+    this.router.navigateByUrl("manage-notification"); 
   }
 }
