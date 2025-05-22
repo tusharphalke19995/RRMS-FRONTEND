@@ -23,39 +23,42 @@
     <!-- Form Content -->
     <form [formGroup]="SMTPSettingForm" class="flex flex-col flex-auto p-6 overflow-y-auto">
         <!-- First Row -->
-        <div class="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3">
+        <div class="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-2">
             <mat-form-field appearance="outline" class="w-full">
                 <mat-label *transloco="let t" class="font-medium">{{t('smtpServerName')}}</mat-label>
-                <input matInput [formControlName]="'smtpServerName'" placeholder="Enter employee name">
+                <input matInput [formControlName]="'smtpServerName'" placeholder="Enter SMTP Server Name">
                 <mat-error *ngIf="SMTPSettingForm.get('smtpServerName').hasError('required')">
                     Required
                 </mat-error>
             </mat-form-field>
-                 <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('smtpServerName')}}</mat-label>
-                <input matInput [formControlName]="'smtpServerName'" placeholder="Enter employee name">
-                <mat-error *ngIf="SMTPSettingForm.get('smtpServerName').hasError('required')">
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('portNo')}}</mat-label>
+                <input matInput [formControlName]="'portNo'" placeholder="Enter Port No">
+                <mat-error *ngIf="SMTPSettingForm.get('portNo').hasError('required')">
                     Required
                 </mat-error>
             </mat-form-field>
-                 <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('smtpServerName')}}</mat-label>
-                <input matInput [formControlName]="'smtpServerName'" placeholder="Enter employee name">
-                <mat-error *ngIf="SMTPSettingForm.get('smtpServerName').hasError('required')">
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('encryption')}}</mat-label>
+                <input matInput [formControlName]="'encryption'" placeholder="Enter Encryption">
+                <mat-error *ngIf="SMTPSettingForm.get('encryption').hasError('required')">
                     Required
                 </mat-error>
             </mat-form-field>
-                 <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('smtpServerName')}}</mat-label>
-                <input matInput [formControlName]="'smtpServerName'" placeholder="Enter employee name">
-                <mat-error *ngIf="SMTPSettingForm.get('smtpServerName').hasError('required')">
+
+        </div>
+        <div class="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-2">
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('username')}}</mat-label>
+                <input matInput [formControlName]="'username'" placeholder="Enter Username">
+                <mat-error *ngIf="SMTPSettingForm.get('username').hasError('required')">
                     Required
                 </mat-error>
             </mat-form-field>
-                 <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('smtpServerName')}}</mat-label>
-                <input matInput [formControlName]="'smtpServerName'" placeholder="Enter employee name">
-                <mat-error *ngIf="SMTPSettingForm.get('smtpServerName').hasError('required')">
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('password')}}</mat-label>
+                <input matInput [formControlName]="'password'" placeholder="Enter Password">
+                <mat-error *ngIf="SMTPSettingForm.get('password').hasError('required')">
                     Required
                 </mat-error>
             </mat-form-field>

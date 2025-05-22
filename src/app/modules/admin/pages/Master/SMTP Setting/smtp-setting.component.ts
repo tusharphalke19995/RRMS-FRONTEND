@@ -74,7 +74,11 @@ export class SMTPSettingComponent implements OnInit {
   ];
 
   displayedColumns: string[] = [
-    "statusName",
+    "username",
+    "smtpServerName",
+    "portNo",
+    "encryption",
+    "password",
     "action"
   ];
   userRoleDropdown: [];

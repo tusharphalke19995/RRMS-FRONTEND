@@ -82,11 +82,11 @@ export class AddUpdateSMTPSettingComponent {
   saveSMTPSetting() {
     if (this.SMTPSettingForm.valid) {
       const data = {
-        smtpServerName: this.SMTPSettingForm.value.statusName,
-        portNo: this.SMTPSettingForm.value.statusName,
-        encryption: this.SMTPSettingForm.value.statusName,
-        username: this.SMTPSettingForm.value.statusName,
-        password: this.SMTPSettingForm.value.statusName,
+        smtpServerName: this.SMTPSettingForm.value.smtpServerName,
+        portNo: this.SMTPSettingForm.value.portNo,
+        encryption: this.SMTPSettingForm.value.encryption,
+        username: this.SMTPSettingForm.value.username,
+        password: this.SMTPSettingForm.value.password,
       };
       this.masterService.createSMTP(data).subscribe({
         next: (response: any) => {
@@ -113,11 +113,11 @@ export class AddUpdateSMTPSettingComponent {
   updateSMTPSetting() {
     if (this.SMTPSettingForm.valid) {
       const data = {
-           smtpServerName: this.SMTPSettingForm.value.statusName,
-        portNo: this.SMTPSettingForm.value.statusName,
-        encryption: this.SMTPSettingForm.value.statusName,
-        username: this.SMTPSettingForm.value.statusName,
-        password: this.SMTPSettingForm.value.statusName,
+           smtpServerName: this.SMTPSettingForm.value.smtpServerName,
+        portNo: this.SMTPSettingForm.value.portNo,
+        encryption: this.SMTPSettingForm.value.encryption,
+        username: this.SMTPSettingForm.value.username,
+        password: this.SMTPSettingForm.value.password,
       };
       this.masterService.updateSMTPById(this.data.smtpId, data).subscribe({
         next: (response: any) => {
