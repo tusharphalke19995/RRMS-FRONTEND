@@ -30,6 +30,7 @@ import { FileWithMetadata } from "../../upload-files/model/upload-files.models";
 import { AuthService } from "app/core/auth/auth.service";
 import { MasterService } from "../../Master/master.service";
 import { SearchDocService } from "../searchDoc.service";
+import { CaseDataApprovalService } from "../../case-data-approvals/case-data-approvals.service";
 
 @Component({
   selector: "app-get-doc",
@@ -65,7 +66,7 @@ import { SearchDocService } from "../searchDoc.service";
 })
 export class GetDocComponent {
   isLoading: boolean = false;
-
+  originalFiles: FileWithMetadata[] = [];  
   files: any[] = [];
 
   caseMetaData: any;
@@ -94,7 +95,8 @@ export class GetDocComponent {
     private _router: Router,
     private _masterService:MasterService,
     private authenticationService:AuthService,
-    private searchDocService:SearchDocService
+    private searchDocService:SearchDocService,
+    private caseDataApprovalService:CaseDataApprovalService
   ) {
     this.authData = this.authenticationService.getAuthData();
   
@@ -112,6 +114,7 @@ export class GetDocComponent {
   getFilesWithMetadataSelected() {
     this.dataService.getFilesData().subscribe((files) => {
       this.files = files;
+       this.originalFiles = JSON.parse(JSON.stringify(files));
       if(this.files.length>0){
       this.showRequestConent= false;
       }
@@ -138,54 +141,54 @@ export class GetDocComponent {
   }) {
     this.selectedFiles = data.files; 
     this.selectedMetadata = data.metadata;
-   
-    console.log("Files selected:", this.selectedFiles); 
-    console.log("Metadata selected:", this.selectedMetadata);
   }
 
-  updateUploadedFile() {
-    const formData = new FormData();
-    formData.append("caseDetails", JSON.stringify(this.caseMetaData));
-    console.log("file", this.selectedFiles);
-    const fileDetailsArray = this.selectedFiles.map((file) => ({
-      hashTag: file.metadata.hashTag
-        ? file.metadata.hashTag
-            .split(",")
-            .map((tag) => tag.trim())
-            .join(",")
-        : "",
-      subject: file.metadata.subject || "",
-      classification: file.metadata.classification || "",
-      fileType: file.metadata.fileType || "",
-    }));
-    formData.append("fileDetails", JSON.stringify(fileDetailsArray));
+updateUploadedFile() {
+  const filesToUpdate = this.selectedFiles?.length > 0 ? this.selectedFiles : this.files;
 
-    this.selectedFiles.forEach((file) => {
-      formData.append(`Files`, file);
+  filesToUpdate.forEach((file) => {
+    const metadata = file.metadata || file;
+
+    const original = this.originalFiles.find(f => f.fileId === file.fileId);
+    const originalMetadata = original?.metadata || original;
+
+    if (!file.fileId || !metadata || !originalMetadata) {
+      console.warn("Missing metadata or fileId", file);
+      return;
+    }
+
+    // Compare fields
+    const hasChanged = ['classification', 'documentType', 'hashTag', 'fileType', 'subject']
+      .some(key => metadata[key] !== originalMetadata[key]);
+
+    if (!hasChanged) {
+      console.log(`No changes for fileId: ${file.fileId}, skipping update`);
+      return;
+    }
+
+    const payload = {
+      classification: metadata.classification,
+      documentType: metadata.documentType,
+      hashTag: metadata.hashTag,
+      fileType: metadata.fileType,
+      subject: metadata.subject,
+    };
+
+    this.caseDataApprovalService.updateFileDataById(file.fileId, payload).subscribe({
+      next: () => {
+        this._snackBar.open('File metadata updated', 'Close', {  duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top", });
+      },
+      error: (err) => {
+        console.error('Upload failed', err);
+        this._snackBar.open('Update failed', 'Close', { duration: 3000,horizontalPosition: "right",
+            verticalPosition: "top", });
+      }
     });
-    this.searchDocService
-      .updateCaseDetailsByIdData(this.caseMetaData.CaseInfoDetailsId, formData)
-      .subscribe({
-        next: (response: any) => {
-          this._snackBar.open("File Updated successfully", "Close", {
-            duration: 3000,
-            horizontalPosition: "right",
-            verticalPosition: "top",
-            panelClass: ["success-snackbar"],
-          });
-          this._router.navigateByUrl("search-document");
-          this.selectedFiles = [];
-        },
-        error: (error) => {
-          this._snackBar.open(error.message || "Error creating user", "Close", {
-            duration: 3000,
-            horizontalPosition: "right",
-            verticalPosition: "top",
-            panelClass: ["error-snackbar"],
-          });
-        },
-      });
-  }
+  });
+}
+
 
   isImage(file: any): boolean {
     return file && file.type && file.type.startsWith('image/');
@@ -217,6 +220,8 @@ hasRoleInDivision(...roles: string[]): boolean {
   } 
 
   goToAddDoc(){
+    this._uploadDocumentService.setState(this.files, this.caseMetaData,true);
     this._router.navigateByUrl('upload-document');
   }
+  
 }

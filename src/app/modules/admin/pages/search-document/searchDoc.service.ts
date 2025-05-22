@@ -29,16 +29,6 @@ export class SearchDocService {
     );
   }
 
-    updateCaseDetailsByIdData(id: number, data: any) {
-      const url = `${apiurls.updateCaseDetailsById}${id}`;
-      return this._httpClient.patch(url, data, {
-          headers: new HttpHeaders({
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-          })
-      }).pipe(catchError(this.handleError));
-  }
-
    createProduct() 
    {
     this._httpClient.post<InventoryProduct>('api/apps/ecommerce/inventory/product', {})

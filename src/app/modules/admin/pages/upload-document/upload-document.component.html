@@ -264,7 +264,7 @@
                         <td>
                             <mat-form-field appearance="outline" class="example-full-width">
                             <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('letterNo')}}</mat-label>
-                            <input matInput matInput [formControlName]="'letterNo'" [required]="true" >
+                            <input matInput matInput [formControlName]="'letterNo'" [required]="true">
                             <mat-error *ngIf="uploadDocumentForm.get('letterNo').hasError('required')">
                                 Required
                             </mat-error>
@@ -332,11 +332,18 @@
                         [disabled]="uploadDocumentForm.pristine || uploadDocumentForm.untouched" (click)="clearForm()">
                         {{t('clear')}}
                     </button>
-                    <button *transloco="let t" class="ml-2" mat-flat-button [color]="'primary'"
+                    <button *ngIf="!isPatchSearchPage" class="ml-2" mat-flat-button [color]="'primary'"
                     [disabled]="!canSubmit" (click)="sumbitUpload()">
                         <mat-spinner *ngIf="isSubmitting" diameter="20" class="mr-2"></mat-spinner>
-                        <span *ngIf="!isSubmitting">{{t('submit')}}</span>
-                        <span *ngIf="isSubmitting">{{t('uploading')}}</span>
+                        <span *ngIf="!isSubmitting">Submit</span>
+                        <span *ngIf="isSubmitting">Uploading</span>
+                    </button>
+
+                     <button *ngIf="isPatchSearchPage"  class="ml-2" mat-flat-button [color]="'primary'"
+                     (click)="updateUpload()">
+                        <mat-spinner *ngIf="isSubmitting" diameter="20" class="mr-2"></mat-spinner>
+                        <span *ngIf="!isSubmitting">Update</span>
+                        <span *ngIf="isSubmitting">Uploading</span>
                     </button>
                 </div>
             </form>

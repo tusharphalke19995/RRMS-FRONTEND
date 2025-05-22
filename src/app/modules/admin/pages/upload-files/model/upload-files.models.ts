@@ -51,6 +51,7 @@ export interface IFileUploadModel {
 
 
  export interface FileWithMetadata extends File {
+  fileId?: number; 
     metadata?: {
       subject: string;
       fileType: string;
