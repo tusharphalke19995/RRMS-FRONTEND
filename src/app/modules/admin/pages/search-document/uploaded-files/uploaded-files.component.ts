@@ -13,7 +13,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { TranslocoModule } from "@ngneat/transloco";
 import { SearchDocService } from "../searchDoc.service";
-import { DomSanitizer } from "@angular/platform-browser";
+import { DomSanitizer, SafeHtml, SafeResourceUrl } from "@angular/platform-browser";
 import { SharedService } from "app/shared/shared.service";
 
 @Component({
@@ -43,6 +43,8 @@ export class UploadedFilesComponent {
   audioFiles: string[] = [];
   videoFiles: string[] = [];
   caseMetaData: any;
+  htmlPreviewContent: SafeHtml | null = null;
+  fileType: string = '';
   constructor(
     private sanitizer: DomSanitizer,
         private dataService: SharedService,
@@ -77,10 +79,31 @@ export class UploadedFilesComponent {
     };
     this._searchDocService.filePreviewData(payload).subscribe({
       next: (res: Blob | null) => {
-        if (res) {
+        debugger;
+
+        const fileType = res.type;
+
+        if (fileType === 'application/json' || fileType === 'text/html') {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const json = JSON.parse(reader.result as string);
+          if (json.type === 'html') {
+            this.htmlPreviewContent = this.sanitizer.bypassSecurityTrustHtml(json.html);
+            this.fileType = 'html';
+          }
+        } catch (e) {
+          console.error('Error parsing HTML response:', e);
+        }
+      };
+      reader.readAsText(res);
+      return;
+      }
+
+        // if (res) {
           const fileUrl = URL.createObjectURL(res);
-          const fileType = res.type;
-         
+          // const fileType = res.type;
+         const safeUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fileUrl);
         if (fileType.startsWith('image/')) {
           this.imageFiles.push(fileUrl);
         } else if (fileType === 'application/pdf') {
@@ -92,9 +115,9 @@ export class UploadedFilesComponent {
         } else {
           console.warn('Unsupported file type:', fileType);
         }
-      } else {
-        console.error('No file data received');
-      }
+      // } else {
+      //   console.error('No file data received');
+      // }
       },
       error: (error) => {
         console.error("Error fetching file preview:", error);
