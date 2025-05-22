@@ -53,7 +53,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
   },
   {
     id: "reqAccess",
-    title: "Access Requests",
+    title: "Access Status",
     type: "basic",
     icon: "heroicons_outline:user",
     link: "/request-access",
