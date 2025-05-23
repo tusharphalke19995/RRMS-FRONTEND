@@ -149,7 +149,7 @@ export class SMTPSettingComponent implements OnInit {
   addSMTPSetting(data) {
     const dialogRef = this.dialog.open(AddUpdateSMTPSettingComponent, {
       data: data,
-      width: "400px",
+      width: "600px",
     });
     dialogRef.afterClosed().subscribe((result) => {
       this._changeDetectorRef.detectChanges();

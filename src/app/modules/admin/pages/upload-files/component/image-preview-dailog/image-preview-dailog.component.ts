@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@ngneat/transloco';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SharedService } from 'app/shared/shared.service';
 import { SearchDocService } from '../../../search-document/searchDoc.service';
 import { UploadedFilesComponent } from '../../../search-document/uploaded-files/uploaded-files.component';
@@ -39,6 +39,13 @@ export class ImagePreviewDailogComponent {
 fileInfo: string[] = [];
   imageFiles: string[] = [];
   caseMetaData: any;
+    base64pdf: SafeResourceUrl | null = null;
+    pdfTitle: string = "PDF Preview";
+    wordFiles: string[] = [];
+    excelFiles: string[] = [];
+    excelViewerUrl: SafeResourceUrl;
+    wordHtml: string;
+    wordViewerUrl: SafeResourceUrl;
   constructor(
     private sanitizer: DomSanitizer,
         private dataService: SharedService,
@@ -59,15 +66,46 @@ fileInfo: string[] = [];
  if (res) {
           const fileUrl = URL.createObjectURL(res);
           const fileType = res.type;
-            if (fileType.startsWith('image/')) {
-          this.imageFiles.push(fileUrl);
-        } else if (fileType === 'application/pdf') {
-          this.pdfFiles.push(fileUrl);
-        } else if (fileType.startsWith('audio/')) {
-          this.audioFiles.push(fileUrl);
-        } else if (fileType.startsWith('video/')) {
-          this.videoFiles.push(fileUrl);
-        }
+           if (fileType.startsWith("image/")) {
+            this.imageFiles.push(fileUrl);
+          } else if (fileType === "application/pdf") {
+            this.base64pdf = fileUrl;
+            this.pdfFiles.push(fileUrl);
+          } else if (fileType.startsWith("audio/")) {
+            this.audioFiles.push(fileUrl);
+          } else if (fileType.startsWith("video/")) {
+            this.videoFiles.push(fileUrl);
+          } else if (
+            fileType === "application/msword" ||
+            fileType ===
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          ) {
+            const googleDocsViewerUrl = `https://rrms-backend.onrender.com/viewer?url=${encodeURIComponent(
+              fileUrl
+            )}&embedded=true`;
+
+            this.wordViewerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(googleDocsViewerUrl);
+                        console.log("Word document URL:", googleDocsViewerUrl);
+            this.wordFiles.push(googleDocsViewerUrl);
+          }
+          // Handle Excel files (.xls, .xlsx)
+          else if (
+            fileType === "application/vnd.ms-excel" ||
+            fileType ===
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          ) {
+            const googleDocsViewerUrl = `https://rrms-backend.onrender.com/viewer?url=${encodeURIComponent(
+              fileUrl
+            )}&embedded=true`;
+
+     
+              this.excelViewerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(googleDocsViewerUrl);
+            console.log("Excel document URL:", googleDocsViewerUrl);
+
+            this.excelFiles.push(googleDocsViewerUrl);
+          } else {
+            console.warn("Unsupported file type:", fileType);
+          }
         } else {
           console.error("No file data received");
         }

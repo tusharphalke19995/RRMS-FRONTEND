@@ -40,6 +40,7 @@ import { InventoryVendor } from "../../upload-document/uploadDoc.types";
 import { SearchUserService } from "../search-userlist/searchUser.service";
 import { MasterService } from "../../Master/master.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 interface Role {
   roleId: number;
   roleName: string;
@@ -84,6 +85,7 @@ interface Designation {
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+        MatSlideToggleModule
   ],
   templateUrl: "./archived-users.component.html",
   styleUrl: "./archived-users.component.scss",
@@ -134,7 +136,7 @@ export class ArchivedUsersComponent implements OnInit, AfterViewInit {
     "email",
     "role",
     "designation",
-    // "action"
+    "action"
   ];
 
   /**
@@ -440,11 +442,50 @@ export class ArchivedUsersComponent implements OnInit, AfterViewInit {
     });
   }
 
+
+  toggleUserStatus(user: any): void {
+  const updatedStatus = !user.is_active;
+  const payload = {
+    isActive: updatedStatus
+  };
+
+  this._searchUserService.updateUserById(user.kgid, payload).subscribe({
+    next: () => {
+      user.is_active = updatedStatus;
+      this._snackBar.open(
+        `User ${updatedStatus ? 'activated' : 'deactivated'} successfully.`,
+        'Close',
+        {
+          duration: 3000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+          panelClass: ['success-snackbar']
+        }
+      );
+      this.searcUserBySelectedParameter();
+    },
+    error: () => {
+      this._snackBar.open('Failed to update user status.', 'Close', {
+        duration: 3000,
+        horizontalPosition: 'right',
+        verticalPosition: 'top',
+        panelClass: ['error-snackbar']
+      });
+    }
+  });
+}
+
   getApiCall() {
     this.searchUserListForm.valueChanges
       .pipe(debounceTime(400), distinctUntilChanged())
       .subscribe(() => {
         this.searcUserBySelectedParameter();
       });
+  }
+
+    viewUser(data) {
+    this.sharedService.setUserData(data);
+    this.sharedService.setUserBoolean(true);
+    this.router.navigateByUrl('/manage-user/user-addUpdate')
   }
 }

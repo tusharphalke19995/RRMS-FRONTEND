@@ -13,8 +13,13 @@ import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { TranslocoModule } from "@ngneat/transloco";
 import { SearchDocService } from "../searchDoc.service";
-import { DomSanitizer, SafeHtml, SafeResourceUrl } from "@angular/platform-browser";
+import {
+  DomSanitizer,
+  SafeHtml,
+  SafeResourceUrl,
+} from "@angular/platform-browser";
 import { SharedService } from "app/shared/shared.service";
+import { PdfViewerModule } from "ng2-pdf-viewer";
 
 @Component({
   selector: "app-uploaded-files",
@@ -31,6 +36,7 @@ import { SharedService } from "app/shared/shared.service";
     MatButtonModule,
     TranslocoModule,
     NgFor,
+    PdfViewerModule,
   ],
   templateUrl: "./uploaded-files.component.html",
   styleUrl: "./uploaded-files.component.scss",
@@ -44,18 +50,24 @@ export class UploadedFilesComponent {
   videoFiles: string[] = [];
   caseMetaData: any;
   htmlPreviewContent: SafeHtml | null = null;
-  fileType: string = '';
+  fileType: string = "";
+  base64pdf: SafeResourceUrl | null = null;
+  pdfTitle: string = "PDF Preview";
+  wordFiles: string[] = [];
+  excelFiles: string[] = [];
+  excelViewerUrl: SafeResourceUrl;
+  wordHtml: string;
+  wordViewerUrl: SafeResourceUrl;
   constructor(
     private sanitizer: DomSanitizer,
-        private dataService: SharedService,
+    private dataService: SharedService,
     private _searchDocService: SearchDocService,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<UploadedFilesComponent>
   ) {
-    console.log("dadsfvta",data)
+    console.log("dadsfvta", data);
     this.getCasedataSelected();
     this.getUploadMetaDataFiles();
-   
   }
 
   onNoClose(): void {
@@ -65,59 +77,72 @@ export class UploadedFilesComponent {
   getCasedataSelected() {
     this.dataService.getCaseData().subscribe((caseData) => {
       this.caseMetaData = caseData;
-      console.log("this.caseMetaData",this.caseMetaData)
+      console.log("this.caseMetaData", this.caseMetaData);
     });
   }
-  
+
   getUploadMetaDataFiles(): void {
-    let payload = {
+    const payload = {
       fileHash: this.data?.file?.fileHash || this.data?.fileHash,
       requested_to: 0,
       comments: "",
-      division_id: sessionStorage.getItem('divisionID'),
-      case_id:  this.data?.case_details_id || this.caseMetaData?.CaseInfoDetailsId || this.data?.caseInfoDetailsId,
+      division_id: sessionStorage.getItem("divisionID"),
+      case_id:
+        this.data?.case_details_id ||
+        this.caseMetaData?.CaseInfoDetailsId ||
+        this.data?.caseInfoDetailsId,
     };
+
     this._searchDocService.filePreviewData(payload).subscribe({
-      next: (res: Blob | null) => {
-        debugger;
+      next: (res: any) => {
+        if (res) {
+          const fileType = res.mime_type || res.type;
+          const fileUrl = `data:${fileType};base64,${res.base64_content}`;
+          const safeUrl: SafeResourceUrl =
+            this.sanitizer.bypassSecurityTrustResourceUrl(fileUrl);
+          if (fileType.startsWith("image/")) {
+            this.imageFiles.push(fileUrl);
+          } else if (fileType === "application/pdf") {
+            this.base64pdf = safeUrl;
+            this.pdfFiles.push(fileUrl);
+          } else if (fileType.startsWith("audio/")) {
+            this.audioFiles.push(fileUrl);
+          } else if (fileType.startsWith("video/")) {
+            this.videoFiles.push(fileUrl);
+          } else if (
+            fileType === "application/msword" ||
+            fileType ===
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          ) {
+            const googleDocsViewerUrl = `https://docs.google.com/viewer?url=$${encodeURIComponent(
+              fileUrl
+            )}&embedded=true`;
 
-        const fileType = res.type;
-
-        if (fileType === 'application/json' || fileType === 'text/html') {
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const json = JSON.parse(reader.result as string);
-          if (json.type === 'html') {
-            this.htmlPreviewContent = this.sanitizer.bypassSecurityTrustHtml(json.html);
-            this.fileType = 'html';
+            this.wordViewerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(googleDocsViewerUrl);
+                        console.log("Word document URL:", googleDocsViewerUrl);
+            this.wordFiles.push(googleDocsViewerUrl);
           }
-        } catch (e) {
-          console.error('Error parsing HTML response:', e);
-        }
-      };
-      reader.readAsText(res);
-      return;
-      }
+          // Handle Excel files (.xls, .xlsx)
+          else if (
+            fileType === "application/vnd.ms-excel" ||
+            fileType ===
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          ) {
+            const googleDocsViewerUrl = `https://docs.google.com/viewer?url=$${encodeURIComponent(
+              fileUrl
+            )}&embedded=true`;
 
-        // if (res) {
-          const fileUrl = URL.createObjectURL(res);
-          // const fileType = res.type;
-         const safeUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fileUrl);
-        if (fileType.startsWith('image/')) {
-          this.imageFiles.push(fileUrl);
-        } else if (fileType === 'application/pdf') {
-          this.pdfFiles.push(fileUrl);
-        } else if (fileType.startsWith('audio/')) {
-          this.audioFiles.push(fileUrl);
-        } else if (fileType.startsWith('video/')) {
-          this.videoFiles.push(fileUrl);
+     
+              this.excelViewerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(googleDocsViewerUrl);
+            console.log("Excel document URL:", googleDocsViewerUrl);
+
+            this.excelFiles.push(googleDocsViewerUrl);
+          } else {
+            console.warn("Unsupported file type:", fileType);
+          }
         } else {
-          console.warn('Unsupported file type:', fileType);
+          console.error("No file data received");
         }
-      // } else {
-      //   console.error('No file data received');
-      // }
       },
       error: (error) => {
         console.error("Error fetching file preview:", error);
@@ -152,6 +177,4 @@ export class UploadedFilesComponent {
   getSafeUrl(url: string) {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
-
-  
 }

@@ -20,7 +20,7 @@ export class SearchDocService {
   
   filePreviewData(data: any) {
     return this._httpClient.post(apiurls.filePreview, data, {
-      responseType: 'blob', 
+
     }).pipe(
       catchError((error) => {
         console.error('Error in filePreviewData API:', error);

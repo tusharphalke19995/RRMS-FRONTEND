@@ -155,7 +155,11 @@ export class AddUpdateSMTPSettingComponent {
     if (this.data) {
       const userData = this.data;
       this.SMTPSettingForm.patchValue({
-        statusName: userData.statusName,
+        smtpServerName: userData.smtpServerName,
+        portNo: userData.portNo,
+        encryption: userData.encryption,
+        username: userData.username,
+        password: userData.password,
       });
     }
   }

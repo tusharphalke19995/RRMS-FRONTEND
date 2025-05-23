@@ -139,7 +139,8 @@ export class ActiveUserlistComponent implements OnInit, AfterViewInit {
   getActiveUserList() {
     this.sharedService.activeUserData$.subscribe((userInfo: any) => {
       this.activeUserData = userInfo;
-      console.log(" this.activeUserData ", this.activeUserData);
+     
+       this.activeUserData  = userInfo.filter((n) => !n.is_active);
       this.activeUserData = userInfo.map(user => ({
         ...user,
         isExpanded: false

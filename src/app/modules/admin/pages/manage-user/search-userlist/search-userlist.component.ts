@@ -141,6 +141,7 @@ export class SearchUserlistComponent implements OnInit, AfterViewInit {
     "designation",
     "action"
   ];
+  finalData: any;
 
   /**
    * Constructor
@@ -434,7 +435,8 @@ searcUserBySelectedParameter(){
     };
     this._searchUserService.searchUser(data).subscribe({
       next: (response: any) => {
-        this.dataSource = new MatTableDataSource(response);
+         this.finalData = response.filter((n) => n.is_active);
+        this.dataSource = new MatTableDataSource(this.finalData);
         this.dataSource.paginator = this.paginator1;
       },
       error: (error) => {
