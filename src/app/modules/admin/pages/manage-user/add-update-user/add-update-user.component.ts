@@ -203,7 +203,7 @@ export class AddUpdateUserComponent {
         this.router.navigateByUrl("manage-user/active-user");
       },
       error: (error) => {
-        this._snackBar.open(error.message || "Error creating user", "Close", {
+        this._snackBar.open(error.detail || "Cannot create more than 5 admin users.", "Close", {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
