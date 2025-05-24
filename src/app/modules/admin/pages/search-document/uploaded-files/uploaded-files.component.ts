@@ -81,6 +81,15 @@ export class UploadedFilesComponent {
     });
   }
 
+  base64ToBlob(base64: string, mimeType: string): Blob {
+  const byteChars = atob(base64);
+  const byteNumbers = new Array(byteChars.length);
+  for (let i = 0; i < byteChars.length; i++) {
+    byteNumbers[i] = byteChars.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  return new Blob([byteArray], { type: mimeType });
+}
   getUploadMetaDataFiles(): void {
     const payload = {
       fileHash: this.data?.file?.fileHash || this.data?.fileHash,
@@ -114,13 +123,17 @@ export class UploadedFilesComponent {
             fileType ===
               "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
           ) {
-            const googleDocsViewerUrl = `https://docs.google.com/viewer?url=$${encodeURIComponent(
-              fileUrl
-            )}&embedded=true`;
+            // const googleDocsViewerUrl = `https://docs.google.com/viewer?url=$${encodeURIComponent(
+            //   fileUrl
+            // )}&embedded=true`;
 
-            this.wordViewerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(googleDocsViewerUrl);
-                        console.log("Word document URL:", googleDocsViewerUrl);
-            this.wordFiles.push(googleDocsViewerUrl);
+            // this.wordViewerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(googleDocsViewerUrl);
+            //             console.log("Word document URL:", googleDocsViewerUrl);
+            // this.wordFiles.push(googleDocsViewerUrl);
+              const blob = this.base64ToBlob(res.base64_content, fileType);
+              const url = window.URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              window.open(url, '_blank');
           }
           // Handle Excel files (.xls, .xlsx)
           else if (
