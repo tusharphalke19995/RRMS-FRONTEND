@@ -165,7 +165,7 @@ export class AddUpdateUserComponent {
     this.addUpdateUserForm = this._formBuilder.group({
       firstName: ["", [Validators.required]],
       lastName: ["", [Validators.required]],
-      emailID: ["", [Validators.required, Validators.email,notGmailValidator()]],
+      emailID: ["", [Validators.required, Validators.email]],//notGmailValidator()
       kgid: ["", Validators.required, MaxLengthValidator[12]],
       mobileNo: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
       roleId: ["", [Validators.required]],
@@ -203,14 +203,19 @@ export class AddUpdateUserComponent {
         });
         this.router.navigateByUrl("manage-user/active-user");
       },
-      error: (error) => {
-        this._snackBar.open( error.error.error, "Close", {
-          duration: 3000,
-          horizontalPosition: "right",
-          verticalPosition: "top",
-          panelClass: ["error-snackbar"],
-        });
-      },
+     error: (error: any) => {
+      console.log("error", error);
+
+      // Check if the error has a message and display it
+      const errorMessage = error.error?.message || 'An error occurred while creating the user.';
+
+      this._snackBar.open(errorMessage, "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["error-snackbar"],
+      });
+    },
     });
   }
 

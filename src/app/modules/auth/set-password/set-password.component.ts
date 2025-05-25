@@ -56,6 +56,8 @@ export class SetPasswordComponent implements OnInit {
   authData: any;
   DivisionIdsUserLogin: any;
   DepartmentIdsUserLogin: any;
+   uid: string | null = null;
+  token: string | null = null;
   /**
    * Constructor
    */
@@ -75,6 +77,14 @@ export class SetPasswordComponent implements OnInit {
    * On init
    */
   ngOnInit(): void {
+       this._activatedRoute.queryParams.subscribe((params) => {
+      this.uid = params['uid'];  // Accessing the 'uid' query parameter
+      this.token = params['token'];  // Accessing the 'token' query parameter
+
+      console.log('UID:', this.uid);
+      console.log('Token:', this.token);
+    });
+
     // Create the form
     this.resetPasswordForm = this._formBuilder.group({
       newPassword: [
@@ -106,8 +116,8 @@ export class SetPasswordComponent implements OnInit {
     this.resetPasswordForm.disable();
     this.showAlert = false;
     const payload = {
-      uid: "Dd",
-      token: "dd",
+      uid: this.uid,
+      token:this.token,
       new_password: this.resetPasswordForm.value.newPassword,
     };
 
