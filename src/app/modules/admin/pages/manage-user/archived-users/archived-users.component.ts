@@ -168,8 +168,8 @@ export class ArchivedUsersComponent implements OnInit, AfterViewInit {
     this.getUserRoleDropdown();
     this.getDivisionDropdown();
     this.getDesignationsDropDownData();
+    this.searcUserBySelectedParameter();
     this.getDepartmentsInfo();
-    this.getUserInfo();
   }
 
   ngAfterViewInit() {
@@ -408,6 +408,13 @@ export class ArchivedUsersComponent implements OnInit, AfterViewInit {
       event.preventDefault();
     }
   }
+
+  allowNumbersAndLetters(event: KeyboardEvent): void {
+  const char = event.key;
+  if (!/^[a-zA-Z0-9\s]$/.test(char) && char !== 'Backspace') {
+    event.preventDefault();
+  }
+}
 
   getRoleName(roleId: number): string {
     const role = this.userRoleDropdown.find((r) => r.roleId === roleId);

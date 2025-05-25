@@ -491,4 +491,12 @@ getApiCall() {
       });
   }
 
+    allowNumbersAndLetters(event: KeyboardEvent): void {
+  const char = event.key;
+  if (!/^[a-zA-Z0-9\s]$/.test(char) && char !== 'Backspace') {
+    event.preventDefault();
+  }
+}
+
+
 }

@@ -263,4 +263,11 @@ export class AuthSignInComponent implements OnInit {
     sessionStorage.clear();
     this._router.navigateByUrl('sign-out')
   }
+  
+    allowNumbersAndLetters(event: KeyboardEvent): void {
+  const char = event.key;
+  if (!/^[a-zA-Z0-9\s]$/.test(char) && char !== 'Backspace') {
+    event.preventDefault();
+  }
+}
 }

@@ -11,6 +11,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
+import { notGmailValidator } from 'app/shared/validators/notGmailValidator';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -65,7 +66,7 @@ export class AuthForgotPasswordComponent implements OnInit {
     this.forgotPasswordForm = this._formBuilder.group({
        firstName: ["", [Validators.required]],
       lastName: ["", [Validators.required]],
-      emailID: ["", [Validators.required, Validators.email]],
+      emailID: ["", [Validators.required, Validators.email,notGmailValidator()]],
       mobileNo: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
     });
   }
@@ -161,5 +162,12 @@ export class AuthForgotPasswordComponent implements OnInit {
     }
   }
 
+
+    allowNumbersAndLetters(event: KeyboardEvent): void {
+  const char = event.key;
+  if (!/^[a-zA-Z0-9\s]$/.test(char) && char !== 'Backspace') {
+    event.preventDefault();
+  }
+}
 
 }

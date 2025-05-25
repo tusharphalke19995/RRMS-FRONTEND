@@ -32,6 +32,7 @@ import { MatSort, MatSortModule } from "@angular/material/sort";
 import { AddMultiplesDivisionComponent } from "../add-multiples-division/add-multiples-division.component";
 import { Router } from "@angular/router";
 import { SharedService } from "app/shared/shared.service";
+import { notGmailValidator } from "app/shared/validators/notGmailValidator";
 
 @Component({
   selector: "app-add-update-user",
@@ -164,7 +165,7 @@ export class AddUpdateUserComponent {
     this.addUpdateUserForm = this._formBuilder.group({
       firstName: ["", [Validators.required]],
       lastName: ["", [Validators.required]],
-      emailID: ["", [Validators.required, Validators.email]],
+      emailID: ["", [Validators.required, Validators.email,notGmailValidator()]],
       kgid: ["", Validators.required, MaxLengthValidator[12]],
       mobileNo: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
       roleId: ["", [Validators.required]],
@@ -414,4 +415,11 @@ export class AddUpdateUserComponent {
   goToUserList() {
     this.router.navigateByUrl("/manage-user/active-user");
   }
+
+    allowNumbersAndLetters(event: KeyboardEvent): void {
+  const char = event.key;
+  if (!/^[a-zA-Z0-9\s]$/.test(char) && char !== 'Backspace') {
+    event.preventDefault();
+  }
+}
 }

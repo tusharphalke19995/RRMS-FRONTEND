@@ -40,7 +40,7 @@
                         <input
                             id="kgid"
                             matInput
-                            (keypress)="allowOnlyNumbers($event)"
+                            (keypress)="allowNumbersAndLetters($event)"
                             [formControlName]="'kgid'">
                         <mat-error *ngIf="signInForm.get('kgid').hasError('required')">
                          kgid is required
