@@ -79,7 +79,7 @@ export class ResetPasswordComponent implements OnInit {
      this.kgid = sessionStorage.getItem('id');
     // Create the form
     this.resetPasswordForm = this._formBuilder.group({
-      kgid: ["", [Validators.required]],
+      // kgid: ["", [Validators.required]],
      newPassword: [
           '',
           [
@@ -121,13 +121,15 @@ submit(): void {
   this._authService.resetPassword(payload).subscribe({
     next: (response: any) => {
       console.log("Password reset response:", response);
-    this._snackBar.open("OTP sent to registered email", "Close", {
+    this._snackBar.open("Password reset successful.", "Close", {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
             panelClass: ["success-snackbar"],
           });
            this.resetPasswordForm.enable();
+           this.resetPasswordForm.reset();
+           this._router.navigateByUrl("sign-in");
     },
     error: (error) => {
       this.showAlert = true;
