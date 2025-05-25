@@ -56,6 +56,7 @@ export class ResetPasswordComponent implements OnInit {
   authData: any;
   DivisionIdsUserLogin: any;
   DepartmentIdsUserLogin: any;
+   kgid:any;
   /**
    * Constructor
    */
@@ -75,6 +76,7 @@ export class ResetPasswordComponent implements OnInit {
    * On init
    */
   ngOnInit(): void {
+     this.kgid = sessionStorage.getItem('id');
     // Create the form
     this.resetPasswordForm = this._formBuilder.group({
       kgid: ["", [Validators.required]],
@@ -112,7 +114,7 @@ submit(): void {
   this.resetPasswordForm.disable();
   this.showAlert = false;
   const payload = {
-    kgid: this.resetPasswordForm.value.kgid,
+    kgid: this.kgid,
     password: this.resetPasswordForm.value.newPassword,
   };
 

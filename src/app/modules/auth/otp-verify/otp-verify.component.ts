@@ -178,7 +178,7 @@ startCountdown(): void {
           });
            this.otpForm.enable();
             this.otpForm.reset();
-           this._router.navigateByUrl('sign-in');
+           this._router.navigateByUrl('reset-password');
         },
         error: (error) => {
           this.showAlert = true;
