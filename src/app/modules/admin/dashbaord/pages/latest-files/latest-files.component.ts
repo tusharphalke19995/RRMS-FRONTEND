@@ -231,7 +231,7 @@ export class LatestFilesComponent implements OnInit, AfterViewInit {
     requested_to: 0,
     comments: "",
     division_id: sessionStorage.getItem("divisionID"),
-    case_id: data?.CaseInfoDetailsId,
+    case_id: data?.caseInfoDetailsId,
   };
 
   this._searchDocService.filePreviewData(payload).subscribe({

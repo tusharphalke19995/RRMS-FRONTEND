@@ -69,12 +69,12 @@
                         class="bg-primary-300 dark:bg-slate-500 text-black">
                         File Name
                     </th>
-                    <td mat-cell *matCellDef="let row; let i = index" (click)="viewImage(row.file)">
+                    <td mat-cell *matCellDef="let row; let i = index" (click)="viewImage(row)">
                         <mat-icon class="mr-2 align-middle text-primary"
                             matTooltip="View File">insert_drive_file</mat-icon>
 
-                        <span class="text-primary-500 hover:underline truncate-text" matTooltip="{{ row.file_name }}">
-                            {{ row.file_name }}
+                        <span class="text-primary-500 hover:underline truncate-text" matTooltip="{{ row.fileName }}">
+                            {{ row.fileName }}
                         </span>
                     </td>
                 </ng-container>
