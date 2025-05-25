@@ -124,13 +124,15 @@ export class SetPasswordComponent implements OnInit {
     this._authService.setPassword(payload).subscribe({
       next: (response: any) => {
         console.log("Password set response:", response);
-        this._snackBar.open("Password sent to registered email", "Close", {
+        this._snackBar.open("Password has been set for the user.", "Close", {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
           panelClass: ["success-snackbar"],
         });
         this.resetPasswordForm.enable();
+        this.resetPasswordForm.reset();
+        this._router.navigateByUrl('sign-in')
       },
       error: (error) => {
         this.showAlert = true;
