@@ -373,6 +373,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       year: this.uploadDocumentForm.value.yearId,
     };
     const formData = new FormData();
+    formData.append("division_id", sessionStorage.getItem("divisionID"));
     formData.append("caseDetails", JSON.stringify(uploadMetaData));
     console.log(" this.selectedFiles", this.selectedFiles);
     const fileDetailsArray = this.selectedFiles.map((file: any) => {
@@ -401,7 +402,6 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       const newFile = new File([file], newFileName, { type: file.type });
       formData.append("Files", newFile);
       formData.append("is_draft", "true");
-      formData.append("division_id", sessionStorage.getItem("divisionID"));
     });
 
     this._uploadDocumentService.saveDraftInfo(formData).subscribe({
@@ -704,18 +704,18 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   get canisSaveDraft(): boolean {
     if (this.isSaveDraft) return false;
     if (this.uploadDocumentForm.invalid) return false;
-    if (!this.selectedFiles || this.selectedFiles.length === 0) return false;
+    // if (!this.selectedFiles || this.selectedFiles.length === 0) return false;
     for (const file of this.selectedFiles) {
       const meta = file.metadata;
-      if (
-        !meta ||
-        !meta.subject ||
-        !meta.fileType ||
-        !meta.classification ||
-        !meta.documentType
-      ) {
-        return false;
-      }
+      // if (
+      //   !meta ||
+      //   !meta.subject ||
+      //   !meta.fileType ||
+      //   !meta.classification ||
+      //   !meta.documentType
+      // ) {
+      //   return false;
+      // }
     }
     return true;
   }
