@@ -175,6 +175,8 @@ startCountdown(): void {
             panelClass: ["success-snackbar"],
           });
            this.otpForm.enable();
+            this.otpForm.reset();
+           this._router.navigateByUrl('sign-in');
         },
         error: (error) => {
           this.showAlert = true;

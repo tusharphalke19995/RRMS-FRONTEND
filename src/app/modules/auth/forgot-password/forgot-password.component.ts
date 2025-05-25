@@ -97,13 +97,15 @@ export class AuthForgotPasswordComponent implements OnInit {
       .subscribe({
         next: (response: any) => {
           console.log("response", response);
-          this._snackBar.open("OTP sent to registered email", "Close", {
+          this._snackBar.open("OTP sent to registered email.", "Close", {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
             panelClass: ["success-snackbar"],
           });
           this.forgotPasswordForm.enable();
+          this.forgotPasswordForm.reset();
+          this._router.navigateByUrl('otp-verify')
         },
         error: (error) => {
           console.error("Login error:", error);
