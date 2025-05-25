@@ -44,6 +44,7 @@ import { FileWithMetadata } from "../upload-files/model/upload-files.models";
 import { SharedService } from "app/shared/shared.service";
 import { MasterService } from "../Master/master.service";
 import { AuthService } from "app/core/auth/auth.service";
+import { DraftDetailsComponent } from "./draft-details/draft-details.component";
 
 interface State {
   stateId: number;
@@ -98,6 +99,7 @@ interface CaseStatus {
     MatSelectModule,
     MatDatepickerModule,
     UploadFilesComponent,
+    DraftDetailsComponent,
   ],
 })
 export class UploadDocumentComponent implements OnInit, OnDestroy {
@@ -139,12 +141,15 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   caseTypeFinalId: number;
   masterData: any;
   isSubmitting: boolean = false;
+  isSaveDraft: boolean = false;
   checkFileSatus: boolean;
   finalFIRValue: any;
   patchDetailsfiles: any[] = [];
   caseMetaData: any;
+  draftInfo: any;
   files: any[] = [];
   isPatchSearchPage: boolean;
+  isDraft: boolean= true;
   // selectedFiles: any;
   /**
    * Constructor
@@ -181,6 +186,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.onDisctrictChange(443);
     this.getMasterDropDown();
     this.getDataSearchForPatch();
+    this.getDraftDataPatch();
     // Initialize filtered arrays
     this.filteredStates = this.stateDropdown || [];
     this.filteredDistricts = this.districtDropdown || [];
@@ -346,10 +352,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     return "";
   }
 
-  sumbitUpload() {
-    if (this.isSubmitting) return;
-
-    this.isSubmitting = true;
+  saveDraftUpload() {
+    if (this.isSaveDraft) return;
+    this.isSaveDraft = true;
     this._changeDetectorRef.detectChanges();
     const caseDate = this.getDateOnly(this.uploadDocumentForm.value.caseDate);
     let uploadMetaData = {
@@ -369,7 +374,89 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     };
     const formData = new FormData();
     formData.append("caseDetails", JSON.stringify(uploadMetaData));
-     console.log(" this.selectedFiles", this.selectedFiles)
+    console.log(" this.selectedFiles", this.selectedFiles);
+    const fileDetailsArray = this.selectedFiles.map((file: any) => {
+      const metadata = file.metadata || file;
+
+      return {
+        fileId: file.fileId || null,
+        hashTag: metadata.hashTag
+          ? metadata.hashTag
+              .split(",")
+              .map((tag) => tag.trim())
+              .join(",")
+          : "",
+        subject: metadata.subject || "",
+        classification: metadata.classification || "",
+        fileType: metadata.fileType || "",
+        documentType: metadata.documentType || "",
+      };
+    });
+
+    formData.append("fileDetails", JSON.stringify(fileDetailsArray));
+
+    this.selectedFiles.forEach((file) => {
+      const newFileName =
+        this.uploadDocumentForm.value.caseNo + "_" + file.name;
+      const newFile = new File([file], newFileName, { type: file.type });
+      formData.append("Files", newFile);
+      formData.append("is_draft", "true");
+      formData.append("division_id", sessionStorage.getItem("divisionID"));
+    });
+
+    this._uploadDocumentService.saveDraftInfo(formData).subscribe({
+      next: (response: any) => {
+        this._snackBar.open("Draft saved successfully", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["success-snackbar"],
+        });
+        this.addcitizenfeedbackNgForm.resetForm();
+        // this._router.navigateByUrl("search-document");
+        this.resetSelectedFiles();
+         this._uploadDocumentService.setDraftData(null, true);
+      },
+      error: (error) => {
+        this._snackBar.open(error.message || "Error creating user", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["error-snackbar"],
+        });
+      },
+      complete: () => {
+        this.isSaveDraft = false;
+        this._changeDetectorRef.detectChanges();
+      },
+    });
+  }
+
+  sumbitUpload() {
+    if (this.isSubmitting) return;
+
+    this.isSubmitting = true;
+    this._changeDetectorRef.detectChanges();
+    const caseDate = this.getDateOnly(this.uploadDocumentForm.value.caseDate);
+    let uploadMetaData = {
+      CaseInfoDetailsId:this.draftInfo?.CaseInfoDetailsId ?? 0,
+      stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
+      districtId: this.uploadDocumentForm.value.districtId,
+      unitId: this.uploadDocumentForm.value.unitsId,
+      Office: this.uploadDocumentForm.value.office,
+      letterNo: this.uploadDocumentForm.value.letterNo,
+      caseNo: this.uploadDocumentForm.value.caseNo,
+      caseDate: caseDate || null,
+      caseType: this.uploadDocumentForm.value.caseType,
+      firNo: this.uploadDocumentForm.value.firNo,
+      author: this.uploadDocumentForm.value.author,
+      toAddr: this.uploadDocumentForm.value.toAddr,
+      caseStatus: this.uploadDocumentForm.value.statusId,
+      year: this.uploadDocumentForm.value.yearId,
+    };
+    const formData = new FormData();
+    formData.append("caseDetails", JSON.stringify(uploadMetaData));
+    console.log(" this.selectedFiles", this.selectedFiles);
     // const fileDetailsArray = this.selectedFiles.map((file) => ({
     //   fileId: null,
     //   hashTag: file.metadata.hashTag
@@ -384,25 +471,25 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     //   documentType: file.metadata.documentType || "",
     // }));
     // formData.append("fileDetails", JSON.stringify(fileDetailsArray));
-const fileDetailsArray = this.selectedFiles.map((file: any) => {
-  const metadata = file.metadata || file; 
+    const fileDetailsArray = this.selectedFiles.map((file: any) => {
+      const metadata = file.metadata || file;
 
-  return {
-    fileId: file.fileId || null,
-    hashTag: metadata.hashTag
-      ? metadata.hashTag
-          .split(',')
-          .map(tag => tag.trim())
-          .join(',')
-      : '',
-    subject: metadata.subject || '',
-    classification: metadata.classification || '',
-    fileType: metadata.fileType || '',
-    documentType: metadata.documentType || '',
-  };
-});
+      return {
+        fileId: file.fileId || null,
+        hashTag: metadata.hashTag
+          ? metadata.hashTag
+              .split(",")
+              .map((tag) => tag.trim())
+              .join(",")
+          : "",
+        subject: metadata.subject || "",
+        classification: metadata.classification || "",
+        fileType: metadata.fileType || "",
+        documentType: metadata.documentType || "",
+      };
+    });
 
-formData.append("fileDetails", JSON.stringify(fileDetailsArray));
+    formData.append("fileDetails", JSON.stringify(fileDetailsArray));
 
     this.selectedFiles.forEach((file) => {
       const newFileName =
@@ -423,6 +510,7 @@ formData.append("fileDetails", JSON.stringify(fileDetailsArray));
         this.addcitizenfeedbackNgForm.resetForm();
         // this._router.navigateByUrl("search-document");
         this.resetSelectedFiles();
+          this._uploadDocumentService.setDraftData(null, true);
       },
       error: (error) => {
         this._snackBar.open(error.message || "Error creating user", "Close", {
@@ -439,170 +527,100 @@ formData.append("fileDetails", JSON.stringify(fileDetailsArray));
     });
   }
 
-//   updateUpload() {
-//     if (this.isSubmitting) return;
+  updateUpload() {
+    if (this.isSubmitting) return;
+    if (!this.selectedFiles || this.selectedFiles.length === 0) {
+      this._snackBar.open(
+        "Upload one or more documents before updating the case",
+        "Close",
+        {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["warning-snackbar"],
+        }
+      );
+      return;
+    }
+    this.isSubmitting = true;
+    this._changeDetectorRef.detectChanges();
 
-//     this.isSubmitting = true;
-//     this._changeDetectorRef.detectChanges();
-//     const caseDate = this.getDateOnly(this.uploadDocumentForm.value.caseDate);
-//     let uploadMetaData = {
-//       stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
-//       districtId: this.uploadDocumentForm.value.districtId,
-//       unitId: this.uploadDocumentForm.value.unitsId,
-//       Office: this.uploadDocumentForm.value.office,
-//       letterNo: this.uploadDocumentForm.value.letterNo,
-//       caseNo: this.uploadDocumentForm.value.caseNo,
-//       caseDate: caseDate || null,
-//       caseType: this.uploadDocumentForm.value.caseType,
-//       firNo: this.uploadDocumentForm.value.firNo,
-//       author: this.uploadDocumentForm.value.author,
-//       toAddr: this.uploadDocumentForm.value.toAddr,
-//       caseStatus: this.uploadDocumentForm.value.statusId,
-//       year: this.uploadDocumentForm.value.yearId,
-//     };
-//     const formData = new FormData();
-//     formData.append("caseDetails", JSON.stringify(uploadMetaData));
-//      console.log(" this.selectedFiles", this.selectedFiles)
-// const fileDetailsArray = this.selectedFiles.map((file: any) => {
-//   const metadata = file.metadata || file; 
-
-//   return {
-//     fileId: file.fileId || null,
-//     hashTag: metadata.hashTag
-//       ? metadata.hashTag
-//           .split(',')
-//           .map(tag => tag.trim())
-//           .join(',')
-//       : '',
-//     subject: metadata.subject || '',
-//     classification: metadata.classification || '',
-//     fileType: metadata.fileType || '',
-//     documentType: metadata.documentType || '',
-//   };
-// });
-
-// formData.append("fileDetails", JSON.stringify(fileDetailsArray));
-
-//     this.selectedFiles.forEach((file) => {
-//       const newFileName =
-//         this.uploadDocumentForm.value.caseNo + "_" + file.name;
-//       const newFile = new File([file], newFileName, { type: file.type });
-//       formData.append("Files", newFile);
-//       formData.append("division_id", sessionStorage.getItem("divisionID"));
-//     });
-
-//     this._uploadDocumentService.updateCaseDetailsByIdData(this.caseMetaData.CaseInfoDetailsId, formData).subscribe({
-//       next: (response: any) => {
-//         this._snackBar.open("Case Details Update successfully", "Close", {
-//           duration: 3000,
-//           horizontalPosition: "right",
-//           verticalPosition: "top",
-//           panelClass: ["success-snackbar"],
-//         });
-//         this.addcitizenfeedbackNgForm.resetForm();
-//         this._router.navigateByUrl("search-document");
-//         this.resetSelectedFiles();
-//       },
-//       error: (error) => {
-//         this._snackBar.open(error.message || "Error creating user", "Close", {
-//           duration: 3000,
-//           horizontalPosition: "right",
-//           verticalPosition: "top",
-//           panelClass: ["error-snackbar"],
-//         });
-//       },
-//       complete: () => {
-//         this.isSubmitting = false;
-//         this._changeDetectorRef.detectChanges();
-//       },
-//     });
-//   }
-
-updateUpload() {
-  if (this.isSubmitting) return;
-  if (!this.selectedFiles || this.selectedFiles.length === 0) {
-    this._snackBar.open("Upload one or more documents before updating the case", "Close", {
-      duration: 3000,
-      horizontalPosition: "right",
-      verticalPosition: "top",
-      panelClass: ["warning-snackbar"],
-    });
-    return;
-  }
-  this.isSubmitting = true;
-  this._changeDetectorRef.detectChanges();
-
-  const caseDate = this.getDateOnly(this.uploadDocumentForm.value.caseDate);
-  let uploadMetaData = {
-    stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
-    districtId: this.uploadDocumentForm.value.districtId,
-    unitId: this.uploadDocumentForm.value.unitsId,
-    Office: this.uploadDocumentForm.value.office,
-    letterNo: this.uploadDocumentForm.value.letterNo,
-    caseNo: this.uploadDocumentForm.value.caseNo,
-    caseDate: caseDate || null,
-    caseType: this.uploadDocumentForm.value.caseType,
-    firNo: this.uploadDocumentForm.value.firNo,
-    author: this.uploadDocumentForm.value.author,
-    toAddr: this.uploadDocumentForm.value.toAddr,
-    caseStatus: this.uploadDocumentForm.value.statusId,
-    year: this.uploadDocumentForm.value.yearId,
-  };
-
-  const formData = new FormData();
-  formData.append("caseDetails", JSON.stringify(uploadMetaData));
-
-  const fileDetailsArray = this.selectedFiles.map((file: any) => {
-    const metadata = file.metadata || file;
-
-    return {
-      fileId: file.fileId || null,
-      hashTag: metadata.hashTag
-        ? metadata.hashTag.split(',').map(tag => tag.trim()).join(',')
-        : '',
-      subject: metadata.subject || '',
-      classification: metadata.classification || '',
-      fileType: metadata.fileType || '',
-      documentType: metadata.documentType || '',
+    const caseDate = this.getDateOnly(this.uploadDocumentForm.value.caseDate);
+    let uploadMetaData = {
+      stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
+      districtId: this.uploadDocumentForm.value.districtId,
+      unitId: this.uploadDocumentForm.value.unitsId,
+      Office: this.uploadDocumentForm.value.office,
+      letterNo: this.uploadDocumentForm.value.letterNo,
+      caseNo: this.uploadDocumentForm.value.caseNo,
+      caseDate: caseDate || null,
+      caseType: this.uploadDocumentForm.value.caseType,
+      firNo: this.uploadDocumentForm.value.firNo,
+      author: this.uploadDocumentForm.value.author,
+      toAddr: this.uploadDocumentForm.value.toAddr,
+      caseStatus: this.uploadDocumentForm.value.statusId,
+      year: this.uploadDocumentForm.value.yearId,
     };
-  });
 
-  formData.append("fileDetails", JSON.stringify(fileDetailsArray));
+    const formData = new FormData();
+    formData.append("caseDetails", JSON.stringify(uploadMetaData));
 
-  this.selectedFiles.forEach((file) => {
-    const newFileName = this.uploadDocumentForm.value.caseNo + "_" + file.name;
-    const newFile = new File([file], newFileName, { type: file.type });
-    formData.append("Files", newFile);
-    formData.append("division_id", sessionStorage.getItem("divisionID"));
-  });
+    const fileDetailsArray = this.selectedFiles.map((file: any) => {
+      const metadata = file.metadata || file;
 
-  this._uploadDocumentService.updateCaseDetailsByIdData(this.caseMetaData.CaseInfoDetailsId, formData).subscribe({
-    next: (response: any) => {
-      this._snackBar.open("Case Details Updated successfully", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["success-snackbar"],
+      return {
+        fileId: file.fileId || null,
+        hashTag: metadata.hashTag
+          ? metadata.hashTag
+              .split(",")
+              .map((tag) => tag.trim())
+              .join(",")
+          : "",
+        subject: metadata.subject || "",
+        classification: metadata.classification || "",
+        fileType: metadata.fileType || "",
+        documentType: metadata.documentType || "",
+      };
+    });
+
+    formData.append("fileDetails", JSON.stringify(fileDetailsArray));
+
+    this.selectedFiles.forEach((file) => {
+      const newFileName =
+        this.uploadDocumentForm.value.caseNo + "_" + file.name;
+      const newFile = new File([file], newFileName, { type: file.type });
+      formData.append("Files", newFile);
+      formData.append("division_id", sessionStorage.getItem("divisionID"));
+    });
+
+    this._uploadDocumentService
+      .updateCaseDetailsByIdData(this.caseMetaData.CaseInfoDetailsId, formData)
+      .subscribe({
+        next: (response: any) => {
+          this._snackBar.open("Case Details Updated successfully", "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["success-snackbar"],
+          });
+          this.addcitizenfeedbackNgForm.resetForm();
+          this._router.navigateByUrl("search-document");
+          this.resetSelectedFiles();
+        },
+        error: (error) => {
+          this._snackBar.open(error.message || "Error updating case", "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["error-snackbar"],
+          });
+        },
+        complete: () => {
+          this.isSubmitting = false;
+          this._changeDetectorRef.detectChanges();
+        },
       });
-      this.addcitizenfeedbackNgForm.resetForm();
-      this._router.navigateByUrl("search-document");
-      this.resetSelectedFiles();
-    },
-    error: (error) => {
-      this._snackBar.open(error.message || "Error updating case", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["error-snackbar"],
-      });
-    },
-    complete: () => {
-      this.isSubmitting = false;
-      this._changeDetectorRef.detectChanges();
-    },
-  });
-}
-
+  }
 
   resetSelectedFiles() {
     this.checkFileSatus = true;
@@ -666,6 +684,25 @@ updateUpload() {
 
   get canSubmit(): boolean {
     if (this.isSubmitting) return false;
+    if (this.uploadDocumentForm.invalid) return false;
+    if (!this.selectedFiles || this.selectedFiles.length === 0) return false;
+    for (const file of this.selectedFiles) {
+      const meta = file.metadata;
+      if (
+        !meta ||
+        !meta.subject ||
+        !meta.fileType ||
+        !meta.classification ||
+        !meta.documentType
+      ) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  get canisSaveDraft(): boolean {
+    if (this.isSaveDraft) return false;
     if (this.uploadDocumentForm.invalid) return false;
     if (!this.selectedFiles || this.selectedFiles.length === 0) return false;
     for (const file of this.selectedFiles) {
@@ -850,6 +887,19 @@ updateUpload() {
     this._uploadDocumentService.clearState();
   }
 
+  getDraftDataPatch() {
+    const state = this._uploadDocumentService.getDraftData();
+    this.draftInfo = state.draftInfo;
+      this.isDraft = state.isDraft;
+    console.log("clearDraft", this.draftInfo);
+     console.log("isDraft", this.isDraft);
+    if (this.draftInfo) {
+      this.dataPatchDraft(this.draftInfo);
+    }
+    // Clear state after loading
+    this._uploadDocumentService.clearDraft();
+  }
+
   dataPatch(data) {
     if (data) {
       const uploadDataPach = data;
@@ -868,7 +918,32 @@ updateUpload() {
         toAddr: uploadDataPach.toAddr,
         statusId: uploadDataPach.caseStatus,
       });
-       this.uploadDocumentForm.disable();
+      this.uploadDocumentForm.disable();
     }
+  }
+
+  dataPatchDraft(data) {
+    if (data) {
+      const uploadDataPach = data;
+      this.uploadDocumentForm.patchValue({
+        stateIDInfo: uploadDataPach.stateId,
+        yearId: uploadDataPach.year,
+        districtId: uploadDataPach.districtId,
+        unitsId: uploadDataPach.unitId,
+        office: uploadDataPach.Office,
+        caseDate: uploadDataPach.caseDate,
+        caseNo: uploadDataPach.caseNo,
+        firNo: uploadDataPach.firNo,
+        letterNo: uploadDataPach.letterNo,
+        caseType: Number(uploadDataPach.caseType),
+        author: uploadDataPach.author,
+        toAddr: uploadDataPach.toAddr,
+        statusId: uploadDataPach.caseStatus,
+      });
+    }
+  }
+
+  viewDrafts() {
+    this._router.navigateByUrl("upload-document/draft-details");
   }
 }

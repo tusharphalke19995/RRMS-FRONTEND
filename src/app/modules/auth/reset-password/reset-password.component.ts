@@ -74,37 +74,34 @@ export class ResetPasswordComponent implements OnInit {
   ngOnInit(): void {
     // Create the form
     this.resetPasswordForm = this._formBuilder.group({
-      // currentPassword: [
-      //   "",
-      //   [
-      //     Validators.required,
-      //     // Validators.pattern(
-      //     //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-      //     // ),
-      //   ],
-      // ],
-      // newPassword: [
-      //   "",
-      //   [
-      //     Validators.required,
-      //     // Validators.pattern(
-      //     //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-      //     // ),
-      //   ],
-      // ],
-      //  confirmPassword: [
-      //   "",
-      //   [
-      //     Validators.required,
-      //     // Validators.pattern(
-      //     //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-      //     // ),
-      //   ],
-      // ],
-       firstName: ["", [Validators.required]],
-      lastName: ["", [Validators.required]],
-      emailID: ["", [Validators.required, Validators.email]],
-      mobileNo: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
+      currentPassword: [
+        "",
+        [
+          Validators.required,
+          // Validators.pattern(
+          //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+          // ),
+        ],
+      ],
+      newPassword: [
+        "",
+        [
+          Validators.required,
+          // Validators.pattern(
+          //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+          // ),
+        ],
+      ],
+       confirmPassword: [
+        "",
+        [
+          Validators.required,
+          // Validators.pattern(
+          //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+          // ),
+        ],
+      ],
+
     });
   }
 

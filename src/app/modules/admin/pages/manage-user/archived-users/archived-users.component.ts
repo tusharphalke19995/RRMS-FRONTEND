@@ -169,6 +169,7 @@ export class ArchivedUsersComponent implements OnInit, AfterViewInit {
     this.getDivisionDropdown();
     this.getDesignationsDropDownData();
     this.getDepartmentsInfo();
+    this.getUserInfo();
   }
 
   ngAfterViewInit() {

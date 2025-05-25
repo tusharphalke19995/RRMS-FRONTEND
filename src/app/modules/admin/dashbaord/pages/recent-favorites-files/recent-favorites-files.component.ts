@@ -108,7 +108,7 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
     private _masterService: MasterService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: UntypedFormBuilder,
-    private _citizeninfoService: SearchDocService,
+    private _searchDocService: SearchDocService,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -193,15 +193,15 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
 
 
 
-      viewImage(data) {
-        const dialogRef = this.dialog.open(UploadedFilesComponent, {
-          data: data,
-          width: "1000px",
-        });
-        dialogRef.afterClosed().subscribe((result) => {
-          this.cdr.detectChanges();
-        });
-      }
+      // viewImage(data) {
+      //   const dialogRef = this.dialog.open(UploadedFilesComponent, {
+      //     data: data,
+      //     width: "1000px",
+      //   });
+      //   dialogRef.afterClosed().subscribe((result) => {
+      //     this.cdr.detectChanges();
+      //   });
+      // }
       
       getHashTags(hashTagString: string): string[] {
         if (!hashTagString) return [];
@@ -223,5 +223,87 @@ export class RecentFavoritesFilesComponent implements OnInit, AfterViewInit {
     this.isExpanded[rowIndex] = !this.isExpanded[rowIndex];
   }
     
+    viewImage(data) {
+  const payload = {
+    fileHash: data?.file?.fileHash || data?.fileHash,
+    requested_to: 0,
+    comments: "",
+    division_id: sessionStorage.getItem("divisionID"),
+    case_id: data?.CaseInfoDetailsId,
+  };
+
+  this._searchDocService.filePreviewData(payload).subscribe({
+    next: (res: any) => {
+      if (!res) {
+        console.error("No file data received");
+        return;
+      }
+
+      const fileType = res.mime_type || res.type;
+      const base64 = res.base64_content;
+      const fileName = res.file_name || "document";
+
+      const officeMimeTypes = [
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+         "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+      ];
+
+      if (officeMimeTypes.includes(fileType)) {
+        const blob = this.base64ToBlob(base64, fileType);
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+      } else {
+        // Open UploadedFilesComponent dialog
+        const dialogRef = this.dialog.open(UploadedFilesComponent, {
+          data: data,
+          width: "850px",
+          maxWidth: "100vw",
+          height: "90vh",
+          panelClass: "custom-dialog-class",
+        });
+
+        dialogRef.afterClosed().subscribe(() => {
+          this._changeDetectorRef.detectChanges();
+        });
+      }
+    },
+    error: (error) => {
+      console.error("Error fetching file preview:", error);
+    },
+  });
+}
+
+
+  base64ToBlob(base64: string, mime: string): Blob {
+    const byteCharacters = atob(base64);
+    const byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+      const slice = byteCharacters.slice(offset, offset + 512);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+
+    return new Blob(byteArrays, { type: mime });
+  }
+
 }
 

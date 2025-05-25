@@ -15,6 +15,8 @@ export class UploadDocumentService {
 private fileData: FileWithMetadata[] = [];
   private caseData: any;
   isPatch: boolean;
+  draftInfo:any;
+  isDraft:boolean =true;
  /**
      * Constructor
      */
@@ -63,7 +65,12 @@ getUnitsByDistictIdData(
   }
 
   uploadDocument(data:FormData) {
-    return this.commonApiCallService.post(apiurls.uploadInfo, data).pipe(catchError(this.handleError));
+    return this.commonApiCallService.post(apiurls.caseDataSubmit, data).pipe(catchError(this.handleError));
+  }
+
+
+  saveDraftInfo(data:FormData) {
+    return this.commonApiCallService.post(apiurls.saveDraft, data).pipe(catchError(this.handleError));
   }
 
 
@@ -74,6 +81,10 @@ getUnitsByDistictIdData(
   
   getMasterDropDownData() {
     return this.commonApiCallService.get(apiurls.getMasterDropDown).pipe(catchError(this.handleError));
+  }
+    
+  getCaseDataDraftsData() {
+    return this.commonApiCallService.get(apiurls.getCaseDataDrafts).pipe(catchError(this.handleError));
   }
 
   updateUploadedDoc(pk: number, caseData: any) {
@@ -126,6 +137,20 @@ getUnitsByDistictIdData(
     this.fileData = [];
     this.caseData = null;
     this.isPatch=false;
+  }
+
+    setDraftData(draftInfo:any,isDraft:boolean) {
+    this.draftInfo = draftInfo;
+    this.isDraft = isDraft;
+  }
+
+  getDraftData() {
+    return { draftInfo: this.draftInfo ,isDraft:this.isDraft};
+  }
+
+  clearDraft() {
+    this.draftInfo = [];
+     this.isPatch=false;
   }
   
    /**

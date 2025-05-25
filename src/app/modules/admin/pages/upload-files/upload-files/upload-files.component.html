@@ -13,7 +13,7 @@
         <span *transloco="let t">{{t('uploadSupportingFiles')}}</span>
       </button>
       <input #fileInput type="file" class="hidden-input" (change)="onFileChange($event)" [multiple]="true" accept="image/*,audio/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,'audio/mpeg',
-        'video/mp4'" />
+        'video/mp4,.ppt,.pptx'" />
       <span class="selected-file-name" *ngIf="selectedFiles.length > 0">
         {{ selectedFiles.length }} file(s) selected
       </span>
@@ -21,7 +21,7 @@
 
     <!-- File Size Info -->
     <div class="file-size-info" *ngIf="checkGetFile">
-      Supported formats include: PDF, MP3, MP4, DOCX, XLS, XLSX, and various image formats
+      Supported formats include: PDF, MP3, MP4, DOCX, XLS, XLSX,PPTX,PPT and various image formats
     </div>
 
     <!-- Select All Checkbox (only if more than one file) -->

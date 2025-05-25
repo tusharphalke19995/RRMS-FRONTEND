@@ -35,6 +35,7 @@ export const appRoutes: Route[] = [
             {path: 'sign-in', loadChildren: () => import('app/modules/auth/sign-in/sign-in.routes')},
             {path: 'sign-up', loadChildren: () => import('app/modules/auth/sign-up/sign-up.routes')},
              {path: 'sign-out', loadChildren: () => import('app/modules/auth/sign-out/sign-out.routes')},
+               {path: 'otp-verify', loadChildren: () => import('app/modules/auth/otp-verify/otp-verify.routes')},
         ]
     },
 

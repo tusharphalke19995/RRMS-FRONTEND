@@ -50,6 +50,7 @@ import { MasterService } from "../../Master/master.service";
 import { ContentManagerDialogComponent } from "../component/content-manager-dialog/content-manager-dialog.component";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { ImagePreviewDailogComponent } from "../component/image-preview-dailog/image-preview-dailog.component";
+import { SearchDocService } from "../../search-document/searchDoc.service";
 // import { saveAs } from 'file-saver';
 
 interface CustomFile extends File {
@@ -92,7 +93,7 @@ interface FileWithMetadata extends CustomFile {
     MatCardModule,
     MatDialogModule,
     MatCheckboxModule,
-    CommonModule
+    CommonModule,
   ],
   templateUrl: "./upload-files.component.html",
   styleUrls: ["./upload-files.component.scss"],
@@ -118,7 +119,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   // @ViewChildren(UploadDocsComponent) childGames!: QueryList<UploadDocsComponent>;
   @Input() loadingVisible: boolean;
   @Input() isCheckModalConfirmaion: boolean;
-  @Input()  checkFileSatus: boolean;
+  @Input() checkFileSatus: boolean;
   loading$ = new BehaviorSubject<boolean>(false);
   files = {
     selectedFiles: [] as IFileUploadModel[],
@@ -178,17 +179,12 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   DivisionsRoles: any;
   filteredDocumentTypes: DocumentType[] = [];
   documentTypeSearchTimeout: any;
-  // canEdit: boolean = false;
-  // canDelete: boolean = false;
   selectedIndexes = new Set<number>();
   userLoginId: any;
-  // fileStageDropDown=[{value:"Enquiry",fileStageName:"Enquiry"},
-  //   {value:"I/O",fileStageName:"I/O"},
-  //   {value:"Crime",fileStageName:"Crime"}
-  // ]
   previewUrl: string | null = null;
-  previewType: 'image' | 'video' | 'audio' | 'pdf' | 'other' = 'other';
+  previewType: "image" | "video" | "audio" | "pdf" | "other" = "other";
   showEditUserUpload: boolean;
+  @Input() caseMetaData: any;
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -199,7 +195,8 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     private _masterService: MasterService,
     private authenticationService: AuthService,
     private _changeDetectorRef: ChangeDetectorRef,
-    private _uploadDocumentService: UploadDocumentService
+    private _uploadDocumentService: UploadDocumentService,
+    private _searchDocService: SearchDocService
   ) {
     this.authData = this.authenticationService.getAuthData();
     this.metadataForm = this.fb.group({
@@ -247,10 +244,11 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     }
     this.showTextNoData = !this.filesData?.length;
     this.selectedFiles = this.getfiles;
-    if(this.checkFileSatus == true){
-       this.metadataForm.reset();
-        this.selectedFiles=[];
-        this.filesWithMetadataSelected.emit({ files: [], metadata: [] });
+    console.log('caseMetaData',this.caseMetaData)
+    if (this.checkFileSatus == true) {
+      this.metadataForm.reset();
+      this.selectedFiles = [];
+      this.filesWithMetadataSelected.emit({ files: [], metadata: [] });
     }
   }
 
@@ -489,7 +487,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   onFileChange(event: any) {
-    this.showEditUserUpload =  true;
+    this.showEditUserUpload = true;
     const files: FileList = event.target.files;
 
     if (files.length > 0) {
@@ -535,10 +533,19 @@ export class UploadFilesComponent implements OnInit, OnChanges {
 
     // Add additional validation if needed
     // Example: file type validation
-    const allowedTypes = [ 'image/jpeg', 'image/png','audio/mpeg',
-        'video/mp4', 'application/pdf',
-        'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "audio/mpeg",
+      "video/mp4",
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+       "application/vnd.ms-powerpoint", 
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    ];
     if (!allowedTypes.includes(file.type)) {
       file.validationErrors.push("Invalid file type");
       this._snackBar.open("Invalid file type", "Close", {
@@ -597,41 +604,204 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     });
   }
 
-  viewImage(data) {
-    if(this.checkGetFile ===true)
-{
-const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
-      data: data,
-      width: "850px", // or '100vw' for full width
-      maxWidth: "100vw",
-      height: "90vh",
-      panelClass: "custom-dialog-class",
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      this._changeDetectorRef.detectChanges();
-    });
-} else{
-const dialogRef = this.dialog.open(UploadedFilesComponent, {
-      data: data,
-      width: "850px", // or '100vw' for full width
-      maxWidth: "100vw",
-      height: "90vh",
-      panelClass: "custom-dialog-class",
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      this._changeDetectorRef.detectChanges();
-    });
-}   
+  //   viewImage(data) {
+  //     if(this.checkGetFile ===true)
+  // {
+  // const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
+  //       data: data,
+  //       width: "850px", // or '100vw' for full width
+  //       maxWidth: "100vw",
+  //       height: "90vh",
+  //       panelClass: "custom-dialog-class",
+  //     });
+  //     dialogRef.afterClosed().subscribe((result) => {
+  //       this._changeDetectorRef.detectChanges();
+  //     });
+  // } else{
+  // const dialogRef = this.dialog.open(UploadedFilesComponent, {
+  //       data: data,
+  //       width: "850px", // or '100vw' for full width
+  //       maxWidth: "100vw",
+  //       height: "90vh",
+  //       panelClass: "custom-dialog-class",
+  //     });
+  //     dialogRef.afterClosed().subscribe((result) => {
+  //       this._changeDetectorRef.detectChanges();
+  //     });
+  // }
 
+  //   }
+
+  // viewImage(data) {
+  //   const payload = {
+  //     fileHash: data?.file?.fileHash || data?.fileHash,
+  //     requested_to: 0,
+  //     comments: "",
+  //     division_id: sessionStorage.getItem("divisionID"),
+  //     case_id: this.caseMetaData?.CaseInfoDetailsId,
+  //   };
+
+  //   this._searchDocService.filePreviewData(payload).subscribe({
+  //     next: (res: any) => {
+  //       if (!res) {
+  //         console.error("No file data received");
+  //         return;
+  //       }
+
+  //       const fileType = res.mime_type || res.type;
+  //       const base64 = res.base64_content;
+  //       const fileName = res.file_name || "document";
+
+  //       const officeMimeTypes = [
+  //         "application/msword",
+  //         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  //         "application/vnd.ms-excel",
+  //         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  //         "application/vnd.ms-powerpoint",
+  //         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  //       ];
+
+  //       if (officeMimeTypes.includes(fileType)) {
+  //         const blob = this.base64ToBlob(base64, fileType);
+  //         const url = window.URL.createObjectURL(blob);
+
+  //         const link = document.createElement("a");
+  //         link.href = url;
+  //         link.download = fileName;
+  //         document.body.appendChild(link);
+  //         link.click();
+  //         link.remove();
+
+  //         setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+  //       } else {
+  //         if (this.checkGetFile === true) {
+  //           const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
+  //             data: data,
+  //             width: "850px", // or '100vw' for full width
+  //             maxWidth: "100vw",
+  //             height: "90vh",
+  //             panelClass: "custom-dialog-class",
+  //           });
+  //           dialogRef.afterClosed().subscribe((result) => {
+  //             this._changeDetectorRef.detectChanges();
+  //           });
+  //         } else {
+  //           const dialogRef = this.dialog.open(UploadedFilesComponent, {
+  //             data: data,
+  //             width: "850px", // or '100vw' for full width
+  //             maxWidth: "100vw",
+  //             height: "90vh",
+  //             panelClass: "custom-dialog-class",
+  //           });
+  //           dialogRef.afterClosed().subscribe((result) => {
+  //             this._changeDetectorRef.detectChanges();
+  //           });
+  //         }
+  //       }
+  //     },
+  //     error: (error) => {
+  //       console.error("Error fetching file preview:", error);
+  //     },
+  //   });
+  // }
+
+  viewImage(data) {
+  if (this.checkGetFile === true) {
+    const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
+      data: data,
+      width: "850px",
+      maxWidth: "100vw",
+      height: "90vh",
+      panelClass: "custom-dialog-class",
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      this._changeDetectorRef.detectChanges();
+    });
+    return;
   }
 
-  // checkPermissions() {
-  //   const userPermissions = this.authData.Permission;
-  //   const roleName = this.authData.role_name;
-  //   console.log("userPermissions", userPermissions);
-  //   this.canEdit = userPermissions.includes("change_filedetails");
-  //   this.canDelete = userPermissions.includes("delete_filedetails");
-  // }
+  // If checkGetFile is false, proceed with API call
+  const payload = {
+    fileHash: data?.file?.fileHash || data?.fileHash,
+    requested_to: 0,
+    comments: "",
+    division_id: sessionStorage.getItem("divisionID"),
+    case_id: this.caseMetaData?.CaseInfoDetailsId,
+  };
+
+  this._searchDocService.filePreviewData(payload).subscribe({
+    next: (res: any) => {
+      if (!res) {
+        console.error("No file data received");
+        return;
+      }
+
+      const fileType = res.mime_type || res.type;
+      const base64 = res.base64_content;
+      const fileName = res.file_name || "document";
+
+      const officeMimeTypes = [
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+       "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+      ];
+
+      if (officeMimeTypes.includes(fileType)) {
+        const blob = this.base64ToBlob(base64, fileType);
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+      } else {
+        // Open UploadedFilesComponent dialog
+        const dialogRef = this.dialog.open(UploadedFilesComponent, {
+          data: data,
+          width: "850px",
+          maxWidth: "100vw",
+          height: "90vh",
+          panelClass: "custom-dialog-class",
+        });
+
+        dialogRef.afterClosed().subscribe(() => {
+          this._changeDetectorRef.detectChanges();
+        });
+      }
+    },
+    error: (error) => {
+      console.error("Error fetching file preview:", error);
+    },
+  });
+}
+
+
+  base64ToBlob(base64: string, mime: string): Blob {
+    const byteCharacters = atob(base64);
+    const byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+      const slice = byteCharacters.slice(offset, offset + 512);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+
+    return new Blob(byteArrays, { type: mime });
+  }
 
   toggleFavourite(file: any) {
     // console.log("is_favourited", file.is_favourited);
@@ -695,19 +865,19 @@ const dialogRef = this.dialog.open(UploadedFilesComponent, {
   }
 
   onHashTagKeyUp(event: KeyboardEvent): void {
-  if (event.key === " ") {
-    const hashTagControl = this.metadataForm.get("hashTag");
-    let hashTagValue = hashTagControl?.value || "";
-    const words = hashTagValue
-      .split(" ")
-      .filter(word => word.trim() !== "") 
-      .map(word => word.startsWith("#") ? word : `#${word}`)
+    if (event.key === " ") {
+      const hashTagControl = this.metadataForm.get("hashTag");
+      let hashTagValue = hashTagControl?.value || "";
+      const words = hashTagValue
+        .split(" ")
+        .filter((word) => word.trim() !== "")
+        .map((word) => (word.startsWith("#") ? word : `#${word}`));
 
-    const updatedHashTag = words.join(" ");
+      const updatedHashTag = words.join(" ");
 
-    hashTagControl?.setValue(updatedHashTag + " ");
+      hashTagControl?.setValue(updatedHashTag + " ");
+    }
   }
-}
 
   formatTags(tags: string): string[] {
     if (!tags) {
@@ -746,54 +916,26 @@ const dialogRef = this.dialog.open(UploadedFilesComponent, {
     return classification ? classification.value : "Unknown";
   }
 
-   getFolderNameById(id: number): string {
+  getFolderNameById(id: number): string {
     this.updateDocumentTypes(id);
-    const folderName = this.FileTypeDropDown?.find(
-      (c) => c.id === id
-    );
+    const folderName = this.FileTypeDropDown?.find((c) => c.id === id);
     return folderName ? folderName.value : "Unknown";
   }
 
-   getDocNameById(id: number): string {
-    const docName = this.DocumentTypeDropDown?.find(
-      (c) => c.id === id
-    );
+  getDocNameById(id: number): string {
+    const docName = this.DocumentTypeDropDown?.find((c) => c.id === id);
     return docName ? docName.value : "Unknown";
   }
 
   updateDocumentTypes(folderId: number): void {
-  if (folderId === 3) {
-    this.DocumentTypeDropDown = this.masterData?.CaseFiles;
-  } else if (folderId === 4) {
-    this.DocumentTypeDropDown = this.masterData?.Correspondence;
-  } else {
-    this.DocumentTypeDropDown = [];
+    if (folderId === 3) {
+      this.DocumentTypeDropDown = this.masterData?.CaseFiles;
+    } else if (folderId === 4) {
+      this.DocumentTypeDropDown = this.masterData?.Correspondence;
+    } else {
+      this.DocumentTypeDropDown = [];
+    }
   }
-}
-
-  // getUserRoleName(): string | null {
-  //   const userRole = this.authData.DivisionsRoles.find(
-  //     (role) => role.role_name === "User"
-  //   );
-  //   // console.log("userRole",userRole)
-  //   return userRole ? userRole.role_name : null;
-  // }
-
-  // canRequestAccess(file: any): boolean {
-  //   const hasUserRole = this.authData.Role=== "User";
-  //   if (!hasUserRole) {
-  //     return false;
-  //   }
-  //    const classification = this.getFileClassificationNameById(file.classification);
-  //    console.log("classification",)
-  //   return (
-  //     classification === "Confidential" &&
-  //     !file.is_request_raised &&
-  //     !file.is_access_request_approved &&
-  //     file.uploaded_by !== this.finalUserID
-
-  //   );
-  // }
 
   hasRole(...roles: string[]): boolean {
     return this.authData.DivisionsRoles.some((role) =>

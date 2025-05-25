@@ -33,13 +33,11 @@ import { finalize } from 'rxjs';
         MatProgressSpinnerModule],
 })
 export class AuthForgotPasswordComponent implements OnInit {
-  @ViewChild("signInNgForm") signInNgForm: NgForm;
-
   alert: { type: FuseAlertType; message: string } = {
     type: "success",
     message: "",
   };
-  signInForm: UntypedFormGroup;
+  forgotPasswordForm: UntypedFormGroup;
   showAlert: boolean = false;
   divisionsRoles:any;
   authData:any;
@@ -64,18 +62,11 @@ export class AuthForgotPasswordComponent implements OnInit {
    */
   ngOnInit(): void {
     // Create the form
-    this.signInForm = this._formBuilder.group({
-      kgid: ["", [Validators.required]],
-      password: [
-        "",
-        [
-          Validators.required,
-          // Validators.pattern(
-          //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-          // ),
-        ],
-      ],
-      // rememberMe: [''],
+    this.forgotPasswordForm = this._formBuilder.group({
+       firstName: ["", [Validators.required]],
+      lastName: ["", [Validators.required]],
+      emailID: ["", [Validators.required, Validators.email]],
+      mobileNo: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
     });
   }
 
@@ -87,15 +78,15 @@ export class AuthForgotPasswordComponent implements OnInit {
    * Sign in
    */
   signIn(): void {
-    if (this.signInForm.invalid) {
+    if (this.forgotPasswordForm.invalid) {
         return;
     }
-    this.signInForm.disable();
+    this.forgotPasswordForm.disable();
     this.showAlert = false;
 
     const payload = {
-        kgid: this.signInForm.value.kgid,
-        password: this.signInForm.value.password,
+        kgid: this.forgotPasswordForm.value.kgid,
+        password: this.forgotPasswordForm.value.password,
     };
 
     this._authService.userLogin(payload).subscribe({
@@ -111,14 +102,14 @@ export class AuthForgotPasswordComponent implements OnInit {
           
                 this.showAlert = true;
                 this.alert = { type: 'error', message: 'Login failed. Please check your credentials.' };
-                this.signInForm.enable();
+                this.forgotPasswordForm.enable();
             }
         },
         error: (error) => {
             console.error("Login error:", error);
             this.showAlert = true;
             this.alert = { type: 'error', message: 'An error occurred during login. Please try again.' };
-            this.signInForm.enable(); 
+            this.forgotPasswordForm.enable(); 
         },
     });
   }
@@ -162,5 +153,13 @@ export class AuthForgotPasswordComponent implements OnInit {
       sessionStorage.setItem("departmentID", JSON.stringify(this.DepartmentIdsUserLogin));
     }
   }
+
+   allowOnlyLetters(event: KeyboardEvent): void {
+    const char = event.key;
+    if (!/^[a-zA-Z\s]$/.test(char)) {
+      event.preventDefault();
+    }
+  }
+
 
 }

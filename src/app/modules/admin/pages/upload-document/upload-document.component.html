@@ -39,11 +39,23 @@
                 </div>
             </div>
             <!-- Title -->
-            <div class="mt-2">
+
+              <div class="mt-2 flex items-center justify-between">
                 <ng-container *transloco="let t">
                     <div class="text-3xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                        {{t('uploadDoc')}}</div>
+                        {{t('uploadDoc')}}
+                    </div>
                 </ng-container>
+                
+                <!-- Add User button -->
+                <button *ngIf="isDraft"
+                        mat-flat-button 
+                        [color]="'primary'"
+                        class="min-w-[120px]"
+                        (click)="viewDrafts()">
+                    <mat-icon class="icon-size-5 mr-2" [svgIcon]="'heroicons_solid:plus'"></mat-icon>
+                   View Drafts
+                </button>
             </div>
         </div>
 
@@ -331,6 +343,12 @@
                     <button *transloco="let t" mat-button [color]="'accent'"
                         [disabled]="uploadDocumentForm.pristine || uploadDocumentForm.untouched" (click)="clearForm()">
                         {{t('clear')}}
+                    </button>
+                     <button *ngIf="isDraft" class="ml-2" mat-flat-button [color]="'primary'"
+                    [disabled]="!canisSaveDraft" (click)="saveDraftUpload()">
+                        <mat-spinner *ngIf="isSaveDraft" diameter="20" class="mr-2"></mat-spinner>
+                        <span *ngIf="!isSaveDraft">Save Draft</span>
+                        <span *ngIf="isSaveDraft">Uploading</span>
                     </button>
                     <button *ngIf="!isPatchSearchPage" class="ml-2" mat-flat-button [color]="'primary'"
                     [disabled]="!canSubmit" (click)="sumbitUpload()">

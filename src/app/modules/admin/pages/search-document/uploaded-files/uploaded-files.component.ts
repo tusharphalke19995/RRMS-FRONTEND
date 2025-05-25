@@ -19,7 +19,6 @@ import {
   SafeResourceUrl,
 } from "@angular/platform-browser";
 import { SharedService } from "app/shared/shared.service";
-import { PdfViewerModule } from "ng2-pdf-viewer";
 
 @Component({
   selector: "app-uploaded-files",
@@ -35,8 +34,7 @@ import { PdfViewerModule } from "ng2-pdf-viewer";
     MatSelectModule,
     MatButtonModule,
     TranslocoModule,
-    NgFor,
-    PdfViewerModule,
+    NgFor
   ],
   templateUrl: "./uploaded-files.component.html",
   styleUrl: "./uploaded-files.component.scss",
@@ -118,39 +116,7 @@ export class UploadedFilesComponent {
             this.audioFiles.push(fileUrl);
           } else if (fileType.startsWith("video/")) {
             this.videoFiles.push(fileUrl);
-          } else if (
-            fileType === "application/msword" ||
-            fileType ===
-              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-          ) {
-            // const googleDocsViewerUrl = `https://docs.google.com/viewer?url=$${encodeURIComponent(
-            //   fileUrl
-            // )}&embedded=true`;
-
-            // this.wordViewerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(googleDocsViewerUrl);
-            //             console.log("Word document URL:", googleDocsViewerUrl);
-            // this.wordFiles.push(googleDocsViewerUrl);
-              const blob = this.base64ToBlob(res.base64_content, fileType);
-              const url = window.URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              window.open(url, '_blank');
-          }
-          // Handle Excel files (.xls, .xlsx)
-          else if (
-            fileType === "application/vnd.ms-excel" ||
-            fileType ===
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-          ) {
-            const googleDocsViewerUrl = `https://docs.google.com/viewer?url=$${encodeURIComponent(
-              fileUrl
-            )}&embedded=true`;
-
-     
-              this.excelViewerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(googleDocsViewerUrl);
-            console.log("Excel document URL:", googleDocsViewerUrl);
-
-            this.excelFiles.push(googleDocsViewerUrl);
-          } else {
+          }  else {
             console.warn("Unsupported file type:", fileType);
           }
         } else {

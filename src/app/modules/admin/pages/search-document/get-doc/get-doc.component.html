@@ -118,7 +118,7 @@
         </button>
       </div>
      
-      <app-upload-files [getfiles]="files" (filesWithMetadataSelected)="onFilesWithMetadataSelectedUpdate($event)"
+      <app-upload-files [caseMetaData]="caseMetaData" [getfiles]="files" (filesWithMetadataSelected)="onFilesWithMetadataSelectedUpdate($event)"
         [ClassificationTypeDropDown]="fileClassificationDropDown" [FileTypeDropDown]="fileTypesDropDown"
         [finalUserID]="finalUserID" [masterData]="masterData">
       </app-upload-files>

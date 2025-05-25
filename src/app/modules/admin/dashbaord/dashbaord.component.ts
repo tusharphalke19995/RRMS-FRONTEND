@@ -34,6 +34,7 @@ import { SplitTagsPipe } from "app/shared/pipes/splitTags";
 import { MasterService } from "../pages/Master/master.service";
 import { CaseDataApprovalService } from "../pages/case-data-approvals/case-data-approvals.service";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { SearchDocService } from "../pages/search-document/searchDoc.service";
 @Component({
   selector: "app-dashbaord",
   templateUrl: "./dashbaord.component.html",
@@ -57,7 +58,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     CurrencyPipe,
     CommonModule,
     UploadedFilesComponent,
-    MatTooltipModule
+    MatTooltipModule,
   ],
 })
 export class DashbaordComponent implements OnInit, OnDestroy {
@@ -104,7 +105,8 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     private _searchUserService: SearchUserService,
     private dialog: MatDialog,
     private sharedService: SharedService,
-    private masterService: MasterService
+    private masterService: MasterService,
+    private _searchDocService: SearchDocService
   ) {
     this.extractDivisionAndDepartmentIds();
   }
@@ -197,23 +199,85 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     });
   }
 
-  viewImage(data) {
-    const dialogRef = this.dialog.open(UploadedFilesComponent, {
-      data: data,
-      width: "1000px",
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      this.cdr.detectChanges();
-    });
-  }
+  // viewImage(data) {
+  //   const dialogRef = this.dialog.open(UploadedFilesComponent, {
+  //     data: data,
+  //     width: "1000px",
+  //   });
+  //   dialogRef.afterClosed().subscribe((result) => {
+  //     this.cdr.detectChanges();
+  //   });
+  // }
+
+  // viewImageLatesFilesList(data) {
+  //   const dialogRef = this.dialog.open(UploadedFilesComponent, {
+  //     data: data,
+  //     width: "1000px",
+  //   });
+  //   dialogRef.afterClosed().subscribe((result) => {
+  //     this.cdr.detectChanges();
+  //   });
+  // }
 
   viewImageLatesFilesList(data) {
-    const dialogRef = this.dialog.open(UploadedFilesComponent, {
-      data: data,
-      width: "1000px",
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      this.cdr.detectChanges();
+    const payload = {
+      fileHash: data?.file?.fileHash || data?.fileHash,
+      requested_to: 0,
+      comments: "",
+      division_id: sessionStorage.getItem("divisionID"),
+      case_id: data.caseInfoDetailsId,
+    };
+
+    this._searchDocService.filePreviewData(payload).subscribe({
+      next: (res: any) => {
+        if (!res) {
+          console.error("No file data received");
+          return;
+        }
+
+        const fileType = res.mime_type || res.type;
+        const base64 = res.base64_content;
+        const fileName = res.file_name || "document";
+
+        const officeMimeTypes = [
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "application/vnd.ms-powerpoint",
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        ];
+
+        if (officeMimeTypes.includes(fileType)) {
+          const blob = this.base64ToBlob(base64, fileType);
+          const url = window.URL.createObjectURL(blob);
+
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+
+          setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+        } else {
+          // Open UploadedFilesComponent dialog
+          const dialogRef = this.dialog.open(UploadedFilesComponent, {
+            data: data,
+            width: "850px",
+            maxWidth: "100vw",
+            height: "90vh",
+            panelClass: "custom-dialog-class",
+          });
+
+          dialogRef.afterClosed().subscribe(() => {
+            this.cdr.detectChanges();
+          });
+        }
+      },
+      error: (error) => {
+        console.error("Error fetching file preview:", error);
+      },
     });
   }
 
@@ -381,5 +445,84 @@ export class DashbaordComponent implements OnInit, OnDestroy {
     }
   }
 
- 
+  viewImage(data) {
+    const payload = {
+      fileHash: data?.file?.fileHash || data?.fileHash,
+      requested_to: 0,
+      comments: "",
+      division_id: sessionStorage.getItem("divisionID"),
+      case_id: data.caseInfoDetailsId,
+    };
+
+    this._searchDocService.filePreviewData(payload).subscribe({
+      next: (res: any) => {
+        if (!res) {
+          console.error("No file data received");
+          return;
+        }
+
+        const fileType = res.mime_type || res.type;
+        const base64 = res.base64_content;
+        const fileName = res.file_name || "document";
+
+        const officeMimeTypes = [
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "application/vnd.ms-powerpoint",
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+           "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        ];
+
+        if (officeMimeTypes.includes(fileType)) {
+          const blob = this.base64ToBlob(base64, fileType);
+          const url = window.URL.createObjectURL(blob);
+
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+
+          setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+        } else {
+          // Open UploadedFilesComponent dialog
+          const dialogRef = this.dialog.open(UploadedFilesComponent, {
+            data: data,
+            width: "850px",
+            maxWidth: "100vw",
+            height: "90vh",
+            panelClass: "custom-dialog-class",
+          });
+
+          dialogRef.afterClosed().subscribe(() => {
+            this.cdr.detectChanges();
+          });
+        }
+      },
+      error: (error) => {
+        console.error("Error fetching file preview:", error);
+      },
+    });
+  }
+
+  base64ToBlob(base64: string, mime: string): Blob {
+    const byteCharacters = atob(base64);
+    const byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+      const slice = byteCharacters.slice(offset, offset + 512);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+
+    return new Blob(byteArrays, { type: mime });
+  }
 }
