@@ -100,7 +100,7 @@ export class ManageNotificationComponent implements AfterViewInit {
     "recipientDivisions",
     "created_at",
     "message",
-    "is_read",
+
     "action",
   ];
   notificationInfo: any;

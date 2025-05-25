@@ -145,14 +145,18 @@
                                                 <div class="file-name" (click)="viewImage(favoritesItem.file)">
                                                     <mat-icon class="cursor-pointer">{{
                                                         'insert_drive_file' }}</mat-icon>
-                                                    <span class="text-primary-500  hover:underline cursor-pointer" matTooltip="View File">{{
-                                                        favoritesItem.file.fileName }}</span>
+
+                                                    <span class="text-primary-500 hover:underline truncate-text"
+                                                        matTooltip="{{  favoritesItem.file.fileName }}">
+                                                        {{ favoritesItem.file.fileName}}
+                                                    </span>
                                                 </div>
 
                                                 <div class="added-at"> <mat-icon class="icon-size-5 text-hint"
                                                         [svgIcon]="'heroicons_solid:clock'"></mat-icon>
                                                     <span class="ml-1.2">{{ favoritesItem.added_at | date: 'medium'
                                                         }}</span>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -188,8 +192,7 @@
                         </div>
                         <ng-template #noData>
                             <!-- <p class="text-center text-gray-500">No data available</p> -->
-                            <img class="text-center"
-                                src="../../../../assets/images/others/nodata.jpg" alt="">
+                            <img class="text-center" src="../../../../assets/images/others/nodata.jpg" alt="">
                         </ng-template>
                     </div>
 
@@ -211,8 +214,11 @@
                                                     (click)="viewImageLatesFilesList(latestFileItem)"> <mat-icon
                                                         class="cursor-pointer">{{
                                                         'insert_drive_file' }}</mat-icon>
-                                                    <span class="text-primary-500  hover:underline cursor-pointer" matTooltip="View File">{{
-                                                        latestFileItem.fileName }}</span>
+
+                                                    <span class="text-primary-500 hover:underline truncate-text"
+                                                        matTooltip="{{  latestFileItem.fileName }}">
+                                                        {{ latestFileItem.fileName}}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>

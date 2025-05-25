@@ -52,6 +52,7 @@ import { DialogService } from "../common/dialog.service";
 
 @Component({
   selector: "app-case-data-approval",
+   styleUrl: './case-data-approvals.component.scss',
   standalone: true,
   imports: [
     NgIf,
@@ -454,7 +455,7 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
     requested_to: 0,
     comments: "",
     division_id: sessionStorage.getItem("divisionID"),
-    case_id: data.caseInfoDetailsId,
+    case_id: data.case_details_id,
   };
 
   this._searchDocService.filePreviewData(payload).subscribe({

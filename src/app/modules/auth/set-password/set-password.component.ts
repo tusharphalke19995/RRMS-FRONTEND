@@ -23,9 +23,9 @@ import { AuthService, UserModel } from "app/core/auth/auth.service";
 import { CustomValidators } from "app/shared/validators/customValidators";
 
 @Component({
-  selector: "auth-reset-password",
-  templateUrl: "./reset-password.component.html",
-  styleUrl: "./reset-password.component.scss",
+  selector: "auth-set-password",
+  templateUrl: "./set-password.component.html",
+  styleUrl: "./set-password.component.scss",
   encapsulation: ViewEncapsulation.None,
   animations: fuseAnimations,
   standalone: true,
@@ -43,7 +43,7 @@ import { CustomValidators } from "app/shared/validators/customValidators";
     MatProgressSpinnerModule,
   ],
 })
-export class ResetPasswordComponent implements OnInit {
+export class SetPasswordComponent implements OnInit {
   @ViewChild("signInNgForm") signInNgForm: NgForm;
 
   alert: { type: FuseAlertType; message: string } = {
@@ -64,7 +64,7 @@ export class ResetPasswordComponent implements OnInit {
     private _authService: AuthService,
     private _formBuilder: UntypedFormBuilder,
     private _router: Router,
-     private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar
   ) {}
 
   // -----------------------------------------------------------------------------------------------------
@@ -77,21 +77,15 @@ export class ResetPasswordComponent implements OnInit {
   ngOnInit(): void {
     // Create the form
     this.resetPasswordForm = this._formBuilder.group({
-      kgid: ["", [Validators.required]],
-     newPassword: [
-          '',
-          [
-            Validators.required,
-            Validators.pattern(
-              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-            ),
-          ],
+      newPassword: [
+        "",
+        [
+          Validators.required,
+          Validators.pattern(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+          ),
         ],
-        confirmPassword: ['', [Validators.required]],
-      },
-      {
-        validator: CustomValidators.passwordsMatch('newPassword', 'confirmPassword'),
-      
+      ],
     });
   }
 
@@ -102,43 +96,43 @@ export class ResetPasswordComponent implements OnInit {
   /**
    * Sign in
    */
-submit(): void {
-  if (this.resetPasswordForm.invalid) {
-    // Trigger validation error for the custom password mismatch
-    this.resetPasswordForm.markAllAsTouched();  // This will show validation errors
-    return;
+  submit(): void {
+    if (this.resetPasswordForm.invalid) {
+      // Trigger validation error for the custom password mismatch
+      this.resetPasswordForm.markAllAsTouched(); // This will show validation errors
+      return;
+    }
+
+    this.resetPasswordForm.disable();
+    this.showAlert = false;
+    const payload = {
+      uid: "Dd",
+      token: "dd",
+      new_password: this.resetPasswordForm.value.newPassword,
+    };
+
+    this._authService.setPassword(payload).subscribe({
+      next: (response: any) => {
+        console.log("Password set response:", response);
+        this._snackBar.open("Password sent to registered email", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["success-snackbar"],
+        });
+        this.resetPasswordForm.enable();
+      },
+      error: (error) => {
+        this.showAlert = true;
+        this.alert = {
+          type: "error",
+          message: error.error.error,
+        };
+        // Re-enable the form in case of error
+        this.resetPasswordForm.enable();
+      },
+    });
   }
-
-  this.resetPasswordForm.disable();
-  this.showAlert = false;
-  const payload = {
-    kgid: this.resetPasswordForm.value.kgid,
-    password: this.resetPasswordForm.value.newPassword,
-  };
-
-  this._authService.resetPassword(payload).subscribe({
-    next: (response: any) => {
-      console.log("Password reset response:", response);
-    this._snackBar.open("OTP sent to registered email", "Close", {
-            duration: 3000,
-            horizontalPosition: "right",
-            verticalPosition: "top",
-            panelClass: ["success-snackbar"],
-          });
-           this.resetPasswordForm.enable();
-    },
-    error: (error) => {
-      this.showAlert = true;
-      this.alert = {
-        type: "error",
-        message: error.error.error,
-      };
-      // Re-enable the form in case of error
-      this.resetPasswordForm.enable();
-    },
-  });
-}
-
 
   allowOnlyNumbers(event: KeyboardEvent): void {
     const charCode = event.key.charCodeAt(0);

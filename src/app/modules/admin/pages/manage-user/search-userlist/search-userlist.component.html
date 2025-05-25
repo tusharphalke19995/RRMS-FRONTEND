@@ -72,7 +72,7 @@
                             <td>
                                 <mat-form-field appearance="outline" class="example-full-width">
                                     <mat-label class="font-medium">First Name</mat-label>
-                                    <input matInput matInput max="10" (keypress)="allowOnlyLetters($event)"
+                                    <input matInput matInput min="3" (keypress)="allowOnlyLetters($event)"
                                         [formControlName]="'firstName'">
                                     <mat-error *ngIf="searchUserListForm.get('firstName')?.hasError('required')">
                                         Required
@@ -82,7 +82,7 @@
                             <td>
                                 <mat-form-field appearance="outline" class="example-full-width">
                                     <mat-label class="font-medium">Last Name</mat-label>
-                                    <input matInput matInput max="10" (keypress)="allowOnlyLetters($event)"
+                                    <input matInput matInput min="3" (keypress)="allowOnlyLetters($event)"
                                         [formControlName]="'lastName'">
                                     <mat-error *ngIf="searchUserListForm.get('lastName')?.hasError('required')">
                                         Required

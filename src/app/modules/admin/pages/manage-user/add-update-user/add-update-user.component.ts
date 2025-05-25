@@ -170,15 +170,15 @@ export class AddUpdateUserComponent {
       mobileNo: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
       roleId: ["", [Validators.required]],
       designation: [[], [Validators.required]],
-      password: [
-        "",
-        [
-          Validators.required,
-          Validators.pattern(
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-          ),
-        ],
-      ],
+      // password: [
+      //   "",
+      //   [
+      //     Validators.required,
+      //     Validators.pattern(
+      //       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+      //     ),
+      //   ],
+      // ],
     });
   }
 
@@ -189,7 +189,7 @@ export class AddUpdateUserComponent {
       email: this.addUpdateUserForm.value.emailID,
       kgid: this.addUpdateUserForm.value.kgid,
       mobileno: this.addUpdateUserForm.value.mobileNo,
-      password: this.addUpdateUserForm.value.password,
+      // password: this.addUpdateUserForm.value.password,
       roleId: this.addUpdateUserForm.value.roleId,
       designation: this.addUpdateUserForm.value.designation,
     };
@@ -204,7 +204,7 @@ export class AddUpdateUserComponent {
         this.router.navigateByUrl("manage-user/active-user");
       },
       error: (error) => {
-        this._snackBar.open(error.detail || "Cannot create more than 5 admin users.", "Close", {
+        this._snackBar.open( error.error.error, "Close", {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
@@ -402,7 +402,7 @@ export class AddUpdateUserComponent {
         this.router.navigateByUrl("manage-user/active-user");
       },
       error: (error) => {
-        this._snackBar.open(error.message || "Error creating user", "Close", {
+        this._snackBar.open( error.error.error, "Close", {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",

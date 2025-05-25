@@ -1,5 +1,3 @@
-
-  
 .custom-tag-list {
   display: flex;
   flex-wrap: wrap;
@@ -17,4 +15,10 @@
   align-items: center;
   justify-content: center;
 }
-  
+.truncate-text {
+  display: inline-block;
+  max-width: 120px; /* Or whatever suits your layout */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

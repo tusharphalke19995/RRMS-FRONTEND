@@ -47,25 +47,41 @@ export class AuthService
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    /**
-     * Forgot password
-     *
-     * @param email
-     */
-    forgotPassword(email: string): Observable<any>
-    {
-        return this._httpClient.post('api/auth/forgot-password', email);
-    }
+    forgotPassword(kgid:any) {
+    const url = `${apiurls.forgotPassword}/${kgid}`;
+    return this._httpClient.post(url,{});
+  }
 
     /**
      * Reset password
      *
      * @param password
      */
-    resetPassword(password: string): Observable<any>
+    setPassword(data:any): Observable<any>
     {
-        return this._httpClient.post('api/auth/reset-password', password);
+        return this._httpClient.post(apiurls.setPassword, data)
     }
+
+    /**
+     * Verify Otp
+     *
+     * @param password
+     */
+    verifyOtp(data:any): Observable<any>
+    {
+        return this._httpClient.post(apiurls.verifyOtp, data)
+    }
+
+      /**
+     * Reset Password
+     *
+     * @param password
+     */
+    resetPassword(data:any): Observable<any>
+    {
+        return this._httpClient.post(apiurls.resetPassword, data)
+    }
+
 
 
     userLogin(data): Observable<any> {
@@ -76,7 +92,6 @@ export class AuthService
                     return of({ success: false, message: error.error?.message || 'An error occurred. Please try again.' });
                 }),
                 switchMap((response: any) => {
-                    debugger;
                     if (response.responseData.access) {
                         this.accessToken = response.responseData.access; // Set the token
                     }

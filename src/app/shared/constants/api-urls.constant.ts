@@ -54,6 +54,12 @@ export const apiurls = {
   updateFileDataById: `${environment.userApiUrl}casedata/updateFileData`,
   searchUsers: `${environment.userApiUrl}users/search-users`,
   updateCaseDetailsById: `${environment.userApiUrl}casedata`,
+  setPassword: `${environment.userApiUrl}users/set-password`,
+  forgotPassword: `${environment.userApiUrl}users/request-otp`,
+  verifyOtp: `${environment.userApiUrl}users/verify-otp`,
+  resetPassword: `${environment.userApiUrl}users/reset-password`,
+
+
 
   
   sendReminder: (id: number | string) =>

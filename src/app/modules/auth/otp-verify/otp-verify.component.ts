@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
   OnInit,
@@ -25,8 +26,11 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
-import { FuseAlertComponent, FuseAlertType } from "@fuse/components/alert";
+import { FuseAlertComponent } from "@fuse/components/alert";
 import { AuthService } from "app/core/auth/auth.service";
+import { interval, Observable, Subscription } from "rxjs";
+import { FuseAlertType } from "@fuse/components/alert";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: "app-otp-verify",
@@ -44,7 +48,7 @@ import { AuthService } from "app/core/auth/auth.service";
     MatCheckboxModule,
     MatProgressSpinnerModule,
     NgFor,
-    NgForOf
+    NgForOf,
   ],
   templateUrl: "./otp-verify.component.html",
   styleUrl: "./otp-verify.component.scss",
@@ -73,15 +77,18 @@ export class OtpVerifyComponent implements OnInit {
   showAlert: boolean = false;
   divisionsRoles: any;
   authData: any;
-
+  countdown: number = 600;
+  countdownSubscription!: Subscription;
   /**
    * Constructor
    */
   constructor(
+      private cdRef: ChangeDetectorRef,
     private _activatedRoute: ActivatedRoute,
     private _authService: AuthService,
     private _formBuilder: UntypedFormBuilder,
-    private _router: Router
+    private _router: Router,
+     private _snackBar: MatSnackBar
   ) {}
 
   // -----------------------------------------------------------------------------------------------------
@@ -92,10 +99,32 @@ export class OtpVerifyComponent implements OnInit {
    * On init
    */
   ngOnInit(): void {
-    // Create the form
-    // this.otpForm = this._formBuilder.group({
-    //   otp: ["", [Validators.required]],
-    // });
+    this.startCountdown();
+  }
+
+startCountdown(): void {
+    this.countdownSubscription = interval(1000).subscribe(() => {
+      if (this.countdown > 0) {
+        this.countdown--;
+        this.cdRef.detectChanges(); // Manually trigger change detection
+      }
+    });
+  }
+
+ timer(): string {
+    const minutes = Math.floor(this.countdown / 60);
+    const seconds = this.countdown % 60;
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  }
+
+  isTimerExpired(): boolean {
+    return this.countdown <= 0;
+  }
+
+  ngOnDestroy(): void {
+    if (this.countdownSubscription) {
+      this.countdownSubscription.unsubscribe();
+    }
   }
 
   // -----------------------------------------------------------------------------------------------------
@@ -134,34 +163,28 @@ export class OtpVerifyComponent implements OnInit {
       this.showAlert = false;
       let payload = {
         otp: otp,
+        kgid: 3,
       };
-
-      this._authService.userLogin(payload).subscribe({
+      this._authService.verifyOtp(payload).subscribe({
         next: (response: any) => {
           console.log("response", response);
-          if (response.statusCode == 200) {
-            this._authService.accessToken = response.responseData.access;
-          } else {
-            this.showAlert = true;
-            this.alert = {
-              type: "error",
-              message: "Login failed. Please check your credentials.",
-            };
-            this.otpForm.enable();
-          }
+          this._snackBar.open("OTP Verify Successfully", "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["success-snackbar"],
+          });
+           this.otpForm.enable();
         },
         error: (error) => {
-          console.error("Login error:", error);
           this.showAlert = true;
           this.alert = {
             type: "error",
-            message: "An error occurred during login. Please try again.",
+            message: error.error.error,
           };
           this.otpForm.enable();
         },
       });
     }
   }
-
-  
 }
