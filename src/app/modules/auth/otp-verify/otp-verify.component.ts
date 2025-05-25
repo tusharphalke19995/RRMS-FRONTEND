@@ -79,6 +79,7 @@ export class OtpVerifyComponent implements OnInit {
   authData: any;
   countdown: number = 600;
   countdownSubscription!: Subscription;
+  kgid:any;
   /**
    * Constructor
    */
@@ -99,6 +100,7 @@ export class OtpVerifyComponent implements OnInit {
    * On init
    */
   ngOnInit(): void {
+    this.kgid = sessionStorage.getItem('id');
     this.startCountdown();
   }
 
@@ -163,7 +165,7 @@ startCountdown(): void {
       this.showAlert = false;
       let payload = {
         otp: otp,
-        kgid: 3,
+        kgid:  this.kgid,
       };
       this._authService.verifyOtp(payload).subscribe({
         next: (response: any) => {

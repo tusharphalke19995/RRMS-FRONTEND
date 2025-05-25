@@ -92,6 +92,7 @@ export class AuthForgotPasswordComponent implements OnInit {
     }
     this.forgotPasswordForm.disable();
     this.showAlert = false;
+    sessionStorage.setItem("id",this.forgotPasswordForm.value.kgid)
     this._authService
       .forgotPassword(this.forgotPasswordForm.value.kgid)
       .subscribe({
