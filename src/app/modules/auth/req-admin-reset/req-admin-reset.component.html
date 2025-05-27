@@ -1,0 +1,100 @@
+<div class="flex flex-col flex-auto items-center sm:justify-center min-w-0 bg-cover bg-center"
+    style="background-image: url('../../../../assets/images/rrms.jpg');">
+
+    <div class="flex flex-col flex-auto items-start sm:justify-center min-w-0 bg-cover bg-center pl-6 sm:pl-16 ">
+        <div
+            class="w-full bg-white/0.1 backdrop-blur-md  border-2 border-solid border-primary-900 p-6 sm:mx-0 rounded-2xl attractive-shadow animate-fade-in">
+            <!-- Logo -->
+            <div class="w-20 h-20 flex items-center justify-center rounded-full bg-white mx-auto">
+                <img src="assets/images/KSPPCW-logo.png" class="object-contain w-20 h-20 " />
+            </div>
+
+            <!-- Title -->
+            <div
+                class="mt-2 text-4xl  font-extrabold tracking-tight bg-gradient-to-r  text-center bg-clip-text drop-shadow-lg tracking-wider text-blue-800">
+                Request Admin Reset</div>
+            <!-- <div class="flex items-baseline mt-0.5 font-medium">
+                    <div>Don't have an account?</div>
+                    <a
+                        class="ml-1 text-primary-500 hover:underline"
+                        [routerLink]="['/sign-up']">Sign up
+                    </a>
+                </div> -->
+
+            <!-- Alert -->
+            <fuse-alert class="mt-2" *ngIf="showAlert" [appearance]="'outline'" [showIcon]="false" [type]="alert.type"
+                [@shake]="alert.type === 'error'">
+                {{alert.message}}
+            </fuse-alert>
+
+            <!-- Sign in form -->
+            <form class="mt-3" [formGroup]="requestAdminResetForm" #signInNgForm="ngForm">
+
+                <!-- Email field -->
+                <mat-form-field class="w-full">
+                    <mat-label class="text-xl text-white">KGID</mat-label>
+                    <input id="kgid" matInput (keypress)="allowNumbersAndLetters($event)" [formControlName]="'kgid'">
+                    <mat-error *ngIf="requestAdminResetForm.get('kgid').hasError('required')">
+                        kgid is required
+                    </mat-error>
+
+                </mat-form-field>
+
+                <mat-form-field class="w-full">
+                    <mat-label class="text-xl text-white">First name</mat-label>
+                    <input id="name" matInput (keypress)="allowOnlyLetters($event)" [formControlName]="'firstName'">
+                    <mat-error *ngIf="requestAdminResetForm.get('firstName').hasError('required')">
+                        First name is required
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="w-full">
+                    <mat-label class="text-xl text-white">Last name</mat-label>
+                    <input id="name" matInput (keypress)="allowOnlyLetters($event)" [formControlName]="'lastName'">
+                    <mat-error *ngIf="requestAdminResetForm.get('lastName').hasError('required')">
+                        Last name is required
+                    </mat-error>
+                </mat-form-field>
+                 <mat-form-field  class="w-full">
+                        <mat-label class="text-xl text-white">Mobile No</mat-label>
+                        <input matInput [formControlName]="'mobileNo'" (keypress)="allowOnlyNumbers($event)"
+                            maxlength="10" placeholder="Enter mobile number" >
+                        <mat-error *ngIf="requestAdminResetForm.get('mobileNo').hasError('required')">
+                            Required
+                        </mat-error>
+                    </mat-form-field>
+
+                <mat-form-field class="w-full">
+                    <mat-label class="text-xl text-white">Email</mat-label>
+                    <input id="email" matInput [formControlName]="'email'">
+                    <mat-error *ngIf="requestAdminResetForm.get('email').hasError('required')">
+                        Email address is required
+                    </mat-error>
+                    <mat-error *ngIf="requestAdminResetForm.get('email').hasError('email')">
+                        Please enter a valid email address
+                    </mat-error>
+                </mat-form-field>
+
+
+                <!-- Actions -->
+
+
+                <div class="mt-2 w-full  text-md font-medium text-secondary text-center">
+                    <a class="ml-1 text-white hover:underline" [routerLink]="['/sign-in']">Sign In
+                    </a>
+                </div>
+
+                <!-- Submit button -->
+                <button class="fuse-mat-button-large w-full mt-8" mat-flat-button [color]="'primary'"
+                    [disabled]="requestAdminResetForm.disabled" (click)="signIn()">
+                    <span *ngIf="!requestAdminResetForm.disabled">
+                        Submit
+                    </span>
+                    <mat-progress-spinner *ngIf="requestAdminResetForm.disabled" [diameter]="24"
+                        [mode]="'indeterminate'"></mat-progress-spinner>
+                </button>
+            </form>
+        </div>
+    </div>
+
+</div>

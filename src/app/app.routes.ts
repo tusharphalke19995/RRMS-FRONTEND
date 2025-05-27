@@ -67,6 +67,11 @@ export const appRoutes: Route[] = [
         loadChildren: () =>
           import("app/modules/auth/set-password/set-password.routes"),
       },
+       {
+        path: "request-admin-reset",
+        loadChildren: () =>
+          import("app/modules/auth/req-admin-reset/req-admin-reset.routes"),
+      },
     ],
   },
 

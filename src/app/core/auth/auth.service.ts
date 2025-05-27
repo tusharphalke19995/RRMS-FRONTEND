@@ -82,6 +82,16 @@ export class AuthService
         return this._httpClient.post(apiurls.resetPassword, data)
     }
 
+     /**
+     * Reset Password
+     *
+     * @param password
+     */
+    requestAdminReset(data:any): Observable<any>
+    {
+        return this._httpClient.post(apiurls.requestAdminReset, data)
+    }
+
 
 
     userLogin(data): Observable<any> {

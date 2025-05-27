@@ -180,7 +180,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
         id: "resetPassword",
         title: "Reset Password",
         type: "basic",
-        link: "/manage-userr/file-Correspondence",
+        link: "/manage-user/reset-password-request",
       }
     ],
   },

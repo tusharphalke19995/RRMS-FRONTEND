@@ -145,5 +145,6 @@
          "addFileCorrespondence":"Add File Correspondence",
         "updateFileCorrespondence":"Update File Correspondence",
         "corrFileName":"Correspondence File Name",
-        "updateUser":"Update User"
+        "updateUser":"Update User",
+         "resPassReq": "Reset Password Request"
 }
