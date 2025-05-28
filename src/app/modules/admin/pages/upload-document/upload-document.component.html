@@ -48,7 +48,7 @@
                 </ng-container>
                 
                 <!-- Add User button -->
-                <button *ngIf="isDraft"
+                <button *ngIf="isDraft && !isPatchSearchPage"
                         mat-flat-button 
                         [color]="'primary'"
                         class="min-w-[120px]"
@@ -335,7 +335,7 @@
                     <div>Files/Documents</div>
                 </div>
 
-                <app-upload-files [getfiles]="patchDetailsfiles" (filesWithMetadataSelected)="onFilesWithMetadataSelected($event)"
+                <app-upload-files [getfiles]="patchDetailsfiles" [getfiles]="dfaftfiles" (filesWithMetadataSelected)="onFilesWithMetadataSelected($event)"
                     [DocumentTypeDropDown]="DocumentTypeDropDown" [crimeNo]="crimeNo" [FileTypeDropDown]="FileTypeDropDown" [ClassificationTypeDropDown]="ClassificationTypeDropDown" [masterData]="masterData" [checkFileSatus]="checkFileSatus">
                 </app-upload-files>
 
@@ -344,7 +344,7 @@
                         [disabled]="uploadDocumentForm.pristine || uploadDocumentForm.untouched" (click)="clearForm()">
                         {{t('clear')}}
                     </button>
-                     <button *ngIf="isDraft" class="ml-2" mat-flat-button [color]="'primary'"
+                     <button *ngIf="isDraft && !isPatchSearchPage" class="ml-2" mat-flat-button [color]="'primary'"
                     [disabled]="!canisSaveDraft" (click)="saveDraftUpload()">
                         <mat-spinner *ngIf="isSaveDraft" diameter="20" class="mr-2"></mat-spinner>
                         <span *ngIf="!isSaveDraft">Save Draft</span>

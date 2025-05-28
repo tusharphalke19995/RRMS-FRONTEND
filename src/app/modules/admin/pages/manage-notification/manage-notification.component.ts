@@ -162,19 +162,28 @@ export class ManageNotificationComponent implements AfterViewInit {
 //   this.router.navigate(['upload-approval'], { queryParams: { object_id: row.object_id } });
 // }
 
-goToProcess(row: any): void {
-    const url = new URL(row.redirect_url, window.location.origin); // Safely parse URL
-    const tab = url.searchParams.get('tab');
-    let selectedTab = 0;
-    if (tab === 'approved') {
-      selectedTab = 1;
-    } else if (tab === 'denied') {
-      selectedTab = 2;
-    }
+ goToProcess(row: any): void {
+  const url = new URL(row.redirect_url, window.location.origin); // Safely parse URL
+  const tab = url.searchParams.get('tab');
+  let selectedTab = 0;
+  if (tab === 'approved') {
+    selectedTab = 1;
+  } else if (tab === 'denied') {
+    selectedTab = 2;
+  }
+  if (url.pathname.includes('upload-approvals')) {
     this.router.navigate(['upload-approval'], {
       queryParams: { object_id: row.object_id, selectedTab: selectedTab }
     });
+  } else if (url.pathname.includes('access')) {
+    this.router.navigate(['request-access'], {
+      queryParams: { object_id: row.object_id, selectedTab: selectedTab }
+    });
+  } else {
+    console.error('Unknown redirect path:', url.pathname);
   }
+}
+
 
   ngAfterViewInit(): void {
     this.setupPagination();

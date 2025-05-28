@@ -145,6 +145,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   checkFileSatus: boolean;
   finalFIRValue: any;
   patchDetailsfiles: any[] = [];
+  dfaftfiles:any[]=[];
   caseMetaData: any;
   draftInfo: any;
   files: any[] = [];
@@ -606,6 +607,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           this.addcitizenfeedbackNgForm.resetForm();
           this._router.navigateByUrl("search-document");
           this.resetSelectedFiles();
+              this._uploadDocumentService.setState(null,null,false);
         },
         error: (error) => {
           this._snackBar.open(error.message || "Error updating case", "Close", {
@@ -881,6 +883,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       this.patchDetailsfiles = this.files;
     }
     if (this.caseMetaData) {
+      console.log("this.caseMetaData",this.caseMetaData)
       this.dataPatch(this.caseMetaData);
     }
     // Clear state after loading
@@ -895,6 +898,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
      console.log("isDraft", this.isDraft);
     if (this.draftInfo) {
       this.dataPatchDraft(this.draftInfo);
+    }
+     if (this.draftInfo?.file_details) {
+      this.dfaftfiles = this.draftInfo?.file_details;
     }
     // Clear state after loading
     this._uploadDocumentService.clearDraft();

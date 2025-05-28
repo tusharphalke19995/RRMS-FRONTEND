@@ -450,12 +450,13 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
   }
 
     viewImage(data) {
+      console.log("Data,data",data)
   const payload = {
     fileHash: data?.file?.fileHash || data?.fileHash,
     requested_to: 0,
     comments: "",
     division_id: sessionStorage.getItem("divisionID"),
-    case_id: data.caseInfoDetailsId,
+    case_id: data.case_details_id,
   };
 
   this._searchDocService.filePreviewData(payload).subscribe({
