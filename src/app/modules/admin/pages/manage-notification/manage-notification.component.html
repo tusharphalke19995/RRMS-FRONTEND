@@ -65,7 +65,13 @@
         <ng-container matColumnDef="message">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">
             Notification Content </th>
-          <td mat-cell *matCellDef="let row"> {{row.message}} </td>
+          <td mat-cell *matCellDef="let row">
+  <span class="text-primary-500 hover:underline truncate-text" matTooltipPosition="above" matTooltip="{{ row.message }}">
+                            {{ row.message }}
+                        </span>
+          </td>
+
+          
         </ng-container>
 
 
@@ -103,16 +109,20 @@
           </td>
         </ng-container>
 
+     
+
         <!-- Recipient Divisions -->
-        <ng-container matColumnDef="recipientDivisions">
+        <ng-container matColumnDef="type">
           <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black">
-           Requested For
+          Type of Request 
           </th>
-          <td mat-cell *matCellDef="let row">
-            <!-- {{ getDivisionNames(row.recipient?.designation_detail) }} -->
+          <td mat-cell *matCellDef="let row" >
+            {{ row.type }}
+
           </td>
         </ng-container>
 
+        
 
         <!--Last Name Column -->
         <ng-container matColumnDef="created_at">

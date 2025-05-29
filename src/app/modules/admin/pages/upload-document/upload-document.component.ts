@@ -235,10 +235,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     files: FileWithMetadata[];
     metadata: any[];
   }) {
-    this.selectedFiles = data.files; // Update the selected files
-    this.selectedMetadata = data.metadata; // Update the metadata
-    console.log("Files selected:", this.selectedFiles); // Log for debugging
-    console.log("Metadata selected:", this.selectedMetadata); // Log for debugging
+    this.selectedFiles = data.files;
+    this.selectedMetadata = data.metadata; 
   }
 
   /**

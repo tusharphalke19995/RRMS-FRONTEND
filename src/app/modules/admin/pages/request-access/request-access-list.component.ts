@@ -38,7 +38,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
-import { RouterLink } from "@angular/router";
+import { ActivatedRoute, RouterLink } from "@angular/router";
 import { TranslocoModule } from "@ngneat/transloco";
 import { MatTabsModule } from "@angular/material/tabs";
 import { RequestDialogComponent } from "./request-access-dialog/request-access-dialog.component";
@@ -167,8 +167,8 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
     private _formBuilder: UntypedFormBuilder,
     private _searchDocService: SearchDocService,
     private requestAccessService: RequestAccessService,
-    private authenticationService: AuthService
-  ) {
+    private authenticationService: AuthService,
+private route: ActivatedRoute  ) {
     this.authData = this.authenticationService.getAuthData();
   }
 
@@ -181,6 +181,20 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
    */
   ngOnInit(): void {
     this.getContentManagerReqForWkFlow();
+    this.getUrlInfo();
+  }
+
+  getUrlInfo(){
+     this.route.queryParams.subscribe(params => {
+      const tab = params['selectedTab'];
+      const objectId = params['object_id'];
+      if (tab !== undefined) {
+        this.selectedTab = Number(tab); 
+       this.getContentManagerReqForWkFlow();
+      }else{
+     this.getContentManagerReqForWkFlow();
+      }
+    });
   }
 
   getContentManagerReqForWkFlow() {
@@ -226,6 +240,7 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       this.getContentManagerReqForWkFlow();
+      this._changeDetectorRef.detectChanges();
     });
   }
 
@@ -456,7 +471,7 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
     requested_to: 0,
     comments: "",
     division_id: sessionStorage.getItem("divisionID"),
-    case_id: data.case_details_id,
+    case_id: data?.file?.classification,
   };
 
   this._searchDocService.filePreviewData(payload).subscribe({

@@ -32,6 +32,7 @@ import { NotificationService } from "./notification.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfirmationDialogComponent } from "./confirmation-dialog/confirmation-dialog.component";
 import { DashbaordService } from "../../dashbaord/dashboard.service";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @Component({
   selector: "app-manage-notification",
@@ -59,6 +60,7 @@ import { DashbaordService } from "../../dashbaord/dashboard.service";
     MatPaginatorModule,
     MatSortModule,
     CommonModule,
+     MatTooltipModule
   ],
   templateUrl: "./manage-notification.component.html",
   styleUrl: "./manage-notification.component.scss",
@@ -97,10 +99,9 @@ export class ManageNotificationComponent implements AfterViewInit {
     "requestedByDepartments",
     "requestedByDivisions",
     "recipientDepartments",
-    "recipientDivisions",
+    "type",
     "created_at",
     "message",
-
     "action",
   ];
   notificationInfo: any;

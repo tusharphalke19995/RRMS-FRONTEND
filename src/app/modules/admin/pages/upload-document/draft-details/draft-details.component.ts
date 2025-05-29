@@ -80,8 +80,8 @@ export class DraftDetailsComponent {
   displayedColumns: string[] = [
     "firNo",
     "caseNo",
-    "caseStatus",
-    "unitId",
+    "caseStatusName",
+    "unitName",
     "action",
   ];
 

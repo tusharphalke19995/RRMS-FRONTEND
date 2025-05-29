@@ -72,10 +72,10 @@
                                 File Name
                             </th>
                             <td mat-cell *matCellDef="let row; let i = index" (click)="viewImage(row)">
-                                <mat-icon class="mr-2 align-middle text-primary"
+                                <mat-icon class="mr-2 align-middle cursor-pointer text-primary"
                                     matTooltip="View File">insert_drive_file</mat-icon>
 
-                                <span class="text-primary-500 hover:underline truncate-text"
+                                <span class="text-primary-500 cursor-pointer hover:underline truncate-text"
                                     matTooltip="{{ row.file_name }}">
                                     {{ row.file_name }}
                                 </span>

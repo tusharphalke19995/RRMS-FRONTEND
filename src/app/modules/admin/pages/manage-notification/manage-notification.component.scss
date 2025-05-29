@@ -181,22 +181,31 @@
 
 .bg-read {
   // background-color: #d1e7dd; 
+
+    font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  color: #444;
+}
+
+.bg-unread {
+  // background-color: #f8d7da; 
   font-family: 'Arial', sans-serif;
   font-size: 15px;
   font-weight: bold;
   color: #333;
 }
 
-.bg-unread {
-  // background-color: #f8d7da; 
-  font-family: 'Roboto', sans-serif;
-  font-size: 14px;
-  font-weight: normal;
-  color: #444;
-}
-
 .hover {
   &:hover {
     background-color: rgba(0, 0, 0, 0.1);
   }
+}
+
+.truncate-text {
+  display: inline-block;
+  max-width: 120px; /* Or whatever suits your layout */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
