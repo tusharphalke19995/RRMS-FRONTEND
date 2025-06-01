@@ -185,6 +185,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   previewType: "image" | "video" | "audio" | "pdf" | "other" = "other";
   showEditUserUpload: boolean;
   @Input() caseMetaData: any;
+  @Input() isDraft: boolean;
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -244,12 +245,21 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     }
     this.showTextNoData = !this.filesData?.length;
     this.selectedFiles = this.getfiles;
-    console.log('caseMetaData',this.caseMetaData)
+    console.log('getfiles',this.getfiles)
     if (this.checkFileSatus == true) {
       this.metadataForm.reset();
       this.selectedFiles = [];
       this.filesWithMetadataSelected.emit({ files: [], metadata: [] });
     }
+    if(this.selectedFiles.length>0){
+    this.showEditUserUpload = true;
+      this.filesWithMetadataSelected.emit({
+        files: this.selectedFiles,
+        metadata: this.selectedFiles.map((file) => file.metadata),
+      });
+    }
+    console.log("isDraft",this.isDraft)
+
   }
 
   patchData(formData: any) {

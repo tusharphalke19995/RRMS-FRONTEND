@@ -151,6 +151,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   files: any[] = [];
   isPatchSearchPage: boolean;
   isDraft: boolean= true;
+
   // selectedFiles: any;
   /**
    * Constructor
@@ -237,6 +238,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }) {
     this.selectedFiles = data.files;
     this.selectedMetadata = data.metadata; 
+    console.log("  this.selectedFiles ",  this.selectedFiles )
+
+    
   }
 
   /**
@@ -395,7 +399,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     });
     formData.append("is_draft", "true");
     formData.append("fileDetails", JSON.stringify(fileDetailsArray));
-
+   formData.append("dept_id", sessionStorage.getItem("departmentID"));
     this.selectedFiles.forEach((file) => {
       const newFileName =
         this.uploadDocumentForm.value.caseNo + "_" + file.name;
@@ -415,7 +419,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         this.addcitizenfeedbackNgForm.resetForm();
         // this._router.navigateByUrl("search-document");
         this.resetSelectedFiles();
-         this._uploadDocumentService.setDraftData(null, true);
+      this._uploadDocumentService.clearDraft();
+      this.isDraft = true;
+        this.selectedFiles = [];
       },
       error: (error) => {
         this._snackBar.open(error.message || "Error creating user", "Close", {
@@ -475,13 +481,14 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     });
 
     formData.append("fileDetails", JSON.stringify(fileDetailsArray));
-
+ formData.append("division_id", sessionStorage.getItem("divisionID"));
+    formData.append("dept_id", sessionStorage.getItem("departmentID"));
     this.selectedFiles.forEach((file) => {
       const newFileName =
         this.uploadDocumentForm.value.caseNo + "_" + file.name;
       const newFile = new File([file], newFileName, { type: file.type });
       formData.append("Files", newFile);
-      formData.append("division_id", sessionStorage.getItem("divisionID"));
+     
     });
 
     this._uploadDocumentService.uploadDocument(formData).subscribe({
@@ -495,7 +502,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         this.addcitizenfeedbackNgForm.resetForm();
         // this._router.navigateByUrl("search-document");
         this.resetSelectedFiles();
-          this._uploadDocumentService.setDraftData(null, true);
+        this._uploadDocumentService.clearDraft();
+         this.isDraft = true;
+          this.selectedFiles =[];
       },
       error: (error) => {
         this._snackBar.open(error.message || "Error creating user", "Close", {
@@ -569,13 +578,15 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     });
 
     formData.append("fileDetails", JSON.stringify(fileDetailsArray));
-
+  formData.append("division_id", sessionStorage.getItem("divisionID"));
+   formData.append("dept_id", sessionStorage.getItem("departmentID"));
+  
     this.selectedFiles.forEach((file) => {
       const newFileName =
         this.uploadDocumentForm.value.caseNo + "_" + file.name;
       const newFile = new File([file], newFileName, { type: file.type });
       formData.append("Files", newFile);
-      formData.append("division_id", sessionStorage.getItem("divisionID"));
+    
     });
 
     this._uploadDocumentService
@@ -591,7 +602,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           this.addcitizenfeedbackNgForm.resetForm();
           this._router.navigateByUrl("search-document");
           this.resetSelectedFiles();
-              this._uploadDocumentService.setState(null,null,false);
+              this._uploadDocumentService.clearDraft();
+               this.isDraft = true;
+              this.selectedFiles = [];
         },
         error: (error) => {
           this._snackBar.open(error.message || "Error updating case", "Close", {
@@ -629,6 +642,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       this.crimeNo = `${this.caseTypeFinalId}${districtId}${paddedUnitId}${yearId}${this.finalFIRValue}`;
       this.uploadDocumentForm.get("caseNo")?.setValue(this.crimeNo);
     }
+    
   }
 
   onCaseTypeChange(event: any) {
@@ -668,24 +682,49 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     }
   }
 
+  // get canSubmit(): boolean {
+  //   if (this.isSubmitting) return false;
+  //   if (this.uploadDocumentForm.invalid) return false;
+  //   console.log("this.selectedFiles",this.selectedFiles)
+  //   if (!this.selectedFiles || this.selectedFiles.length === 0) return false;
+  //   for (const file of this.selectedFiles) {
+  //     const meta = file.metadata;
+  //     console.log("meta",meta)
+  //     if (
+  //       !meta ||
+  //       !meta.subject ||
+  //       !meta.fileType ||
+  //       !meta.classification ||
+  //       !meta.documentType
+  //     ) {
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // }
+
   get canSubmit(): boolean {
-    if (this.isSubmitting) return false;
-    if (this.uploadDocumentForm.invalid) return false;
-    if (!this.selectedFiles || this.selectedFiles.length === 0) return false;
-    for (const file of this.selectedFiles) {
-      const meta = file.metadata;
-      if (
-        !meta ||
-        !meta.subject ||
-        !meta.fileType ||
-        !meta.classification ||
-        !meta.documentType
-      ) {
-        return false;
-      }
+  if (this.isSubmitting) return false;
+
+  if (this.uploadDocumentForm.invalid) return false;
+
+  if (!Array.isArray(this.selectedFiles) || this.selectedFiles.length === 0) return false;
+
+  for (const file of this.selectedFiles) {
+    const meta = file.metadata ?? file;  // Use metadata if available, otherwise fall back to file
+
+    if (
+      !meta.subject ||
+      !meta.fileType ||
+      !meta.classification ||
+      !meta.documentType
+    ) {
+      return false;
     }
-    return true;
   }
+
+  return true;
+}
 
   get canisSaveDraft(): boolean {
     if (this.isSaveDraft) return false;
@@ -862,7 +901,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.files = state.files;
     this.caseMetaData = state.caseData;
     this.isPatchSearchPage = state.isPatch;
-
+    console.log("this.caseMetaData",this.caseMetaData)
+        console.log("this.files",this.files)
     if (this.files) {
       this.patchDetailsfiles = this.files;
     }

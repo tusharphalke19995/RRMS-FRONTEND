@@ -151,7 +151,7 @@ getUnitsByDistictIdData(
 
   clearDraft() {
     this.draftInfo = [];
-     this.isPatch=false;
+     this.isDraft=false;
   }
   
    /**
