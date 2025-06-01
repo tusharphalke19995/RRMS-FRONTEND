@@ -371,7 +371,7 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
       data: {
         title: "Confirm Action",
         message:
-          "You are about to withdraw the request. This action will delete the files from the system. Are you sure?",
+          "You are about to withdraw upload request. This action will delete the files from the system. Are you sure you want to proceed?",
         confirmButtonText: "Yes",
         cancelButtonText: "No",
       },
@@ -425,7 +425,7 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (response: any) => {
           this.getCasedataUploadApprovalsData();
-        this.dialogService.openSuccessDialog('Success','Withdraw Access Request successfully');
+        this.dialogService.openSuccessDialog('Success','Upload request withdrawn successfully');
         },
         error: (error) => {
         this.dialogService.openErrorDialog('Error','Something Went Wrong');
@@ -440,11 +440,11 @@ export class CaseDataApprovalsComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (response: any) => {
           this.getCasedataUploadApprovalsData();
-        this.dialogService.openSuccessDialog('Success','Reminder Send successfully');
+        this.dialogService.openSuccessDialog('Success','Reminder sent successfully.');
 
         },
         error: (error: any) => {
-        this.dialogService.openErrorDialog('Error','Reminder already sent recently. can send a reminder again next day.');
+        this.dialogService.openErrorDialog('Error','A reminder was already sent recently. You can send another reminder after 24 hours.');
         },
       });
   }

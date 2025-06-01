@@ -12,8 +12,8 @@
         <mat-icon>cloud_upload</mat-icon>
         <span *transloco="let t">{{t('uploadSupportingFiles')}}</span>
       </button>
-      <input #fileInput type="file" class="hidden-input" (change)="onFileChange($event)" [multiple]="true" accept="image/*,audio/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,'audio/mpeg',
-        'video/mp4,.ppt,.pptx'" />
+      <input #fileInput type="file" class="hidden-input" (change)="onFileChange($event)" [multiple]="true" accept="image/*,audio/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,'audio/mpeg','video/mp4, application/vnd.openxmlformats-officedocument.presentationml.presentation,
+          .ppt,.pptx'" />
       <span class="selected-file-name" *ngIf="selectedFiles.length > 0">
         {{ selectedFiles.length }} file(s) selected
       </span>

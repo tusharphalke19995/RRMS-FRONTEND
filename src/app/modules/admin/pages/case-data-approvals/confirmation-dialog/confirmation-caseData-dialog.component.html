@@ -8,7 +8,7 @@
     <div class="flex items-center">
       <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('confirmApprove')}}</span>
     </div>
-    <button mat-icon-button  (click)="onCancel()" [tabIndex]="-1">
+    <button mat-icon-button (click)="onCancel()" [tabIndex]="-1">
       <mat-icon class="icon-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
     </button>
   </div>
@@ -18,13 +18,10 @@
     <!-- First Row -->
     <h5 class="text-center font-semibold text-xl" *transloco="let t">{{t('reqText')}}</h5>
     <form [formGroup]="manageNotificationConfirmation" class="flex flex-col flex-auto p-6 overflow-y-auto">
-      <!-- <div>
-        <mat-icon class=" align-middle text-primary" matTooltip="View File"
-           >insert_drive_file</mat-icon>
-          {{ data.file?.fileName || 'No File Name' }}
-      </div> -->
+      <span class="font-bold text-lg text-gray-700">File Name:
+        <span class="text-gray-500"> {{ data.file.fileName || 'No File Name' }}</span></span>
       <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mb-4 mt-4">
-        
+
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Remarks</mat-label>
           <input matInput formControlName="remarks" placeholder="Enter Remarks" />
@@ -32,7 +29,7 @@
             Remarks are required when denying.
           </mat-error>
         </mat-form-field>
-       
+
       </div>
       <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
         <button mat-flat-button
@@ -48,10 +45,10 @@
         </button>
 
         <button mat-flat-button
-        class="min-w-[90px] px-6 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
-        (click)="onCancel()" *transloco="let t">
-        {{ t('close') }}
-      </button>
+          class="min-w-[90px] px-6 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
+          (click)="onCancel()" *transloco="let t">
+          {{ t('close') }}
+        </button>
 
       </div>
     </form>

@@ -334,7 +334,7 @@ private route: ActivatedRoute  ) {
       data: {
         title: "Confirm Action",
         message:
-          "You are about to withdraw the request. This action will delete the filles from the system. Are you sure?",
+          "You are about to withdraw access request. Are you sure you want to proceed?",
         confirmButtonText: "Yes",
         cancelButtonText: "No",
       },
@@ -390,7 +390,7 @@ private route: ActivatedRoute  ) {
           this.getContentManagerReqForWkFlow();
           this.dialogService.openSuccessDialog(
             "Success",
-            "Withdraw Access Request successfully"
+            "Access request withdrawn successfully"
           );
         },
         error: (error) => {
@@ -407,13 +407,13 @@ private route: ActivatedRoute  ) {
           this.getContentManagerReqForWkFlow();
           this.dialogService.openSuccessDialog(
             "Success",
-            "Reminder Send successfully"
+            "Reminder sent successfully."
           );
         },
         error: (error: any) => {
           this.dialogService.openErrorDialog(
             "Error",
-            "Reminder already sent recently. can send a reminder again next day."
+            "A reminder was already sent recently. You can send another reminder after 24 hours."
           );
         },
       });
