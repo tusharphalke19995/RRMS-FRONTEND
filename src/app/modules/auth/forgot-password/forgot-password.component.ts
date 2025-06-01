@@ -113,8 +113,14 @@ export class AuthForgotPasswordComponent implements OnInit {
           this.showAlert = true;
           this.alert = {
             type: "error",
-            message: "An error occurred during login. Please try again.",
+            message: error.error.error,
           };
+           this._snackBar.open( error.error.error, "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["error-snackbar"],
+          });
           this.forgotPasswordForm.enable();
         },
       });

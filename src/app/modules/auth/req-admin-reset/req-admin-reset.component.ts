@@ -14,6 +14,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { fuseAnimations } from "@fuse/animations";
 import { FuseAlertComponent, FuseAlertType } from "@fuse/components/alert";
@@ -68,7 +69,8 @@ export class RequestAdminResetComponent implements OnInit {
     private _authService: AuthService,
     private _formBuilder: UntypedFormBuilder,
     private _router: Router,
-    private dialogService:DialogService
+    private dialogService:DialogService,
+    private _snackBar: MatSnackBar
   ) {}
 
   // -----------------------------------------------------------------------------------------------------
@@ -123,6 +125,21 @@ export class RequestAdminResetComponent implements OnInit {
           
           // this._router.navigateByUrl("/sign-in")
       },
+              error: (error) => {
+          console.error("Login error:", error);
+          this.showAlert = true;
+          this.alert = {
+            type: "error",
+            message: error.error.error,
+          };
+           this._snackBar.open( error.error.error, "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["error-snackbar"],
+          });
+          this.requestAdminResetForm.enable();
+        },
      
     });
   }

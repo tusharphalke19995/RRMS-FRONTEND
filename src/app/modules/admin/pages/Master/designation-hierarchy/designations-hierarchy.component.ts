@@ -96,18 +96,18 @@ export class DesignationHierarchyComponent implements OnInit, AfterViewInit {
       property: "child_designation_name",
     },
    
-    {
-      labelen: "Action",
-      labelhi: "Action",
-      property: "action",
-      isAction: true,
-    },
+    // {
+    //   labelen: "Action",
+    //   labelhi: "Action",
+    //   property: "action",
+    //   isAction: true,
+    // },
   ];
 
   displayedColumns: string[] = [
       "child_designation_name",
     "parent_designation_name",
-    "action",
+    // "action",
   ];
   userRoleDropdown: [];
   designationsDropdown: [];
