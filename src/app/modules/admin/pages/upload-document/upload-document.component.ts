@@ -357,6 +357,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.detectChanges();
     const caseDate = this.getDateOnly(this.uploadDocumentForm.value.caseDate);
     let uploadMetaData = {
+       CaseInfoDetailsId:this.draftInfo?.CaseInfoDetailsId ?? 0,
       stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
       districtId: this.uploadDocumentForm.value.districtId,
       unitId: this.uploadDocumentForm.value.unitsId,
@@ -392,7 +393,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         documentType: metadata.documentType || "",
       };
     });
-
+    formData.append("is_draft", "true");
     formData.append("fileDetails", JSON.stringify(fileDetailsArray));
 
     this.selectedFiles.forEach((file) => {
@@ -400,7 +401,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         this.uploadDocumentForm.value.caseNo + "_" + file.name;
       const newFile = new File([file], newFileName, { type: file.type });
       formData.append("Files", newFile);
-      formData.append("is_draft", "true");
+     
     });
 
     this._uploadDocumentService.saveDraftInfo(formData).subscribe({
@@ -455,21 +456,6 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     };
     const formData = new FormData();
     formData.append("caseDetails", JSON.stringify(uploadMetaData));
-    console.log(" this.selectedFiles", this.selectedFiles);
-    // const fileDetailsArray = this.selectedFiles.map((file) => ({
-    //   fileId: null,
-    //   hashTag: file.metadata.hashTag
-    //     ? file.metadata.hashTag || file.metadata.hashTag
-    //         .split(",")
-    //         .map((tag) => tag.trim())
-    //         .join(",")
-    //     : "",
-    //   subject: file.metadata.subject || "",
-    //   classification: file.metadata.classification || "",
-    //   fileType: file.metadata.fileType || "",
-    //   documentType: file.metadata.documentType || "",
-    // }));
-    // formData.append("fileDetails", JSON.stringify(fileDetailsArray));
     const fileDetailsArray = this.selectedFiles.map((file: any) => {
       const metadata = file.metadata || file;
 

@@ -47,6 +47,7 @@
                     </div>
                 </ng-container>
                 
+                
                 <!-- Add User button -->
                 <button *ngIf="!isPatchSearchPage"
                         mat-flat-button 
@@ -344,7 +345,7 @@
                         [disabled]="uploadDocumentForm.pristine || uploadDocumentForm.untouched" (click)="clearForm()">
                         {{t('clear')}}
                     </button>
-                     <button *ngIf="isDraft && !isPatchSearchPage" class="ml-2" mat-flat-button [color]="'primary'"
+                     <button *ngIf="!isPatchSearchPage" class="ml-2" mat-flat-button [color]="'primary'"
                     [disabled]="!canisSaveDraft" (click)="saveDraftUpload()">
                         <mat-spinner *ngIf="isSaveDraft" diameter="20" class="mr-2"></mat-spinner>
                         <span *ngIf="!isSaveDraft">Save Draft</span>
