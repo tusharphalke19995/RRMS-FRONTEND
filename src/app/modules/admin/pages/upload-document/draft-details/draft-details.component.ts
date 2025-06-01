@@ -111,7 +111,8 @@ export class DraftDetailsComponent {
   }
 
   getDraftData() {
-    this._uploadDocumentService.getCaseDataDraftsData().subscribe({
+     const divisionID = Number(sessionStorage.getItem("divisionID"));
+    this._uploadDocumentService.getCaseDataDraftsData(divisionID).subscribe({
       next: (response: any) => {
         console.log("response", response);
         this.dataSource = new MatTableDataSource(response);

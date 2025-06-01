@@ -83,8 +83,9 @@ getUnitsByDistictIdData(
     return this.commonApiCallService.get(apiurls.getMasterDropDown).pipe(catchError(this.handleError));
   }
     
-  getCaseDataDraftsData() {
-    return this.commonApiCallService.get(apiurls.getCaseDataDrafts).pipe(catchError(this.handleError));
+  getCaseDataDraftsData(id:number) {
+     const url = `${apiurls.getCaseDataDrafts}/${id}`
+    return this.commonApiCallService.get(url).pipe(catchError(this.handleError));
   }
 
   updateUploadedDoc(pk: number, caseData: any) {
