@@ -23,13 +23,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
     icon: "heroicons_outline:magnifying-glass",
     link: "/search-document",
   },
-  // {
-  //   id: "userMng",
-  //   title: "User Management",
-  //   type: "basic",
-  //   icon: "heroicons_outline:user-circle",
-  //   link: "/manage-user",
-  // },
+  {
+    id: "contentMng",
+    title: "Content Management",
+    type: "basic",
+    icon: "heroicons_outline:user-circle",
+    link: "/content-management",
+  },
   // {
   //     id   : 'roleMng',
   //     title: 'Role Management',

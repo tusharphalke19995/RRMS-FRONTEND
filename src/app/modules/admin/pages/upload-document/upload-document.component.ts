@@ -419,7 +419,6 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         this.addcitizenfeedbackNgForm.resetForm();
         // this._router.navigateByUrl("search-document");
         this.resetSelectedFiles();
-      this._uploadDocumentService.clearDraft();
       this.isDraft = true;
         this.selectedFiles = [];
       },
@@ -502,7 +501,6 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         this.addcitizenfeedbackNgForm.resetForm();
         // this._router.navigateByUrl("search-document");
         this.resetSelectedFiles();
-        this._uploadDocumentService.clearDraft();
          this.isDraft = true;
           this.selectedFiles =[];
       },
@@ -602,7 +600,6 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           this.addcitizenfeedbackNgForm.resetForm();
           this._router.navigateByUrl("search-document");
           this.resetSelectedFiles();
-              this._uploadDocumentService.clearDraft();
                this.isDraft = true;
               this.selectedFiles = [];
         },
@@ -931,6 +928,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }
 
   dataPatch(data) {
+    debugger
     if (data) {
       const uploadDataPach = data;
       this.uploadDocumentForm.patchValue({

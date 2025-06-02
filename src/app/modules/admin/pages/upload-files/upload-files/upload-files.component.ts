@@ -258,7 +258,6 @@ export class UploadFilesComponent implements OnInit, OnChanges {
         metadata: this.selectedFiles.map((file) => file.metadata),
       });
     }
-    console.log("isDraft",this.isDraft)
 
   }
 

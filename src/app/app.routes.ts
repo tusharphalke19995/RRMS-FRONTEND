@@ -72,6 +72,7 @@ export const appRoutes: Route[] = [
         loadChildren: () =>
           import("app/modules/auth/req-admin-reset/req-admin-reset.routes"),
       },
+     
     ],
   },
 
@@ -199,6 +200,13 @@ export const appRoutes: Route[] = [
             "app/modules/admin/pages/user-details/user-info/user-info.routes"
           ),
       },
+      {
+        path:"content-management",
+        loadChildren: () =>
+          import(
+            "app/modules/admin/pages/content-mng/contentMng.routes"
+          ),
+      }
     ],
   },
 ];

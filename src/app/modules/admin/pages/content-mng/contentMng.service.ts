@@ -19,7 +19,7 @@ export class ContentMngService
       .pipe(catchError(this.handleError));
   }
 
-  getFolderData() {
+  getFolderDatak() {
     return this._httpClient
       .get(apiurls.folderTree,)
       .pipe(catchError(this.handleError));
@@ -31,9 +31,9 @@ export class ContentMngService
       .pipe(catchError(this.handleError));
   }
 
-  approveNotification(data:any){
+  getFolderData(data:any){
     return this._httpClient
-    .post(apiurls.approveFiles, data,)
+    .post(apiurls.folderTree, data,)
     .pipe(catchError(this.handleError));
   }
 
