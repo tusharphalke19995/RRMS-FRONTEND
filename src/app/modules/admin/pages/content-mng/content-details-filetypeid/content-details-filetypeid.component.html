@@ -26,6 +26,36 @@
                 Content Management
               </span>
             </ng-container>
+              <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+            <ng-container>
+              <span class="ml-1 text-secondary">
+                Folder
+              </span>
+            </ng-container>
+            <ng-container>
+              <div class="">/</div>
+            </ng-container>
+               <ng-container>
+              <div>{{year}}</div>
+               </ng-container>
+  <ng-container>
+              <div class="">/</div>
+            </ng-container>
+            <ng-container>
+              <div>{{caseNo}}</div>
+            </ng-container>
+             <ng-container>
+              <div class="">/</div>
+            </ng-container>
+            <ng-container>
+              <div>{{caseTypeId}}</div>
+            </ng-container>
+              <ng-container>
+              <div class="">/</div>
+            </ng-container>
+            <ng-container>
+              <div>{{fileTypeId}}</div>
+            </ng-container>
           </div>
 
         </div>
@@ -69,11 +99,11 @@
                 <ng-container *ngFor="let folder of items.folders; trackBy:trackByFn">
                   <div class="relative w-40 h-40 m-2 p-4 shadow rounded-2xl bg-card">
                     <a class="absolute z-20 top-1.5 right-1.5 w-8 h-8 min-h-8" (click)="$event.preventDefault()"
-                       mat-icon-button>
+                      mat-icon-button>
                       <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:information-circle'"></mat-icon>
                     </a>
                     <a class="z-10 absolute inset-0 flex flex-col p-4 cursor-pointer"
-                       (click)="goToDetails(folder)">
+                      (click)="goToCaseDocumentTypeIdDetails(folder)">
                       <div class="aspect-[9/6]">
                         <div class="flex items-center justify-center h-full">
                           <!-- Icon -->
@@ -83,9 +113,9 @@
                       </div>
                       <div class="flex flex-col flex-auto justify-center text-center text-sm font-medium">
                         <div class="truncate" [matTooltip]="folder.name">{{folder.name}}</div>
-                        <!-- <ng-container *ngIf="folder.contents">
+                        <ng-container *ngIf="folder.contents">
                           <div class="text-secondary truncate">{{folder.contents}}</div>
-                        </ng-container> -->
+                        </ng-container>
                       </div>
                     </a>
                   </div>

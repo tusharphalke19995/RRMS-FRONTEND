@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,28 +7,20 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { TranslocoModule } from '@ngneat/transloco';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { SharedService } from 'app/shared/shared.service';
-import { DashbaordService } from '../../dashbaord/dashboard.service';
-import { NotificationService } from '../manage-notification/notification.service';
-import { UploadedFilesComponent } from '../search-document/uploaded-files/uploaded-files.component';
-import { ContentMngService } from './contentMng.service';
-import { Item, Items } from './interface/content.model';
-import { ContentDetailsComponent } from './content-details/content-details.component';
-
+import { ContentMngService } from '../contentMng.service';
+import { Item, Items } from '../interface/content.model';
 
 @Component({
-  selector: 'app-content-mng',
+  selector: 'app-content-details-filetypeid',
   standalone: true,
-  imports: [
+ imports: [
     NgIf,
     RouterLink,
     MatSelectModule,
@@ -51,26 +43,39 @@ import { ContentDetailsComponent } from './content-details/content-details.compo
     MatPaginatorModule,
     MatSortModule,
     CommonModule,
-     MatTooltipModule,
-     ContentDetailsComponent
+     MatTooltipModule
   ],
-  templateUrl: './content-mng.component.html',
-  styleUrl: './content-mng.component.scss'
+  templateUrl: './content-details-filetypeid.component.html',
+  styleUrl: './content-details-filetypeid.component.scss'
 })
-export class ContentMngComponent  implements OnInit {
+export class ContentCaseFiletypeIdDetailsComponent implements OnInit {
   alert: { type: string; message: string };
   isLoading: boolean = false;
  selectedItem: Item;
     items: Items;
+  finalYear: "year";
+  year: string;
+  caseNo: string;
+  caseTypeId: string;
+  fileTypeId: string;
 
   constructor(
      
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router,
         private contentMngService: ContentMngService,
+        private route: ActivatedRoute
        
     )
     {
+ this.route.queryParamMap.subscribe(params => {
+      this.year = params.get('name');
+       this.caseNo = params.get('caseNo');
+       this.caseTypeId=params.get('caseTypeId');
+          this.fileTypeId=params.get('filetypeid');
+      console.log('Name:', this.year);
+       console.log('caseNo:', this.caseNo);
+    });
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -82,6 +87,7 @@ export class ContentMngComponent  implements OnInit {
      */
     ngOnInit(): void
     {
+     
     this.getFolder();
     }
 
@@ -112,7 +118,11 @@ export class ContentMngComponent  implements OnInit {
      getFolder() {
     const divisionID = Number(sessionStorage.getItem("divisionID"));
     let payload={
-      division_id:divisionID
+      division_id:divisionID,
+      year: this.year,
+      caseType:this.caseTypeId,
+      caseNo:this.caseNo,
+      fileTypeId:this.fileTypeId
     }
     this.contentMngService.getFolderData(payload).subscribe({
       next: (response: any) => {
@@ -125,10 +135,9 @@ export class ContentMngComponent  implements OnInit {
     });
   }
 
-
-  goToDetails(data: any) {
-     this._router.navigate(['/content-management/folders'], {
-      queryParams: { name:  data.name }
+ goToCaseDocumentTypeIdDetails(data: any) {
+      this._router.navigate(['/content-management/folders/caseNo/caseTypeid/filetypeid/documenttypeid'], {
+      queryParams: { name: this.year ,caseNo:this.caseNo,caseTypeId:this.caseTypeId,filetypeid:this.fileTypeId,documentTypeId:data.id}
     });
   }
 }
