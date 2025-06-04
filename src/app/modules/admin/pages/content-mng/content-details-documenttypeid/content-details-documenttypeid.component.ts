@@ -24,6 +24,10 @@ import { TranslocoModule } from "@ngneat/transloco";
 import { ContentMngService } from "../contentMng.service";
 import { Item, Items } from "../interface/content.model";
 import { FileIconPipe } from "../pipe/fileIcon";
+import { SearchDocService } from "../../search-document/searchDoc.service";
+import { MatDialog } from "@angular/material/dialog";
+import { ImagePreviewDailogComponent } from "../../upload-files/component/image-preview-dailog/image-preview-dailog.component";
+import { ImagePreviewFolderDailogComponent } from "../image-preview-folder-dailog/image-preview-folder-dailog.component";
 
 @Component({
   selector: "app-content-details-documenttypeid",
@@ -68,12 +72,15 @@ export class ContentCaseDocumentTypeIdDetailsComponent implements OnInit {
   caseTypeId: string;
   fileTypeId: string;
   documentTypeId: string;
+  selectAll: any;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _router: Router,
     private contentMngService: ContentMngService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private _searchDocService: SearchDocService,
+    private dialog: MatDialog
   ) {
     this.route.queryParamMap.subscribe((params) => {
       this.year = params.get("name");
@@ -160,5 +167,37 @@ export class ContentCaseDocumentTypeIdDetailsComponent implements OnInit {
       // Add more mappings as needed
     };
     return iconMap[extension] || "insert_drive_file"; // Default icon
+  }
+
+  viewImage(data) {
+    const dialogRef = this.dialog.open(ImagePreviewFolderDailogComponent, {
+      data: data,
+      width: "850px",
+      maxWidth: "100vw",
+      height: "90vh",
+      panelClass: "custom-dialog-class",
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      this._changeDetectorRef.detectChanges();
+    });
+    return;
+  }
+
+  base64ToBlob(base64: string, mime: string): Blob {
+    const byteCharacters = atob(base64);
+    const byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+      const slice = byteCharacters.slice(offset, offset + 512);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+
+    return new Blob(byteArrays, { type: mime });
   }
 }
