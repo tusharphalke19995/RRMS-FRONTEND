@@ -48,8 +48,8 @@
              <ng-container>
               <div class="">/</div>
             </ng-container>
-            <ng-container>
-              <div>{{caseTypeId}}</div>
+            <ng-container *ngFor="let folder of items.folders; trackBy:trackByFn">
+              <div>{{folder.name}}</div>
             </ng-container>
 
 

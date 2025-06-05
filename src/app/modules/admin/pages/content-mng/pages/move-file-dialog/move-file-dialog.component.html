@@ -1,0 +1,88 @@
+<div class="flex flex-col w-full max-w-3xl h-[90vh] bg-white rounded-lg shadow-lg overflow-hidden">
+  <!-- Header -->
+  <div
+    class="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md">
+    <div class="flex-1 flex items-center">
+      <span class="text-xl font-semibold tracking-tight truncate" *transloco="let t">Move File</span>
+    </div>
+    <button mat-icon-button (click)="cancel()" [tabIndex]="-1">
+      <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+    </button>
+  </div>
+
+  <!-- Preview Area -->
+  <div class="flex-1 flex flex-col items-center justify-center bg-gray-50 overflow-auto p-4">
+    <p><strong>Selected Files:</strong></p>
+    <ul>
+      <li *ngFor="let file of data.selectedFiles">{{ file.name }}</li>
+    </ul>
+      <div class="w-full flex justify-start mb-4" *ngIf="navigationStack.length > 0">
+   
+  </div>
+
+   
+    <div class="overflow-x-auto">
+      <ng-container *ngIf="items && (items.folders.length > 0 || items.files.length > 0); else noItems">
+        <div class="p-6 md:p-8 space-y-8">
+          <!-- Folders -->
+          <ng-container *ngIf="items.folders.length > 0">
+            <div>
+              <div class="font-medium">Folders</div>
+              <div class="flex flex-wrap -m-2 mt-2">
+                <ng-container *ngFor="let folder of items.folders; trackBy:trackByFn">
+                  <div class="relative w-40 h-40 m-2 p-4 shadow rounded-2xl bg-card">
+                    <a class="absolute z-20 top-1.5 right-1.5 w-8 h-8 min-h-8" (click)="$event.preventDefault()"
+                      mat-icon-button>
+                      <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:information-circle'"></mat-icon>
+                    </a>
+                    <a class="z-10 absolute inset-0 flex flex-col p-4 cursor-pointer"
+                      (click)="handleFolderClick(folder)">
+
+                      <div class="aspect-[9/6]">
+                        <div class="flex items-center justify-center h-full">
+                          <!-- Icon -->
+                          <mat-icon class="icon-size-14 text-hint opacity-50"
+                            [svgIcon]="'heroicons_solid:folder'"></mat-icon>
+                        </div>
+                      </div>
+                      <div class="flex flex-col flex-auto justify-center text-center text-sm font-medium">
+                        <div class="truncate" [matTooltip]="folder.name">{{folder.name}}</div>
+                        <ng-container *ngIf="folder.contents">
+                          <div class="text-secondary truncate">{{folder.contents}}</div>
+                        </ng-container>
+                      </div>
+                    </a>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+
+      <ng-template #noItems>
+        <div class="flex flex-auto flex-col items-center justify-center bg-gray-100 dark:bg-transparent">
+          <mat-icon class="icon-size-24" [svgIcon]="'heroicons_outline:folder-open'"></mat-icon>
+          <div class="mt-4 text-2xl font-semibold tracking-tight text-secondary">There are no items!</div>
+        </div>
+      </ng-template>
+    </div>
+
+    <div class="flex justify-end space-x-3 mt-6 pt-4 w-full">
+      <!-- <button mat-stroked-button color="primary" (click)="goBack()">
+       Back
+    </button> -->
+      <button mat-flat-button
+        class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
+        (click)="confirmMove()">
+        Move
+      </button>
+
+      <button mat-stroked-button
+        class="min-w-[90px] px-6 py-2 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+        (click)="cancel()">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>

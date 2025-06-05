@@ -37,6 +37,12 @@ export class ContentMngService
     .pipe(catchError(this.handleError));
   }
 
+
+    moveFilesInfo(data:any){
+    return this._httpClient
+    .post(apiurls.moveFiles, data,)
+    .pipe(catchError(this.handleError));
+  }
   /**
    * The error handler.
    * @param err The http error response.

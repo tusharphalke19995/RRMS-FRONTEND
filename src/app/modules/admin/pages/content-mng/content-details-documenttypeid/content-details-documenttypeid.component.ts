@@ -27,8 +27,9 @@ import { FileIconPipe } from "../pipe/fileIcon";
 import { SearchDocService } from "../../search-document/searchDoc.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ImagePreviewDailogComponent } from "../../upload-files/component/image-preview-dailog/image-preview-dailog.component";
-import { ImagePreviewFolderDailogComponent } from "../image-preview-folder-dailog/image-preview-folder-dailog.component";
-
+import { ImagePreviewFolderDailogComponent } from "../pages/image-preview-folder-dailog/image-preview-folder-dailog.component";
+import { MoveFileDialogComponent } from "../pages/move-file-dialog/move-file-dialog.component";
+  import { forkJoin } from 'rxjs';
 @Component({
   selector: "app-content-details-documenttypeid",
   standalone: true,
@@ -65,15 +66,17 @@ export class ContentCaseDocumentTypeIdDetailsComponent implements OnInit {
   alert: { type: string; message: string };
   isLoading: boolean = false;
   selectedItem: Item;
-  items: Items;
+  items: any[] = [];
   finalYear: "year";
   year: string;
   caseNo: string;
   caseTypeId: string;
   fileTypeId: string;
   documentTypeId: string;
-  selectAll: any;
-
+  selectAll = false;
+folderNameDropdown: string[] = [];
+  finalFileId: any;
+  finalDestination: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _router: Router,
@@ -184,20 +187,79 @@ export class ContentCaseDocumentTypeIdDetailsComponent implements OnInit {
     return;
   }
 
-  base64ToBlob(base64: string, mime: string): Blob {
-    const byteCharacters = atob(base64);
-    const byteArrays = [];
+  openMoveDialog(file: any) {
+    const selectedFiles = [file];
 
-    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-      const slice = byteCharacters.slice(offset, offset + 512);
-      const byteNumbers = new Array(slice.length);
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
+    const dialogRef = this.dialog.open(MoveFileDialogComponent, {
+      width: "550px",
+      height:"450px",
+      data: { selectedFiles
+       },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+       if (result) {
+      const { files, destination } = result;
+      if (!destination || destination.length === 0) {
+        console.warn("No destination selected");
+        return;
       }
-      const byteArray = new Uint8Array(byteNumbers);
-      byteArrays.push(byteArray);
-    }
+      const selectedFileId = files[0]?.file_id;
+      this.finalFileId = selectedFileId;
+       const folderList = Array.isArray(destination)
+      ? destination.flatMap(d => d.folders || [])
+      : [];
+      this.finalDestination = folderList;
+      console.log("  this.finalDestination",  this.finalDestination)
 
-    return new Blob(byteArrays, { type: mime });
+      this.finallMoveFiles();
+    }
+    });
   }
+
+ finallMoveFiles() {
+  const departmentID = Number(sessionStorage.getItem("departmentID"));
+
+  if (!this.finalDestination || !this.finalFileId) {
+    console.error("Missing required data for file move.");
+    return;
+  }
+  const folderMap = this.finalDestination.reduce((acc, folder) => {
+    console.log("folder",folder)
+    switch (folder.level) {
+      case 'caseNo':
+        acc.caseNo = folder.name;
+        break;
+      case 'caseType':
+        acc.caseType = folder.id;
+        break;
+      case 'filetype':
+        acc.file_type_id = folder.id;
+        break;
+      case 'documenttype':
+        acc.document_type_id = folder.id;
+        break;
+    }
+    return acc;
+  }, {} as any);
+  const payload = {
+    deptId: departmentID,
+    file_id: this.finalFileId,
+    ...folderMap,
+  };
+
+  console.log("Final move payload:", payload);
+
+  this.contentMngService.moveFilesInfo(payload).subscribe({
+    next: (response: any) => {
+      this.items = response;
+      console.log("File moved successfully:", response);
+    },
+    error: (error) => {
+      console.error("Error moving file:", error);
+    },
+  });
+}
+
+
 }

@@ -87,8 +87,8 @@ export class ImagePreviewFolderDailogComponent {
     const extension = file.name.split(".").pop().toLowerCase();
 
     // Use sanitized path
-    const formattedUrl = file.path.replace(/%20/g, "_");
-    this.finalUrl = decodeURIComponent(formattedUrl);
+    // const formattedUrl = file.path.replace(/%20/g, "_");
+    this.finalUrl = decodeURIComponent(file.path);
 
     if (this.viewableTypes.includes(extension)) {
       this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
