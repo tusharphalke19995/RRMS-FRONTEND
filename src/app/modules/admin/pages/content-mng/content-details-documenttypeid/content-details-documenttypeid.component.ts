@@ -30,6 +30,7 @@ import { ImagePreviewDailogComponent } from "../../upload-files/component/image-
 import { ImagePreviewFolderDailogComponent } from "../pages/image-preview-folder-dailog/image-preview-folder-dailog.component";
 import { MoveFileDialogComponent } from "../pages/move-file-dialog/move-file-dialog.component";
   import { forkJoin } from 'rxjs';
+import { MatSnackBar } from "@angular/material/snack-bar";
 @Component({
   selector: "app-content-details-documenttypeid",
   standalone: true,
@@ -83,7 +84,8 @@ folderNameDropdown: string[] = [];
     private contentMngService: ContentMngService,
     private route: ActivatedRoute,
     private _searchDocService: SearchDocService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+     private _snackBar: MatSnackBar
   ) {
     this.route.queryParamMap.subscribe((params) => {
       this.year = params.get("name");
@@ -253,7 +255,13 @@ folderNameDropdown: string[] = [];
   this.contentMngService.moveFilesInfo(payload).subscribe({
     next: (response: any) => {
       this.items = response;
-      console.log("File moved successfully:", response);
+       this._snackBar.open('File moved successfully', "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["success-snackbar"],
+      });
+    
     },
     error: (error) => {
       console.error("Error moving file:", error);

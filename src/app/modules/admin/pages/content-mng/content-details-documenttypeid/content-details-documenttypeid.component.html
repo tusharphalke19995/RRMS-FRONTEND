@@ -35,32 +35,47 @@
             <ng-container>
               <div class="">/</div>
             </ng-container>
-            <ng-container>
-              <div>{{year}}</div>
+            <ng-container *ngIf="year">
+              <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+              <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management'"
+                >
+                {{ year }}
+              </a>
             </ng-container>
-            <ng-container>
-              <div class="">/</div>
+           
+             <ng-container *ngIf="caseNo">
+              <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+              <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management/folders'"
+                [queryParams]="{ name: year }">
+                {{ caseNo }}
+              </a>
             </ng-container>
-            <ng-container>
-              <div>{{caseNo}}</div>
+
+
+              <ng-container *ngIf="caseTypeId">
+              <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+              <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management/folders/caseTypeid'"
+                [queryParams]="{ name: year, caseNo: caseNo}">
+                {{ caseTypeId }}
+              </a>
             </ng-container>
-            <ng-container>
-              <div class="">/</div>
+
+
+              <ng-container *ngIf="fileTypeId">
+              <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+              <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management/folders/caseTypeid/filetypeid'"
+                [queryParams]="{  name: year, caseNo: caseNo, caseTypeId: caseTypeId }">
+                {{ fileTypeId }}
+              </a>
             </ng-container>
-            <ng-container>
-              <div>{{caseTypeId}}</div>
-            </ng-container>
-            <ng-container>
-              <div class="">/</div>
-            </ng-container>
-            <ng-container>
-              <div>{{fileTypeId}}</div>
-            </ng-container>
-            <ng-container>
-              <div class="">/</div>
-            </ng-container>
-            <ng-container>
-              <div>{{documentTypeId}}</div>
+
+
+              <ng-container *ngIf="documentTypeId">
+              <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+              <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management/folders/folders/caseTypeid/filetypeid'"
+                [queryParams]="{name: year, caseNo: caseNo, caseTypeId: caseTypeId }">
+                {{ documentTypeId }}
+              </a>
             </ng-container>
 
           </div>
