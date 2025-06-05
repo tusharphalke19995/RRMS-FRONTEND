@@ -39,23 +39,21 @@
               </ng-container>
             </ng-container>
 
-            <ng-container *ngIf="caseNo">
+             <ng-container *ngIf="caseNo">
               <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
               <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management/folders'"
-                [queryParams]="{name: year}">
+                [queryParams]="{ name: year }">
                 {{ caseNo }}
               </a>
             </ng-container>
 
             <ng-container *ngIf="caseTypeId">
               <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
-              <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management/folders/caseTypeid'"
-                [queryParams]="{ name: year, caseNo: caseNo }">
+              <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management/folders/caseNo'"
+                [queryParams]="{ name: year, caseNo: caseNo}">
                 {{ caseTypeId }}
               </a>
             </ng-container>
-
-
           </div>
 
         </div>
