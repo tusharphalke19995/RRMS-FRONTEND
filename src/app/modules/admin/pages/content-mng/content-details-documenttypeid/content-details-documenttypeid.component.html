@@ -32,16 +32,15 @@
                 Folder
               </span>
             </ng-container>
-           
+
             <ng-container *ngIf="year">
               <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
-              <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management'"
-                >
+              <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management'">
                 {{ year }}
               </a>
             </ng-container>
-           
-             <ng-container *ngIf="caseNo">
+
+            <ng-container *ngIf="caseNo">
               <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
               <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management/folders'"
                 [queryParams]="{ name: year }">
@@ -50,7 +49,7 @@
             </ng-container>
 
 
-              <ng-container *ngIf="caseTypeId">
+            <ng-container *ngIf="caseTypeId">
               <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
               <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management/folders/caseNo'"
                 [queryParams]="{ name: year, caseNo: caseNo}">
@@ -59,7 +58,7 @@
             </ng-container>
 
 
-              <ng-container *ngIf="fileTypeId">
+            <ng-container *ngIf="fileTypeId">
               <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
               <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management/folders/caseNo/caseTypeid'"
                 [queryParams]="{  name: year, caseNo: caseNo, caseTypeId: caseTypeId }">
@@ -68,9 +67,10 @@
             </ng-container>
 
 
-              <ng-container *ngIf="documentTypeId">
+            <ng-container *ngIf="documentTypeId">
               <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
-              <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management/folders/caseNo/caseTypeid/filetypeid'"
+              <a class="text-primary-500 cursor-pointer"
+                [routerLink]="'/content-management/folders/caseNo/caseTypeid/filetypeid'"
                 [queryParams]="{name: year, caseNo: caseNo, caseTypeId: caseTypeId,fileTypeId:fileTypeId }">
                 {{ documentTypeId }}
               </a>
@@ -123,9 +123,12 @@
                     <div class="aspect-[9/6]">
                       <div class="flex items-center justify-center h-full">
                         <div class="relative">
-                          <mat-icon class="icon-size-14 text-hint opacity-50"
+                          <!-- <mat-icon class="icon-size-14 text-hint opacity-50"
                             [svgIcon]="getFileIcon(getFileExtension(file.name))" (click)="viewImage(file)">
-                          </mat-icon>
+                          </mat-icon> -->
+                          <img [src]="getFileIcon(getFileExtension(file.name))"
+                            class="w-15 h-15 object-contain opacity-80 cursor-pointer" (click)="viewImage(file)"
+                            [alt]="file.name" />
                           <div
                             class="absolute left-0 bottom-0 px-1.5 rounded text-sm font-semibold leading-5 text-white"
                             [ngClass]="{

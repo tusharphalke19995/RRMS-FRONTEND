@@ -145,26 +145,46 @@ folderNameDropdown: string[] = [];
     });
   }
 
-  getFileExtension(filename: string): string {
-        const ext = filename.split(".").pop()?.toLowerCase();
-        return ext || "";
-      }
+  // getFileExtension(filename: string): string {
+  //       const ext = filename.split(".").pop()?.toLowerCase();
+  //       return ext || "";
+  //     }
     
-      getFileIcon(extension: string): string {
-        const iconMap: { [key: string]: string } = {
-          jpg: "image",
-          jpeg: "image",
-          png: "image",
-          pdf: "picture_as_pdf",
-          doc: "description",
-          docx: "description",
-          xls: "table_chart",
-          xlsx: "table_chart",
-          txt: "text_snippet",
-          // Add more mappings as needed
-        };
-        return iconMap[extension] || "insert_drive_file"; // Default icon
-      }
+  //     getFileIcon(extension: string): string {
+  //       const iconMap: { [key: string]: string } = {
+  //         jpg: "image",
+  //         jpeg: "image",
+  //         png: "image",
+  //         pdf: "picture_as_pdf",
+  //         doc: "description",
+  //         docx: "description",
+  //         xls: "table_chart",
+  //         xlsx: "table_chart",
+  //         txt: "text_snippet",
+  //       };
+  //       return iconMap[extension] || "insert_drive_file"; // Default icon
+  //     }
+
+    getFileIcon(extension: string): string {
+  const iconMap: { [key: string]: string } = {
+    jpg: "assets/format_img/png.png",
+    jpeg: "assets/format_img/png.png",
+    png: "assets/format_img/png.png",
+    pdf: "assets/format_img/pdf.gif",
+    doc: "assets/format_img/word.png",
+    docx: "assets/format_img/ppt.png",
+    xls: "assets/format_img/xlxs.png",
+    xlsx: "assets/format_img/xlxs.png",
+    txt: "assets/format_img/txt.png",
+    // Add more as needed
+  };
+  return iconMap[extension] || "assets/icons/file.png"; // Default icon
+}
+
+getFileExtension(filename: string): string {
+  return filename?.split('.').pop()?.toLowerCase() || '';
+}
+
     
       viewImage(data) {
         const dialogRef = this.dialog.open(ImagePreviewFolderDailogComponent, {
