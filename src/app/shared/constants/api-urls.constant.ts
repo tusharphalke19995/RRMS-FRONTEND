@@ -61,6 +61,8 @@ export const apiurls = {
   requestAdminReset: `${environment.userApiUrl}users/reset-pwd-request`,
   folderTree: `${environment.userApiUrl}cm/folder-tree`,
   moveFiles: `${environment.userApiUrl}cm/move-files`,
+  archiveFiles : `${environment.userApiUrl}cm/archive-files`,
+
 
   sendReminder: (id: number | string) =>
     `${environment.userApiUrl}casedata/requests/${id}/send-reminder`,

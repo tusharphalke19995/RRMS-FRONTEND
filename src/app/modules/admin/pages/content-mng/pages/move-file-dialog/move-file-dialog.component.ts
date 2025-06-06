@@ -19,6 +19,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { TranslocoModule } from "@ngneat/transloco";
 import { ContentMngService } from "../../contentMng.service";
 import { Items } from "../../interface/content.model";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: "app-move-file-dialog",
@@ -49,6 +50,7 @@ export class MoveFileDialogComponent {
   fileTypeId: any;
   navigationStack: Items[] = [];
   constructor(
+     private _snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<MoveFileDialogComponent>,
     private contentMngService: ContentMngService,
     @Inject(MAT_DIALOG_DATA)
@@ -172,4 +174,33 @@ export class MoveFileDialogComponent {
       this.items = this.navigationStack.pop();
     }
   }
+
+   selectedFilesArchive() {
+    const fileId = this.data.selectedFiles[0].file_id;
+    const payload = {
+    file_id:fileId
+    };
+
+    this.contentMngService.archiveFiles(payload).subscribe({
+  next: (res: Items) => {
+    this.items = res;
+    this.cancel();
+    this._snackBar.open('File Archive successfully', 'Close', {
+      duration: 3000,
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+      panelClass: ['success-snackbar'],
+    });
+  },
+  error: (err) => {
+    console.error('Error archiving file:', err);
+    this._snackBar.open('Failed to File Archive', 'Close', {
+      duration: 3000,
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+      panelClass: ['error-snackbar'],
+    });
+  }
+});
+   }
 }
