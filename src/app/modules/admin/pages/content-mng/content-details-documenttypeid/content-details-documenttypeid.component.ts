@@ -78,6 +78,7 @@ export class ContentCaseDocumentTypeIdDetailsComponent implements OnInit {
 folderNameDropdown: string[] = [];
   finalFileId: any;
   finalDestination: any;
+  finalSelectedCaseNo: string;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _router: Router,
@@ -184,7 +185,8 @@ folderNameDropdown: string[] = [];
     docx: "assets/format_img/ppt.png",
     xls: "assets/format_img/xlxs.png",
     xlsx: "assets/format_img/xlxs.png",
-    txt: "assets/format_img/txt.png",
+    pptx: "assets/format_img/pptx.png",
+    ppt: "assets/format_img/pptx.png",
     // Add more as needed
   };
   return iconMap[extension] || "assets/icons/file.png"; // Default icon
@@ -221,11 +223,13 @@ getFileExtension(filename: string): string {
 
     dialogRef.afterClosed().subscribe((result) => {
        if (result) {
-      const { files, destination } = result;
+      const { files, destination,caseNo } = result;
       if (!destination || destination.length === 0) {
         console.warn("No destination selected");
         return;
       }
+      console.log("wcaseNo",caseNo)
+      this.finalSelectedCaseNo=caseNo;
       const selectedFileId = files[0]?.file_id;
       this.finalFileId = selectedFileId;
        const folderList = Array.isArray(destination)
@@ -267,6 +271,7 @@ getFileExtension(filename: string): string {
   const payload = {
     deptId: departmentID,
     file_id: this.finalFileId,
+    caseNo: this.finalSelectedCaseNo,
     ...folderMap,
   };
 

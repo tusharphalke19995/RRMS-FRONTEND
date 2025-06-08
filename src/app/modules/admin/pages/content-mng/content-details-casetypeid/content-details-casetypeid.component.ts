@@ -175,7 +175,8 @@ folderNameDropdown: string[] = [];
     docx: "assets/format_img/ppt.png",
     xls: "assets/format_img/xlxs.png",
     xlsx: "assets/format_img/xlxs.png",
-    txt: "assets/format_img/txt.png",
+     pptx: "assets/format_img/pptx.png",
+    ppt: "assets/format_img/pptx.png",
     // Add more as needed
   };
   return iconMap[extension] || "assets/icons/file.png"; // Default icon

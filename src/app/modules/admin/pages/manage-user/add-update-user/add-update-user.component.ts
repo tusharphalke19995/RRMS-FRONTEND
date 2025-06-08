@@ -394,7 +394,7 @@ export class AddUpdateUserComponent {
       // mobileno:  this.userData.mobileno,
       // password: this.userData.password,
       roleId: this.addUpdateUserForm.value.roleId,
-      designation: this.addUpdateUserForm.value.designation,
+      designationIds: this.addUpdateUserForm.value.designation,
     };
     this._searchUserService.updateUserById(this.userData.kgid, data).subscribe({
       next: (response: any) => {

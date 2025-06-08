@@ -63,7 +63,8 @@ export class MoveFileDialogComponent {
   confirmMove() {
     this.dialogRef.close({
       files: this.data.selectedFiles,
-      destination:this.navigationStack.concat(this.items)
+      destination:this.navigationStack.concat(this.items),
+      caseNo:this.caseNo
     });
   }
 
