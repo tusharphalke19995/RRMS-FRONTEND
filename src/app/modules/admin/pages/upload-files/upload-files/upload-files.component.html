@@ -74,14 +74,14 @@
                 {{ getFileClassificationNameById(file.metadata?.classification || file.classification) }}
               </span>
                <span
-                *ngIf="(file.metadata?.documentType || file.documentType)"
+                *ngIf="(file.metadata?.fileType || file.fileType)"
                 class="ml-2 px-2 py-1 text-amber-800 bg-amber-100 dark:text-amber-50 dark:bg-amber-500 rounded-full text-md">
-                {{ getFolderNameById(file.metadata?.documentType || file.documentType) }}
+                {{ getFolderNameById(file.metadata?.fileType || file.fileType) }}
               </span>
                 <span
-                *ngIf="file.metadata?.fileType || file.fileType"
+                *ngIf="file.metadata?.documentType || file.documentType"
                 class="ml-2 px-2 py-1 text-green-800 bg-green-100 dark:text-green-50 dark:bg-green-500 rounded-full text-md">
-               {{ getDocNameById(file.metadata?.fileType || file.fileType) }}
+               {{ getDocNameById(file.metadata?.documentType || file.documentType) }}
               </span>
               <span (click)="toggleFavourite(file)" class="py-1 cursor-pointer" *ngIf="!checkGetFile">
                 <mat-icon [ngClass]="{'text-yellow-500': file.is_favourited, 'text-gray-500': !file.is_favourited}">
@@ -171,13 +171,13 @@
 
       <mat-form-field appearance="outline" class="w-full">
         <mat-label *transloco="let t" class="font-medium">{{t('fileStage')}}</mat-label>
-        <mat-select [formControlName]="'documentType'" (selectionChange)="onFileTypeChange($event)">
+        <mat-select [formControlName]="'fileType'" (selectionChange)="onFileTypeChange($event)">
           <mat-option [value]="null">Please Select</mat-option>
           <ng-container *ngFor="let fileStageData of FileTypeDropDown; trackBy: trackByFn">
             <mat-option [value]="fileStageData.id">{{fileStageData.value}}</mat-option>
           </ng-container>
         </mat-select>
-        <mat-error *ngIf="metadataForm.get('documentType').hasError('required')">
+        <mat-error *ngIf="metadataForm.get('fileType').hasError('required')">
           Required
         </mat-error>
       </mat-form-field>
@@ -197,13 +197,13 @@
 
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Document Type</mat-label>
-        <mat-select formControlName="fileType" [panelClass]="'custom-select-panel'">
+        <mat-select formControlName="documentType" [panelClass]="'custom-select-panel'">
           <mat-option [value]="null">Please Select</mat-option>
           <ng-container *ngFor="let fileType of DocumentTypeDropDown">
             <mat-option [value]="fileType.id">{{ fileType.value }}</mat-option>
           </ng-container>
         </mat-select>
-        <mat-error *ngIf="metadataForm.get('fileType').hasError('required')">
+        <mat-error *ngIf="metadataForm.get('documentType').hasError('required')">
           Required
         </mat-error>
       </mat-form-field>

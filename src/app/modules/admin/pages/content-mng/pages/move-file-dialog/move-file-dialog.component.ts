@@ -185,13 +185,13 @@ export class MoveFileDialogComponent {
     this.contentMngService.archiveFiles(payload).subscribe({
   next: (res: Items) => {
     this.items = res;
-    this.cancel();
     this._snackBar.open('File Archive successfully', 'Close', {
       duration: 3000,
       horizontalPosition: 'right',
       verticalPosition: 'top',
       panelClass: ['success-snackbar'],
     });
+     this.cancel();
   },
   error: (err) => {
     console.error('Error archiving file:', err);

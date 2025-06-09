@@ -286,7 +286,7 @@ getFileExtension(filename: string): string {
         verticalPosition: "top",
         panelClass: ["success-snackbar"],
       });
-    
+    this.getFolder()
     },
     error: (error) => {
       console.error("Error moving file:", error);

@@ -999,6 +999,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   onFileTypeChangeEdit(data) {
+    console.log("data.documentType",data.documentType)
     if (data.documentType == 3) {
       this.DocumentTypeDropDown = this.masterData.CaseFiles;
     } else if (data.documentType == 4) {
