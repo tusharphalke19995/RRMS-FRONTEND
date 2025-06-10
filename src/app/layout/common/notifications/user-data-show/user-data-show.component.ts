@@ -51,7 +51,14 @@ ngOnInit(): void {
 onSumbit() {
     this._notify.sendPwdResetData(this.data.pwdResetRequestId).subscribe({
       next: (response: any[]) => {
-      console.log("Res",response);
+         this._snackBar.open('Password Reset Link Sent Successfully', "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["success-snackbar"],
+      });
+      this.dialogRef.close(true);
+
       },
       error: (error) => {
         console.error("Error fetching latest files:", error);

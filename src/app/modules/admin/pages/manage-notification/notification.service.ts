@@ -45,7 +45,7 @@ export class NotificationService
 
    sendPwdResetData(id:any){
            const url = `${apiurls.sendPwdReset}${id}`; 
-    return this._httpClient.get(url, {
+    return this._httpClient.post(url, {
     }).pipe(catchError(this.handleError));
   }
 
