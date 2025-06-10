@@ -16,7 +16,7 @@ private fileData: FileWithMetadata[] = [];
   private caseData: any;
   isPatch: boolean;
   draftInfo:any;
-  isDraft:boolean =true;
+  isDraft:boolean;
  /**
      * Constructor
      */
@@ -140,18 +140,17 @@ getUnitsByDistictIdData(
     this.isPatch=false;
   }
 
-    setDraftData(draftInfo:any,isDraft:boolean) {
+    setDraftData(draftInfo:any) {
     this.draftInfo = draftInfo;
-    this.isDraft = isDraft;
   }
 
   getDraftData() {
-    return { draftInfo: this.draftInfo ,isDraft:this.isDraft};
+    return { draftInfo: this.draftInfo};
   }
 
   clearDraft() {
     this.draftInfo = [];
-     this.isDraft=false;
+
   }
   
    /**

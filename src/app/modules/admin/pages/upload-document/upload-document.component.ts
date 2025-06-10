@@ -145,12 +145,12 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   checkFileSatus: boolean;
   finalFIRValue: any;
   patchDetailsfiles: any[] = [];
-  dfaftfiles:any[]=[];
+  dfaftfiles: any[] = [];
   caseMetaData: any;
   draftInfo: any;
   files: any[] = [];
   isPatchSearchPage: boolean;
-  isDraft: boolean= true;
+  isDraft: boolean = false;
 
   // selectedFiles: any;
   /**
@@ -237,10 +237,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     metadata: any[];
   }) {
     this.selectedFiles = data.files;
-    this.selectedMetadata = data.metadata; 
-    console.log("  this.selectedFiles ",  this.selectedFiles )
-
-    
+    this.selectedMetadata = data.metadata;
+    console.log("  this.selectedFiles ", this.selectedFiles);
   }
 
   /**
@@ -361,7 +359,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.detectChanges();
     const caseDate = this.getDateOnly(this.uploadDocumentForm.value.caseDate);
     let uploadMetaData = {
-       CaseInfoDetailsId:this.draftInfo?.CaseInfoDetailsId ?? 0,
+      CaseInfoDetailsId: this.draftInfo?.CaseInfoDetailsId ?? 0,
       stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
       districtId: this.uploadDocumentForm.value.districtId,
       unitId: this.uploadDocumentForm.value.unitsId,
@@ -399,13 +397,12 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     });
     formData.append("is_draft", "true");
     formData.append("fileDetails", JSON.stringify(fileDetailsArray));
-   formData.append("dept_id", sessionStorage.getItem("departmentID"));
+    formData.append("dept_id", sessionStorage.getItem("departmentID"));
     this.selectedFiles.forEach((file) => {
       const newFileName =
         this.uploadDocumentForm.value.caseNo + "_" + file.name;
       const newFile = new File([file], newFileName, { type: file.type });
       formData.append("Files", newFile);
-     
     });
 
     this._uploadDocumentService.saveDraftInfo(formData).subscribe({
@@ -419,9 +416,13 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         this.addcitizenfeedbackNgForm.resetForm();
         // this._router.navigateByUrl("search-document");
         this.resetSelectedFiles();
-      this.isDraft = true;
         this.selectedFiles = [];
+        this._uploadDocumentService.clearDraft();
+        this.getDraftDataPatch()
+        this._changeDetectorRef.detectChanges();
+        this.isDraft =false;
       },
+
       error: (error) => {
         this._snackBar.open(error.message || "Error creating user", "Close", {
           duration: 3000,
@@ -444,7 +445,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.detectChanges();
     const caseDate = this.getDateOnly(this.uploadDocumentForm.value.caseDate);
     let uploadMetaData = {
-      CaseInfoDetailsId:this.draftInfo?.CaseInfoDetailsId ?? 0,
+      CaseInfoDetailsId: this.draftInfo?.CaseInfoDetailsId ?? 0,
       stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
       districtId: this.uploadDocumentForm.value.districtId,
       unitId: this.uploadDocumentForm.value.unitsId,
@@ -480,14 +481,13 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     });
 
     formData.append("fileDetails", JSON.stringify(fileDetailsArray));
- formData.append("division_id", sessionStorage.getItem("divisionID"));
+    formData.append("division_id", sessionStorage.getItem("divisionID"));
     formData.append("dept_id", sessionStorage.getItem("departmentID"));
     this.selectedFiles.forEach((file) => {
       const newFileName =
         this.uploadDocumentForm.value.caseNo + "_" + file.name;
       const newFile = new File([file], newFileName, { type: file.type });
       formData.append("Files", newFile);
-     
     });
 
     this._uploadDocumentService.uploadDocument(formData).subscribe({
@@ -501,8 +501,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         this.addcitizenfeedbackNgForm.resetForm();
         // this._router.navigateByUrl("search-document");
         this.resetSelectedFiles();
-         this.isDraft = true;
-          this.selectedFiles =[];
+        this.selectedFiles = [];
+        this._uploadDocumentService.clearDraft();
+        this.isDraft =false;
       },
       error: (error) => {
         this._snackBar.open(error.message || "Error creating user", "Close", {
@@ -576,15 +577,14 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     });
 
     formData.append("fileDetails", JSON.stringify(fileDetailsArray));
-  formData.append("division_id", sessionStorage.getItem("divisionID"));
-   formData.append("dept_id", sessionStorage.getItem("departmentID"));
-  
+    formData.append("division_id", sessionStorage.getItem("divisionID"));
+    formData.append("dept_id", sessionStorage.getItem("departmentID"));
+
     this.selectedFiles.forEach((file) => {
       const newFileName =
         this.uploadDocumentForm.value.caseNo + "_" + file.name;
       const newFile = new File([file], newFileName, { type: file.type });
       formData.append("Files", newFile);
-    
     });
 
     this._uploadDocumentService
@@ -600,8 +600,10 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           this.addcitizenfeedbackNgForm.resetForm();
           this._router.navigateByUrl("search-document");
           this.resetSelectedFiles();
-               this.isDraft = true;
-              this.selectedFiles = [];
+          this.selectedFiles = [];
+          this._uploadDocumentService.clearDraft();
+          this.isDraft =false;
+
         },
         error: (error) => {
           this._snackBar.open(error.message || "Error updating case", "Close", {
@@ -639,7 +641,6 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       this.crimeNo = `${this.caseTypeFinalId}${districtId}${paddedUnitId}${yearId}${this.finalFIRValue}`;
       this.uploadDocumentForm.get("caseNo")?.setValue(this.crimeNo);
     }
-    
   }
 
   onCaseTypeChange(event: any) {
@@ -701,27 +702,28 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   // }
 
   get canSubmit(): boolean {
-  if (this.isSubmitting) return false;
+    if (this.isSubmitting) return false;
 
-  if (this.uploadDocumentForm.invalid) return false;
+    if (this.uploadDocumentForm.invalid) return false;
 
-  if (!Array.isArray(this.selectedFiles) || this.selectedFiles.length === 0) return false;
-
-  for (const file of this.selectedFiles) {
-    const meta = file.metadata ?? file;  // Use metadata if available, otherwise fall back to file
-
-    if (
-      !meta.subject ||
-      !meta.fileType ||
-      !meta.classification ||
-      !meta.documentType
-    ) {
+    if (!Array.isArray(this.selectedFiles) || this.selectedFiles.length === 0)
       return false;
-    }
-  }
 
-  return true;
-}
+    for (const file of this.selectedFiles) {
+      const meta = file.metadata ?? file; // Use metadata if available, otherwise fall back to file
+
+      if (
+        !meta.subject ||
+        !meta.fileType ||
+        !meta.classification ||
+        !meta.documentType
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 
   get canisSaveDraft(): boolean {
     if (this.isSaveDraft) return false;
@@ -898,13 +900,13 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.files = state.files;
     this.caseMetaData = state.caseData;
     this.isPatchSearchPage = state.isPatch;
-    console.log("this.caseMetaData",this.caseMetaData)
-        console.log("this.files",this.files)
+    console.log("this.caseMetaData", this.caseMetaData);
+    console.log("this.files", this.files);
     if (this.files) {
       this.patchDetailsfiles = this.files;
     }
     if (this.caseMetaData) {
-      console.log("this.caseMetaData",this.caseMetaData)
+      console.log("this.caseMetaData", this.caseMetaData);
       this.dataPatch(this.caseMetaData);
     }
     // Clear state after loading
@@ -914,21 +916,22 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   getDraftDataPatch() {
     const state = this._uploadDocumentService.getDraftData();
     this.draftInfo = state.draftInfo;
-      this.isDraft = state.isDraft;
     console.log("clearDraft", this.draftInfo);
-     console.log("isDraft", this.isDraft);
+    console.log("isDraft", this.isDraft);
     if (this.draftInfo) {
       this.dataPatchDraft(this.draftInfo);
     }
-     if (this.draftInfo?.file_details) {
+    if (this.draftInfo?.file_details) {
       this.dfaftfiles = this.draftInfo?.file_details;
+      this.isDraft = true;
     }
+    
     // Clear state after loading
     this._uploadDocumentService.clearDraft();
   }
 
   dataPatch(data) {
-    debugger
+    debugger;
     if (data) {
       const uploadDataPach = data;
       this.uploadDocumentForm.patchValue({

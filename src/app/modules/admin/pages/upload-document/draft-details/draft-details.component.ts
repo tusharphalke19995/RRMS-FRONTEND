@@ -151,7 +151,7 @@ export class DraftDetailsComponent {
 
   editDraft(data: any) {
     console.log("editDraft",data)
-    this._uploadDocumentService.setDraftData(data, false);
+    this._uploadDocumentService.setDraftData(data);
     this._router.navigateByUrl("upload-document");
   }
 }

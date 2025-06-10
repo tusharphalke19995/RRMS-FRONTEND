@@ -29,11 +29,11 @@
       <div *ngIf="selectedFiles.length > 1" class="flex items-center justify-between mb-2">
         <mat-checkbox [checked]="selectedIndexes.size === selectedFiles.length"
           [indeterminate]="selectedIndexes.size > 0 && selectedIndexes.size < selectedFiles.length"
-          (change)="toggleSelectAll($event.checked)"   [disabled]="!isDraft">
+          (change)="toggleSelectAll($event.checked)"   [disabled]="isDraft">
           Select All
         </mat-checkbox>
         <button *ngIf="hasSelectedFiles" mat-raised-button color="primary" (click)="openMetadataForSelected()"
-          class="apply-metadata-btn"  [disabled]="!isDraft" >
+          class="apply-metadata-btn"  [disabled]="isDraft" >
           <mat-icon>edit</mat-icon>
           {{ selectedIndexes.size === selectedFiles.length ? 'Edit All' : 'Edit Selected' }}
         </button>
