@@ -62,6 +62,9 @@ export const apiurls = {
   folderTree: `${environment.userApiUrl}cm/folder-tree`,
   moveFiles: `${environment.userApiUrl}cm/move-files`,
   archiveFiles : `${environment.userApiUrl}cm/archive-files`,
+  getUsersData : `${environment.userApiUrl}users/get-user-data/`,
+  sendPwdReset : `${environment.userApiUrl}users/send-pwd-reset/`,
+  
 
 
   sendReminder: (id: number | string) =>

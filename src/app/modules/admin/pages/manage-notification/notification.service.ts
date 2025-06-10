@@ -37,6 +37,18 @@ export class NotificationService
     .pipe(catchError(this.handleError));
   }
 
+  getUsersData(id:any) {
+       const url = `${apiurls.getUsersData}${id}`; 
+    return this._httpClient.get(url, {
+    }).pipe(catchError(this.handleError));
+  }
+
+   sendPwdResetData(id:any){
+           const url = `${apiurls.sendPwdReset}${id}`; 
+    return this._httpClient.get(url, {
+    }).pipe(catchError(this.handleError));
+  }
+
   /**
    * The error handler.
    * @param err The http error response.

@@ -1,0 +1,71 @@
+<div class="flex flex-col max-w-340 md:min-w-160 max-h-screen">
+
+
+  <!-- Header with improved styling -->
+  <div
+    class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md"
+    cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle cdkDrag>
+    <div class="flex items-center">
+      <span class="text-xl font-semibold tracking-tight" *transloco="let t">User Info</span>
+    </div>
+    <button mat-icon-button  (click)="onCancel()" [tabIndex]="-1">
+      <mat-icon class="icon-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+    </button>
+  </div>
+
+  <!-- Form Content -->
+  <div class="flex flex-col flex-auto p-6 overflow-y-auto">
+    <!-- First Row -->
+    <!-- <h5 class="text-center font-semibold text-xl" *transloco="let t">{{t('reqText')}}</h5> -->
+    <form [formGroup]="manageNotificationConfirmation" class="flex flex-col flex-auto p-6 overflow-y-auto">
+     
+      <div class="">
+    
+        <div class="p-4 w-full">
+     
+
+       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <p class="text-gray-500 dark:text-gray-400 text-sm">Email</p>
+          <p class="font-semibold text-gray-900 dark:text-white">{{ data.email }}</p>
+        </div>
+        <div>
+          <p class="text-gray-500 dark:text-gray-400 text-sm">User Name</p>
+          <p class="font-semibold text-gray-900 dark:text-white">{{ data.userName }}</p>
+        </div>
+         <div>
+          <p class="text-gray-500 dark:text-gray-400 text-sm">KGID</p>
+          <p class="font-semibold text-gray-900 dark:text-white">{{ data.kgid }}</p>
+        </div>
+        <div>
+          <p class="text-gray-500 dark:text-gray-400 text-sm">Mobile No</p>
+          <p class="font-semibold text-gray-900 dark:text-white">{{ data.mobileNo }}</p>
+        </div>
+        <div>
+          <p class="text-gray-500 dark:text-gray-400 text-sm">Password Request Email</p>
+          <p class="font-semibold text-gray-900 dark:text-white">{{ data.pwdRequestEmail }}</p>
+        </div>
+        <div>
+          <p class="text-gray-500 dark:text-gray-400 text-sm">Password Request MobileNo</p>
+          <p class="font-semibold text-gray-900 dark:text-white">{{ data.pwdRequestMobileNo }}</p>
+        </div>
+      </div>
+    </div>
+      </div>
+      <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
+        <button mat-flat-button
+          class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
+          (click)="onSumbit()" *transloco="let t">
+          Sumbit
+        </button>
+        <button mat-flat-button
+        class="min-w-[90px] px-6 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
+        (click)="onCancel()" *transloco="let t">
+        {{ t('close') }}
+      </button>
+
+      </div>
+    </form>
+
+  </div>
+</div>

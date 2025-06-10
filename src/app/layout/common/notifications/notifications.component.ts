@@ -19,6 +19,7 @@ import {
   ViewEncapsulation,
 } from "@angular/core";
 import { MatButton, MatButtonModule } from "@angular/material/button";
+import { MatDialog } from "@angular/material/dialog";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { Router, RouterLink } from "@angular/router";
@@ -26,7 +27,9 @@ import { AuthService } from "app/core/auth/auth.service";
 import { NotificationsService } from "app/layout/common/notifications/notifications.service";
 import { Notification } from "app/layout/common/notifications/notifications.types";
 import { DashbaordService } from "app/modules/admin/dashbaord/dashboard.service";
+import { NotificationService } from "app/modules/admin/pages/manage-notification/notification.service";
 import { Subject, takeUntil } from "rxjs";
+import { UserDataShowComponent } from "./user-data-show/user-data-show.component";
 
 @Component({
   selector: "notifications",
@@ -74,7 +77,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     private _viewContainerRef: ViewContainerRef,
     private _dashbaordService: DashbaordService,
     private router: Router,
-    private authenticationService: AuthService
+    private authenticationService: AuthService,
+    private _notify:NotificationService,
+        private _dialog: MatDialog
   ) {}
 
   // -----------------------------------------------------------------------------------------------------
@@ -319,6 +324,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
  goToProcess(row: any): void {
+  console.log("sss",row)
+  if(row.redirect_url ==='/notifications'){
+   this.getUsersDataById(row.object_id)
+  }else{
   const url = new URL(row.redirect_url, window.location.origin); // Safely parse URL
   const tab = url.searchParams.get('tab');
   let selectedTab = 0;
@@ -338,7 +347,31 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   } else {
     console.error('Unknown redirect path:', url.pathname);
   }
+  }
+
 }
+
+ approvedRequest(data: any){
+    const dialogRef = this._dialog.open(UserDataShowComponent, {
+      data: data,
+      width: "677px",
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+     
+    });
+  }
+
+getUsersDataById(id) {
+    this._notify.getUsersData(id).subscribe({
+      next: (response: any[]) => {
+      console.log("Res",response);
+      this.approvedRequest(response)
+      },
+      error: (error) => {
+        console.error("Error fetching latest files:", error);
+      },
+    });
+  }
 
 
   goToAllNotifications() {

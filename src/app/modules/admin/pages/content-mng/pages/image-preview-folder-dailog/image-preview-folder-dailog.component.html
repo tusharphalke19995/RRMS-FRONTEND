@@ -11,12 +11,12 @@
   </div>
 
   <!-- Preview Area -->
-  <div class="flex-1 flex flex-col items-center justify-center bg-gray-50 overflow-auto p-4">
+  <div class="flex-1 flex flex-col items-center justify-center bg-gray-50  p-4">
 
     <!-- Conditional iframe render -->
     <ng-container *ngIf="safeUrl && viewableTypes.includes(getExtension(data.name))">
-      <div class="flex flex-col items-center w-full">
-        <iframe [src]="safeUrl" width="100%" height="600px" frameborder="0"></iframe>
+      <div class="relative w-full" style="padding-bottom: 56.25%; height: 0;">
+        <iframe [src]="safeUrl" class="absolute top-0 left-0 w-full h-full" frameborder="0"></iframe>
       </div>
     </ng-container>
 
