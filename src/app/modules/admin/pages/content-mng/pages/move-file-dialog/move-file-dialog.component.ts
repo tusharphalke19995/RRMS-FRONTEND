@@ -64,7 +64,18 @@ export class MoveFileDialogComponent {
     this.dialogRef.close({
       files: this.data.selectedFiles,
       destination:this.navigationStack.concat(this.items),
-      caseNo:this.caseNo
+      caseNo:this.caseNo,
+      caseType: this.caseTypeId,
+      fileTypeId: this.fileTypeId,
+      year:this.year,
+      type:'move'
+    });
+  }
+
+  confirmArchived() {
+    this.dialogRef.close({
+      files: this.data.selectedFiles,
+       type:'archive'
     });
   }
 
@@ -176,32 +187,4 @@ export class MoveFileDialogComponent {
     }
   }
 
-   selectedFilesArchive() {
-    const fileId = this.data.selectedFiles[0].file_id;
-    const payload = {
-    file_id:fileId
-    };
-
-    this.contentMngService.archiveFiles(payload).subscribe({
-  next: (res: Items) => {
-    this.items = res;
-    this._snackBar.open('File Archive successfully', 'Close', {
-      duration: 3000,
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
-      panelClass: ['success-snackbar'],
-    });
-     this.cancel();
-  },
-  error: (err) => {
-    console.error('Error archiving file:', err);
-    this._snackBar.open('Failed to File Archive', 'Close', {
-      duration: 3000,
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
-      panelClass: ['error-snackbar'],
-    });
-  }
-});
-   }
 }

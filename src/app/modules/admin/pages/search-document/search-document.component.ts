@@ -222,7 +222,8 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private _uploadDocumentService: UploadDocumentService,
     private _router: Router
-  ) {}
+  ) {
+  }
 
   // -----------------------------------------------------------------------------------------------------
   // @ Lifecycle hooks

@@ -29,7 +29,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { ImagePreviewDailogComponent } from "../../upload-files/component/image-preview-dailog/image-preview-dailog.component";
 import { ImagePreviewFolderDailogComponent } from "../pages/image-preview-folder-dailog/image-preview-folder-dailog.component";
 import { MoveFileDialogComponent } from "../pages/move-file-dialog/move-file-dialog.component";
-  import { forkJoin } from 'rxjs';
+import { forkJoin } from "rxjs";
 import { MatSnackBar } from "@angular/material/snack-bar";
 @Component({
   selector: "app-content-details-documenttypeid",
@@ -75,10 +75,12 @@ export class ContentCaseDocumentTypeIdDetailsComponent implements OnInit {
   fileTypeId: string;
   documentTypeId: string;
   selectAll = false;
-folderNameDropdown: string[] = [];
+  folderNameDropdown: string[] = [];
   finalFileId: any;
   finalDestination: any;
   finalSelectedCaseNo: string;
+  finalFileTypeId: any;
+  finalcaseType: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _router: Router,
@@ -86,7 +88,7 @@ folderNameDropdown: string[] = [];
     private route: ActivatedRoute,
     private _searchDocService: SearchDocService,
     private dialog: MatDialog,
-     private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar
   ) {
     this.route.queryParamMap.subscribe((params) => {
       this.year = params.get("name");
@@ -170,31 +172,31 @@ folderNameDropdown: string[] = [];
   //     xls: "table_chart",
   //     xlsx: "table_chart",
   //     txt: "text_snippet",
-      
+
   //   };
   //   return iconMap[extension] || "insert_drive_file"; // Default icon
   // }
 
   getFileIcon(extension: string): string {
-  const iconMap: { [key: string]: string } = {
-    jpg: "assets/format_img/png.png",
-    jpeg: "assets/format_img/png.png",
-    png: "assets/format_img/png.png",
-    pdf: "assets/format_img/pdf.gif",
-    doc: "assets/format_img/word.png",
-    docx: "assets/format_img/ppt.png",
-    xls: "assets/format_img/xlxs.png",
-    xlsx: "assets/format_img/xlxs.png",
-    pptx: "assets/format_img/pptx.png",
-    ppt: "assets/format_img/pptx.png",
-    // Add more as needed
-  };
-  return iconMap[extension] || "assets/icons/file.png"; // Default icon
-}
+    const iconMap: { [key: string]: string } = {
+      jpg: "assets/format_img/png.png",
+      jpeg: "assets/format_img/png.png",
+      png: "assets/format_img/png.png",
+      pdf: "assets/format_img/pdf.gif",
+      doc: "assets/format_img/word.png",
+      docx: "assets/format_img/ppt.png",
+      xls: "assets/format_img/xlxs.png",
+      xlsx: "assets/format_img/xlxs.png",
+      pptx: "assets/format_img/pptx.png",
+      ppt: "assets/format_img/pptx.png",
+      // Add more as needed
+    };
+    return iconMap[extension] || "assets/icons/file.png"; // Default icon
+  }
 
-getFileExtension(filename: string): string {
-  return filename?.split('.').pop()?.toLowerCase() || '';
-}
+  getFileExtension(filename: string): string {
+    return filename?.split(".").pop()?.toLowerCase() || "";
+  }
 
   viewImage(data) {
     const dialogRef = this.dialog.open(ImagePreviewFolderDailogComponent, {
@@ -216,83 +218,117 @@ getFileExtension(filename: string): string {
 
     const dialogRef = this.dialog.open(MoveFileDialogComponent, {
       width: "550px",
-      height:"450px",
-      data: { selectedFiles
-       },
+      height: "450px",
+      data: { selectedFiles },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-       if (result) {
-      const { files, destination,caseNo } = result;
-      if (!destination || destination.length === 0) {
-        console.warn("No destination selected");
-        return;
+      if (result) {
+        const { files, destination, caseNo, fileTypeId, caseType, year, type } =
+          result;
+        // if (!destination || destination.length === 0) {
+        //   console.warn("No destination selected");
+        //   return;
+        // }
+        this.finalSelectedCaseNo = caseNo;
+        this.finalFileTypeId = fileTypeId;
+        this.finalcaseType = caseType;
+        this.finalYear = year;
+        const selectedFileId = files[0]?.file_id;
+        this.finalFileId = selectedFileId;
+        const folderList = Array.isArray(destination)
+          ? destination.flatMap((d) => d.folders || [])
+          : [];
+        this.finalDestination = folderList;
+        if (this.finalFileId) {
+          if (type === "move") {
+            this.finallMoveFiles();
+          } else if (type === "archive") {
+            this.selectedFilesArchive();
+          }
+        }
       }
-      console.log("wcaseNo",caseNo)
-      this.finalSelectedCaseNo=caseNo;
-      const selectedFileId = files[0]?.file_id;
-      this.finalFileId = selectedFileId;
-       const folderList = Array.isArray(destination)
-      ? destination.flatMap(d => d.folders || [])
-      : [];
-      this.finalDestination = folderList;
-      console.log("  this.finalDestination",  this.finalDestination)
-
-      this.finallMoveFiles();
-    }
     });
   }
 
- finallMoveFiles() {
-  const departmentID = Number(sessionStorage.getItem("departmentID"));
+  finallMoveFiles() {
+    const departmentID = Number(sessionStorage.getItem("departmentID"));
 
-  if (!this.finalDestination || !this.finalFileId) {
-    console.error("Missing required data for file move.");
-    return;
-  }
-  const folderMap = this.finalDestination.reduce((acc, folder) => {
-    console.log("folder",folder)
-    switch (folder.level) {
-      case 'caseNo':
-        acc.caseNo = folder.name;
-        break;
-      case 'caseType':
-        acc.caseType = folder.id;
-        break;
-      case 'filetype':
-        acc.file_type_id = folder.id;
-        break;
-      case 'documenttype':
-        acc.document_type_id = folder.id;
-        break;
+    if (!this.finalDestination || !this.finalFileId) {
+      console.error("Missing required data for file move.");
+      return;
     }
-    return acc;
-  }, {} as any);
-  const payload = {
-    deptId: departmentID,
-    file_id: this.finalFileId,
-    caseNo: this.finalSelectedCaseNo,
-    ...folderMap,
-  };
+    const folderMap = this.finalDestination.reduce((acc, folder) => {
+      console.log("folder", folder);
+      switch (folder.level) {
+        case "caseNo":
+          acc.caseNo = folder.name;
+          break;
+        case "caseType":
+          acc.caseType = folder.id;
+          break;
+        case "filetype":
+          acc.file_type_id = folder.id;
+          break;
+        case "documenttype":
+          acc.document_type_id = folder.id;
+          break;
+      }
+      return acc;
+    }, {} as any);
+    const payload = {
+      deptId: departmentID,
+      file_id: this.finalFileId,
+      year: this.finalYear,
+      caseNo: this.finalSelectedCaseNo,
+      file_type_id: this.finalFileTypeId,
+      caseType: this.finalcaseType,
+      ...folderMap,
+    };
 
-  console.log("Final move payload:", payload);
+    console.log("Final move payload:", payload);
 
-  this.contentMngService.moveFilesInfo(payload).subscribe({
-    next: (response: any) => {
-      this.items = response;
-       this._snackBar.open('File moved successfully', "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["success-snackbar"],
-      });
-    this.getFolder()
-    },
-    error: (error) => {
-      console.error("Error moving file:", error);
-    },
-  });
-}
+    this.contentMngService.moveFilesInfo(payload).subscribe({
+      next: (response: any) => {
+        this.items = response;
+        this._snackBar.open("File moved successfully", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["success-snackbar"],
+        });
+        this.getFolder();
+      },
+      error: (error) => {
+        console.error("Error moving file:", error);
+      },
+    });
+  }
 
+  selectedFilesArchive() {
+    const payload = {
+      file_id: this.finalFileId,
+    };
 
+    this.contentMngService.archiveFiles(payload).subscribe({
+      next: (res: Items) => {
+        this._snackBar.open("File Archive successfully", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["success-snackbar"],
+        });
+        this.getFolder();
+      },
+      error: (err) => {
+        console.error("Error archiving file:", err);
+        this._snackBar.open("Failed to File Archive", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["error-snackbar"],
+        });
+      },
+    });
+  }
 }
