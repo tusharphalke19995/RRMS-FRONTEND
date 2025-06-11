@@ -83,6 +83,8 @@ export class ContentCaseDocumentTypeIdDetailsComponent implements OnInit {
   finalcaseType: any;
   finalCaseNo: any;
   finalDocumentTypeId: any;
+  prviousFolderName:any;
+  latestFolderName:any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _router: Router,
@@ -110,6 +112,7 @@ export class ContentCaseDocumentTypeIdDetailsComponent implements OnInit {
    */
   ngOnInit(): void {
     this.getFolder();
+    this.getPreviousFolderPathData();
   }
 
   // -----------------------------------------------------------------------------------------------------
@@ -131,6 +134,14 @@ export class ContentCaseDocumentTypeIdDetailsComponent implements OnInit {
     return item.id || index;
   }
 
+   getPreviousFolderPathData(){
+    const state = this.contentMngService.getCurrentFolderName();
+     const stateLatest = this.contentMngService.getCurrentFolderNameLatest();
+    this.prviousFolderName = state.fname;
+   this.latestFolderName = stateLatest.fnameLatest;
+    }
+    
+
   getFolder() {
     const divisionID = Number(sessionStorage.getItem("divisionID"));
     let payload = {
@@ -144,7 +155,6 @@ export class ContentCaseDocumentTypeIdDetailsComponent implements OnInit {
     this.contentMngService.getFolderData(payload).subscribe({
       next: (response: any) => {
         this.items = response;
-        console.log("this.items", this.items);
       },
       error: (error) => {
         console.error("Error fetching latest files:", error);
@@ -313,8 +323,6 @@ finallMoveFiles() {
     },
   });
 }
-
-
 
   selectedFilesArchive() {
     const payload = {

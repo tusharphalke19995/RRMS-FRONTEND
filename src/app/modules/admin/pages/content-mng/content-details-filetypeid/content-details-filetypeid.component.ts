@@ -65,6 +65,13 @@ export class ContentCaseFiletypeIdDetailsComponent implements OnInit {
 folderNameDropdown: string[] = [];
   finalFileId: any;
   finalDestination: any;
+  finalSelectedCaseNo: string;
+  finalFileTypeId: any;
+  finalcaseType: any;
+  finalCaseNo: any;
+  finalDocumentTypeId: any;
+  finalFolderName: any[];
+  prviousFolderName: { fname: any; };
   constructor(
      
         private _changeDetectorRef: ChangeDetectorRef,
@@ -96,6 +103,7 @@ folderNameDropdown: string[] = [];
     {
      
     this.getFolder();
+    this.getPreviousFolderPathData();
     }
 
 
@@ -122,6 +130,13 @@ folderNameDropdown: string[] = [];
         return item.id || index;
     }
 
+    getPreviousFolderPathData(){
+    const state = this.contentMngService.getCurrentFolderName();
+    console.log("prviousFolderName",this.prviousFolderName)
+    this.prviousFolderName = state.fname;
+   
+    }
+
      getFolder() {
     const divisionID = Number(sessionStorage.getItem("divisionID"));
     let payload={
@@ -134,7 +149,11 @@ folderNameDropdown: string[] = [];
     this.contentMngService.getFolderData(payload).subscribe({
       next: (response: any) => {
        this.items = response;
-       console.log("this.items",this.items)
+   if (this.items.folders && Array.isArray(this.items.folders)) {
+      this.finalFolderName = this.items.folders.map((element: any) => element.name);
+    }
+     this.contentMngService.setCurrentFolderNameLatest(this.finalFolderName)
+    
       },
       error: (error) => {
         console.error("Error fetching latest files:", error);
@@ -203,83 +222,128 @@ getFileExtension(filename: string): string {
       });
       return;
     }
-  
-    openMoveDialog(file: any) {
-      const selectedFiles = [file];
-  
-      const dialogRef = this.dialog.open(MoveFileDialogComponent, {
-        width: "550px",
-        height:"450px",
-        data: { selectedFiles
-         },
-      });
-  
-      dialogRef.afterClosed().subscribe((result) => {
-         if (result) {
-        const { files, destination } = result;
-        if (!destination || destination.length === 0) {
-          console.warn("No destination selected");
-          return;
-        }
-        const selectedFileId = files[0]?.file_id;
-        this.finalFileId = selectedFileId;
-         const folderList = Array.isArray(destination)
-        ? destination.flatMap(d => d.folders || [])
+  openMoveDialog(file: any) {
+  const selectedFiles = [file];
+
+  const dialogRef = this.dialog.open(MoveFileDialogComponent, {
+    width: "550px",
+    height: "450px",
+    data: { selectedFiles },
+  });
+
+  dialogRef.afterClosed().subscribe((result) => {
+    if (result) {
+      const {
+        files,
+        destination,
+        year,
+        caseNo,
+        caseType,
+        fileTypeId,
+        documentTypeId,
+        type,
+      } = result;
+
+      const selectedFileId = files?.[0]?.file_id;
+      if (!selectedFileId) {
+        console.error("No file ID selected from dialog result");
+        return;
+      }
+
+      this.finalFileId = selectedFileId;
+      this.finalYear = year ?? null;
+      this.finalCaseNo = caseNo ?? null;
+      this.finalcaseType = caseType ?? null;
+      this.finalFileTypeId = fileTypeId ?? null;
+      this.finalDocumentTypeId = documentTypeId ?? null;
+
+      // Optional: Store the raw folders if you still need them
+      this.finalDestination = Array.isArray(destination)
+        ? destination.flatMap((d) => d.folders || [])
         : [];
-        this.finalDestination = folderList;
-        console.log("  this.finalDestination",  this.finalDestination)
-  
+
+      if (type === "move") {
         this.finallMoveFiles();
+      } else if (type === "archive") {
+        this.selectedFilesArchive();
+      } else {
+        console.warn("Unknown operation type:", type);
       }
+    }
+  });
+}
+
+finallMoveFiles() {
+  const departmentID = Number(sessionStorage.getItem("departmentID"));
+  if (!departmentID) {
+    console.error("Department ID missing from session storage");
+    return;
+  }
+
+  if (!this.finalFileId) {
+    console.error("File ID is missing. Cannot move file.");
+    return;
+  }
+
+  const payload: Record<string, any> = {
+    deptId: departmentID,
+    file_id: this.finalFileId,
+  };
+
+  if (this.finalYear) payload.year = this.finalYear;
+  if (this.finalCaseNo) payload.caseNo = this.finalCaseNo;
+  if (this.finalcaseType) payload.caseType = this.finalcaseType;
+  if (this.finalFileTypeId) payload.file_type_id = this.finalFileTypeId;
+  if (this.finalDocumentTypeId) payload.document_type_id = this.finalDocumentTypeId;
+
+  console.log("Final move payload:", payload);
+
+  this.contentMngService.moveFilesInfo(payload).subscribe({
+    next: (response: any) => {
+      this.items = response;
+      this._snackBar.open("File moved successfully", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["success-snackbar"],
       });
-    }
-  
-   finallMoveFiles() {
-    const departmentID = Number(sessionStorage.getItem("departmentID"));
-  
-    if (!this.finalDestination || !this.finalFileId) {
-      console.error("Missing required data for file move.");
-      return;
-    }
-    const folderMap = this.finalDestination.reduce((acc, folder) => {
-      console.log("folder",folder)
-      switch (folder.level) {
-        case 'caseNo':
-          acc.caseNo = folder.name;
-          break;
-        case 'caseType':
-          acc.caseType = folder.id;
-          break;
-        case 'filetype':
-          acc.file_type_id = folder.id;
-          break;
-        case 'documenttype':
-          acc.document_type_id = folder.id;
-          break;
-      }
-      return acc;
-    }, {} as any);
+      this.getFolder();
+    },
+    error: (error) => {
+      console.error("Error moving file:", error);
+      this._snackBar.open("Failed to move file. Please try again.", "Close", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        panelClass: ["error-snackbar"],
+      });
+    },
+  });
+}
+
+  selectedFilesArchive() {
     const payload = {
-      deptId: departmentID,
       file_id: this.finalFileId,
-      ...folderMap,
     };
-  
-    console.log("Final move payload:", payload);
-  
-    this.contentMngService.moveFilesInfo(payload).subscribe({
-      next: (response: any) => {
-        this.items = response;
-         this._snackBar.open('File moved successfully', "Close", {
+
+    this.contentMngService.archiveFiles(payload).subscribe({
+      next: (res: Items) => {
+        this._snackBar.open("File Archive successfully", "Close", {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
           panelClass: ["success-snackbar"],
         });
-      
+        this.getFolder();
       },
-      error: (error) => {
-        console.error("Error moving file:", error);
+      error: (err) => {
+        console.error("Error archiving file:", err);
+        this._snackBar.open("Failed to File Archive", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["error-snackbar"],
+        });
       },
     });
   }

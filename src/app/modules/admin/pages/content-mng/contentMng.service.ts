@@ -1,27 +1,32 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { apiurls } from 'app/shared/constants/api-urls.constant';
-import { ErrorResponseModel } from 'app/shared/models/error-model';
-import { CommonApiCallService } from 'app/shared/services/common-api-call.service';
-import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { apiurls } from "app/shared/constants/api-urls.constant";
+import { ErrorResponseModel } from "app/shared/models/error-model";
+import { CommonApiCallService } from "app/shared/services/common-api-call.service";
+import { BehaviorSubject, catchError, Observable, tap, throwError } from "rxjs";
 
-@Injectable({providedIn: 'root'})
-export class ContentMngService
-{  constructor(
+@Injectable({ providedIn: "root" })
+export class ContentMngService {
+  fname: any;
+ fnameLatest: any;
+  constructor(
     private _httpClient: HttpClient,
     private commonApiCallService: CommonApiCallService
   ) {}
 
-
-  markasreadNotificationInfo(data:any) {
+  markasreadNotificationInfo(data: any) {
     return this._httpClient
-      .post(apiurls.markasreadNotification,data)
+      .post(apiurls.markasreadNotification, data)
       .pipe(catchError(this.handleError));
   }
 
   getFolderDatak() {
     return this._httpClient
-      .get(apiurls.folderTree,)
+      .get(apiurls.folderTree)
       .pipe(catchError(this.handleError));
   }
 
@@ -31,25 +36,40 @@ export class ContentMngService
       .pipe(catchError(this.handleError));
   }
 
-  getFolderData(data:any){
+  getFolderData(data: any) {
     return this._httpClient
-    .post(apiurls.folderTree, data,)
-    .pipe(catchError(this.handleError));
+      .post(apiurls.folderTree, data)
+      .pipe(catchError(this.handleError));
   }
 
-
-    moveFilesInfo(data:any){
+  moveFilesInfo(data: any) {
     return this._httpClient
-    .post(apiurls.moveFiles, data,)
-    .pipe(catchError(this.handleError));
+      .post(apiurls.moveFiles, data)
+      .pipe(catchError(this.handleError));
   }
 
-
-    archiveFiles(data:any){
+  archiveFiles(data: any) {
     return this._httpClient
-    .post(apiurls.archiveFiles, data,)
-    .pipe(catchError(this.handleError));
+      .post(apiurls.archiveFiles, data)
+      .pipe(catchError(this.handleError));
   }
+
+  setCurrentFolderName(fname: any) {
+    this.fname = fname;
+  }
+
+  getCurrentFolderName() {
+    return { fname: this.fname };
+  }
+
+   setCurrentFolderNameLatest(fnameLatest: any) {
+    this.fnameLatest = fnameLatest;
+  }
+
+  getCurrentFolderNameLatest() {
+    return { fnameLatest: this.fnameLatest };
+  }
+
   /**
    * The error handler.
    * @param err The http error response.
