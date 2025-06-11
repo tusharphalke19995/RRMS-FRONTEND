@@ -60,17 +60,20 @@ export class MoveFileDialogComponent {
     this.getFolder(); // Load root level
   }
 
-  confirmMove() {
-    this.dialogRef.close({
-      files: this.data.selectedFiles,
-      destination:this.navigationStack.concat(this.items),
-      caseNo:this.caseNo,
-      caseType: this.caseTypeId,
-      fileTypeId: this.fileTypeId,
-      year:this.year,
-      type:'move'
-    });
-  }
+ confirmMove() {
+  const payload: any = {
+    files: this.data.selectedFiles,
+    destination: this.navigationStack.concat(this.items),
+    type: 'move'
+  };
+if (this.year) payload.year = this.year;
+if (this.caseNo) payload.caseNo = this.caseNo;
+if (this.caseTypeId) payload.caseType = this.caseTypeId;
+if (this.fileTypeId) payload.fileTypeId = this.fileTypeId;
+  
+  this.dialogRef.close(payload);
+}
+
 
   confirmArchived() {
     this.dialogRef.close({
@@ -83,81 +86,168 @@ export class MoveFileDialogComponent {
     this.dialogRef.close();
   }
 
+  // getFolder() {
+  //   const divisionID = Number(sessionStorage.getItem("divisionID"));
+  //   const payload = {
+  //     division_id: divisionID,
+  //   };
+
+  //   this.contentMngService.getFolderData(payload).subscribe({
+  //     next: (res: Items) => (this.items = res),
+  //     error: (err) => console.error("Error fetching root folders:", err),
+  //   });
+  // }
+
+  // getFolderYear(folder: any) {
+  //   const divisionID = Number(sessionStorage.getItem("divisionID"));
+  //   this.year = folder.name
+  //   const payload = {
+  //     division_id: divisionID,
+  //     year: this.year,
+  //   };
+
+  //   this.contentMngService.getFolderData(payload).subscribe({
+  //     next: (res: Items) => (this.items = res),
+  //     error: (err) => console.error("Error fetching root folders:", err),
+  //   });
+  // }
+
+
+  // goToCaseNoDetails(folder: any) {
+  //   this.caseNo = folder.name;
+  //   const divisionID = Number(sessionStorage.getItem("divisionID"));
+  //   const payload = {
+  //     division_id: divisionID,
+  //     year: this.year,
+  //     caseNo: this.caseNo,
+  //   };
+
+  //   this.contentMngService.getFolderData(payload).subscribe({
+  //     next: (res: Items) => (this.items = res),
+  //     error: (err) => console.error("Error fetching caseNo level:", err),
+  //   });
+  // }
+
+  // goToCaseFileTypIdDetails(folder: any) {
+  //   this.caseTypeId = folder.id; 
+  //   const divisionID = Number(sessionStorage.getItem("divisionID"));
+  //   const payload = {
+  //     division_id: divisionID,
+  //     year: this.year,
+  //     caseNo: this.caseNo,
+  //     caseType: this.caseTypeId,
+  //   };
+
+  //   this.contentMngService.getFolderData(payload).subscribe({
+  //     next: (res: Items) => (this.items = res),
+  //     error: (err) => console.error("Error fetching caseTypeId level:", err),
+  //   });
+  // }
+
+
+  // goToFileTypeIdDetails(folder: any) {
+  //   this.fileTypeId = folder.id;
+  //   const divisionID = Number(sessionStorage.getItem("divisionID"));
+  //   const payload = {
+  //     division_id: divisionID,
+  //     year: this.year,
+  //     caseType: this.caseTypeId,
+  //     caseNo: this.caseNo,
+  //     fileTypeId: this.fileTypeId,
+  //   };
+
+  //   this.contentMngService.getFolderData(payload).subscribe({
+  //     next: (res: Items) => (this.items = res),
+  //     error: (err) => console.error("Error fetching fileTypeId level:", err),
+  //   });
+  // }
+
+
   getFolder() {
-    const divisionID = Number(sessionStorage.getItem("divisionID"));
-    const payload = {
-      division_id: divisionID,
-    };
+  const divisionID = Number(sessionStorage.getItem("divisionID"));
+  const payload = { division_id: divisionID };
 
-    this.contentMngService.getFolderData(payload).subscribe({
-      next: (res: Items) => (this.items = res),
-      error: (err) => console.error("Error fetching root folders:", err),
-    });
-  }
+  // Reset all navigation states
+  this.year = null;
+  this.caseNo = null;
+  this.caseTypeId = null;
+  this.fileTypeId = null;
 
-  getFolderYear(folder: any) {
-    const divisionID = Number(sessionStorage.getItem("divisionID"));
-    this.year = folder.name
-    const payload = {
-      division_id: divisionID,
-      year: this.year,
-    };
+  this.contentMngService.getFolderData(payload).subscribe({
+    next: (res: Items) => (this.items = res),
+    error: (err) => console.error("Error fetching root folders:", err),
+  });
+}
 
-    this.contentMngService.getFolderData(payload).subscribe({
-      next: (res: Items) => (this.items = res),
-      error: (err) => console.error("Error fetching root folders:", err),
-    });
-  }
+getFolderYear(folder: any) {
+  const divisionID = Number(sessionStorage.getItem("divisionID"));
+  this.year = folder.name;
+  this.caseNo = null;
+  this.caseTypeId = null;
+  this.fileTypeId = null;
 
+  const payload = {
+    division_id: divisionID,
+    year: this.year,
+  };
 
-  goToCaseNoDetails(folder: any) {
-    this.caseNo = folder.name;
-    const divisionID = Number(sessionStorage.getItem("divisionID"));
-    const payload = {
-      division_id: divisionID,
-      year: this.year,
-      caseNo: this.caseNo,
-    };
+  this.contentMngService.getFolderData(payload).subscribe({
+    next: (res: Items) => (this.items = res),
+    error: (err) => console.error("Error fetching year level folders:", err),
+  });
+}
 
-    this.contentMngService.getFolderData(payload).subscribe({
-      next: (res: Items) => (this.items = res),
-      error: (err) => console.error("Error fetching caseNo level:", err),
-    });
-  }
+goToCaseNoDetails(folder: any) {
+  this.caseNo = folder.name;
+  const divisionID = Number(sessionStorage.getItem("divisionID"));
+  this.caseTypeId = null;
+  this.fileTypeId = null;
 
-  goToCaseFileTypIdDetails(folder: any) {
-    this.caseTypeId = folder.id; // or use folder.name/id if appropriate
-    const divisionID = Number(sessionStorage.getItem("divisionID"));
-    const payload = {
-      division_id: divisionID,
-      year: this.year,
-      caseNo: this.caseNo,
-      caseType: this.caseTypeId,
-    };
+  const payload = {
+    division_id: divisionID,
+    year: this.year,
+    caseNo: this.caseNo,
+  };
 
-    this.contentMngService.getFolderData(payload).subscribe({
-      next: (res: Items) => (this.items = res),
-      error: (err) => console.error("Error fetching caseTypeId level:", err),
-    });
-  }
+  this.contentMngService.getFolderData(payload).subscribe({
+    next: (res: Items) => (this.items = res),
+    error: (err) => console.error("Error fetching caseNo level:", err),
+  });
+}
 
+goToCaseFileTypIdDetails(folder: any) {
+  this.caseTypeId = folder.id;
+  const divisionID = Number(sessionStorage.getItem("divisionID"));
+  this.fileTypeId = null;
+  const payload = {
+    division_id: divisionID,
+    year: this.year,
+    caseNo: this.caseNo,
+    caseType: this.caseTypeId,
+  };
 
-  goToFileTypeIdDetails(folder: any) {
-    this.fileTypeId = folder.id;
-    const divisionID = Number(sessionStorage.getItem("divisionID"));
-    const payload = {
-      division_id: divisionID,
-      year: this.year,
-      caseType: this.caseTypeId,
-      caseNo: this.caseNo,
-      fileTypeId: this.fileTypeId,
-    };
+  this.contentMngService.getFolderData(payload).subscribe({
+    next: (res: Items) => (this.items = res),
+    error: (err) => console.error("Error fetching caseTypeId level:", err),
+  });
+}
 
-    this.contentMngService.getFolderData(payload).subscribe({
-      next: (res: Items) => (this.items = res),
-      error: (err) => console.error("Error fetching fileTypeId level:", err),
-    });
-  }
+goToFileTypeIdDetails(folder: any) {
+  this.fileTypeId = folder.id;
+  const divisionID = Number(sessionStorage.getItem("divisionID"));
+  const payload = {
+    division_id: divisionID,
+    year: this.year,
+    caseNo: this.caseNo,
+    caseType: this.caseTypeId,
+    fileTypeId: this.fileTypeId,
+  };
+
+  this.contentMngService.getFolderData(payload).subscribe({
+    next: (res: Items) => (this.items = res),
+    error: (err) => console.error("Error fetching fileTypeId level:", err),
+  });
+}
 
   trackByFn(index: number, item: any): any {
     return item.id || index;
