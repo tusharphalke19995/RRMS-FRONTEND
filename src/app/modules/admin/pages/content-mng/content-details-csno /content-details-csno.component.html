@@ -32,16 +32,15 @@
                 Folder
               </span>
             </ng-container>
-            
+
             <ng-container *ngIf="year">
               <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
-              <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management'"
-                >
+              <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management'">
                 {{ year }}
               </a>
             </ng-container>
 
-             <ng-container *ngIf="caseNo">
+            <ng-container *ngIf="caseNo">
               <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
               <a class="text-primary-500 cursor-pointer" [routerLink]="'/content-management/folders'"
                 [queryParams]="{  name: year }">
@@ -101,7 +100,7 @@
                           <!-- Icon -->
                           <!-- <mat-icon class="icon-size-14 text-hint opacity-50"
                             [svgIcon]="'heroicons_solid:folder'"></mat-icon> -->
-                             <img src="../../../../../assets/images/others/folder.jpg" width="30px" alt="">
+                          <img src="../../../../../assets/images/others/folder.jpg" width="30px" alt="">
                         </div>
                       </div>
                       <div class="flex flex-col flex-auto justify-center text-center text-sm font-medium">
@@ -119,83 +118,52 @@
 
           <!-- Files -->
           <ng-container *ngIf="items.files.length > 0">
-            <div>
-              <div class="font-medium">Files</div>
-              <div class="flex flex-wrap -m-2 mt-2">
-                <ng-container *ngFor="let file of items.files; trackBy:trackByFn">
-                  <a class="flex flex-col w-40 h-40 m-2 p-4 shadow rounded-2xl cursor-pointer bg-card"
-                    [routerLink]="['./details/', file.id]">
-                    <div class="aspect-[9/6]">
-                      <div class="flex items-center justify-center h-full">
-                        <!-- Icons -->
-                        <div class="relative">
-                          <!-- <mat-icon class="icon-size-14 text-hint opacity-50"
-                            [svgIcon]="'heroicons_solid:document'"></mat-icon> -->
-                             <img [src]="getFileIcon(getFileExtension(file.name))"
-                            class="w-15 h-15 object-contain opacity-80 cursor-pointer" (click)="viewImage(file)"
-                            [alt]="file.name" />
-                          <div
-                            class="absolute left-0 bottom-0 px-1.5 rounded text-sm font-semibold leading-5 text-white"
-                            [class.bg-red-600]="file.type === 'PDF'" [class.bg-blue-600]="file.type === 'DOC'"
-                            [class.bg-green-600]="file.type === 'XLS'" [class.bg-gray-600]="file.type === 'TXT'"
-                            [class.bg-amber-600]="file.type === 'JPG'">
-                            {{file.type.toUpperCase()}}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="flex flex-col flex-auto justify-center text-center text-sm font-medium">
-                      <div class="truncate" [matTooltip]="file.name">{{file.name}}</div>
-                      <ng-container *ngIf="file.contents">
-                        <div class="text-secondary truncate">{{file.contents}}</div>
-                      </ng-container>
-                    </div>
-                  </a>
-                </ng-container>
-              </div>
-            </div>
-          </ng-container>
-        </div>
-      </ng-container>
+            <ng-container>
+              <div>
+                <div class="font-medium">Files</div>
+                <div class="flex flex-wrap -m-2 mt-2">
 
-        <ng-container *ngIf="items.files.length > 0">
-        <ng-container>
-            <div>
-              <div class="font-medium">Files</div>
-              <div class="flex flex-wrap -m-2 mt-2">
+                  <ng-container *ngFor="let file of items.files; trackBy: trackByFn">
 
-                <ng-container *ngFor="let file of items.files; trackBy: trackByFn">
-
-                  <a class="flex flex-col w-40 h-40 m-2 p-4 shadow rounded-2xl cursor-pointer bg-card">
-                    <div class="aspect-[9/6]">
-                      <div class="flex items-center justify-center h-full">
-                        <div class="relative">
-                          <mat-icon class="icon-size-14 text-hint opacity-50"
+                    <a class="flex flex-col w-40 h-40 m-2 p-4 shadow rounded-2xl cursor-pointer bg-card">
+                      <div class="aspect-[9/6]">
+                        <div class="flex items-center justify-center h-full">
+                          <div class="relative">
+                            <!-- <mat-icon class="icon-size-14 text-hint opacity-50"
                             [svgIcon]="getFileIcon(getFileExtension(file.name))" (click)="viewImage(file)">
-                          </mat-icon>
-                          <div
-                            class="absolute left-0 bottom-0 px-1.5 rounded text-sm font-semibold leading-5 text-white"
-                            [ngClass]="{
+                          </mat-icon> -->
+
+                            <img [src]="getFileIcon(getFileExtension(file.name))"
+                              class="w-15 h-15 object-contain opacity-80 cursor-pointer" (click)="viewImage(file)"
+                              [alt]="file.name" />
+                            <div
+                              class="absolute left-0 bottom-0 px-1.5 rounded text-sm font-semibold leading-5 text-white"
+                              [ngClass]="{
                  'bg-red-600': (file.name || '').toUpperCase() === 'PDF',
                  'bg-blue-600': (file.name || '').toUpperCase() === 'DOC',
                  'bg-green-600': (file.name || '').toUpperCase() === 'XLS',
                  'bg-gray-600': (file.name || '').toUpperCase() === 'TXT',
                  'bg-amber-600': (file.name || '').toUpperCase() === 'JPG'
                }">
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="flex flex-col flex-auto justify-center text-center text-sm font-medium"
-                      (click)="openMoveDialog(file)">
-                      <div class="truncate" [matTooltip]="file.name">{{ file.name }}</div>
-                    </div>
-                  </a>
-                </ng-container>
+                      <div class="flex flex-col flex-auto justify-center text-center text-sm font-medium"
+                        (click)="openMoveDialog(file)">
+                        <div class="truncate" [matTooltip]="file.name">{{ file.name }}</div>
+                      </div>
+                    </a>
+                  </ng-container>
+
+
+                </div>
               </div>
-            </div>
+            </ng-container>
           </ng-container>
+        </div>
       </ng-container>
+
 
       <ng-template #noItems>
         <div class="flex flex-auto flex-col items-center justify-center bg-gray-100 dark:bg-transparent">
@@ -205,9 +173,9 @@
       </ng-template>
     </div>
 
-   
+
   </div>
-  
+
 
   <!-- Buttons -->
 
