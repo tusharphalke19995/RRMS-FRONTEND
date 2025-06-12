@@ -19,13 +19,12 @@
       <div class="w-full flex justify-start mb-4" *ngIf="navigationStack.length > 0">
    
   </div>
-
    
     <div class="overflow-x-auto">
-      <ng-container *ngIf="items && (items.folders.length > 0 || items.files.length > 0); else noItems">
+      <ng-container>
         <div class="p-6 md:p-8 space-y-8">
           <!-- Folders -->
-          <ng-container *ngIf="items.folders.length > 0">
+          <ng-container>
             <div>
               <div class="font-medium">Folders</div>
               <div class="flex flex-wrap -m-2 mt-2">

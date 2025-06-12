@@ -48,6 +48,7 @@ export class MoveFileDialogComponent {
   caseTypeId: any;
   caseNo: any;
   fileTypeId: any;
+  documentTypeId:any;
   navigationStack: Items[] = [];
   constructor(
      private _snackBar: MatSnackBar,
@@ -70,6 +71,7 @@ if (this.year) payload.year = this.year;
 if (this.caseNo) payload.caseNo = this.caseNo;
 if (this.caseTypeId) payload.caseType = this.caseTypeId;
 if (this.fileTypeId) payload.fileTypeId = this.fileTypeId;
+if(this.documentTypeId)payload.documentTypeId = this.documentTypeId
   
   this.dialogRef.close(payload);
 }
@@ -249,6 +251,24 @@ goToFileTypeIdDetails(folder: any) {
   });
 }
 
+goToDocumentTypeDetails(folder: any) {
+  this.documentTypeId = folder.id;
+  const divisionID = Number(sessionStorage.getItem("divisionID"));
+  const payload = {
+    division_id: divisionID,
+    year: this.year,
+    caseNo: this.caseNo,
+    caseType: this.caseTypeId,
+    fileTypeId: this.fileTypeId,
+     documentTypeId: this.documentTypeId,
+  };
+
+  this.contentMngService.getFolderData(payload).subscribe({
+    next: (res: Items) => (this.items = res),
+    error: (err) => console.error("Error fetching fileTypeId level:", err),
+  });
+}
+
   trackByFn(index: number, item: any): any {
     return item.id || index;
   }
@@ -263,6 +283,8 @@ goToFileTypeIdDetails(folder: any) {
       this.goToCaseFileTypIdDetails(folder);
     } else if (!this.fileTypeId) {
       this.goToFileTypeIdDetails(folder);
+    }else if(!this.documentTypeId){
+      this.goToDocumentTypeDetails(folder)
     }
   }
 
