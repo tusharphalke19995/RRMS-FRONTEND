@@ -34,6 +34,8 @@ export const apiurls = {
   getContentManagerReq: `${environment.userApiUrl}casedata/requests`,
   getFileTypes: `${environment.userApiUrl}mdm/fileTypes`,
   getFileClassification: `${environment.userApiUrl}mdm/fileClassification`,
+  getDomain: `${environment.userApiUrl}mdm/domain`,
+  getDomainNames: `${environment.userApiUrl}mdm/domain/names`,
   getCaseStatus: `${environment.userApiUrl}mdm/caseStatus`,
   getCmoradmins: `${environment.userApiUrl}users/getcmoradmins`,
   caseDataFilePreview: `${environment.userApiUrl}casedata/filePreview`,
@@ -59,12 +61,17 @@ export const apiurls = {
   verifyOtp: `${environment.userApiUrl}users/verify-otp`,
   resetPassword: `${environment.userApiUrl}users/reset-password`,
   requestAdminReset: `${environment.userApiUrl}users/reset-pwd-request`,
+  adminSetDefaultPwd: `${environment.userApiUrl}users/set-default-pwd/`,
+  getallRequests: `${environment.userApiUrl}users/getallRequests`,
+  userSetPassword: `${environment.userApiUrl}users/set-password/`,
+  setStatusPasswordReset: `${environment.userApiUrl}users/setStatus`,
   folderTree: `${environment.userApiUrl}cm/folder-tree`,
   moveFiles: `${environment.userApiUrl}cm/move-files`,
   archiveFiles : `${environment.userApiUrl}cm/archive-files`,
   getUsersData : `${environment.userApiUrl}users/get-user-data/`,
   sendPwdReset : `${environment.userApiUrl}users/send-pwd-reset/`,
-  
+  folderTreeView : `${environment.userApiUrl}cm/folder-tree-view`,
+
 
 
   sendReminder: (id: number | string) =>

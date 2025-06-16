@@ -411,7 +411,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
-          panelClass: ["success-snackbar"],
+          panelClass: ["green-snackbar"],
         });
         this.addcitizenfeedbackNgForm.resetForm();
         // this._router.navigateByUrl("search-document");
@@ -496,7 +496,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
-          panelClass: ["success-snackbar"],
+          panelClass: ["green-snackbar"],
         });
         this.addcitizenfeedbackNgForm.resetForm();
         // this._router.navigateByUrl("search-document");
@@ -595,7 +595,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
-            panelClass: ["success-snackbar"],
+            panelClass: ["green-snackbar"],
           });
           this.addcitizenfeedbackNgForm.resetForm();
           this._router.navigateByUrl("search-document");

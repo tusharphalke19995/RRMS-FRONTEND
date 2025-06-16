@@ -108,49 +108,45 @@
           </ng-container>
 
           <!-- Files -->
-          <ng-container *ngIf="items.files.length > 0">
-            <ng-container>
-              <div>
-                <div class="font-medium">Files</div>
-                <div class="flex flex-wrap -m-2 mt-2">
+           <ng-container>
+            <ng-container *ngIf="items.files.length > 0">
+                <div>
+                  <div class="font-medium mb-2">Files</div>
+                  <div
+                    class="file-list-wrapper divide-y divide-gray-200 border border-gray-200 rounded-md overflow-hidden">
 
-                  <ng-container *ngFor="let file of items.files; trackBy: trackByFn">
+                    <ng-container *ngFor="let file of items.files; trackBy: trackByFn">
+                      <div class="file-list-item flex items-center px-4 py-3 hover:bg-gray-50 transition cursor-pointer"
+                        (click)="openMoveDialog(file)">
+                        <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center mr-4">
+                          <img [src]="getFileIcon(getFileExtension(file.name))" class="w-8 h-8 object-contain"
+                            [alt]="file.name" (click)="viewImage(file); $event.stopPropagation()" />
+                        </div>
 
-                    <a class="flex flex-col w-40 h-40 m-2 p-4 shadow rounded-2xl cursor-pointer bg-card">
-                      <div class="aspect-[9/6]">
-                        <div class="flex items-center justify-center h-full">
-                          <div class="relative">
-                            <!-- <mat-icon class="icon-size-14 text-hint opacity-50"
-                            [svgIcon]="getFileIcon(getFileExtension(file.name))" (click)="viewImage(file)">
-                          </mat-icon> -->
-
-                            <img [src]="getFileIcon(getFileExtension(file.name))"
-                              class="w-15 h-15 object-contain opacity-80 cursor-pointer" (click)="viewImage(file)"
-                              [alt]="file.name" />
-                            <div
-                              class="absolute left-0 bottom-0 px-1.5 rounded text-sm font-semibold leading-5 text-white"
-                              [ngClass]="{
-                 'bg-red-600': (file.name || '').toUpperCase() === 'PDF',
-                 'bg-blue-600': (file.name || '').toUpperCase() === 'DOC',
-                 'bg-green-600': (file.name || '').toUpperCase() === 'XLS',
-                 'bg-gray-600': (file.name || '').toUpperCase() === 'TXT',
-                 'bg-amber-600': (file.name || '').toUpperCase() === 'JPG'
-               }">
-                            </div>
+                        <div class="flex-1 min-w-0">
+                          <div class="text-sm font-medium text-gray-800 truncate" [matTooltip]="file.name">
+                            {{ file.name }}
+                          </div>
+                          <div class="text-xs text-gray-500 truncate">
+                            {{ getFileExtension(file.name) | uppercase }}
                           </div>
                         </div>
-                      </div>
-                      <div class="flex flex-col flex-auto justify-center text-center text-sm font-medium"
-                        (click)="openMoveDialog(file)">
-                        <div class="truncate" [matTooltip]="file.name">{{ file.name }}</div>
-                      </div>
-                    </a>
-                  </ng-container>
 
+                        <div class="ml-4 text-xs px-2 py-0.5 rounded-full font-semibold text-white" [ngClass]="{
+              'bg-red-600': getFileExtension(file.name) === 'pdf',
+              'bg-blue-600': getFileExtension(file.name) === 'doc' || getFileExtension(file.name) === 'docx',
+              'bg-green-600': getFileExtension(file.name) === 'xls' || getFileExtension(file.name) === 'xlsx',
+              'bg-gray-600': getFileExtension(file.name) === 'txt',
+              'bg-amber-600': getFileExtension(file.name) === 'jpg' || getFileExtension(file.name) === 'png'
+            }">
+                          {{ getFileExtension(file.name) | uppercase }}
+                        </div>
+                      </div>
+                    </ng-container>
 
+                  </div>
                 </div>
-              </div>
-            </ng-container>
+              </ng-container>
           </ng-container>
         </div>
       </ng-container>

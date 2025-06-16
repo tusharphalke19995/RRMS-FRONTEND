@@ -206,7 +206,15 @@ export const appRoutes: Route[] = [
           import(
             "app/modules/admin/pages/content-mng/contentMng.routes"
           ),
+      },
+       {
+        path:"folder-tree",
+        loadChildren: () =>
+          import(
+            "app/modules/admin/pages/folder-tree/folder-tree.routes"
+          ),
       }
+      
     ],
   },
 ];

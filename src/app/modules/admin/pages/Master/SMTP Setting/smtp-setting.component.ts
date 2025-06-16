@@ -19,7 +19,7 @@ import { Subject } from 'rxjs';
 import { SearchDocService } from '../../search-document/searchDoc.service';
 import { InventoryVendor } from '../../upload-document/uploadDoc.types';
 import { MasterService } from '../master.service';
-import { AddUpdateSMTPSettingComponent } from './add-update-smtp-setting/add-update-smtp-setting..component';
+import { AddUpdateSMTPSettingComponent } from './add-update-smtp-setting/add-update-smtp-setting.component';
 
 @Component({
   selector: 'app-smtp-setting',
@@ -181,13 +181,13 @@ export class SMTPSettingComponent implements OnInit {
   }
 
   deleteSMTPSetting(data) {
-        this._masterService.deleteSMTPById(data.statusId).subscribe({
+        this._masterService.deleteSMTPById(data.smtpId).subscribe({
         next: (response: any) => {
           this._snackBar.open("SMTP Deleted successfully", "Close", {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
-            panelClass: ["success-snackbar"],
+            panelClass: ["green-snackbar"],
           });
           this.getCaseStatusInfo();
         },

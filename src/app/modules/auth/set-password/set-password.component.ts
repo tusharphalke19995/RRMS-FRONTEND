@@ -128,7 +128,7 @@ export class SetPasswordComponent implements OnInit {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
-          panelClass: ["success-snackbar"],
+          panelClass: ["green-snackbar"],
         });
         this.resetPasswordForm.enable();
         this.resetPasswordForm.reset();

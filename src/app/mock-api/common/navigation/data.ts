@@ -150,7 +150,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
       },
       {
         id: "emailDomain",
-        title: "Email Domain Management",
+        title: "Domain Management",
         type: "basic",
         link: "/manage-master/email-domain-mng",
       },

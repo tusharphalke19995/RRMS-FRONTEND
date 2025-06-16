@@ -208,7 +208,7 @@ export class DepartmentComponent implements OnInit, AfterViewInit {
         duration: 3000,
         horizontalPosition: "right",
         verticalPosition: "top",
-        panelClass: ["success-snackbar"],
+        panelClass: ["green-snackbar"],
       });
       this.getDepartmentsInfo();
     },

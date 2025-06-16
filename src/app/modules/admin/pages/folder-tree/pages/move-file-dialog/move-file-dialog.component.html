@@ -1,0 +1,115 @@
+<div class="move-file-dialog">
+  <!-- Dialog Header -->
+  <div class="dialog-header">
+    <h2 mat-dialog-title>Move Files</h2>
+    <button mat-icon-button (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Selected Files Section -->
+  <div class="selected-files" *ngIf="fileDetails.length > 0">
+    <h3>Selected Files ({{ fileDetails.length }})</h3>
+    <div class="file-list">
+      <div class="file-item" *ngFor="let file of fileDetails">
+        <mat-icon class="file-icon">{{ getFileIcon(file.name) }}</mat-icon>
+        <div class="file-info">
+          <span class="file-name">{{ file.name }}</span>
+          <div class="file-meta">
+            <span class="uploader" *ngIf="file.uploadedBy">
+              <mat-icon class="meta-icon">person</mat-icon>
+              <span>{{ file.uploadedBy }}</span>
+            </span>
+            <span class="date" *ngIf="file.date">
+              <mat-icon class="meta-icon">calendar_today</mat-icon>
+              <span>{{ file.date | date:'medium' }}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-container">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Search folders</mat-label>
+      <input matInput [(ngModel)]="searchFilter" (keyup)="applyFilter($event)" placeholder="Type to search...">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <!-- Breadcrumbs -->
+  <div class="breadcrumbs" *ngIf="breadcrumbs.length > 0">
+    <button mat-button class="home-button" (click)="navigateToRoot()">
+      <mat-icon>home</mat-icon>
+      <span>Root</span>
+    </button>
+    <ng-container *ngFor="let crumb of breadcrumbs; let last = last">
+      <mat-icon class="crumb-separator">chevron_right</mat-icon>
+      <button mat-button [class.active]="last" (click)="navigateToFolder(crumb)">
+        <mat-icon>folder</mat-icon>
+        <span>{{ crumb.name }}</span>
+      </button>
+    </ng-container>
+  </div>
+
+  <!-- Folder Tree -->
+  <div class="folder-tree-container" [class.loading]="loading$ | async">
+    <div class="loading-overlay" *ngIf="loading$ | async">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="folder-tree">
+      <!-- Folder Node -->
+      <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+        <div class="tree-node" [class.selected]="isNodeSelected(node)" (click)="selectNode(node)">
+          <button mat-icon-button matTreeNodeToggle class="toggle-button">
+            <mat-icon [@rotateIcon]="treeControl.isExpanded(node) ? 'expanded' : 'collapsed'">
+              {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+            </mat-icon>
+          </button>
+          <div class="node-content">
+            <mat-icon class="node-icon">folder</mat-icon>
+            <div class="node-details">
+              <span class="node-name">{{ node.name }}</span>
+              <span class="node-level">{{ node.level }}</span>
+            </div>
+          </div>
+        </div>
+        <div [class.tree-invisible]="!treeControl.isExpanded(node)" class="tree-node-children">
+          <ng-container matTreeNodeOutlet></ng-container>
+        </div>
+      </mat-nested-tree-node>
+
+      <!-- Leaf Node -->
+      <mat-tree-node *matTreeNodeDef="let node; when: isLeaf">
+        <div class="tree-node" [class.selected]="isNodeSelected(node)" (click)="selectNode(node)">
+          <div class="node-content">
+            <mat-icon class="node-icon">folder</mat-icon>
+            <div class="node-details">
+              <span class="node-name">{{ node.name }}</span>
+              <span class="node-level">{{ node.level }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-tree-node>
+    </mat-tree>
+  </div>
+
+  <!-- Selected Path -->
+  <div class="selected-path" *ngIf="selectedNode">
+    <h3>Selected Destination</h3>
+    <div class="path-info">
+      <mat-icon>folder</mat-icon>
+      <span>{{ selectedNode.name }}</span>
+    </div>
+  </div>
+
+  <!-- Dialog Actions -->
+  <div class="dialog-actions">
+    <button mat-button (click)="close()">Cancel</button>
+    <button mat-flat-button color="primary" (click)="confirmMove()" [disabled]="!selectedNode">
+      Move Files
+    </button>
+  </div>
+</div>

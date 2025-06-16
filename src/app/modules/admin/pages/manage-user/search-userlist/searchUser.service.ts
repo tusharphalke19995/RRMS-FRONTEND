@@ -84,6 +84,45 @@ getDesignationsInfo(id:number) {
     }).pipe(catchError(this.handleError));
 }
 
+
+  adminSetDefaultPwdInfo(userId: number, data: any) {
+    const url = `${apiurls.adminSetDefaultPwd}${userId}`; // Construct the full URL with user ID
+    return this._httpClient.post(url, data, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
+
+  userSetPasswordInfo(userId: number, data: any) {
+    const url = `${apiurls.userSetPassword}${userId}`; // Construct the full URL with user ID
+    return this._httpClient.post(url, data, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
+
+
+
+
+getallRequests() {
+    const url = `${apiurls.getallRequests}`; 
+    return this._httpClient.get(url, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
+
+ setStatusPasswordReset(data) {
+    return this._httpClient
+      .post(apiurls.setStatusPasswordReset, data,)
+      .pipe(catchError(this.handleError));
+  }
   
   /**
    * The error handler.

@@ -141,7 +141,7 @@ getDateOnly(dateInput: any): string {
 //         duration: 3000,
 //         horizontalPosition: "right",
 //         verticalPosition: "top",
-//         panelClass: ["success-snackbar"],
+//         panelClass: ["green-snackbar"],
 //       });
 //       this.dialogRef.close(true);
 //     },
@@ -199,7 +199,7 @@ private submitRequest(status: string, remarksControl: any, startDateControl: any
   };
   this.dashbaordService.fileAccessByRequestid(this.data.id, this.payloadAppDenied).subscribe({
     next: () => this._snackBar.open("Request Process successfully", "Close", {
-      duration: 3000, horizontalPosition: "right", verticalPosition: "top", panelClass: ["success-snackbar"],
+      duration: 3000, horizontalPosition: "right", verticalPosition: "top", panelClass: ["green-snackbar"],
     }),
     error: (error) => this._snackBar.open(error.message || "Error", "Close", { duration: 3000 }),
   });

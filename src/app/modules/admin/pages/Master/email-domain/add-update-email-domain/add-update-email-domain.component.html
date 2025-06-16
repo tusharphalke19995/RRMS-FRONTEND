@@ -6,11 +6,11 @@
 
         <div class="flex items-center">
             <span class="text-xl font-semibold tracking-tight" *ngIf="updateBool; else addRoleTemplate">
-                {{ 'updateCaseStatus' | transloco }}
+               Update Domain
             </span>
             <ng-template #addRoleTemplate>
                 <span class="text-xl font-semibold tracking-tight">
-                    {{ 'addCaseStatus' | transloco }}
+                   Add Domain
                 </span>
             </ng-template>
         </div>
@@ -25,9 +25,9 @@
         <!-- First Row -->
         <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
             <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('statusName')}}</mat-label>
-                <input matInput [formControlName]="'statusName'" placeholder="Enter employee name">
-                <mat-error *ngIf="emailDomainForm.get('statusName').hasError('required')">
+                <mat-label *transloco="let t" class="font-medium">Domain Name</mat-label>
+                <input matInput [formControlName]="'domainName'"  placeholder="Enter Domain Name">
+                <mat-error *ngIf="emailDomainForm.get('domainName').hasError('required')">
                     Required
                 </mat-error>
             </mat-form-field>

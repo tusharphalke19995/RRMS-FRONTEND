@@ -55,7 +55,7 @@ export class AddUpdateEmailDomainComponent {
 
   initiateForm() {
     this.emailDomainForm = this._formBuilder.group({
-      statusName: ["", Validators.required],
+      domainName: ["", Validators.required],
     });
   }
 
@@ -68,15 +68,15 @@ export class AddUpdateEmailDomainComponent {
   saveEmailDomain() {
     if (this.emailDomainForm.valid) {
       const data = {
-        statusName: this.emailDomainForm.value.statusName,
+        domainName: this.emailDomainForm.value.domainName,
       };
-      this.masterService.createCaseStatus(data).subscribe({
+      this.masterService.createDomain(data).subscribe({
         next: (response: any) => {
-          this._snackBar.open("Case Status Created Successfully", "Close", {
+          this._snackBar.open("Domain Created Successfully", "Close", {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
-            panelClass: ["success-snackbar"],
+            panelClass: ["green-snackbar"],
           });
           this.onNoClose();
         },
@@ -95,15 +95,16 @@ export class AddUpdateEmailDomainComponent {
   updateEmailDomain() {
     if (this.emailDomainForm.valid) {
       const data = {
-        statusName: this.emailDomainForm.value.statusName,
+        domainId:this.data.domainId,
+        domainName: this.emailDomainForm.value.domainName,
       };
-        this.masterService.updateCaseStatusById(this.data.statusId,data).subscribe({
+        this.masterService.updateDomainById(this.data.domainId,data).subscribe({
         next: (response: any) => {
-          this._snackBar.open("Case Status Updated successfully", "Close", {
+          this._snackBar.open("Domain Updated successfully", "Close", {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
-            panelClass: ["success-snackbar"],
+            panelClass: ["green-snackbar"],
           });
           this.onNoClose();
         },
@@ -133,8 +134,9 @@ export class AddUpdateEmailDomainComponent {
     if (this.data) {
       const userData = this.data;
       this.emailDomainForm.patchValue({
-        statusName: userData.statusName,
+        domainName: userData.domainName
       });
     }
   }
+
 }

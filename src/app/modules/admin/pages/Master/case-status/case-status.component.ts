@@ -183,7 +183,7 @@ export class CaseStatusComponent implements OnInit {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
-            panelClass: ["success-snackbar"],
+            panelClass: ["green-snackbar"],
           });
           this.getCaseStatusInfo();
         },

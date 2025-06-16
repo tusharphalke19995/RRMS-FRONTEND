@@ -33,6 +33,8 @@ import { AddMultiplesDivisionComponent } from "../add-multiples-division/add-mul
 import { Router } from "@angular/router";
 import { SharedService } from "app/shared/shared.service";
 import { notGmailValidator } from "app/shared/validators/notGmailValidator";
+import { emailDomainValidator } from "app/shared/validators/emailDomainValidator";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
   selector: "app-add-update-user",
@@ -99,6 +101,7 @@ export class AddUpdateUserComponent {
   updateBool: boolean = false;
   isView: boolean;
   constructor(
+     private http: HttpClient,
     private router: Router,
     private _searchUserService: SearchUserService,
     private _formBuilder: UntypedFormBuilder,
@@ -128,6 +131,9 @@ export class AddUpdateUserComponent {
     });
   }
 
+    get emailID() {
+    return this.addUpdateUserForm.get('emailID');
+  }
   getUserDataPatch() {
     this.isView = false;
     this.sharedService.getUserData().subscribe((data) => {
@@ -165,11 +171,16 @@ export class AddUpdateUserComponent {
     this.addUpdateUserForm = this._formBuilder.group({
       firstName: ["", [Validators.required]],
       lastName: ["", [Validators.required]],
-      emailID: ["", [Validators.required, Validators.email]],//notGmailValidator()
+      // emailID: ["", [Validators.required, Validators.email]],//notGmailValidator()
       kgid: ["", Validators.required, MaxLengthValidator[12]],
       mobileNo: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
       roleId: ["", [Validators.required]],
       designation: [[], [Validators.required]],
+       emailID: [
+        '',
+        [Validators.required, Validators.email],
+        [emailDomainValidator('https://rrms-backend.onrender.com/mdm/domain/names', this.http)]
+      ]
       // password: [
       //   "",
       //   [
@@ -199,7 +210,7 @@ export class AddUpdateUserComponent {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
-          panelClass: ["success-snackbar"],
+          panelClass: ["green-snackbar"],
         });
         this.router.navigateByUrl("manage-user/active-user");
       },
@@ -402,7 +413,7 @@ export class AddUpdateUserComponent {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
-          panelClass: ["success-snackbar"],
+          panelClass: ["green-snackbar"],
         });
         this.router.navigateByUrl("manage-user/active-user");
       },

@@ -1,28 +1,41 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { CommonModule, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { ReactiveFormsModule, FormsModule, UntypedFormGroup, NgForm, UntypedFormBuilder } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { RouterLink } from '@angular/router';
-import { TranslocoModule } from '@ngneat/transloco';
-import { Subject } from 'rxjs';
-import { SearchDocService } from '../../search-document/searchDoc.service';
-import { InventoryVendor } from '../../upload-document/uploadDoc.types';
-import { MasterService } from '../master.service';
-import { AddUpdateEmailDomainComponent } from './add-update-email-domain/add-update-email-domain.component';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
+import {
+  CommonModule,
+  CurrencyPipe,
+  NgClass,
+  NgFor,
+  NgIf,
+  NgTemplateOutlet,
+} from "@angular/common";
+import {
+  ReactiveFormsModule,
+  FormsModule,
+  UntypedFormGroup,
+  NgForm,
+  UntypedFormBuilder,
+} from "@angular/forms";
+import { MatButtonModule } from "@angular/material/button";
+import { MatRippleModule } from "@angular/material/core";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatDialog } from "@angular/material/dialog";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatIconModule } from "@angular/material/icon";
+import { MatInputModule } from "@angular/material/input";
+import { MatPaginatorModule, MatPaginator } from "@angular/material/paginator";
+import { MatSelectModule } from "@angular/material/select";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatSortModule, MatSort } from "@angular/material/sort";
+import { MatTableModule, MatTableDataSource } from "@angular/material/table";
+import { RouterLink } from "@angular/router";
+import { TranslocoModule } from "@ngneat/transloco";
+import { Subject } from "rxjs";
+import { SearchDocService } from "../../search-document/searchDoc.service";
+import { InventoryVendor } from "../../upload-document/uploadDoc.types";
+import { MasterService } from "../master.service";
+import { AddUpdateEmailDomainComponent } from "./add-update-email-domain/add-update-email-domain.component";
 
 @Component({
-  selector: 'app-email-domain',
+  selector: "app-email-domain",
   standalone: true,
   imports: [
     NgIf,
@@ -45,10 +58,10 @@ import { AddUpdateEmailDomainComponent } from './add-update-email-domain/add-upd
     MatButtonModule,
     MatTableModule,
     MatPaginatorModule,
-    MatSortModule
-],
-  templateUrl: './email-domain.component.html',
-  styleUrl: './email-domain.component.scss'
+    MatSortModule,
+  ],
+  templateUrl: "./email-domain.component.html",
+  styleUrl: "./email-domain.component.scss",
 })
 export class EmailDomainComponent implements OnInit {
   searchUserListForm: UntypedFormGroup;
@@ -64,7 +77,7 @@ export class EmailDomainComponent implements OnInit {
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
   columns: any[] = [
-    { labelen: "Status Name", labelhi: "Status Name", property: "statusName" },    
+    { labelen: "Domain Name", labelhi: "Domain Name", property: "domainName" },
     {
       labelen: "Action",
       labelhi: "Action",
@@ -73,10 +86,7 @@ export class EmailDomainComponent implements OnInit {
     },
   ];
 
-  displayedColumns: string[] = [
-    "statusName",
-    "action"
-  ];
+  displayedColumns: string[] = ["domainName", "action"];
   userRoleDropdown: [];
   designationsDropdown: [];
 
@@ -84,7 +94,7 @@ export class EmailDomainComponent implements OnInit {
    * Constructor
    */
   constructor(
-     private _snackBar: MatSnackBar,
+    private _snackBar: MatSnackBar,
     private _masterService: MasterService,
     public dialog: MatDialog,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -119,7 +129,6 @@ export class EmailDomainComponent implements OnInit {
     this._unsubscribeAll.complete();
   }
 
-
   /**
    * Clear the form
    */
@@ -141,12 +150,10 @@ export class EmailDomainComponent implements OnInit {
   trackByFn(index: number, item: any): any {
     return item.id || index;
   }
-  
-  addEmail(){
 
-  }
+  addEmail() {}
 
-   addEmailDomain(data) {
+  addEmailDomain(data) {
     const dialogRef = this.dialog.open(AddUpdateEmailDomainComponent, {
       data: data,
       width: "400px",
@@ -166,12 +173,13 @@ export class EmailDomainComponent implements OnInit {
     }
   }
 
-  updateEmailDomain(row: any): void {
+  updateEmailDomain(row: any) {
+    console.log("Domain")
     this.addEmailDomain(row);
   }
 
   getEmailDomainInfo() {
-    this._masterService.getCaseStatus().subscribe({
+    this._masterService.getDomain().subscribe({
       next: (response: any) => {
         console.log("response", response);
         this.dataSource = new MatTableDataSource(response);
@@ -181,26 +189,24 @@ export class EmailDomainComponent implements OnInit {
   }
 
   deleteEmailDomain(data) {
-        this._masterService.deleteCaseStatusById(data.statusId).subscribe({
-        next: (response: any) => {
-          this._snackBar.open("Case Status Deleted successfully", "Close", {
-            duration: 3000,
-            horizontalPosition: "right",
-            verticalPosition: "top",
-            panelClass: ["success-snackbar"],
-          });
-          this.getEmailDomainInfo();
-        },
-        error: (error) => {
-          this._snackBar.open(error.message || "Error creating user", "Close", {
-            duration: 3000,
-            horizontalPosition: "right",
-            verticalPosition: "top",
-            panelClass: ["error-snackbar"],
-          });
-        },
-      });
-    
+    this._masterService.deleteDomain(data.domainId).subscribe({
+      next: (response: any) => {
+        this._snackBar.open("Domain Deleted successfully", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["green-snackbar"],
+        });
+        this.getEmailDomainInfo();
+      },
+      error: (error) => {
+        this._snackBar.open(error.message || "Error creating user", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["error-snackbar"],
+        });
+      },
+    });
   }
-
 }

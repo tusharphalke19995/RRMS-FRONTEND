@@ -69,7 +69,15 @@ export class AddUpdateSMTPSettingComponent {
       portNo: ["", Validators.required],
       encryption: ["", Validators.required],
       username: ["", Validators.required],
-      password: ["", Validators.required],
+      password: [
+        "",
+        [
+          Validators.required,
+          Validators.pattern(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+          ),
+        ],
+      ],
     });
   }
 
@@ -94,7 +102,7 @@ export class AddUpdateSMTPSettingComponent {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
-            panelClass: ["success-snackbar"],
+            panelClass: ["green-snackbar"],
           });
           this.onNoClose();
         },
@@ -113,6 +121,7 @@ export class AddUpdateSMTPSettingComponent {
   updateSMTPSetting() {
     if (this.SMTPSettingForm.valid) {
       const data = {
+        smtpId:this.data.smtpId,
            smtpServerName: this.SMTPSettingForm.value.smtpServerName,
         portNo: this.SMTPSettingForm.value.portNo,
         encryption: this.SMTPSettingForm.value.encryption,
@@ -125,7 +134,7 @@ export class AddUpdateSMTPSettingComponent {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
-            panelClass: ["success-snackbar"],
+            panelClass: ["green-snackbar"],
           });
           this.onNoClose();
         },
@@ -163,4 +172,11 @@ export class AddUpdateSMTPSettingComponent {
       });
     }
   }
+      allowOnlyNumbers(event: KeyboardEvent): void {
+    const charCode = event.key.charCodeAt(0);
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
+  }
+
 }

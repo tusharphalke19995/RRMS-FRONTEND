@@ -467,7 +467,7 @@ toggleUserStatus(user: any): void {
           duration: 3000,
           horizontalPosition: 'right',
           verticalPosition: 'top',
-          panelClass: ['success-snackbar']
+          panelClass: ['green-snackbar']
         }
       );
       this.searcUserBySelectedParameter();

@@ -64,16 +64,18 @@
                         </mat-error>
                     </mat-form-field>
 
-                <mat-form-field class="w-full">
-                    <mat-label class="text-xl text-white">Email</mat-label>
-                    <input id="email" matInput [formControlName]="'email'">
-                    <mat-error *ngIf="requestAdminResetForm.get('email').hasError('required')">
-                        Email address is required
-                    </mat-error>
-                    <mat-error *ngIf="requestAdminResetForm.get('email').hasError('email')">
-                        Please enter a valid email address
-                    </mat-error>
-                </mat-form-field>
+               
+                  <mat-form-field class="w-full">
+                        <mat-label  class="text-xl text-white">Email</mat-label>
+                        <input matInput formControlName="email" placeholder="Enter email" />
+                        <mat-progress-spinner matSuffix [mode]="'indeterminate'" [diameter]="20"
+                            *ngIf="email?.pending"></mat-progress-spinner>
+                        <mat-error *ngIf="email?.hasError('required')">{{ 'Required' }}</mat-error>
+                        <mat-error *ngIf="email?.hasError('email')">{{ 'Please enter a valid email address'
+                            }}</mat-error>
+                        <mat-error *ngIf="email?.hasError('domainNotAllowed')">{{ 'Email domain is not allowed'
+                            }}</mat-error>
+                    </mat-form-field>
 
 
                 <!-- Actions -->

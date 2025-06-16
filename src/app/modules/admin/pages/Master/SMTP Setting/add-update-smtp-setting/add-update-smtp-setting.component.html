@@ -24,14 +24,14 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <mat-form-field appearance="outline" class="w-full">
                 <mat-label class="font-medium">SMTP ServerName</mat-label>
-                <input matInput [formControlName]="'smtpServerName'" placeholder="Enter SMTP Server Name">
+                <input matInput  [formControlName]="'smtpServerName'" placeholder="Enter SMTP Server Name">
                 <mat-error *ngIf="SMTPSettingForm.get('smtpServerName').hasError('required')">
                     Required
                 </mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="w-full">
                 <mat-label class="font-medium">Port No</mat-label>
-                <input matInput [formControlName]="'portNo'" placeholder="Enter Port No">
+                <input matInput  (keypress)="allowOnlyNumbers($event)"[formControlName]="'portNo'" placeholder="Enter Port No">
                 <mat-error *ngIf="SMTPSettingForm.get('portNo').hasError('required')">
                     Required
                 </mat-error>

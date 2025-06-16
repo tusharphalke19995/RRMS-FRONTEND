@@ -326,7 +326,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
  goToProcess(row: any): void {
   console.log("sss",row)
   if(row.redirect_url ==='/notifications'){
-   this.getUsersDataById(row.object_id)
+ this.router.navigate(['manage-user/reset-password-request'])
   }else{
   const url = new URL(row.redirect_url, window.location.origin); // Safely parse URL
   const tab = url.searchParams.get('tab');

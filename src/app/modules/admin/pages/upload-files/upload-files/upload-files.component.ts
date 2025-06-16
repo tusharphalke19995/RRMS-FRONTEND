@@ -232,7 +232,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
         duration: 3000,
         horizontalPosition: "right",
         verticalPosition: "top",
-        panelClass: ["success-snackbar"],
+        panelClass: ["green-snackbar"],
       });
       return;
     }
@@ -302,7 +302,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
         duration: 3000,
         horizontalPosition: "right",
         verticalPosition: "top",
-        panelClass: ["success-snackbar"],
+        panelClass: ["green-snackbar"],
       });
     }
   }
@@ -346,7 +346,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
         duration: 3000,
         horizontalPosition: "right",
         verticalPosition: "top",
-        panelClass: ["success-snackbar"],
+        panelClass: ["green-snackbar"],
       });
       return;
     }
@@ -487,7 +487,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
         duration: 3000,
         horizontalPosition: "right",
         verticalPosition: "top",
-        panelClass: ["success-snackbar"],
+        panelClass: ["green-snackbar"],
       });
       this.openFileModal = false;
       this.selectedIndexes.clear();
@@ -831,7 +831,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
-            panelClass: ["success-snackbar"],
+            panelClass: ["green-snackbar"],
           });
           this._router.navigateByUrl("search-document");
           this.selectedFiles = [];
@@ -857,7 +857,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
-            panelClass: ["success-snackbar"],
+            panelClass: ["green-snackbar"],
           });
           this._router.navigateByUrl("search-document");
           this.selectedFiles = [];
