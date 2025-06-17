@@ -90,12 +90,13 @@ export class ResetPasswordRequestComponent implements OnInit {
 
     @ViewChild("pendingSort") pendingSort: MatSort;
   @ViewChild("pendingPaginator") pendingPaginator: MatPaginator;
-  @ViewChild("rejectSort") approvedSort: MatSort;
+  @ViewChild("rejectSort") rejectSort: MatSort;
   @ViewChild("rejectPaginator") rejectPaginator: MatPaginator;
-
+  @ViewChild("approvedSort") approvedSort: MatSort;
+  @ViewChild("approvedPaginator") approvedPaginator: MatPaginator;
    pendingDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
   rejectDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
-
+approvedDataSource: MatTableDataSource<any> = new MatTableDataSource([]);
   displayedColumns: string[] = ["kgid","userName","email","mobileno", "action"];
     displayedRejectColumns: string[] = ["kgid","userName","email","mobileno",];
   userRoleDropdown: [];
@@ -181,6 +182,12 @@ export class ResetPasswordRequestComponent implements OnInit {
         this.pendingDataSource.paginator.firstPage();
       }
     } else if (this.selectedTab === 1) {
+      this.approvedDataSource.filter = filterValue.trim().toLowerCase();
+      if (this.approvedDataSource.paginator) {
+        this.approvedDataSource.paginator.firstPage();
+      }
+    }
+    else if (this.selectedTab === 2) {
       this.rejectDataSource.filter = filterValue.trim().toLowerCase();
       if (this.rejectDataSource.paginator) {
         this.rejectDataSource.paginator.firstPage();
@@ -218,10 +225,13 @@ export class ResetPasswordRequestComponent implements OnInit {
       this.pendingDataSource.paginator = this.pendingPaginator;
     }
     if (this.rejectDataSource) {
-      this.rejectDataSource.sort = this.approvedSort;
+      this.rejectDataSource.sort = this.rejectSort;
       this.rejectDataSource.paginator = this.rejectPaginator;
     }
-
+    if(this.approvedDataSource){
+      this.approvedDataSource.sort = this.approvedSort;
+      this.approvedDataSource.paginator = this.approvedPaginator;
+    }
   }
 
 
@@ -245,6 +255,10 @@ export class ResetPasswordRequestComponent implements OnInit {
     );
     this.rejectDataSource = new MatTableDataSource(
       updatedData.filter((item: any) => item.status === "rejected")
+    );
+
+       this.approvedDataSource = new MatTableDataSource(
+      updatedData.filter((item: any) => item.status === "approved")
     );
     this.setupPagination();
   }

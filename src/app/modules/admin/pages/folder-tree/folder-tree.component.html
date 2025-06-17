@@ -1,33 +1,57 @@
 <div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent">
   <div class="folder-tree-container">
     <!-- Header Section -->
-    <div class="header-section">
-      <h5></h5>
-    </div>
+   
+   <div class="flex-1 min-w-0">
+      <!-- Breadcrumbs -->
+      <div>
+        <div class="hidden sm:flex flex-wrap items-center font-medium">
+          <ng-container>
+            <div>
+              <a class="whitespace-nowrap text-primary-500 cursor-pointer">
+                Home </a>
+            </div>
+          </ng-container>
 
-    <!-- Navigation Section -->
-    <div class="navigation-section">
-      <div class="breadcrumbs">
-        <button mat-button class="home-button" (click)="navigateToRoot()">
-          <mat-icon>home</mat-icon>
-          <span>Root</span>
-        </button>
-        <ng-container *ngFor="let crumb of breadcrumbs; let last = last">
-          <mat-icon class="crumb-separator">chevron_right</mat-icon>
-          <button mat-button [class.active]="last" (click)="navigateToFolder(crumb)">
-            <mat-icon>folder</mat-icon>
-            <span>{{ crumb.name }}</span>
-          </button>
-        </ng-container>
+          <div class="flex items-center ml-1 whitespace-nowrap">
+            <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+            <ng-container>
+              <span class="ml-1 text-secondary">
+                Content Management
+              </span>
+            </ng-container>
+          </div>
+
+        </div>
+        <div class="flex sm:hidden">
+          <a class="inline-flex items-center -ml-1.5 text-secondary font-medium">
+            <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
+            <span class="ml-1">Back</span>
+          </a>
+        </div>
       </div>
-    </div>
+      <!-- Title -->
 
-    <!-- Tree View Section -->
-    <div class="tree-section">
+      <div class="mt-2 flex items-center justify-between">
+        <ng-container>
+          <div class="text-3xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+            Content Management
+          </div>
+        </ng-container>
+
+      </div>
+        <div class="tree-section">
       <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="folder-tree">
         <!-- Folder Node -->
         <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
-          <div class="tree-node" [class.selected]="isItemSelected(node)" (click)="toggleItemSelection(node)">
+          <div class="tree-node" 
+               [class.level-0]="node.level === 0"
+               [class.level-1]="node.level === 1"
+               [class.level-2]="node.level === 2"
+               [class.level-3]="node.level === 3"
+               [class.level-4]="node.level === 4"
+               [class.selected]="isItemSelected(node)" 
+               (click)="toggleItemSelection(node)">
             <button mat-icon-button 
                     class="toggle-button"
                     (click)="toggleNode(node, $event)">
@@ -84,6 +108,9 @@
         </mat-nested-tree-node>
       </mat-tree>
     </div>
+    </div>
+    
+  
   </div>
 </div>
 

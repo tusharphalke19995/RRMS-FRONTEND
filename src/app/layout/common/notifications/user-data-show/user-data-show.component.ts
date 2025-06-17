@@ -127,6 +127,7 @@ export class UserDataShowComponent {
                 panelClass: ["green-snackbar"],
               }
             );
+            this.afterSubmitdata();
             this.dialogRef.close(true);
           },
           error: (error) => {
@@ -172,6 +173,21 @@ export class UserDataShowComponent {
       },
       error: (error) => {
         console.error("Error fetching latest files:", error);
+      },
+    });
+  }
+
+  afterSubmitdata(){
+       let payload = {
+      pwdId: this.data.passwordResetRequestId,
+      status: "approved",
+    };
+    this.SearchUserService.setStatusPasswordReset(payload).subscribe({
+      next: () => {
+  
+      },
+      error: (error) => {
+        console.error("Error resetting password:", error);
       },
     });
   }
