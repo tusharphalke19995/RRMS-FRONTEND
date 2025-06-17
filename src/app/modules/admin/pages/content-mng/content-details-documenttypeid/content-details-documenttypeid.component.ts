@@ -290,7 +290,7 @@ finallMoveFiles() {
 
   const payload: Record<string, any> = {
     deptId: departmentID,
-    file_id: this.finalFileId,
+    file_ids: [this.finalFileId],
   };
 
   if (this.finalYear) payload.year = this.finalYear;

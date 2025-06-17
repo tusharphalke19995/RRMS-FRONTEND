@@ -122,10 +122,15 @@ export class AuthSignInComponent implements OnInit {
       next: (response: any) => {
         console.log("response", response);
         if (response.statusCode == 200) {
-          this._authService.accessToken = response.responseData.access;
-          setTimeout(() => {
-            this.checkDesignationObj();
-          }, 2000);
+          if (response.passwordSet === false) {
+            sessionStorage.setItem('id',this.signInForm.value.kgid)
+            this._router.navigateByUrl("reset-password");
+          } else {
+            this._authService.accessToken = response.responseData.access;
+            setTimeout(() => {
+              this.checkDesignationObj();
+            }, 2000);
+          }
         } else {
           this.showAlert = true;
           this.alert = {
@@ -259,15 +264,15 @@ export class AuthSignInComponent implements OnInit {
     this.setLastAction(Date.now());
   }
 
-  logout(){
+  logout() {
     sessionStorage.clear();
-    this._router.navigateByUrl('sign-out')
+    this._router.navigateByUrl("sign-out");
   }
-  
-    allowNumbersAndLetters(event: KeyboardEvent): void {
-  const char = event.key;
-  if (!/^[a-zA-Z0-9\s]$/.test(char) && char !== 'Backspace') {
-    event.preventDefault();
+
+  allowNumbersAndLetters(event: KeyboardEvent): void {
+    const char = event.key;
+    if (!/^[a-zA-Z0-9\s]$/.test(char) && char !== "Backspace") {
+      event.preventDefault();
+    }
   }
-}
 }

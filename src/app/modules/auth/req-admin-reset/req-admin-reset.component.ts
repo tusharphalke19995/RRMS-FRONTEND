@@ -1,5 +1,4 @@
 import { NgIf } from "@angular/common";
-import { HttpClient } from "@angular/common/http";
 import { Component, OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
 import {
   FormsModule,
@@ -21,7 +20,6 @@ import { fuseAnimations } from "@fuse/animations";
 import { FuseAlertComponent, FuseAlertType } from "@fuse/components/alert";
 import { AuthService } from "app/core/auth/auth.service";
 import { DialogService } from "app/modules/admin/pages/common/dialog.service";
-import { emailDomainValidator } from "app/shared/validators/emailDomainValidator";
 
 @Component({
   selector: "auth-req-admin-reset",
@@ -42,7 +40,6 @@ import { emailDomainValidator } from "app/shared/validators/emailDomainValidator
     MatIconModule,
     MatCheckboxModule,
     MatProgressSpinnerModule,
-    
   ],
 })
 export class RequestAdminResetComponent implements OnInit {
@@ -68,7 +65,6 @@ export class RequestAdminResetComponent implements OnInit {
    * Constructor
    */
   constructor(
-         private http: HttpClient,
     private _activatedRoute: ActivatedRoute,
     private _authService: AuthService,
     private _formBuilder: UntypedFormBuilder,
@@ -90,18 +86,11 @@ export class RequestAdminResetComponent implements OnInit {
       kgid: ["", [Validators.required]],
       firstName: ["", [Validators.required]],
       lastName: ["", [Validators.required]],
-       email: [
-              '',
-              [Validators.required, Validators.email],
-              [emailDomainValidator('https://rrms-backend.onrender.com/mdm/domain/names', this.http)]
-            ],
+      email: ['', [Validators.required, Validators.email]],
         mobileNo: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
     });
   }
 
-   get email() {
-    return this.requestAdminResetForm.get('email');
-  }
   // -----------------------------------------------------------------------------------------------------
   // @ Public methods
   // -----------------------------------------------------------------------------------------------------
