@@ -59,7 +59,7 @@ export class FolderTreeComponent implements OnInit {
   finalFileTypeId: any;
   finalDocumentTypeId: any;
   finalDestination: any[];
-  selectedItems: (FolderNode | FileNode)[] = [];
+  selectedFiles: FileNode[] = [];
   selectedFileIds: number[] = [];
 
   constructor(
@@ -142,25 +142,22 @@ export class FolderTreeComponent implements OnInit {
 
   toggleItemSelection(item: FolderNode | FileNode): void {
     if (this.isFile(item)) {
-      const index = this.selectedItems.findIndex(i => i === item);
+      const index = this.selectedFiles.findIndex(i => i.file_id === item.file_id);
       if (index === -1) {
-        this.selectedItems.push(item);
+        this.selectedFiles.push(item as FileNode);
         this.selectedFileIds.push(item.file_id);
       } else {
-        this.selectedItems.splice(index, 1);
+        this.selectedFiles.splice(index, 1);
         this.selectedFileIds = this.selectedFileIds.filter(id => id !== item.file_id);
-      }
-    } else {
-      // If it's a folder, deselect it
-      const index = this.selectedItems.findIndex(i => i === item);
-      if (index !== -1) {
-        this.selectedItems.splice(index, 1);
       }
     }
   }
 
   isItemSelected(item: FolderNode | FileNode): boolean {
-    return this.selectedItems.includes(item);
+    if (this.isFile(item)) {
+      return this.selectedFiles.some(file => file.file_id === item.file_id);
+    }
+    return false;
   }
 
   getItemIcon(item: FolderNode | FileNode): string {
@@ -252,13 +249,11 @@ export class FolderTreeComponent implements OnInit {
   }
 
   canMoveSelectedItems(): boolean {
-    return this.selectedItems.length > 0 && this.selectedItems.every(item => this.isFile(item));
+    return this.selectedFiles.length > 0 && this.selectedFiles.every(item => this.isFile(item));
   }
 
-  openMoveFileDialog(file?: FileNode) {
-    const filesToMove = file ? [file] : this.selectedItems.filter(item => this.isFile(item)) as FileNode[];
-    
-    if (filesToMove.length === 0) {
+  openMoveFileDialog(): void {
+    if (this.selectedFiles.length === 0) {
       this.snackBar.open('Please select at least one file to move', 'Close', {
         duration: 3000,
         horizontalPosition: 'end',
@@ -268,15 +263,17 @@ export class FolderTreeComponent implements OnInit {
     }
 
     const dialogRef = this.dialog.open(MoveFileDialogComponent, {
-      width: "800px",
-      height: "600px",
-      data: { selectedFiles: filesToMove }
+      width: '800px',
+      height: '600px',
+      data: { selectedFiles: this.selectedFiles }
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe(result => {
       if (result === true) {
+        // Refresh the folder tree after successful move
         this.loadFolderTree();
-        this.selectedItems = [];
+        // Clear selections
+        this.selectedFiles = [];
         this.selectedFileIds = [];
       }
     });
@@ -346,7 +343,7 @@ export class FolderTreeComponent implements OnInit {
           this.loadFolderTree();
           
           // Clear selections
-          this.selectedItems = [];
+          this.selectedFiles = [];
           this.selectedFileIds = [];
           this.finalYear = null;
           this.finalCaseNo = null;

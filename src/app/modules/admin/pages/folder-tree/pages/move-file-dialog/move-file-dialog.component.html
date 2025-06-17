@@ -20,22 +20,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Breadcrumbs -->
-    <div class="breadcrumbs mb-4 flex items-center flex-wrap gap-2">
-      <button mat-button class="home-button" (click)="navigateToRoot()">
-        <mat-icon>home</mat-icon>
-        <span>Root</span>
-      </button>
-      <ng-container *ngFor="let crumb of breadcrumbs; let last = last">
-        <mat-icon class="crumb-separator text-gray-400">chevron_right</mat-icon>
-        <button mat-button [class.active]="last" (click)="navigateToFolder(crumb)">
-          <mat-icon>folder</mat-icon>
-          <span>{{ crumb.name }}</span>
-        </button>
-      </ng-container>
-    </div>
-
     <!-- Folder Tree -->
     <div class="folder-tree-container flex-1 overflow-auto relative" [class.loading]="loading$ | async">
       <div class="loading-overlay absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center" *ngIf="loading$ | async">
