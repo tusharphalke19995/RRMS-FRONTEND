@@ -269,12 +269,82 @@ export class FolderTreeComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        // Refresh the folder tree after successful move
-        this.loadFolderTree();
-        // Clear selections
-        this.selectedFiles = [];
-        this.selectedFileIds = [];
+      if (result) {
+        const departmentID = Number(sessionStorage.getItem("departmentID"));
+        // Create base payload
+        const payload: Record<string, any> = {
+          deptId: departmentID,
+          file_ids: result.files.map(file => file.file_id),
+        };
+
+        // Add optional parameters if they exist
+        const optionalParams = {
+          year: result.year,
+          caseNo: result.caseNo,
+          caseType: result.caseType,
+          file_type_id: result.fileTypeId,
+          document_type_id: result.documentTypeId
+        };
+
+        // Only add parameters that have values
+        Object.entries(optionalParams).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== '') {
+            payload[key] = value;
+          }
+        });
+
+        this.folderTreeService.moveFilesInfo(payload).subscribe({
+          next: (response: any) => {
+            if (response?.success) {
+              this.snackBar.open(
+                `Successfully moved ${result.files.length} file${result.files.length > 1 ? 's' : ''}.`,
+                "Close",
+                {
+                  duration: 3000,
+                  horizontalPosition: "right",
+                  verticalPosition: "top",
+                  panelClass: ["green-snackbar"],
+                }
+              );
+              
+              // Refresh the folder tree
+              this.loadFolderTree();
+              
+              // Clear selections
+              this.selectedFiles = [];
+              this.selectedFileIds = [];
+              this.finalYear = null;
+              this.finalCaseNo = null;
+              this.finalcaseType = null;
+              this.finalFileTypeId = null;
+              this.finalDocumentTypeId = null;
+            } else {
+              this.snackBar.open(
+                response?.message || "Failed to move files. Please try again.",
+                "Close",
+                {
+                  duration: 3000,
+                  horizontalPosition: "right",
+                  verticalPosition: "top",
+                  panelClass: ["error-snackbar"],
+                }
+              );
+            }
+          },
+          error: (error) => {
+            console.error("Error moving files:", error);
+            this.snackBar.open(
+              error?.error?.message || "Failed to move files. Please try again.",
+              "Close",
+              {
+                duration: 3000,
+                horizontalPosition: "right",
+                verticalPosition: "top",
+                panelClass: ["error-snackbar"],
+              }
+            );
+          }
+        });
       }
     });
   }

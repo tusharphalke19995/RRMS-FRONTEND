@@ -4,6 +4,7 @@
   height: 100%;
   padding: 24px;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .dialog-header {
@@ -24,6 +25,7 @@
   padding: 16px;
   background: #f5f5f5;
   border-radius: 8px;
+  flex-shrink: 0;
 
   h3 {
     margin: 0 0 12px 0;
@@ -32,11 +34,9 @@
   }
 
   .file-list {
-    max-height: 200px;
+    max-height: 120px;
     overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    padding-right: 8px;
   }
 
   .file-item {
@@ -45,16 +45,10 @@
     padding: 8px 12px;
     background: white;
     border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 4px;
 
-    .file-icon {
-      margin-right: 12px;
-      color: #666;
-    }
-
-    .file-name {
-      font-size: 14px;
-      color: #333;
+    &:last-child {
+      margin-bottom: 0;
     }
   }
 }
@@ -112,9 +106,8 @@
 .folder-tree-container {
   position: relative;
   flex: 1;
-  min-height: 300px;
-  max-height: 400px;
-  overflow-y: auto;
+  min-height: 0;
+  overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 4px;
   margin: 16px 0;
@@ -137,89 +130,70 @@
     justify-content: center;
     z-index: 1000;
   }
+}
 
-  .folder-tree {
-    padding: 16px;
+.folder-tree {
+  height: 100%;
+  overflow-y: auto;
+  padding: 16px;
+  padding-right: 24px;
+}
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  user-select: none;
+  min-height: 40px;
+
+  &.selectable {
+    cursor: pointer;
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
   }
 
-  .tree-node {
+  &.selected {
+    background-color: rgba(var(--fuse-primary-rgb), 0.1);
+  }
+
+  .toggle-button {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+
+  .node-content {
     display: flex;
     align-items: center;
-    padding: 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    flex: 1;
+    min-width: 0;
 
-    &:hover {
-      background: #f0f0f0;
-    }
-
-    &.selected {
-      background-color: rgba(var(--fuse-primary-rgb), 0.1);
-      border: 1px solid var(--fuse-primary);
-    }
-
-    &.disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
-    .toggle-button {
-      width: 32px;
-      height: 32px;
-      line-height: 32px;
+    .node-icon {
       margin-right: 8px;
-
-      .mat-icon {
-        transition: transform 0.2s ease-in-out;
-      }
+      color: #666;
+      flex-shrink: 0;
     }
 
-    .node-content {
-      display: flex;
-      align-items: center;
-      flex: 1;
-
-      .node-icon {
-        margin-right: 8px;
-        color: #666;
-      }
-
-      .node-details {
-        flex: 1;
-
-        .node-name {
-          display: block;
-          font-weight: 500;
-        }
-
-        .node-level {
-          font-size: 12px;
-          color: #666;
-        }
-      }
+    .node-name {
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
+}
 
-  .tree-node-children {
-    margin-left: 24px;
-    transition: all 0.2s ease-in-out;
-  }
+.tree-node-children {
+  margin-left: 24px;
+}
 
-  .tree-invisible {
-    display: none;
-  }
-
-  .mat-tree-node {
-    min-height: 40px;
-  }
-
-  .mat-nested-tree-node {
-    .mat-tree-node {
-      padding-left: 0;
-    }
-  }
+.tree-invisible {
+  display: none;
 }
 
 .selected-path {
@@ -228,6 +202,7 @@
   background: #e3f2fd;
   border-radius: 4px;
   border: 1px solid var(--fuse-primary);
+  flex-shrink: 0;
 
   h3 {
     margin: 0 0 8px 0;
@@ -241,12 +216,6 @@
     align-items: center;
     gap: 8px;
     color: #1976d2;
-
-    mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-    }
   }
 }
 
@@ -257,6 +226,7 @@
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
 
   button[mat-flat-button] {
     min-width: 120px;
@@ -326,15 +296,15 @@
   }
 }
 
-.mat-mdc-dialog-container {
-
-    .mat-mdc-dialog-surface {
-        padding: 0 !important;
-        max-width: 48rem !important;
-        border-radius: 1rem;
-    }
+::ng-deep .mat-mdc-dialog-container {
+  .mat-mdc-dialog-surface {
+    padding: 0 !important;
+    max-width: 48rem !important;
+    border-radius: 1rem;
+    overflow: hidden !important;
+  }
 }
-  
+
 .example-full-width {
   width: 100%;
 }
