@@ -36,28 +36,7 @@ import { BehaviorSubject } from "rxjs";
 
 import { DatePipe } from '@angular/common';
 import { FolderTreeService } from "../../services/folder-tree.service";
-
-interface FolderNode {
-  id?: string;
-  name: string;
-  level: string;
-  type: string;
-  children?: FolderNode[];
-  files?: FileNode[];
-  isFile?: boolean;
-  path?: string;
-  expanded?: boolean;
-}
-
-interface FileNode {
-  file_id: number;
-  name: string;
-  path: string;
-  created_at: string;
-  uploaded_by: string;
-  fileType?: string;
-  fileSize?: string;
-}
+import { FolderNode, FileNode } from '../../models/folder-tree.model';
 
 interface ApiResponse {
   success: boolean;
@@ -124,11 +103,10 @@ export class MoveFileDialogComponent implements OnInit {
   selectedNode: FolderNode | null = null;
   breadcrumbs: FolderNode[] = [];
   searchFilter: string = '';
-  loadingSubject = new BehaviorSubject<boolean>(false);
-  loading$ = this.loadingSubject.asObservable();
+  loading$ = new BehaviorSubject<boolean>(false);
   selectedFiles: FileNode[] = [];
   originalData: FolderNode[] = [];
-  fileDetails: any[] = [];
+  fileDetails: FileNode[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<MoveFileDialogComponent>,
@@ -199,12 +177,9 @@ export class MoveFileDialogComponent implements OnInit {
     }
   }
 
-  hasChild = (_: number, node: FolderNode): boolean => {
-    return !!node.children && node.children.length > 0;
-  };
-
-  isLeaf = (_: number, node: FolderNode): boolean => {
-    return !node.children || node.children.length === 0;
+  hasChild = (_: number, node: FolderNode) => !!node.children && node.children.length > 0;
+  isLeaf = (_: number, node: FolderNode) => {
+    return node.type === 'folder' && (!node.children || node.children.length === 0);
   };
 
   getIcon(fileName: string | undefined): string {
@@ -256,12 +231,8 @@ export class MoveFileDialogComponent implements OnInit {
     }
   }
 
-  private setLoading(loading: boolean): void {
-    this.loadingSubject.next(loading);
-  }
-
   loadFolderTree(): void {
-    this.setLoading(true);
+    this.loading$.next(true);
     const payload = {
       division_id: sessionStorage.getItem("divisionID")
     };
@@ -285,7 +256,7 @@ export class MoveFileDialogComponent implements OnInit {
             horizontalPosition: 'end',
             verticalPosition: 'top'
           });
-          this.setLoading(false);
+          this.loading$.next(false);
           return;
         }
 
@@ -307,9 +278,10 @@ export class MoveFileDialogComponent implements OnInit {
           horizontalPosition: 'end',
           verticalPosition: 'top'
         });
+        this.loading$.next(false);
       },
       complete: () => {
-        this.setLoading(false);
+        this.loading$.next(false);
         this.cdr.markForCheck();
       }
     });
@@ -391,7 +363,7 @@ export class MoveFileDialogComponent implements OnInit {
       return;
     }
 
-    this.setLoading(true);
+    this.loading$.next(true);
     const payload = {
       file_ids: this.selectedFiles.map(file => file.file_id),
       destination_folder_id: this.selectedNode.id
@@ -423,7 +395,7 @@ export class MoveFileDialogComponent implements OnInit {
         });
       },
       complete: () => {
-        this.setLoading(false);
+        this.loading$.next(false);
       }
     });
   }
@@ -508,5 +480,27 @@ export class MoveFileDialogComponent implements OnInit {
       default:
         return 'insert_drive_file';
     }
+  }
+
+  toggleNode(node: FolderNode, event: Event): void {
+    event.stopPropagation(); // Prevent node selection when toggling
+    if (this.treeControl.isExpanded(node)) {
+      this.treeControl.collapse(node);
+    } else {
+      this.treeControl.expand(node);
+    }
+  }
+
+  navigateToFolder(folder: FolderNode): void {
+    const index = this.breadcrumbs.indexOf(folder);
+    if (index === -1) {
+      this.breadcrumbs.push(folder);
+    } else {
+      this.breadcrumbs = this.breadcrumbs.slice(0, index + 1);
+    }
+  }
+
+  navigateToRoot(): void {
+    this.breadcrumbs = [];
   }
 }

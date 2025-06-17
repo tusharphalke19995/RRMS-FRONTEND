@@ -1,19 +1,23 @@
 export interface FolderNode {
-  id: number;
+  id?: string;
   name: string;
   level: string;
-  type?: string;
+  type: string;
   children?: FolderNode[];
   files?: FileNode[];
+  isFile?: boolean;
   path?: string;
+  expanded?: boolean;
+  isFolder?: boolean;
+   fileSize?: string;
 }
 
 export interface FileNode {
-  name: string;
   file_id: number;
-  uploaded_by?: string;
-  created_at?: string;
+  name: string;
   path?: string;
-  size?: number;
-  type?: string;
+  created_at?: string;
+  uploaded_by?: string;
+  fileType?: string;
+  fileSize?: number;
 } 

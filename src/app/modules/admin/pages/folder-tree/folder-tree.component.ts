@@ -115,11 +115,24 @@ export class FolderTreeComponent implements OnInit {
     }));
   }
 
-  toggleNode(node: FolderNode): void {
+  toggleNode(node: FolderNode, event: Event): void {
+    event.stopPropagation(); // Prevent node selection when toggling
     if (this.treeControl.isExpanded(node)) {
       this.treeControl.collapse(node);
     } else {
       this.treeControl.expand(node);
+    }
+  }
+
+  expandAll(): void {
+    if (this.treeControl.dataNodes) {
+      this.treeControl.expandAll();
+    }
+  }
+
+  collapseAll(): void {
+    if (this.treeControl.dataNodes) {
+      this.treeControl.collapseAll();
     }
   }
 
@@ -174,7 +187,7 @@ export class FolderTreeComponent implements OnInit {
 
   getItemSize(item: FolderNode | FileNode): string {
     if (this.isFile(item)) {
-      const size = item.size || 0;
+      const size = item.fileSize || 0;
       if (size < 1024) return size + ' B';
       if (size < 1024 * 1024) return (size / 1024).toFixed(1) + ' KB';
       if (size < 1024 * 1024 * 1024) return (size / (1024 * 1024)).toFixed(1) + ' MB';
@@ -394,18 +407,6 @@ export class FolderTreeComponent implements OnInit {
         });
       },
     });
-  }
-
-  expandAll(): void {
-    if (this.treeControl.dataNodes) {
-      this.treeControl.expandAll();
-    }
-  }
-
-  collapseAll(): void {
-    if (this.treeControl.dataNodes) {
-      this.treeControl.collapseAll();
-    }
   }
 
   isFile(node: any): node is FileNode {

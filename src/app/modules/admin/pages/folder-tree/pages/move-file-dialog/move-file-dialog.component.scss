@@ -155,11 +155,25 @@
     }
 
     &.selected {
-      background: #e3f2fd;
+      background-color: rgba(var(--fuse-primary-rgb), 0.1);
+      border: 1px solid var(--fuse-primary);
+    }
+
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
     }
 
     .toggle-button {
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
       margin-right: 8px;
+
+      .mat-icon {
+        transition: transform 0.2s ease-in-out;
+      }
     }
 
     .node-content {
@@ -190,10 +204,21 @@
 
   .tree-node-children {
     margin-left: 24px;
+    transition: all 0.2s ease-in-out;
   }
 
   .tree-invisible {
     display: none;
+  }
+
+  .mat-tree-node {
+    min-height: 40px;
+  }
+
+  .mat-nested-tree-node {
+    .mat-tree-node {
+      padding-left: 0;
+    }
   }
 }
 
@@ -202,6 +227,7 @@
   padding: 12px;
   background: #e3f2fd;
   border-radius: 4px;
+  border: 1px solid var(--fuse-primary);
 
   h3 {
     margin: 0 0 8px 0;
@@ -231,6 +257,10 @@
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid rgba(0, 0, 0, 0.12);
+
+  button[mat-flat-button] {
+    min-width: 120px;
+  }
 }
 
 // Custom scrollbar styling
