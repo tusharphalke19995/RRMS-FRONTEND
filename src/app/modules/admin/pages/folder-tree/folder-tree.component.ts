@@ -442,7 +442,7 @@ export class FolderTreeComponent implements OnInit {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
-            panelClass: ["error-snackbar"],
+            panelClass: ["red-snackbar"],
           }
         );
       }
@@ -470,7 +470,7 @@ export class FolderTreeComponent implements OnInit {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
-          panelClass: ["error-snackbar"],
+          panelClass: ["red-snackbar"],
         });
       },
     });
