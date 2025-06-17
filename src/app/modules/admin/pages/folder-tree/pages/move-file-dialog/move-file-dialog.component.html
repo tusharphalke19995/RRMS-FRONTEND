@@ -1,44 +1,26 @@
-<div class="move-file-dialog">
-  <!-- Dialog Header -->
-  <div class="dialog-header">
-    <h2 mat-dialog-title>Move Files</h2>
-    <button mat-icon-button (click)="close()">
-      <mat-icon>close</mat-icon>
+<div class="flex flex-col w-full max-w-3xl h-[90vh] bg-white rounded-lg shadow-lg overflow-hidden">
+  <!-- Header -->
+  <div
+    class="flex items-center justify-between px  bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md">
+    <div class="flex-1 flex items-center">
+      <span class="text-xl font-semibold tracking-tight truncate" *transloco="let t">Move File</span>
+    </div>
+    <button mat-icon-button (click)="close()" [tabIndex]="-1">
+      <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
     </button>
-  </div>
 
-  <!-- Selected Files Section -->
+  </div>
+      <div class="move-file-dialog">
+
   <div class="selected-files" *ngIf="fileDetails.length > 0">
     <h3>Selected Files ({{ fileDetails.length }})</h3>
     <div class="file-list">
       <div class="file-item" *ngFor="let file of fileDetails">
         <mat-icon class="file-icon">{{ getFileIcon(file.name) }}</mat-icon>
-        <div class="file-info">
-          <span class="file-name">{{ file.name }}</span>
-          <div class="file-meta">
-            <span class="uploader" *ngIf="file.uploadedBy">
-              <mat-icon class="meta-icon">person</mat-icon>
-              <span>{{ file.uploadedBy }}</span>
-            </span>
-            <span class="date" *ngIf="file.date">
-              <mat-icon class="meta-icon">calendar_today</mat-icon>
-              <span>{{ file.date | date:'medium' }}</span>
-            </span>
-          </div>
-        </div>
+        <span class="file-name">{{ file.name }}</span>
       </div>
     </div>
   </div>
-
-  <!-- Search Bar -->
-  <div class="search-container">
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Search folders</mat-label>
-      <input matInput [(ngModel)]="searchFilter" (keyup)="applyFilter($event)" placeholder="Type to search...">
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
-  </div>
-
   <!-- Breadcrumbs -->
   <div class="breadcrumbs" *ngIf="breadcrumbs.length > 0">
     <button mat-button class="home-button" (click)="navigateToRoot()">
@@ -113,3 +95,4 @@
     </button>
   </div>
 </div>
+  </div>

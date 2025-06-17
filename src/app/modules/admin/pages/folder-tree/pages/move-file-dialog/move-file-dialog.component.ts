@@ -149,6 +149,7 @@ export class MoveFileDialogComponent implements OnInit {
     }
     this.selectedFiles = data.selectedFiles;
     this.processFileDetails();
+    console.log('Selected files:', this.selectedFiles);
   }
 
   ngOnInit(): void {
@@ -159,12 +160,16 @@ export class MoveFileDialogComponent implements OnInit {
     if (!this.selectedFiles.length) return;
 
     this.fileDetails = this.selectedFiles.map(file => ({
-      name: file.name || 'Unnamed File',
-      uploadedBy: file.uploaded_by || 'Unknown',
-      path: file.path || '/',
-      date: file.created_at ? new Date(file.created_at) : new Date(),
+      name: file.name,
       file_id: file.file_id
     }));
+    
+    this.cdr.markForCheck();
+  }
+
+  isValidDestination(node: FolderNode): boolean {
+    // Check if the node is a folder and not a file
+    return !node.isFile && node.type === 'folder';
   }
 
   private getFileType(extension: string): string {
@@ -334,6 +339,14 @@ export class MoveFileDialogComponent implements OnInit {
   }
 
   selectNode(node: FolderNode): void {
+    if (!this.isValidDestination(node)) {
+      this.snackBar.open('Please select a valid folder destination', 'Close', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top'
+      });
+      return;
+    }
     this.selectedNode = node;
     this.updateBreadcrumbs(node);
     this.cdr.markForCheck();

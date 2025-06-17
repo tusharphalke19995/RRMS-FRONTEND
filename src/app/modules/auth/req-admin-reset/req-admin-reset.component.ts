@@ -90,7 +90,7 @@ export class RequestAdminResetComponent implements OnInit {
       kgid: ["", [Validators.required]],
       firstName: ["", [Validators.required]],
       lastName: ["", [Validators.required]],
-       emailID: [
+       email: [
               '',
               [Validators.required, Validators.email],
               [emailDomainValidator('https://rrms-backend.onrender.com/mdm/domain/names', this.http)]
@@ -133,8 +133,7 @@ export class RequestAdminResetComponent implements OnInit {
           );
            this.requestAdminResetForm.enable();
           this.requestAdminResetForm.reset();
-          
-          // this._router.navigateByUrl("/sign-in")
+          this._router.navigateByUrl("/sign-in")
       },
               error: (error) => {
           console.error("Login error:", error);

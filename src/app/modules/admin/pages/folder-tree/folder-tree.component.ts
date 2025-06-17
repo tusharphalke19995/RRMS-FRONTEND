@@ -137,6 +137,12 @@ export class FolderTreeComponent implements OnInit {
         this.selectedItems.splice(index, 1);
         this.selectedFileIds = this.selectedFileIds.filter(id => id !== item.file_id);
       }
+    } else {
+      // If it's a folder, deselect it
+      const index = this.selectedItems.findIndex(i => i === item);
+      if (index !== -1) {
+        this.selectedItems.splice(index, 1);
+      }
     }
   }
 
@@ -232,6 +238,10 @@ export class FolderTreeComponent implements OnInit {
     });
   }
 
+  canMoveSelectedItems(): boolean {
+    return this.selectedItems.length > 0 && this.selectedItems.every(item => this.isFile(item));
+  }
+
   openMoveFileDialog(file?: FileNode) {
     const filesToMove = file ? [file] : this.selectedItems.filter(item => this.isFile(item)) as FileNode[];
     
@@ -245,8 +255,8 @@ export class FolderTreeComponent implements OnInit {
     }
 
     const dialogRef = this.dialog.open(MoveFileDialogComponent, {
-      width: "550px",
-      height: "450px",
+      width: "800px",
+      height: "600px",
       data: { selectedFiles: filesToMove }
     });
 
@@ -384,28 +394,6 @@ export class FolderTreeComponent implements OnInit {
         });
       },
     });
-  }
-
-  deleteItem(item: FolderNode | FileNode): void {
-    if (confirm(`Are you sure you want to delete ${item.name}?`)) {
-      // const itemId = this.isFile(item) ? item.file_id.toString() : item.id?.toString();
-      // if (itemId) {
-      //   this.folderTreeService.deleteItem(itemId).subscribe({
-      //     next: () => {
-      //       this.snackBar.open('Item deleted successfully', 'Close', { duration: 3000 });
-      //       this.loadFolderTree();
-      //     },
-      //     error: (error) => {
-      //       this.snackBar.open('Error deleting item', 'Close', { duration: 3000 });
-      //       console.error('Error deleting item:', error);
-      //     }
-      //   });
-      // }
-    }
-  }
-
-  downloadFile(file: FileNode): void {
-    // Implementation for download
   }
 
   expandAll(): void {
