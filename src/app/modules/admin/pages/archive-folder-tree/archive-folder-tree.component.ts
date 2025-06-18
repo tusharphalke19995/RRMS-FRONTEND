@@ -1,49 +1,49 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatTreeNestedDataSource } from '@angular/material/tree';
-import { NestedTreeControl } from '@angular/cdk/tree';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FolderTreeService } from './services/folder-tree.service';
-import { FolderNode, FileNode } from './models/folder-tree.model';
-import { MatDialog } from '@angular/material/dialog';
-import { MoveFileDialogComponent } from './pages/move-file-dialog/move-file-dialog.component';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { trigger, state, style, transition, animate } from '@angular/animations';
+import { NestedTreeControl } from '@angular/cdk/tree';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTreeModule } from '@angular/material/tree';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
 import { fuseAnimations } from '@fuse/animations';
-import { trigger, state, style, transition, animate } from '@angular/animations';
+import { MoveFileDialogComponent } from '../content-mng/pages/move-file-dialog/move-file-dialog.component';
+import { FolderNode, FileNode } from '../folder-tree/models/folder-tree.model';
+import { FolderTreeService } from '../folder-tree/services/folder-tree.service';
+import { ArchiveTreeService } from './archive-tree.service';
 
 @Component({
-  selector: 'app-folder-tree',
-  templateUrl: './folder-tree.component.html',
-  styleUrls: ['./folder-tree.component.scss'],
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTreeModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatTooltipModule,
-    MatMenuModule
-  ],
-  animations: [
-    fuseAnimations,
-    trigger('rotateIcon', [
-      state('collapsed', style({ transform: 'rotate(0deg)' })),
-      state('expanded', style({ transform: 'rotate(90deg)' })),
-      transition('collapsed <=> expanded', animate('200ms ease-in-out'))
-    ])
-  ]
+  selector: 'app-archive-folder-tree',
+    standalone: true,
+    imports: [
+      CommonModule,
+      FormsModule,
+      MatButtonModule,
+      MatIconModule,
+      MatTreeModule,
+      MatFormFieldModule,
+      MatInputModule,
+      MatTooltipModule,
+      MatMenuModule
+    ],
+    animations: [
+      fuseAnimations,
+      trigger('rotateIcon', [
+        state('collapsed', style({ transform: 'rotate(0deg)' })),
+        state('expanded', style({ transform: 'rotate(90deg)' })),
+        transition('collapsed <=> expanded', animate('200ms ease-in-out'))
+      ])
+    ],
+  templateUrl: './archive-folder-tree.component.html',
+  styleUrl: './archive-folder-tree.component.scss'
 })
-export class FolderTreeComponent implements OnInit {
+export class ArchiveFolderTreeComponent implements OnInit {
   treeControl = new NestedTreeControl<FolderNode>(node => node.children);
   dataSource = new MatTreeNestedDataSource<FolderNode>();
   selectedItem: FolderNode | FileNode | null = null;
@@ -63,6 +63,7 @@ export class FolderTreeComponent implements OnInit {
   currentFolder: FolderNode | null = null;
 
   constructor(
+   private archiveTreeService:ArchiveTreeService,
     private folderTreeService: FolderTreeService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog, private _snackBar: MatSnackBar,
@@ -77,10 +78,7 @@ export class FolderTreeComponent implements OnInit {
   hasChild = (_: number, node: FolderNode) => !!node.children && node.children.length > 0;
 
   loadFolderTree(): void {
-    const payload = {
-      division_id: sessionStorage.getItem("divisionID")
-    };
-    this.folderTreeService.folderTreeView(payload).subscribe({
+    this.archiveTreeService.getArchiveFolderTree(Number(sessionStorage.getItem("divisionID"))).subscribe({
       next: (response: any) => {
         if (response) {
           console.log('Raw API response:', response);
@@ -486,35 +484,23 @@ export class FolderTreeComponent implements OnInit {
   }
 
   selectedFilesArchive() {
-    if (!this.selectedFileIds || this.selectedFileIds.length === 0) {
-      this._snackBar.open("Please select at least one file to archive.", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["red-snackbar"],
-      });
-      return;
-    }
-
     const payload = {
-      file_ids: this.selectedFileIds,
+      file_id: this.finalFileId,
     };
 
     this.folderTreeService.archiveFiles(payload).subscribe({
       next: (res: any) => {
-        this._snackBar.open("Files archived successfully", "Close", {
+        this._snackBar.open("File Archive successfully", "Close", {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
           panelClass: ["green-snackbar"],
         });
         this.loadFolderTree();
-        this.selectedFiles = [];
-        this.selectedFileIds = [];
       },
       error: (err) => {
-        console.error("Error archiving files:", err);
-        this._snackBar.open("Failed to archive files", "Close", {
+        console.error("Error archiving file:", err);
+        this._snackBar.open("Failed to File Archive", "Close", {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",

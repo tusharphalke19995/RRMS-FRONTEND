@@ -213,8 +213,14 @@ export const appRoutes: Route[] = [
           import(
             "app/modules/admin/pages/folder-tree/folder-tree.routes"
           ),
+      },
+       {
+        path:"archive-folder-tree",
+        loadChildren: () =>
+          import(
+            "app/modules/admin/pages/archive-folder-tree/archive-tree.routes"
+          ),
       }
-      
     ],
   },
 ];

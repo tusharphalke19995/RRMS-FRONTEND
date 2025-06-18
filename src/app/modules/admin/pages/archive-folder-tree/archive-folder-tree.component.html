@@ -1,10 +1,11 @@
+<p>archive-folder-tree works!</p>
 <div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent">
   <div class="folder-tree-container attractive-card">
     <!-- Header Section -->
     <div class="header-section attractive-header">
       <div class="header-content">
         <div class="header-left">
-          <h1 class="page-title">Content Management</h1>
+          <h1 class="page-title">Archive Management</h1>
           <p class="page-subtitle">Organize and manage your files and folders</p>
         </div>
       </div>
@@ -19,13 +20,6 @@
                 [disabled]="!canMoveSelectedItems()">
           <mat-icon>drive_file_move</mat-icon>
           Move {{ selectedFiles.length }} file{{ selectedFiles.length > 1 ? 's' : '' }}
-        </button>
-        <button mat-stroked-button
-                color="warn"
-                (click)="selectedFilesArchive()"
-                [disabled]="selectedFiles.length === 0">
-          <mat-icon>archive</mat-icon>
-          Archive
         </button>
       </div>
     </div>

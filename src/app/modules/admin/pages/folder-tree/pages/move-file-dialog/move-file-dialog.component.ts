@@ -406,14 +406,14 @@ export class MoveFileDialogComponent implements OnInit {
     this.dialogRef.close(payload);
   }
 
-  confirmArchive(): void {
-    const payload: MoveFileDialogResult = {
-      files: this.data.selectedFiles,
-      type: 'archive'
-    };
+  // confirmArchive(): void {
+  //   const payload: MoveFileDialogResult = {
+  //     files: this.data.selectedFiles,
+  //     type: 'archive'
+  //   };
 
-    this.dialogRef.close(payload);
-  }
+  //   this.dialogRef.close(payload);
+  // }
 
   close(): void {
     this.dialogRef.close();

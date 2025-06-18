@@ -71,6 +71,7 @@ export const apiurls = {
   getUsersData : `${environment.userApiUrl}users/get-user-data/`,
   sendPwdReset : `${environment.userApiUrl}users/send-pwd-reset/`,
   folderTreeView : `${environment.userApiUrl}cm/folder-tree-view`,
+  archiveFolderTreeView : `${environment.userApiUrl}cm/archive`,
 
 
 
