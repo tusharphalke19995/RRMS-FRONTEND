@@ -483,4 +483,8 @@ export class MoveFileDialogComponent implements OnInit {
     return this.selectedNode.name === node.name && 
            this.selectedNode.level === node.level;
   }
+
+  trackByFileName(index: number, file: FileNode): string {
+    return file.name || index.toString();
+  }
 }
