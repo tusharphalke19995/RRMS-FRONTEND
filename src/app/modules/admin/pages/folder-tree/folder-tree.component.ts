@@ -497,7 +497,7 @@ export class FolderTreeComponent implements OnInit {
     }
 
     const payload = {
-      file_ids: this.selectedFileIds,
+      file_id: this.selectedFileIds,
     };
 
     this.folderTreeService.archiveFiles(payload).subscribe({

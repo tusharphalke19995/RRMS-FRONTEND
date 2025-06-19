@@ -483,14 +483,13 @@ export class ArchiveFolderTreeComponent implements OnInit {
     });
   }
 
-  selectedFilesArchive() {
-    const payload = {
-      file_id: this.finalFileId,
+  selectedFilesUnArchive() {
+    let payload = {
+      file_id:this.selectedFileIds,
     };
-
-    this.folderTreeService.archiveFiles(payload).subscribe({
+    this.archiveTreeService.unarchiveFolderTreeView(payload).subscribe({
       next: (res: any) => {
-        this._snackBar.open("File Archive successfully", "Close", {
+        this._snackBar.open("File Un-Archive successfully", "Close", {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
@@ -500,7 +499,7 @@ export class ArchiveFolderTreeComponent implements OnInit {
       },
       error: (err) => {
         console.error("Error archiving file:", err);
-        this._snackBar.open("Failed to File Archive", "Close", {
+        this._snackBar.open("Failed to File Un-Archive", "Close", {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",

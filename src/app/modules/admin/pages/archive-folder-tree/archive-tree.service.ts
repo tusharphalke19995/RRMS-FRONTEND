@@ -25,7 +25,10 @@ export class ArchiveTreeService {
     return this.commonApiCallService.get(url).pipe(catchError(this.handleError));
   }
 
-
+  unarchiveFolderTreeView(data:any) {
+     const url = `${apiurls.unarchiveFolderTreeView}`
+    return this.commonApiCallService.post(url,data).pipe(catchError(this.handleError));
+  }
 
 
    /**

@@ -4,7 +4,7 @@
     <div class="header-section attractive-header">
       <div class="header-content">
         <div class="header-left">
-          <h1 class="page-title">Content Management</h1>
+          <h2 class="page-title">Content Management</h2>
           <p class="page-subtitle">Organize and manage your files and folders</p>
         </div>
       </div>
@@ -80,7 +80,9 @@
               
               <div class="node-content attractive-node-content">
                 <div class="node-icon-container attractive-node-icon">
-                  <mat-icon class="node-icon" [class]="'folder-icon-' + node.type">{{ getItemIcon(node) }}</mat-icon>
+                  <!-- <mat-icon class="node-icon" [class]="'folder-icon-' + node.type">{{ getItemIcon(node) }}</mat-icon> -->
+                   <img class="node-icon" [class]="'folder-icon-' + node.type"
+                    src="../../../../../assets/images/others/folder.svg" alt="folder icon">
                 </div>
                 <div class="node-details attractive-node-details">
                   <span class="node-name">{{ node.name }}</span>

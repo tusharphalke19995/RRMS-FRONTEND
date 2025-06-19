@@ -826,7 +826,7 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
             } else if ( currentRole ==="Admin") {
                 return ['searchDocument', 'home', 'uploadDocument', 'notification','caseApproval','reqAccess'].includes(item.id);
             } else if (currentRole === "ContentManager") {
-                return ['searchDocument', 'home', 'uploadDocument', 'notification','caseApproval','reqAccess','contentMng'].includes(item.id);
+                return ['searchDocument', 'home', 'uploadDocument', 'notification','caseApproval','reqAccess','contentMng','archiveMng'].includes(item.id);
             } else if (currentRole === "User") {
                 return ['searchDocument', 'home', 'uploadDocument','notification','caseApproval','reqAccess'].includes(item.id);
             }

@@ -30,6 +30,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
     icon: "heroicons_outline:user-circle",
     link: "/content-management",
   },
+   {
+    id: "archiveMng",
+    title: "Archive Management",
+    type: "basic",
+    icon: "heroicons_outline:user-circle",
+    link: "/archive-folder-tree",
+  },
   // {
   //     id   : 'roleMng',
   //     title: 'Role Management',
