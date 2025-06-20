@@ -100,7 +100,7 @@ export class FolderTreeComponent implements OnInit {
 
           this.dataSource.data = processedData;
           this.treeControl.dataNodes = processedData;
-
+          setTimeout(() => this.treeControl.expandAll());
           this.updateDisplayItems();
           // Set root as current folder
           this.currentFolder = null;
