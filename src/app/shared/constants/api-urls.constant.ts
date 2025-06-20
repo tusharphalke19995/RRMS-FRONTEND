@@ -73,6 +73,7 @@ export const apiurls = {
   folderTreeView : `${environment.userApiUrl}cm/folder-tree-view`,
   archiveFolderTreeView : `${environment.userApiUrl}cm/archive`,
   unarchiveFolderTreeView : `${environment.userApiUrl}cm/unarchive`,
+  copyFiles : `${environment.userApiUrl}cm/copy-files`,
 
   sendReminder: (id: number | string) =>
     `${environment.userApiUrl}casedata/requests/${id}/send-reminder`,

@@ -45,6 +45,11 @@ export class FolderTreeService {
       .pipe(catchError(this.handleError));
   }
 
+    copyFilesInfo(data: any) {
+    return this._httpClient
+      .post(apiurls.copyFiles, data)
+      .pipe(catchError(this.handleError));
+  }
     /**
        * The error handler.
        * @param err The http error response.

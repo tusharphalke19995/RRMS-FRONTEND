@@ -20,6 +20,13 @@
           <mat-icon>drive_file_move</mat-icon>
           Move {{ selectedFiles.length }} file{{ selectedFiles.length > 1 ? 's' : '' }}
         </button>
+         <button mat-raised-button 
+                color="primary"
+                (click)="openMoveFileDialog()"
+                [disabled]="!canCopySelectedItems()">
+          <mat-icon>file_copy</mat-icon>
+          Copy {{ selectedFiles.length }} file{{ selectedFiles.length > 1 ? 's' : '' }}
+        </button>
         <button mat-stroked-button
                 color="warn"
                 (click)="selectedFilesArchive()"
@@ -157,6 +164,13 @@
                         <span>Move</span>
                       </button>
                     </mat-menu>
+                    <mat-menu #fileMenu="matMenu">
+                      <button mat-menu-item (click)="openMoveFileDialog()">
+                        <mat-icon>file_copy</mat-icon>
+                        <span>Copy</span>
+                      </button>
+                    </mat-menu>
+                    
                   </div>
                 </div>
               </div>

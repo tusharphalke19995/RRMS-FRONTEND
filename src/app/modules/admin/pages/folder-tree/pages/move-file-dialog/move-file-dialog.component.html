@@ -208,6 +208,17 @@
         <mat-spinner diameter="20" *ngIf="loading$ | async" aria-label="Moving files"></mat-spinner>
         Move Files
       </button>
+
+      <button mat-raised-button 
+              color="primary" 
+              class="move-button"
+              (click)="confirmCopy()" 
+              [disabled]="!selectedNode || (loading$ | async)"
+              [attr.aria-label]="!selectedNode ? 'Select a destination folder first' : 'Move files to selected folder'">
+        <mat-icon *ngIf="!(loading$ | async)" aria-hidden="true">drive_file_move</mat-icon>
+        <mat-spinner diameter="20" *ngIf="loading$ | async" aria-label="Moving files"></mat-spinner>
+        Copy Files
+      </button>
     </div>
   </footer>
 </div>

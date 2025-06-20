@@ -61,7 +61,7 @@ export interface MoveFileDialogData {
 export interface MoveFileDialogResult {
   files: FileNode[];
   destination?: any[];
-  type: 'move' | 'archive';
+  type: 'move' | 'archive' | 'copy';
   year?: string;
   caseNo?: string;
   caseType?: string;
@@ -378,6 +378,58 @@ export class MoveFileDialogComponent implements OnInit {
       files: this.data.selectedFiles,
       destination: this.navigationStack.concat(this.items),
       type: 'move'
+    };
+
+    // Extract values based on node levels in the path
+    this.navigationStack.concat(this.items).forEach(node => {
+      switch (node.level) {
+        case 'year':
+          payload.year = node.id || node.name;
+          break;
+        case 'caseNo':
+          payload.caseNo = node.id || node.name;
+          break;
+        case 'caseType':
+          payload.caseType = node.id || node.name;
+          break;
+        case 'filetype':
+          payload.fileTypeId = node.id || node.name;
+          break;
+        case 'documenttype':
+          payload.documentTypeId = node.id || node.name;
+          break;
+      }
+    });
+
+    console.log('Selected Node:', this.selectedNode);
+    console.log('Final Payload:', payload);
+    this.dialogRef.close(payload);
+  }
+
+   confirmCopy(): void {
+    if (!this.selectedNode) {
+      this.snackBar.open('Please select a destination folder', 'Close', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top'
+      });
+      return;
+    }
+
+    // Validate that we have at least one level selected
+    if (this.navigationStack.length === 0 && this.items.length === 0) {
+      this.snackBar.open('Invalid destination folder selected', 'Close', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top'
+      });
+      return;
+    }
+
+    const payload: MoveFileDialogResult = {
+      files: this.data.selectedFiles,
+      destination: this.navigationStack.concat(this.items),
+      type: 'copy'
     };
 
     // Extract values based on node levels in the path
