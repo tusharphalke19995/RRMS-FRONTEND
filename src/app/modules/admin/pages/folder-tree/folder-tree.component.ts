@@ -101,9 +101,6 @@ export class FolderTreeComponent implements OnInit {
           this.dataSource.data = processedData;
           this.treeControl.dataNodes = processedData;
 
-          // Auto-expand all folders to show files
-          this.treeControl.expandAll();
-
           this.updateDisplayItems();
           // Set root as current folder
           this.currentFolder = null;
@@ -331,8 +328,6 @@ export class FolderTreeComponent implements OnInit {
       this.selectedFiles.every((item) => this.isFile(item))
     );
   }
-
-
 
   canCopySelectedItems(): boolean {
     return (

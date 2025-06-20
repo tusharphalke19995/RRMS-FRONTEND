@@ -92,7 +92,7 @@ export class ArchiveFolderTreeComponent implements OnInit {
           this.treeControl.dataNodes = processedData;
           
           // Auto-expand all folders to show files
-          this.treeControl.expandAll();
+          // this.treeControl.expandAll();
           
           this.updateDisplayItems();
           // Set root as current folder
