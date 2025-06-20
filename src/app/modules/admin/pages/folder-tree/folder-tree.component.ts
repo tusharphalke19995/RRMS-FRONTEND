@@ -427,9 +427,11 @@ export class FolderTreeComponent implements OnInit {
             } else {
               this.snackBar.open(
                 response?.message ||
-                   `Successfully ${result.type === "copy" ? "copied" : "moved"} ${
-                  result.files.length
-                } file${result.files.length > 1 ? "s" : ""}.`,
+                  `Successfully ${
+                    result.type === "copy" ? "copied" : "moved"
+                  } ${result.files.length} file${
+                    result.files.length > 1 ? "s" : ""
+                  }.`,
                 "Close",
                 {
                   duration: 3000,
@@ -437,9 +439,15 @@ export class FolderTreeComponent implements OnInit {
                   verticalPosition: "top",
                   panelClass: ["green-snackbar"],
                 }
-                
               );
-                            this.loadFolderTree();
+              this.loadFolderTree();
+              this.selectedFiles = [];
+              this.selectedFileIds = [];
+              this.finalYear = null;
+              this.finalCaseNo = null;
+              this.finalcaseType = null;
+              this.finalFileTypeId = null;
+              this.finalDocumentTypeId = null;
             }
           },
           error: (error) => {
@@ -452,7 +460,7 @@ export class FolderTreeComponent implements OnInit {
                 `Successfully ${result.type === "copy" ? "copied" : "moved"} ${
                   result.files.length
                 } file${result.files.length > 1 ? "s" : ""}.`,
-                "Close",
+              "Close",
               {
                 duration: 3000,
                 horizontalPosition: "right",
@@ -460,7 +468,14 @@ export class FolderTreeComponent implements OnInit {
                 panelClass: ["green-snackbar"],
               }
             );
-                          this.loadFolderTree();
+            this.loadFolderTree();
+            this.selectedFiles = [];
+            this.selectedFileIds = [];
+            this.finalYear = null;
+            this.finalCaseNo = null;
+            this.finalcaseType = null;
+            this.finalFileTypeId = null;
+            this.finalDocumentTypeId = null;
           },
         });
       }
