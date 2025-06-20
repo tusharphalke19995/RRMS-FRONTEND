@@ -204,7 +204,7 @@ export const appRoutes: Route[] = [
         path:"content-management",
         loadChildren: () =>
           import(
-            "app/modules/admin/pages/content-mng/contentMng.routes"
+            "app/modules/admin/pages/folder-tree/folder-tree.routes"
           ),
       },
        {
