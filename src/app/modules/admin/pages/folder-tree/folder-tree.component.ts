@@ -23,6 +23,7 @@ import {
   transition,
   animate,
 } from "@angular/animations";
+import { ImagePreviewFolderDailogComponent } from "../content-mng/pages/image-preview-folder-dailog/image-preview-folder-dailog.component";
 
 @Component({
   selector: "app-folder-tree",
@@ -653,4 +654,19 @@ export class FolderTreeComponent implements OnInit {
     this.breadcrumbs = [];
     this.updateDisplayItems();
   }
+
+    viewImage(data) {
+      const dialogRef = this.dialog.open(ImagePreviewFolderDailogComponent, {
+        data: data,
+        width: "850px",
+        maxWidth: "100vw",
+        height: "90vh",
+        panelClass: "custom-dialog-class",
+      });
+  
+      dialogRef.afterClosed().subscribe(() => {
+        
+      });
+      return;
+    }
 }
