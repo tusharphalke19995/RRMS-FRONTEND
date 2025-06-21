@@ -373,7 +373,7 @@ export class FolderTreeComponent implements OnInit {
             caseNo: result.caseNo,
             caseType: result.caseType,
             fileTypeId: result.fileTypeId, // Note camelCase
-            document_type_id: result.documentTypeId,
+            documentTypeId: result.documentTypeId,
           };
           Object.entries(optionalParams).forEach(([key, value]) => {
             if (value !== undefined && value !== null && value !== "") {
