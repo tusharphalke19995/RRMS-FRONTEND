@@ -323,6 +323,7 @@ export class MoveFileDialogComponent implements OnInit {
 
     // Get the complete path from root to selected node
     const path = this.getNodePath(node);
+    console.log('Complete path from root to selected node:', path);
     
     // Update navigation stack and items based on node levels
     path.forEach(node => {
@@ -331,6 +332,7 @@ export class MoveFileDialogComponent implements OnInit {
         level: node.level,
         name: node.name
       };
+      console.log('Processing path node:', nodeData);
 
       switch (node.level) {
         case 'year':
@@ -338,17 +340,21 @@ export class MoveFileDialogComponent implements OnInit {
           break;
         case 'unitId':
           this.navigationStack.push(nodeData);
+          break;
         case 'caseNo':
           this.navigationStack.push(nodeData);
           break;
         case 'caseType':
           this.navigationStack.push(nodeData);
           break;
-        case 'filetype':
+        case 'fileType':
           this.items.push(nodeData);
           break;
-        case 'documenttype':
+        case 'documentType':
           this.items.push(nodeData);
+          break;
+        default:
+          console.log('Unknown level in path:', node.level, 'for node:', node.name);
           break;
       }
     });
@@ -388,23 +394,28 @@ export class MoveFileDialogComponent implements OnInit {
 
     // Extract values based on node levels in the path
     this.navigationStack.concat(this.items).forEach(node => {
+      console.log('Processing node:', node.name, 'with level:', node.level);
       switch (node.level) {
         case 'year':
           payload.year = node.id || node.name;
           break;
         case 'unitId':
           payload.unitId = node.id || node.name;
+          break;
         case 'caseNo':
           payload.caseNo = node.id || node.name;
           break;
         case 'caseType':
           payload.caseType = node.id || node.name;
           break;
-        case 'filetype':
+        case 'fileType':
           payload.fileTypeId = node.id || node.name;
           break;
-        case 'documenttype':
+        case 'documentType':
           payload.documentTypeId = node.id || node.name;
+          break;
+        default:
+          console.log('Unknown level:', node.level, 'for node:', node.name);
           break;
       }
     });
@@ -442,23 +453,28 @@ export class MoveFileDialogComponent implements OnInit {
 
     // Extract values based on node levels in the path
     this.navigationStack.concat(this.items).forEach(node => {
+      console.log('Processing node:', node.name, 'with level:', node.level);
       switch (node.level) {
         case 'year':
           payload.year = node.id || node.name;
           break;
         case 'unitId':
           payload.unitId = node.id || node.name;
+          break;
         case 'caseNo':
           payload.caseNo = node.id || node.name;
           break;
         case 'caseType':
           payload.caseType = node.id || node.name;
           break;
-        case 'filetype':
+        case 'fileType':
           payload.fileTypeId = node.id || node.name;
           break;
-        case 'documenttype':
+        case 'documentType':
           payload.documentTypeId = node.id || node.name;
+          break;
+        default:
+          console.log('Unknown level:', node.level, 'for node:', node.name);
           break;
       }
     });
