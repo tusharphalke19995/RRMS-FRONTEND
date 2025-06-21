@@ -12,7 +12,7 @@
 
     <!-- Search and Actions Section -->
     <div class="actions-section attractive-actions">
-      <div class="action-buttons" *ngIf="selectedFiles.length > 0">
+      <div class="action-buttons">
         <button mat-raised-button color="primary" (click)="openMoveFileDialog()" [disabled]="!canMoveSelectedItems()">
           <mat-icon>drive_file_move</mat-icon>
           Move {{ selectedFiles.length }} file{{ selectedFiles.length > 1 ? 's' : '' }}
@@ -20,6 +20,10 @@
         <button mat-raised-button color="primary" (click)="openMoveFileDialog()" [disabled]="!canCopySelectedItems()">
           <mat-icon>file_copy</mat-icon>
           Copy {{ selectedFiles.length }} file{{ selectedFiles.length > 1 ? 's' : '' }}
+        </button>
+        <button mat-raised-button color="accent" (click)="openMergeCaseDialog()">
+          <mat-icon>merge_type</mat-icon>
+          Merge Folder
         </button>
         <button mat-stroked-button color="warn" (click)="selectedFilesArchive()"
           [disabled]="selectedFiles.length === 0">

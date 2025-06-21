@@ -6,6 +6,7 @@ import { FolderTreeService } from "./services/folder-tree.service";
 import { FolderNode, FileNode } from "./models/folder-tree.model";
 import { MatDialog } from "@angular/material/dialog";
 import { MoveFileDialogComponent } from "./pages/move-file-dialog/move-file-dialog.component";
+import { MergeCaseDialogComponent, MergeCaseDialogResult } from "./pages/merge-case-dialog/merge-case-dialog.component";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
@@ -628,6 +629,109 @@ export class FolderTreeComponent implements OnInit {
           verticalPosition: "top",
           panelClass: ["red-snackbar"],
         });
+      },
+    });
+  }
+
+  selectedCaseNoForMerge(): void {
+    if (!this.selectedFiles || this.selectedFiles.length === 0) {
+      this._snackBar.open(
+        "Please select at least one file to merge.",
+        "Close",
+        {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["red-snackbar"],
+        }
+      );
+      return;
+    }
+
+    // Open the merge case dialog
+    const dialogRef = this.dialog.open(MergeCaseDialogComponent, {
+      width: "900px",
+      // maxWidth: "90vw",
+      data: { selectedFiles: this.selectedFiles },
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((result: MergeCaseDialogResult) => {
+      if (result) {
+        this.performMergeOperation(result);
+      }
+    });
+  }
+
+  openMergeCaseDialog(): void {
+    // Open the merge case dialog without requiring selected files
+    const dialogRef = this.dialog.open(MergeCaseDialogComponent, {
+      width: "600px",
+      maxWidth: "90vw",
+      data: {},
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((result: MergeCaseDialogResult) => {
+      if (result) {
+        this.performMergeOperation(result);
+      }
+    });
+  }
+
+  private performMergeOperation(result: MergeCaseDialogResult): void {
+    const payload = {
+      sourceCaseNo: result.sourceCaseNo,
+      destinationCaseNo: result.destinationCaseNo
+    };
+
+    console.log("Merging folders with payload:", payload);
+
+    this.folderTreeService.mergeFolders(payload).subscribe({
+      next: (response: any) => {
+        if (response?.success) {
+          this._snackBar.open(
+            `Successfully merged case ${result.sourceCaseNo} into ${result.destinationCaseNo}`,
+            "Close",
+            {
+              duration: 3000,
+              horizontalPosition: "right",
+              verticalPosition: "top",
+              panelClass: ["green-snackbar"],
+            }
+          );
+          
+          // Refresh the folder tree
+          this.loadFolderTree();
+          
+          // Clear selections
+          this.selectedFiles = [];
+          this.selectedFileIds = [];
+        } else {
+          this._snackBar.open(
+            response?.message || "Failed to merge folders. Please try again.",
+            "Close",
+            {
+              duration: 3000,
+              horizontalPosition: "right",
+              verticalPosition: "top",
+              panelClass: ["error-snackbar"],
+            }
+          );
+        }
+      },
+      error: (error) => {
+        console.error("Error merging folders:", error);
+        this._snackBar.open(
+          error?.error?.message || "Failed to merge folders. Please try again.",
+          "Close",
+          {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["red-snackbar"],
+          }
+        );
       },
     });
   }
