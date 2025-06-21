@@ -68,6 +68,7 @@ export class FolderTreeComponent implements OnInit {
   selectedFiles: FileNode[] = [];
   selectedFileIds: number[] = [];
   currentFolder: FolderNode | null = null;
+  finalUnitId: any;
 
   constructor(
     private folderTreeService: FolderTreeService,
@@ -367,6 +368,7 @@ export class FolderTreeComponent implements OnInit {
           // Add optional parameters for copy
           const optionalParams = {
             year: result.year,
+            unitId:result.unitId,
             caseNo: result.caseNo,
             caseType: result.caseType,
             fileTypeId: result.fileTypeId, // Note camelCase
@@ -388,6 +390,7 @@ export class FolderTreeComponent implements OnInit {
           // Add optional parameters for move
           const optionalParams = {
             year: result.year,
+            unitId:result.unitId,
             caseNo: result.caseNo,
             caseType: result.caseType,
             file_type_id: result.fileTypeId, // Note snake_case
@@ -514,6 +517,7 @@ export class FolderTreeComponent implements OnInit {
     // Add optional parameters if they exist
     const optionalParams = {
       year: this.finalYear,
+      unitId:this.finalUnitId,
       caseNo: this.finalCaseNo,
       caseType: this.finalcaseType,
       file_type_id: this.finalFileTypeId,

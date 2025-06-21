@@ -37,8 +37,14 @@ export class FolderTreeService {
     return this._httpClient
       .post(apiurls.moveFiles, data)
       .pipe(catchError(this.handleError));
+  } 
+  
+  mergeFolders(data: any) {
+    return this._httpClient
+      .post(apiurls.mergeFolders, data)
+      .pipe(catchError(this.handleError));
   }
-
+  
   archiveFiles(data: any) {
     return this._httpClient
       .post(apiurls.archiveFiles, data)

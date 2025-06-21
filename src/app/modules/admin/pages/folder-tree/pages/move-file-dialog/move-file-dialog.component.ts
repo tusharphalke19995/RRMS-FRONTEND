@@ -51,6 +51,7 @@ interface MoveFileResponse {
 
 export interface MoveFileDialogData {
   selectedFiles: FileNode[];
+  unitId:string;
   year?: string;
   caseNo?: string;
   caseTypeId?: string;
@@ -63,6 +64,7 @@ export interface MoveFileDialogResult {
   destination?: any[];
   type: 'move' | 'archive' | 'copy';
   year?: string;
+  unitId?:string;
   caseNo?: string;
   caseType?: string;
   fileTypeId?: string;
@@ -229,6 +231,8 @@ export class MoveFileDialogComponent implements OnInit {
         return 'level-division';
       case 'year':
         return 'level-year';
+      case 'unitId':
+        return 'level-unitId'; 
       case 'caseNo':
         return 'level-caseNo';
       case 'caseType':
@@ -332,6 +336,8 @@ export class MoveFileDialogComponent implements OnInit {
         case 'year':
           this.navigationStack.push(nodeData);
           break;
+        case 'unitId':
+          this.navigationStack.push(nodeData);
         case 'caseNo':
           this.navigationStack.push(nodeData);
           break;
@@ -386,6 +392,8 @@ export class MoveFileDialogComponent implements OnInit {
         case 'year':
           payload.year = node.id || node.name;
           break;
+        case 'unitId':
+          payload.unitId = node.id || node.name;
         case 'caseNo':
           payload.caseNo = node.id || node.name;
           break;
@@ -438,6 +446,8 @@ export class MoveFileDialogComponent implements OnInit {
         case 'year':
           payload.year = node.id || node.name;
           break;
+        case 'unitId':
+          payload.unitId = node.id || node.name;
         case 'caseNo':
           payload.caseNo = node.id || node.name;
           break;
