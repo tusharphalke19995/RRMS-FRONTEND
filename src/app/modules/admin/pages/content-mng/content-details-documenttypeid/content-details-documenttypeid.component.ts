@@ -27,7 +27,7 @@ import { FileIconPipe } from "../pipe/fileIcon";
 import { SearchDocService } from "../../search-document/searchDoc.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ImagePreviewDailogComponent } from "../../upload-files/component/image-preview-dailog/image-preview-dailog.component";
-import { ImagePreviewFolderDailogComponent } from "../pages/image-preview-folder-dailog/image-preview-folder-dailog.component";
+import { ImagePreviewFolderDailogComponent } from "../../folder-tree/pages/image-preview-folder-dailog/image-preview-folder-dailog.component";
 import { MoveFileDialogComponent } from "../pages/move-file-dialog/move-file-dialog.component";
 import { forkJoin } from "rxjs";
 import { MatSnackBar } from "@angular/material/snack-bar";

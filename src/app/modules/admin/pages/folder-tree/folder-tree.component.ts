@@ -24,7 +24,7 @@ import {
   transition,
   animate,
 } from "@angular/animations";
-import { ImagePreviewFolderDailogComponent } from "../content-mng/pages/image-preview-folder-dailog/image-preview-folder-dailog.component";
+import { ImagePreviewFolderDailogComponent } from "./pages/image-preview-folder-dailog/image-preview-folder-dailog.component";
 
 @Component({
   selector: "app-folder-tree",
@@ -487,108 +487,99 @@ export class FolderTreeComponent implements OnInit {
     });
   }
 
-  finallMoveFiles() {
-    const departmentID = Number(sessionStorage.getItem("departmentID"));
-    if (!departmentID) {
-      this._snackBar.open("Department ID missing. Please try again.", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["error-snackbar"],
-      });
-      return;
-    }
+  // finallMoveFiles() {
+  //   const departmentID = Number(sessionStorage.getItem("departmentID"));
+  //   if (!departmentID) {
+  //     this._snackBar.open("Department ID missing. Please try again.", "Close", {
+  //       duration: 3000,
+  //       horizontalPosition: "right",
+  //       verticalPosition: "top",
+  //       panelClass: ["error-snackbar"],
+  //     });
+  //     return;
+  //   }
 
-    if (!this.selectedFileIds || this.selectedFileIds.length === 0) {
-      this._snackBar.open("Please select at least one file to move.", "Close", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-        panelClass: ["error-snackbar"],
-      });
-      return;
-    }
+  //   if (!this.selectedFileIds || this.selectedFileIds.length === 0) {
+  //     this._snackBar.open("Please select at least one file to move.", "Close", {
+  //       duration: 3000,
+  //       horizontalPosition: "right",
+  //       verticalPosition: "top",
+  //       panelClass: ["error-snackbar"],
+  //     });
+  //     return;
+  //   }
+  //   const payload: Record<string, any> = {
+  //     deptId: departmentID,
+  //     file_ids: this.selectedFileIds,
+  //   };
 
-    // Create base payload
-    const payload: Record<string, any> = {
-      deptId: departmentID,
-      file_ids: this.selectedFileIds,
-    };
+  //   const optionalParams = {
+  //     year: this.finalYear,
+  //     unitId:this.finalUnitId,
+  //     caseNo: this.finalCaseNo,
+  //     caseType: this.finalcaseType,
+  //     file_type_id: this.finalFileTypeId,
+  //     document_type_id: this.finalDocumentTypeId,
+  //   };
+  //   Object.entries(optionalParams).forEach(([key, value]) => {
+  //     if (value !== undefined && value !== null && value !== "") {
+  //       payload[key] = value;
+  //     }
+  //   });
 
-    // Add optional parameters if they exist
-    const optionalParams = {
-      year: this.finalYear,
-      unitId:this.finalUnitId,
-      caseNo: this.finalCaseNo,
-      caseType: this.finalcaseType,
-      file_type_id: this.finalFileTypeId,
-      document_type_id: this.finalDocumentTypeId,
-    };
+  //   console.log("Moving files with payload:", payload);
 
-    // Only add parameters that have values
-    Object.entries(optionalParams).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== "") {
-        payload[key] = value;
-      }
-    });
-
-    console.log("Moving files with payload:", payload);
-
-    this.folderTreeService.moveFilesInfo(payload).subscribe({
-      next: (response: any) => {
-        if (response?.success) {
-          this._snackBar.open(
-            `Successfully moved ${this.selectedFileIds.length} file${
-              this.selectedFileIds.length > 1 ? "s" : ""
-            }.`,
-            "Close",
-            {
-              duration: 3000,
-              horizontalPosition: "right",
-              verticalPosition: "top",
-              panelClass: ["green-snackbar"],
-            }
-          );
-
-          // Refresh the folder tree
-          this.loadFolderTree();
-
-          // Clear selections
-          this.selectedFiles = [];
-          this.selectedFileIds = [];
-          this.finalYear = null;
-          this.finalCaseNo = null;
-          this.finalcaseType = null;
-          this.finalFileTypeId = null;
-          this.finalDocumentTypeId = null;
-        } else {
-          this._snackBar.open(
-            response?.message || "Failed to move files. Please try again.",
-            "Close",
-            {
-              duration: 3000,
-              horizontalPosition: "right",
-              verticalPosition: "top",
-              panelClass: ["error-snackbar"],
-            }
-          );
-        }
-      },
-      error: (error) => {
-        console.error("Error moving files:", error);
-        this._snackBar.open(
-          error?.error?.message || "Failed to move files. Please try again.",
-          "Close",
-          {
-            duration: 3000,
-            horizontalPosition: "right",
-            verticalPosition: "top",
-            panelClass: ["red-snackbar"],
-          }
-        );
-      },
-    });
-  }
+  //   this.folderTreeService.moveFilesInfo(payload).subscribe({
+  //     next: (response: any) => {
+  //       if (response?.success) {
+  //         this._snackBar.open(
+  //           `Successfully moved ${this.selectedFileIds.length} file${
+  //             this.selectedFileIds.length > 1 ? "s" : ""
+  //           }.`,
+  //           "Close",
+  //           {
+  //             duration: 3000,
+  //             horizontalPosition: "right",
+  //             verticalPosition: "top",
+  //             panelClass: ["green-snackbar"],
+  //           }
+  //         );
+  //         this.loadFolderTree();
+  //         this.selectedFiles = [];
+  //         this.selectedFileIds = [];
+  //         this.finalYear = null;
+  //         this.finalCaseNo = null;
+  //         this.finalcaseType = null;
+  //         this.finalFileTypeId = null;
+  //         this.finalDocumentTypeId = null;
+  //       } else {
+  //         this._snackBar.open(
+  //           response?.message || "Failed to move files. Please try again.",
+  //           "Close",
+  //           {
+  //             duration: 3000,
+  //             horizontalPosition: "right",
+  //             verticalPosition: "top",
+  //             panelClass: ["error-snackbar"],
+  //           }
+  //         );
+  //       }
+  //     },
+  //     error: (error) => {
+  //       console.error("Error moving files:", error);
+  //       this._snackBar.open(
+  //         error?.error?.message || "Failed to move files. Please try again.",
+  //         "Close",
+  //         {
+  //           duration: 3000,
+  //           horizontalPosition: "right",
+  //           verticalPosition: "top",
+  //           panelClass: ["red-snackbar"],
+  //         }
+  //       );
+  //     },
+  //   });
+  // }
 
   selectedFilesArchive() {
     if (!this.selectedFileIds || this.selectedFileIds.length === 0) {

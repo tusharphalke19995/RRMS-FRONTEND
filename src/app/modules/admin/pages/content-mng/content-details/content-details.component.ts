@@ -19,7 +19,7 @@ import { Item, Items } from '../interface/content.model';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MoveFileDialogComponent } from '../pages/move-file-dialog/move-file-dialog.component';
-import { ImagePreviewFolderDailogComponent } from '../pages/image-preview-folder-dailog/image-preview-folder-dailog.component';
+import { ImagePreviewFolderDailogComponent } from '../../folder-tree/pages/image-preview-folder-dailog/image-preview-folder-dailog.component';
 
 @Component({
   selector: 'app-content-details',

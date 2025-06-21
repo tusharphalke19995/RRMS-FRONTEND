@@ -1,0 +1,49 @@
+<div class="flex flex-col w-full max-w-3xl h-[90vh] bg-white rounded-lg shadow-lg overflow-hidden">
+  <!-- Header -->
+  <div
+    class="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md">
+    <div class="flex-1 flex items-center">
+      <span class="text-xl font-semibold tracking-tight truncate">{{ fileName }}</span>
+    </div>
+    <button mat-icon-button (click)="onNoClose()" [tabIndex]="-1">
+      <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+    </button>
+  </div>
+
+  <!-- Preview Area -->
+  <div class="flex-1 flex flex-col items-center justify-center bg-gray-50 p-4 overflow-auto">
+    <div [ngSwitch]="fileType" class="w-full h-full flex items-center justify-center">
+      <!-- Image Preview -->
+      <img *ngSwitchCase="'image'" [src]="safeUrl" alt="Image preview"
+        class="max-w-full max-h-full object-contain">
+
+      <!-- Video Preview -->
+      <div *ngSwitchCase="'video'" class="relative w-full" style="padding-bottom: 56.25%; height: 0;">
+        <video [src]="safeUrl" controls class="absolute top-0 left-0 w-full h-full"
+          style="background-color: black;"></video>
+      </div>
+
+      <!-- Audio Preview -->
+      <audio *ngSwitchCase="'audio'" [src]="safeUrl" controls class="w-full"></audio>
+
+      <!-- PDF Preview -->
+      <iframe *ngSwitchCase="'pdf'" [src]="safeUrl" class="w-full h-full" frameborder="0"></iframe>
+
+      <!-- Unsupported file type -->
+      <div *ngSwitchDefault class="text-center">
+        <p class="text-lg text-gray-600">Preview for this file type is not available.</p>
+        <p class="text-sm text-gray-500">You can download the file to view it.</p>
+        <button mat-stroked-button (click)="downloadFile(finalUrl)" class="mt-4">
+          <mat-icon>download</mat-icon> Download
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="flex justify-end p-4 border-t">
+    <button mat-stroked-button (click)="onNoClose()">
+      <mat-icon>close</mat-icon> Close
+    </button>
+  </div>
+</div>
