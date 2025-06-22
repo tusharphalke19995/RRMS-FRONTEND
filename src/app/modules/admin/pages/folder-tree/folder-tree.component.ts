@@ -6,7 +6,10 @@ import { FolderTreeService } from "./services/folder-tree.service";
 import { FolderNode, FileNode } from "./models/folder-tree.model";
 import { MatDialog } from "@angular/material/dialog";
 import { MoveFileDialogComponent } from "./pages/move-file-dialog/move-file-dialog.component";
-import { MergeCaseDialogComponent, MergeCaseDialogResult } from "./pages/merge-case-dialog/merge-case-dialog.component";
+import {
+  MergeCaseDialogComponent,
+  MergeCaseDialogResult,
+} from "./pages/merge-case-dialog/merge-case-dialog.component";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
@@ -369,7 +372,7 @@ export class FolderTreeComponent implements OnInit {
           // Add optional parameters for copy
           const optionalParams = {
             year: result.year,
-            unitId:result.unitId,
+            unitId: result.unitId,
             caseNo: result.caseNo,
             caseType: result.caseType,
             fileTypeId: result.fileTypeId, // Note camelCase
@@ -391,7 +394,7 @@ export class FolderTreeComponent implements OnInit {
           // Add optional parameters for move
           const optionalParams = {
             year: result.year,
-            unitId:result.unitId,
+            unitId: result.unitId,
             caseNo: result.caseNo,
             caseType: result.caseType,
             file_type_id: result.fileTypeId, // Note snake_case
@@ -644,7 +647,7 @@ export class FolderTreeComponent implements OnInit {
       width: "900px",
       // maxWidth: "90vw",
       data: { selectedFiles: this.selectedFiles },
-      disableClose: true
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((result: MergeCaseDialogResult) => {
@@ -660,7 +663,7 @@ export class FolderTreeComponent implements OnInit {
       width: "600px",
       maxWidth: "90vw",
       data: {},
-      disableClose: true
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((result: MergeCaseDialogResult) => {
@@ -673,43 +676,30 @@ export class FolderTreeComponent implements OnInit {
   private performMergeOperation(result: MergeCaseDialogResult): void {
     const payload = {
       sourceCaseNo: result.sourceCaseNo,
-      destinationCaseNo: result.destinationCaseNo
+      destinationCaseNo: result.destinationCaseNo,
     };
 
     console.log("Merging folders with payload:", payload);
 
     this.folderTreeService.mergeFolders(payload).subscribe({
       next: (response: any) => {
-        if (response?.success) {
-          this._snackBar.open(
-            `Successfully merged case ${result.sourceCaseNo} into ${result.destinationCaseNo}`,
-            "Close",
-            {
-              duration: 3000,
-              horizontalPosition: "right",
-              verticalPosition: "top",
-              panelClass: ["green-snackbar"],
-            }
-          );
-          
-          // Refresh the folder tree
-          this.loadFolderTree();
-          
-          // Clear selections
-          this.selectedFiles = [];
-          this.selectedFileIds = [];
-        } else {
-          this._snackBar.open(
-            response?.message || "Failed to merge folders. Please try again.",
-            "Close",
-            {
-              duration: 3000,
-              horizontalPosition: "right",
-              verticalPosition: "top",
-              panelClass: ["error-snackbar"],
-            }
-          );
-        }
+        this._snackBar.open(
+          `Successfully merged case ${result.sourceCaseNo} into ${result.destinationCaseNo}`,
+          "Close",
+          {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["green-snackbar"],
+          }
+        );
+
+        // Refresh the folder tree
+        this.loadFolderTree();
+
+        // Clear selections
+        this.selectedFiles = [];
+        this.selectedFileIds = [];
       },
       error: (error) => {
         console.error("Error merging folders:", error);
@@ -754,18 +744,16 @@ export class FolderTreeComponent implements OnInit {
     this.updateDisplayItems();
   }
 
-    viewImage(data) {
-      const dialogRef = this.dialog.open(ImagePreviewFolderDailogComponent, {
-        data: data,
-        width: "850px",
-        maxWidth: "100vw",
-        height: "90vh",
-        panelClass: "custom-dialog-class",
-      });
-  
-      dialogRef.afterClosed().subscribe(() => {
-        
-      });
-      return;
-    }
+  viewImage(data) {
+    const dialogRef = this.dialog.open(ImagePreviewFolderDailogComponent, {
+      data: data,
+      width: "850px",
+      maxWidth: "100vw",
+      height: "90vh",
+      panelClass: "custom-dialog-class",
+    });
+
+    dialogRef.afterClosed().subscribe(() => {});
+    return;
+  }
 }
