@@ -57,6 +57,7 @@ export interface MoveFileDialogData {
   caseTypeId?: string;
   fileTypeId?: string;
   documentTypeId?: string;
+  mode:string;
 }
 
 export interface MoveFileDialogResult {
@@ -124,7 +125,6 @@ export class MoveFileDialogComponent implements OnInit {
   fileDetails: FileNode[] = [];
   navigationStack: any[] = [];
   items: any[] = [];
-
   constructor(
     public dialogRef: MatDialogRef<MoveFileDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: MoveFileDialogData,

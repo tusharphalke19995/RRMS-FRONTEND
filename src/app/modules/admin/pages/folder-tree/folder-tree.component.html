@@ -13,11 +13,11 @@
     <!-- Search and Actions Section -->
     <div class="actions-section attractive-actions">
       <div class="action-buttons">
-        <button mat-raised-button color="primary" (click)="openMoveFileDialog()" [disabled]="!canMoveSelectedItems()">
+        <button mat-raised-button color="primary" (click)="openMoveFileDialog('move')" [disabled]="!canMoveSelectedItems()">
           <mat-icon>drive_file_move</mat-icon>
           Move {{ selectedFiles.length }} file{{ selectedFiles.length > 1 ? 's' : '' }}
         </button>
-        <button mat-raised-button color="primary" (click)="openMoveFileDialog()" [disabled]="!canCopySelectedItems()">
+        <button mat-raised-button color="primary" (click)="openMoveFileDialog('copy')" [disabled]="!canCopySelectedItems()">
           <mat-icon>file_copy</mat-icon>
           Copy {{ selectedFiles.length }} file{{ selectedFiles.length > 1 ? 's' : '' }}
         </button>

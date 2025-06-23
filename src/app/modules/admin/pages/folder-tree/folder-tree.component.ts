@@ -341,7 +341,7 @@ export class FolderTreeComponent implements OnInit {
       this.selectedFiles.every((item) => this.isFile(item))
     );
   }
-  openMoveFileDialog(): void {
+  openMoveFileDialog(mode: 'move' | 'copy'): void {
     if (this.selectedFiles.length === 0) {
       this.snackBar.open("Please select at least one file to move", "Close", {
         duration: 3000,
@@ -354,7 +354,7 @@ export class FolderTreeComponent implements OnInit {
     const dialogRef = this.dialog.open(MoveFileDialogComponent, {
       width: "800px",
       height: "600px",
-      data: { selectedFiles: this.selectedFiles },
+      data: { selectedFiles: this.selectedFiles ,mode},
     });
 
     dialogRef.afterClosed().subscribe((result) => {

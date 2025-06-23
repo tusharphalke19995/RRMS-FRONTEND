@@ -5,7 +5,8 @@
     <div class="header-content">
       <div class="header-left">
         <mat-icon class="header-icon" aria-hidden="true">folder_open</mat-icon>
-        <h1 class="header-title">Move Files</h1>
+        <h1 class="header-title" *ngIf="data.mode === 'move'">Move Files</h1>
+        <h1 class="header-title" *ngIf="data.mode === 'copy'">Copy Files</h1>
       </div>
       <button mat-icon-button 
               class="close-button" 
@@ -199,6 +200,7 @@
       </button>
        -->
       <button mat-raised-button 
+       *ngIf="data.mode === 'move'"
               color="primary" 
               class="move-button"
               (click)="confirmMove()" 
@@ -210,6 +212,7 @@
       </button>
 
       <button mat-raised-button 
+       *ngIf="data.mode === 'copy'"
               color="primary" 
               class="move-button"
               (click)="confirmCopy()" 
