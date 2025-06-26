@@ -17,6 +17,7 @@ import { MoveFileDialogComponent } from '../content-mng/pages/move-file-dialog/m
 import { FolderNode, FileNode } from '../folder-tree/models/folder-tree.model';
 import { FolderTreeService } from '../folder-tree/services/folder-tree.service';
 import { ArchiveTreeService } from './archive-tree.service';
+import { ImagePreviewFolderDailogComponent } from '../folder-tree/pages/image-preview-folder-dailog/image-preview-folder-dailog.component';
 
 @Component({
   selector: 'app-archive-folder-tree',
@@ -535,4 +536,17 @@ export class ArchiveFolderTreeComponent implements OnInit {
     this.breadcrumbs = [];
     this.updateDisplayItems();
   }
+
+   viewImage(data) {
+      const dialogRef = this.dialog.open(ImagePreviewFolderDailogComponent, {
+        data: data,
+        width: "850px",
+        maxWidth: "100vw",
+        height: "90vh",
+        panelClass: "custom-dialog-class",
+      });
+  
+      dialogRef.afterClosed().subscribe(() => {});
+      return;
+    }
 }

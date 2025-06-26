@@ -97,12 +97,15 @@
                   [class.selected]="isItemSelected(file)" (click)="toggleItemSelection(file)">
                   <div class="file-content attractive-file-content">
                     <div class="file-icon-container attractive-file-icon">
-                      <mat-icon class="file-icon" [class]="'file-icon-' + getFileExtension(file)">{{ getFileIcon(file)
-                        }}</mat-icon>
+                     
+                         <mat-icon class="file-icon" [class]="'file-icon-' + getFileExtension(file)"
+                        (click)="viewImage(file); $event.stopPropagation()" style="cursor: pointer;">
+                        {{ getFileIcon(file) }}
+                      </mat-icon>
                     </div>
                     <div class="file-details attractive-file-details">
                       <span class="file-name" [matTooltip]="file.name">{{ file.name }}</span>
-                      <div class="file-meta attractive-file-meta">
+                     <div class="file-meta attractive-file-meta" (click)="viewImage(file); $event.stopPropagation()">
                         <span class="file-size" *ngIf="file.fileSize">
                           {{ getItemSize(file) }}
                         </span>
