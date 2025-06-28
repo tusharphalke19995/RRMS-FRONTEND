@@ -29,11 +29,11 @@
       <div *ngIf="selectedFiles.length > 1" class="flex items-center justify-between mb-2">
         <mat-checkbox [checked]="selectedIndexes.size === selectedFiles.length"
           [indeterminate]="selectedIndexes.size > 0 && selectedIndexes.size < selectedFiles.length"
-          (change)="toggleSelectAll($event.checked)"   [disabled]="isDraft">
+          (change)="toggleSelectAll($event.checked)">
           Select All
         </mat-checkbox>
         <button *ngIf="hasSelectedFiles" mat-raised-button color="primary" (click)="openMetadataForSelected()"
-          class="apply-metadata-btn"  [disabled]="isDraft" >
+          class="apply-metadata-btn">
           <mat-icon>edit</mat-icon>
           {{ selectedIndexes.size === selectedFiles.length ? 'Edit All' : 'Edit Selected' }}
         </button>
@@ -115,12 +115,18 @@
         <ng-container *ngIf="file.metadata || file">
           <div class="metadata-preview px-4 py-2 bg-gray-50">
             <div class="grid grid-cols-2 gap-2 text-sm">
-              <div *ngIf="getFileSubject(file) && getFileSubject(file) !== 'Multiple Files Selected'">
+              <div *ngIf="getFileSubject(file)">
                 <strong>Subject:</strong> {{ getFileSubject(file) }}
               </div>
-              <!-- <div *ngIf="file.metadata?.fileType || file.fileType">
-                <strong>Type:</strong> {{ getFileTypeNameById(file.metadata?.fileType || file.fileType) }}
-              </div> -->
+              <div *ngIf="(file.metadata?.classification || file.classification) && ClassificationTypeDropDown?.length > 0">
+                <strong>Classification:</strong> {{ getFileClassificationNameById(file.metadata?.classification || file.classification) }}
+              </div>
+              <div *ngIf="file.metadata?.fileType || file.fileType">
+                <strong>File Type:</strong> {{ getFolderNameById(file.metadata?.fileType || file.fileType) }}
+              </div>
+              <div *ngIf="file.metadata?.documentType || file.documentType">
+                <strong>Document Type:</strong> {{ getDocNameById(file.metadata?.documentType || file.documentType) }}
+              </div>
               <div *ngIf="file.metadata?.hashTag || file.hashTag" class="tags-container">
                 <strong>Tags:</strong>
                 <div class="custom-tag-list">
@@ -161,17 +167,15 @@
     <div class="">
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Subject</mat-label>
-        <input matInput formControlName="subject" placeholder="Enter subject" />
+        <input matInput formControlName="subject" placeholder="Enter subject" (input)="onSubjectChange($event)" />
         <mat-error *ngIf="metadataForm.get('subject')?.hasError('required')">
           Subject/content is required
         </mat-error>
       </mat-form-field>
 
-
-
       <mat-form-field appearance="outline" class="w-full">
         <mat-label *transloco="let t" class="font-medium">{{t('fileStage')}}</mat-label>
-        <mat-select [formControlName]="'fileType'" (selectionChange)="onFileTypeChange($event)">
+        <mat-select [formControlName]="'fileType'" (selectionChange)="onFileTypeChange($event)" (valueChange)="onFieldChange($event, 'fileType')">
           <mat-option [value]="null">Please Select</mat-option>
           <ng-container *ngFor="let fileStageData of FileTypeDropDown; trackBy: trackByFn">
             <mat-option [value]="fileStageData.id">{{fileStageData.value}}</mat-option>
@@ -182,22 +186,9 @@
         </mat-error>
       </mat-form-field>
 
-      <!-- <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Document Type</mat-label>
-        <mat-select formControlName="fileType">
-          <mat-option [value]="null">Please Select</mat-option>
-          <ng-container *ngFor="let fileType of DocumentTypeDropDown">
-            <mat-option [value]="fileType.id">{{ fileType.value }}</mat-option>
-          </ng-container>
-        </mat-select>
-        <mat-error *ngIf="metadataForm.get('fileType').hasError('required')">
-          Required
-        </mat-error>
-      </mat-form-field> -->
-
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Document Type</mat-label>
-        <mat-select formControlName="documentType" [panelClass]="'custom-select-panel'">
+        <mat-select formControlName="documentType" [panelClass]="'custom-select-panel'" (selectionChange)="onFieldChange($event, 'documentType')">
           <mat-option [value]="null">Please Select</mat-option>
           <ng-container *ngFor="let fileType of DocumentTypeDropDown">
             <mat-option [value]="fileType.id">{{ fileType.value }}</mat-option>
@@ -210,11 +201,9 @@
     </div>
 
     <div class="">
-
-
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Classification</mat-label>
-        <mat-select formControlName="classification">
+        <mat-select formControlName="classification" (selectionChange)="onFieldChange($event, 'classification')">
           <mat-option [value]="null">Please Select</mat-option>
           <ng-container *ngFor="let classification of ClassificationTypeDropDown">
             <mat-option [value]="classification.id">{{ classification.value
@@ -228,16 +217,14 @@
 
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>HashTag</mat-label>
-        <input matInput formControlName="hashTag" (keyup)="onHashTagKeyUp($event)"
+        <input matInput formControlName="hashTag" (keyup)="onHashTagKeyUp($event)" (input)="onFieldChange($event, 'hashTag')"
           placeholder="Type and press space – '#' will be auto-appended" />
         <mat-hint class="hintHashtag">After typing, press space to auto-append #</mat-hint>
       </mat-form-field>
-
-
     </div>
 
-    <div class="p-2">
-      <p> File/Document Name: <span class="font-semibold"> {{crimeNo}}_{{ fileToEdit?.fileName ||
+    <div class="p-2 mt-4 bg-gray-50 rounded-lg">
+      <p class="text-sm text-gray-600">File/Document Name: <span class="font-semibold text-gray-800">{{crimeNo}}_{{ fileToEdit?.fileName ||
           fileToEdit?.name}}</span></p>
     </div>
   </form>

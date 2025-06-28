@@ -252,7 +252,26 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       this.filesWithMetadataSelected.emit({ files: [], metadata: [] });
     }
     if(this.selectedFiles.length>0){
-    this.showEditUserUpload = true;
+      this.showEditUserUpload = true;
+      
+      // Ensure all files have proper subjects from API data or create default
+      this.selectedFiles.forEach((file) => {
+        if (!file.metadata) {
+          file.metadata = {
+            subject: file.subject || `${this.crimeNo}_${file.name || file.fileName}`,
+            fileType: (file as any).fileType || "",
+            classification: (file as any).classification || "",
+            hashTag: (file as any).hashTag || "",
+            documentType: (file as any).documentType || "",
+          };
+        } else {
+          // Use the subject from API data if available, otherwise use existing or create default
+          const apiSubject = file.subject;
+          const existingSubject = file.metadata.subject;
+          file.metadata.subject = apiSubject || existingSubject || `${this.crimeNo}_${file.name || file.fileName}`;
+        }
+      });
+      
       this.filesWithMetadataSelected.emit({
         files: this.selectedFiles,
         metadata: this.selectedFiles.map((file) => file.metadata),
@@ -376,23 +395,21 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     this.fileToEdit = file;
     this.metadataForm.reset();
 
-    // If file has existing metadata, populate the form
-    if (file.metadata || file) {
-      this.metadataForm.patchValue(file.metadata || file);
-      this.onFileTypeChangeEdit(file);
-    }
+    // Prepare metadata object with API data priority
+    const metadataToUse = {
+      subject: file.subject || file.metadata?.subject || `${this.crimeNo}_${file.name || file.fileName}`,
+      fileType: (file as any).fileType || file.metadata?.fileType || "",
+      documentType: (file as any).documentType || file.metadata?.documentType || "",
+      classification: (file as any).classification || file.metadata?.classification || "",
+      hashTag: (file as any).hashTag || file.metadata?.hashTag || "",
+    };
 
-    // Set default subject if none exists
-    if (!this.metadataForm.get("subject").value) {
-      this.metadataForm.patchValue({
-        subject: `${this.crimeNo}_${file.name || file.fileName}`,
-      });
-    }
-
-    if (this.checkGetFile) {
-      this.metadataForm.patchValue({
-        subject: `${this.crimeNo}_${file.name || file.fileName}`,
-      });
+    // Populate the form with the metadata
+    this.metadataForm.patchValue(metadataToUse);
+    
+    // Handle file type change to update document type dropdown
+    if (metadataToUse.fileType) {
+      this.onFileTypeChangeEdit({ documentType: metadataToUse.fileType });
     }
 
     this.openFileModal = true;
@@ -402,6 +419,9 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   closeFileModal(): void {
     this.openFileModal = false;
     this.fileToEdit = null;
+    
+    // Force change detection to update the card display
+    this._changeDetectorRef.detectChanges();
   }
 
   openMetadataForSelected(): void {
@@ -410,14 +430,27 @@ export class UploadFilesComponent implements OnInit, OnChanges {
 
     // If multiple files are selected, create a dynamic subject
     if (this.selectedIndexes.size > 0) {
-      // For both "Edit All" and "Edit Selected" cases, we'll use the first file's name
+      // For both "Edit All" and "Edit Selected" cases, we'll use the first file's data
       const firstFileIndex = Array.from(this.selectedIndexes)[0];
       const firstFile = this.selectedFiles[firstFileIndex];
 
       if (firstFile) {
-        this.metadataForm.patchValue({
-          subject: `${this.crimeNo}_${firstFile.name || firstFile.fileName}`,
-        });
+        // Prepare metadata object with API data priority
+        const metadataToUse = {
+          subject: firstFile.subject || firstFile.metadata?.subject || `${this.crimeNo}_${firstFile.name || firstFile.fileName}`,
+          fileType: (firstFile as any).fileType || firstFile.metadata?.fileType || "",
+          documentType: (firstFile as any).documentType || firstFile.metadata?.documentType || "",
+          classification: (firstFile as any).classification || firstFile.metadata?.classification || "",
+          hashTag: (firstFile as any).hashTag || firstFile.metadata?.hashTag || "",
+        };
+
+        // Populate the form with the metadata
+        this.metadataForm.patchValue(metadataToUse);
+        
+        // Handle file type change to update document type dropdown
+        if (metadataToUse.fileType) {
+          this.onFileTypeChange({ value: metadataToUse.fileType });
+        }
       }
 
       // Force change detection
@@ -432,13 +465,16 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   getFileSubject(file: FileWithMetadata): string {
-    if (file.metadata?.subject) {
-      return file.metadata.subject;
-    }
+    // First check if there's a subject directly from API data
     if (file.subject) {
       return file.subject;
     }
-    return file.name || file.fileName || "";
+    // Then check if there's a subject in metadata
+    if (file.metadata?.subject) {
+      return file.metadata.subject;
+    }
+    // If no subject is available, construct it with case number and file name
+    return `${this.crimeNo}_${file.name || file.fileName}`;
   }
 
   submitMetadata(): void {
@@ -450,9 +486,6 @@ export class UploadFilesComponent implements OnInit, OnChanges {
         this.selectedFiles[0].metadata = {
           ...this.selectedFiles[0].metadata,
           ...metadata,
-          subject: `${this.crimeNo}_${
-            this.selectedFiles[0].name || this.selectedFiles[0].fileName
-          }`,
         };
       }
       // If checkboxes are selected, apply to those files
@@ -460,11 +493,10 @@ export class UploadFilesComponent implements OnInit, OnChanges {
         this.selectedIndexes.forEach((index) => {
           const file = this.selectedFiles[index];
           if (file) {
-            // Apply metadata with individual file's subject
+            // Apply metadata with all updated fields
             file.metadata = {
               ...file.metadata,
               ...metadata,
-              subject: `${this.crimeNo}_${file.name || file.fileName}`,
             };
           }
         });
@@ -478,12 +510,17 @@ export class UploadFilesComponent implements OnInit, OnChanges {
           file.metadata = {
             ...file.metadata,
             ...metadata,
-            subject: `${this.crimeNo}_${file.name || file.fileName}`,
           };
         }
       }
 
-      this._snackBar.open("Metadata added successfully", "Close", {
+      // Emit the updated files with metadata to the parent component
+      this.filesWithMetadataSelected.emit({
+        files: this.selectedFiles,
+        metadata: this.selectedFiles.map((file) => file.metadata),
+      });
+
+      this._snackBar.open("Metadata updated successfully", "Close", {
         duration: 3000,
         horizontalPosition: "right",
         verticalPosition: "top",
@@ -491,7 +528,9 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       });
       this.openFileModal = false;
       this.selectedIndexes.clear();
-      this._changeDetectorRef.detectChanges();
+      
+      // Refresh the card display
+      this.refreshCardDisplay();
     }
   }
 
@@ -503,6 +542,23 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       const newFiles = Array.from(files)
         .map((file) => this.validateFile(file as FileWithMetadata))
         .filter((file) => file.validationErrors?.length === 0);
+      
+      // Add default metadata with subject for new files
+      newFiles.forEach((file) => {
+        if (!file.metadata) {
+          file.metadata = {
+            subject: file.subject || `${this.crimeNo}_${file.name || file.fileName}`,
+            fileType: "",
+            classification: "",
+            hashTag: "",
+            documentType: "",
+          };
+        } else if (!file.metadata.subject) {
+          // If metadata exists but no subject, use API subject or create default
+          file.metadata.subject = file.subject || `${this.crimeNo}_${file.name || file.fileName}`;
+        }
+      });
+      
       this.selectedFiles = [...this.selectedFiles, ...newFiles];
 
       // Emit the selected files and their metadata to the parent
@@ -613,187 +669,85 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     });
   }
 
-  //   viewImage(data) {
-  //     if(this.checkGetFile ===true)
-  // {
-  // const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
-  //       data: data,
-  //       width: "850px", // or '100vw' for full width
-  //       maxWidth: "100vw",
-  //       height: "90vh",
-  //       panelClass: "custom-dialog-class",
-  //     });
-  //     dialogRef.afterClosed().subscribe((result) => {
-  //       this._changeDetectorRef.detectChanges();
-  //     });
-  // } else{
-  // const dialogRef = this.dialog.open(UploadedFilesComponent, {
-  //       data: data,
-  //       width: "850px", // or '100vw' for full width
-  //       maxWidth: "100vw",
-  //       height: "90vh",
-  //       panelClass: "custom-dialog-class",
-  //     });
-  //     dialogRef.afterClosed().subscribe((result) => {
-  //       this._changeDetectorRef.detectChanges();
-  //     });
-  // }
-
-  //   }
-
-  // viewImage(data) {
-  //   const payload = {
-  //     fileHash: data?.file?.fileHash || data?.fileHash,
-  //     requested_to: 0,
-  //     comments: "",
-  //     division_id: sessionStorage.getItem("divisionID"),
-  //     case_id: this.caseMetaData?.CaseInfoDetailsId,
-  //   };
-
-  //   this._searchDocService.filePreviewData(payload).subscribe({
-  //     next: (res: any) => {
-  //       if (!res) {
-  //         console.error("No file data received");
-  //         return;
-  //       }
-
-  //       const fileType = res.mime_type || res.type;
-  //       const base64 = res.base64_content;
-  //       const fileName = res.file_name || "document";
-
-  //       const officeMimeTypes = [
-  //         "application/msword",
-  //         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  //         "application/vnd.ms-excel",
-  //         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  //         "application/vnd.ms-powerpoint",
-  //         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-  //       ];
-
-  //       if (officeMimeTypes.includes(fileType)) {
-  //         const blob = this.base64ToBlob(base64, fileType);
-  //         const url = window.URL.createObjectURL(blob);
-
-  //         const link = document.createElement("a");
-  //         link.href = url;
-  //         link.download = fileName;
-  //         document.body.appendChild(link);
-  //         link.click();
-  //         link.remove();
-
-  //         setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-  //       } else {
-  //         if (this.checkGetFile === true) {
-  //           const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
-  //             data: data,
-  //             width: "850px", // or '100vw' for full width
-  //             maxWidth: "100vw",
-  //             height: "90vh",
-  //             panelClass: "custom-dialog-class",
-  //           });
-  //           dialogRef.afterClosed().subscribe((result) => {
-  //             this._changeDetectorRef.detectChanges();
-  //           });
-  //         } else {
-  //           const dialogRef = this.dialog.open(UploadedFilesComponent, {
-  //             data: data,
-  //             width: "850px", // or '100vw' for full width
-  //             maxWidth: "100vw",
-  //             height: "90vh",
-  //             panelClass: "custom-dialog-class",
-  //           });
-  //           dialogRef.afterClosed().subscribe((result) => {
-  //             this._changeDetectorRef.detectChanges();
-  //           });
-  //         }
-  //       }
-  //     },
-  //     error: (error) => {
-  //       console.error("Error fetching file preview:", error);
-  //     },
-  //   });
-  // }
-
   viewImage(data) {
-  if (this.checkGetFile === true) {
-    const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
-      data: data,
-      width: "850px",
-      maxWidth: "100vw",
-      height: "90vh",
-      panelClass: "custom-dialog-class",
-    });
+    if (this.checkGetFile === true) {
+      const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
+        data: data,
+        width: "850px",
+        maxWidth: "100vw",
+        height: "90vh",
+        panelClass: "custom-dialog-class",
+      });
 
-    dialogRef.afterClosed().subscribe(() => {
-      this._changeDetectorRef.detectChanges();
-    });
-    return;
-  }
+      dialogRef.afterClosed().subscribe(() => {
+        this._changeDetectorRef.detectChanges();
+      });
+      return;
+    }
 
-  // If checkGetFile is false, proceed with API call
-  const payload = {
-    fileHash: data?.file?.fileHash || data?.fileHash,
-    requested_to: 0,
-    comments: "",
-    division_id: sessionStorage.getItem("divisionID"),
-    case_id: this.caseMetaData?.CaseInfoDetailsId,
-  };
+    // If checkGetFile is false, proceed with API call
+    const payload = {
+      fileHash: data?.file?.fileHash || data?.fileHash,
+      requested_to: 0,
+      comments: "",
+      division_id: sessionStorage.getItem("divisionID"),
+      case_id: this.caseMetaData?.CaseInfoDetailsId,
+    };
 
-  this._searchDocService.filePreviewData(payload).subscribe({
-    next: (res: any) => {
-      if (!res) {
-        console.error("No file data received");
-        return;
-      }
+    this._searchDocService.filePreviewData(payload).subscribe({
+      next: (res: any) => {
+        if (!res) {
+          console.error("No file data received");
+          return;
+        }
 
-      const fileType = res.mime_type || res.type;
-      const base64 = res.base64_content;
-      const fileName = res.file_name || "document";
+        const fileType = res.mime_type || res.type;
+        const base64 = res.base64_content;
+        const fileName = res.file_name || "document";
 
-      const officeMimeTypes = [
-        "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "application/vnd.ms-excel",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "application/vnd.ms-powerpoint",
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-       "application/vnd.ms-powerpoint",
+        const officeMimeTypes = [
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "application/vnd.ms-powerpoint",
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+         "application/vnd.ms-powerpoint",
   "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-      ];
+        ];
 
-      if (officeMimeTypes.includes(fileType)) {
-        const blob = this.base64ToBlob(base64, fileType);
-        const url = window.URL.createObjectURL(blob);
+        if (officeMimeTypes.includes(fileType)) {
+          const blob = this.base64ToBlob(base64, fileType);
+          const url = window.URL.createObjectURL(blob);
 
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
 
-        setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-      } else {
-        // Open UploadedFilesComponent dialog
-        const dialogRef = this.dialog.open(UploadedFilesComponent, {
-          data: data,
-          width: "850px",
-          maxWidth: "100vw",
-          height: "90vh",
-          panelClass: "custom-dialog-class",
-        });
+          setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+        } else {
+          // Open UploadedFilesComponent dialog
+          const dialogRef = this.dialog.open(UploadedFilesComponent, {
+            data: data,
+            width: "850px",
+            maxWidth: "100vw",
+            height: "90vh",
+            panelClass: "custom-dialog-class",
+          });
 
-        dialogRef.afterClosed().subscribe(() => {
-          this._changeDetectorRef.detectChanges();
-        });
-      }
-    },
-    error: (error) => {
-      console.error("Error fetching file preview:", error);
-    },
-  });
-}
-
+          dialogRef.afterClosed().subscribe(() => {
+            this._changeDetectorRef.detectChanges();
+          });
+        }
+      },
+      error: (error) => {
+        console.error("Error fetching file preview:", error);
+      },
+    });
+  }
 
   base64ToBlob(base64: string, mime: string): Blob {
     const byteCharacters = atob(base64);
@@ -1074,5 +1028,46 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       return "Access Approved";
     }
     return "";
+  }
+
+  refreshCardDisplay(): void {
+    // Force change detection to update the card display
+    this._changeDetectorRef.detectChanges();
+    
+    // Emit updated files to parent component
+    this.filesWithMetadataSelected.emit({
+      files: this.selectedFiles,
+      metadata: this.selectedFiles.map((file) => file.metadata),
+    });
+  }
+
+  onFieldChange(event: any, fieldName: string): void {
+    const newValue = event.target.value;
+    
+    // Update the field in the current file being edited
+    if (this.fileToEdit) {
+      const file = this.selectedFiles.find(
+        (f) => f === this.fileToEdit || f.name === this.fileToEdit.name
+      );
+      if (file) {
+        if (!file.metadata) {
+          file.metadata = {
+            subject: "",
+            fileType: "",
+            classification: "",
+            hashTag: "",
+            documentType: "",
+          };
+        }
+        file.metadata[fieldName] = newValue;
+        
+        // Refresh the card display
+        this.refreshCardDisplay();
+      }
+    }
+  }
+
+  onSubjectChange(event: any): void {
+    this.onFieldChange(event, 'subject');
   }
 }

@@ -114,12 +114,30 @@ export class GetDocComponent {
   getFilesWithMetadataSelected() {
     this.dataService.getFilesData().subscribe((files) => {
       this.files = files;
-       this.originalFiles = JSON.parse(JSON.stringify(files));
+      this.originalFiles = JSON.parse(JSON.stringify(files));
+      
+      // Ensure files have proper metadata structure with API subjects
+      this.files.forEach((file) => {
+        if (!file.metadata) {
+          file.metadata = {
+            subject: file.subject || "",
+            fileType: file.fileType || "",
+            classification: file.classification || "",
+            hashTag: file.hashTag || "",
+            documentType: file.documentType || "",
+          };
+        } else {
+          // Ensure API subject is used if available
+          if (file.subject && !file.metadata.subject) {
+            file.metadata.subject = file.subject;
+          }
+        }
+      });
+      
       if(this.files.length>0){
-      this.showRequestConent= false;
+        this.showRequestConent= false;
       }
     })
-     
   }
 
 
