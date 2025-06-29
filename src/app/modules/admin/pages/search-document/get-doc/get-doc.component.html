@@ -126,8 +126,18 @@
 
       <div class="flex items-center justify-end py-2 mr-2"
         *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin')">
-        <button *transloco="let t" class="mr-3" mat-flat-button [color]="'primary'" (click)="updateUploadedFile()">
-          {{t('Update')}}
+        <div class="flex items-center space-x-4 mr-4">
+          <span class="text-sm text-gray-600">
+            Total Files: {{ getTrackingSummary().totalFiles }}
+          </span>
+          <span class="text-sm text-blue-600" *ngIf="getChangedFilesCount() > 0">
+            Modified: {{ getChangedFilesCount() }}
+          </span>
+        </div>
+        <button *transloco="let t" class="mr-3" mat-flat-button [color]="'primary'" 
+                [disabled]="getChangedFilesCount() === 0"
+                (click)="updateUploadedFile()">
+          {{t('Update')}} {{ getChangedFilesCount() > 0 ? '(' + getChangedFilesCount() + ')' : '' }}
         </button>
       </div>
 

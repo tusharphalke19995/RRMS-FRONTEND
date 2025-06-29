@@ -161,52 +161,115 @@ export class GetDocComponent {
     this.selectedMetadata = data.metadata;
   }
 
-updateUploadedFile() {
-  const filesToUpdate = this.selectedFiles?.length > 0 ? this.selectedFiles : this.files;
+  updateUploadedFile() {
+    // Get files to update - either selected files or all files
+    const filesToUpdate = this.selectedFiles?.length > 0 ? this.selectedFiles : this.files;
 
-  filesToUpdate.forEach((file) => {
-    const metadata = file.metadata || file;
-
-    const original = this.originalFiles.find(f => f.fileId === file.fileId);
-    const originalMetadata = original?.metadata || original;
-
-    if (!file.fileId || !metadata || !originalMetadata) {
-      console.warn("Missing metadata or fileId", file);
+    if (!filesToUpdate || filesToUpdate.length === 0) {
+      this._snackBar.open('No files to update', 'Close', { 
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top", 
+      });
       return;
     }
 
-    // Compare fields
-    const hasChanged = ['classification', 'documentType', 'hashTag', 'fileType', 'subject']
-      .some(key => metadata[key] !== originalMetadata[key]);
+    // Get only changed files for update
+    const changedFiles = filesToUpdate.filter(file => {
+      const metadata = file.metadata || file;
+      const original = this.originalFiles.find(f => (f as any).fileId === (file as any).fileId);
+      const originalMetadata = original?.metadata || original;
 
-    if (!hasChanged) {
-      console.log(`No changes for fileId: ${file.fileId}, skipping update`);
-      return;
-    }
-
-    const payload = {
-      classification: metadata.classification,
-      documentType: metadata.documentType,
-      hashTag: metadata.hashTag,
-      fileType: metadata.fileType,
-      subject: metadata.subject,
-    };
-
-    this.caseDataApprovalService.updateFileDataById(file.fileId, payload).subscribe({
-      next: () => {
-        this._snackBar.open('File metadata updated', 'Close', {  duration: 3000,
-            horizontalPosition: "right",
-            verticalPosition: "top", });
-      },
-      error: (err) => {
-        console.error('Upload failed', err);
-        this._snackBar.open('Update failed', 'Close', { duration: 3000,horizontalPosition: "right",
-            verticalPosition: "top", });
+      if (!(file as any).fileId || !metadata || !originalMetadata) {
+        return false;
       }
-    });
-  });
-}
 
+      // Check if any field has changed
+      return ['classification', 'documentType', 'hashTag', 'fileType', 'subject']
+        .some(key => metadata[key] !== originalMetadata[key]);
+    });
+
+    if (changedFiles.length === 0) {
+      this._snackBar.open('No files have been modified', 'Close', { 
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top", 
+      });
+      return;
+    }
+
+    let updateCount = 0;
+    let errorCount = 0;
+
+    // Show progress message
+    this._snackBar.open(`Updating ${changedFiles.length} modified file(s)...`, 'Close', { 
+      duration: 2000,
+      horizontalPosition: "right",
+      verticalPosition: "top", 
+    });
+
+    changedFiles.forEach((file) => {
+      // Use the enhanced metadata preparation method
+      const metadata = file.metadata || file;
+      const original = this.originalFiles.find(f => (f as any).fileId === (file as any).fileId);
+      const originalMetadata = original?.metadata || original;
+
+      if (!(file as any).fileId || !metadata || !originalMetadata) {
+        console.warn("Missing metadata or fileId", file);
+        errorCount++;
+        return;
+      }
+
+      // Prepare payload using the enhanced method
+      const payload = {
+        classification: metadata.classification,
+        documentType: metadata.documentType,
+        hashTag: metadata.hashTag,
+        fileType: metadata.fileType,
+        subject: metadata.subject,
+      };
+
+      this.caseDataApprovalService.updateFileDataById((file as any).fileId, payload).subscribe({
+        next: () => {
+          updateCount++;
+          
+          // Update the original files array to reflect the changes
+          const originalIndex = this.originalFiles.findIndex(f => (f as any).fileId === (file as any).fileId);
+          if (originalIndex !== -1) {
+            this.originalFiles[originalIndex] = JSON.parse(JSON.stringify(file));
+          }
+
+          // Show individual success message
+          this._snackBar.open(`✓ Updated: ${file.name || file.fileName}`, 'Close', { 
+            duration: 2000,
+            horizontalPosition: "right",
+            verticalPosition: "top", 
+          });
+        },
+        error: (err) => {
+          errorCount++;
+          console.error('Upload failed', err);
+          this._snackBar.open(`✗ Failed: ${file.name || file.fileName}`, 'Close', { 
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top", 
+          });
+        }
+      });
+    });
+
+    // Show final summary after all updates
+    setTimeout(() => {
+      if (updateCount > 0) {
+        this._snackBar.open(`Successfully updated ${updateCount} of ${changedFiles.length} files${errorCount > 0 ? `, ${errorCount} failed` : ''}`, 'Close', { 
+          duration: 5000,
+          horizontalPosition: "right",
+          verticalPosition: "top", 
+          panelClass: ["green-snackbar"],
+        });
+      }
+    }, 1000);
+  }
 
   isImage(file: any): boolean {
     return file && file.type && file.type.startsWith('image/');
@@ -220,11 +283,11 @@ updateUploadedFile() {
     this.fileToView = file;
   }
 
-hasRoleInDivision(...roles: string[]): boolean {
-  if (roles.includes(this.authData.Role)) {
-    return true;
+  hasRoleInDivision(...roles: string[]): boolean {
+    if (roles.includes(this.authData.Role)) {
+      return true;
+    }
   }
-}
 
   getMasterDropDown() {
     this._uploadDocumentService.getMasterDropDownData().subscribe({
@@ -242,4 +305,35 @@ hasRoleInDivision(...roles: string[]): boolean {
     this._router.navigateByUrl('upload-document');
   }
   
+  /**
+   * Get tracking summary from upload-files component
+   */
+  getTrackingSummary(): any {
+    // This will be called from the template to get tracking info
+    return {
+      totalFiles: this.files.length,
+      selectedFiles: this.selectedFiles?.length || 0,
+      originalFiles: this.originalFiles.length
+    };
+  }
+
+  /**
+   * Get changed files count for display
+   */
+  getChangedFilesCount(): number {
+    if (!this.files || this.files.length === 0) return 0;
+    
+    return this.files.filter(file => {
+      const metadata = file.metadata || file;
+      const original = this.originalFiles.find(f => (f as any).fileId === (file as any).fileId);
+      const originalMetadata = original?.metadata || original;
+
+      if (!(file as any).fileId || !metadata || !originalMetadata) {
+        return false;
+      }
+
+      return ['classification', 'documentType', 'hashTag', 'fileType', 'subject']
+        .some(key => metadata[key] !== originalMetadata[key]);
+    }).length;
+  }
 }
