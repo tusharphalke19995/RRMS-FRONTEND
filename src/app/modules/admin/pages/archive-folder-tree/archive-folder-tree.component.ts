@@ -13,11 +13,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
 import { fuseAnimations } from '@fuse/animations';
-import { MoveFileDialogComponent } from '../content-mng/pages/move-file-dialog/move-file-dialog.component';
 import { FolderNode, FileNode } from '../folder-tree/models/folder-tree.model';
 import { FolderTreeService } from '../folder-tree/services/folder-tree.service';
 import { ArchiveTreeService } from './archive-tree.service';
 import { ImagePreviewFolderDailogComponent } from '../folder-tree/pages/image-preview-folder-dailog/image-preview-folder-dailog.component';
+import { MoveFileDialogComponent } from '../folder-tree/pages/move-file-dialog/move-file-dialog.component';
 
 @Component({
   selector: 'app-archive-folder-tree',

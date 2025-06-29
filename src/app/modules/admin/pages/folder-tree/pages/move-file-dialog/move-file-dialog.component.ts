@@ -29,7 +29,6 @@ import { MatTableModule } from "@angular/material/table";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { RouterLink } from "@angular/router";
 import { TranslocoModule } from "@ngneat/transloco";
-import { FileIconPipe } from "../../../content-mng/pipe/fileIcon";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { BehaviorSubject } from "rxjs";
@@ -37,6 +36,7 @@ import { BehaviorSubject } from "rxjs";
 import { DatePipe } from '@angular/common';
 import { FolderTreeService } from "../../services/folder-tree.service";
 import { FolderNode, FileNode } from '../../models/folder-tree.model';
+import { FileIconPipe } from "../../pipe/fileIcon";
 
 interface ApiResponse {
   success: boolean;
