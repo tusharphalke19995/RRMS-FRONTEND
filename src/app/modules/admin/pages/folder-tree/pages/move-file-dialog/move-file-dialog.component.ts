@@ -265,6 +265,9 @@ export class MoveFileDialogComponent implements OnInit {
         this.dataSource.data = processedData;
         this.treeControl.dataNodes = processedData;
         
+        // Log the tree structure for debugging
+        this.logTreeStructure(processedData);
+        
         if (processedData.length > 0) {
           this.treeControl.expand(processedData[0]);
         }
@@ -280,6 +283,16 @@ export class MoveFileDialogComponent implements OnInit {
       complete: () => {
         this.loading$.next(false);
         this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private logTreeStructure(nodes: FolderNode[], depth: number = 0): void {
+    const indent = '  '.repeat(depth);
+    nodes.forEach(node => {
+      console.log(`${indent}- ${node.name} (${node.level}) [ID: ${node.id}]`);
+      if (node.children && node.children.length > 0) {
+        this.logTreeStructure(node.children, depth + 1);
       }
     });
   }
@@ -326,15 +339,15 @@ export class MoveFileDialogComponent implements OnInit {
     console.log('Complete path from root to selected node:', path);
     
     // Update navigation stack and items based on node levels
-    path.forEach(node => {
+    path.forEach(pathNode => {
       const nodeData = {
-        id: node.id,
-        level: node.level,
-        name: node.name
+        id: pathNode.id,
+        level: pathNode.level,
+        name: pathNode.name
       };
       console.log('Processing path node:', nodeData);
 
-      switch (node.level) {
+      switch (pathNode.level) {
         case 'year':
           this.navigationStack.push(nodeData);
           break;
@@ -347,14 +360,14 @@ export class MoveFileDialogComponent implements OnInit {
         case 'caseType':
           this.navigationStack.push(nodeData);
           break;
-        case 'fileType':
+        case 'filetype':
           this.items.push(nodeData);
           break;
-        case 'documentType':
+        case 'documenttype':
           this.items.push(nodeData);
           break;
         default:
-          console.log('Unknown level in path:', node.level, 'for node:', node.name);
+          console.log('Unknown level in path:', pathNode.level, 'for node:', pathNode.name);
           break;
       }
     });
@@ -369,16 +382,6 @@ export class MoveFileDialogComponent implements OnInit {
   confirmMove(): void {
     if (!this.selectedNode) {
       this.snackBar.open('Please select a destination folder', 'Close', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top'
-      });
-      return;
-    }
-
-    // Validate that we have at least one level selected
-    if (this.navigationStack.length === 0 && this.items.length === 0) {
-      this.snackBar.open('Invalid destination folder selected', 'Close', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top'
@@ -408,10 +411,10 @@ export class MoveFileDialogComponent implements OnInit {
         case 'caseType':
           payload.caseType = node.id || node.name;
           break;
-        case 'fileType':
+        case 'filetype':
           payload.fileTypeId = node.id || node.name;
           break;
-        case 'documentType':
+        case 'documenttype':
           payload.documentTypeId = node.id || node.name;
           break;
         default:
@@ -421,6 +424,8 @@ export class MoveFileDialogComponent implements OnInit {
     });
 
     console.log('Selected Node:', this.selectedNode);
+    console.log('Navigation Stack:', this.navigationStack);
+    console.log('Items:', this.items);
     console.log('Final Payload:', payload);
     this.dialogRef.close(payload);
   }
@@ -428,16 +433,6 @@ export class MoveFileDialogComponent implements OnInit {
    confirmCopy(): void {
     if (!this.selectedNode) {
       this.snackBar.open('Please select a destination folder', 'Close', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top'
-      });
-      return;
-    }
-
-    // Validate that we have at least one level selected
-    if (this.navigationStack.length === 0 && this.items.length === 0) {
-      this.snackBar.open('Invalid destination folder selected', 'Close', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top'
@@ -467,10 +462,10 @@ export class MoveFileDialogComponent implements OnInit {
         case 'caseType':
           payload.caseType = node.id || node.name;
           break;
-        case 'fileType':
+        case 'filetype':
           payload.fileTypeId = node.id || node.name;
           break;
-        case 'documentType':
+        case 'documenttype':
           payload.documentTypeId = node.id || node.name;
           break;
         default:
@@ -480,6 +475,8 @@ export class MoveFileDialogComponent implements OnInit {
     });
 
     console.log('Selected Node:', this.selectedNode);
+    console.log('Navigation Stack:', this.navigationStack);
+    console.log('Items:', this.items);
     console.log('Final Payload:', payload);
     this.dialogRef.close(payload);
   }
@@ -514,39 +511,37 @@ export class MoveFileDialogComponent implements OnInit {
 
   private getNodePath(node: FolderNode): FolderNode[] {
     const path: FolderNode[] = [];
-    let currentNode = node;
-
-    // Traverse up to find all parent nodes
-    while (currentNode && currentNode.level !== 'division') {
-      path.unshift(currentNode);
-      const parent = this.findParentNode(currentNode);
-      if (!parent) break;
-      currentNode = parent;
-    }
-
-    return path;
-  }
-
-  private findParentNode(node: FolderNode): FolderNode | null {
-    const findInNodes = (nodes: FolderNode[]): FolderNode | null => {
+    
+    console.log('Building path for node:', node.name, 'with level:', node.level);
+    
+    // Find the path by searching through the tree
+    const findPath = (nodes: FolderNode[], targetNode: FolderNode, currentPath: FolderNode[]): boolean => {
       for (const currentNode of nodes) {
-        // Check if current node has the target node as a child
-        if (currentNode.children?.some(child => 
-          (child.id && child.id === node.id) || 
-          (child.name === node.name && child.level === node.level)
-        )) {
-          return currentNode;
+        const newPath = [...currentPath, currentNode];
+        
+        console.log('Checking node:', currentNode.name, 'level:', currentNode.level, 'path length:', newPath.length);
+        
+        // Check if this is the target node
+        if ((currentNode.id && currentNode.id === targetNode.id) || 
+            (currentNode.name === targetNode.name && currentNode.level === targetNode.level)) {
+          console.log('Found target node! Adding path:', newPath.map(n => n.name));
+          path.push(...newPath);
+          return true;
         }
-        // Recursively check children
-        if (currentNode.children) {
-          const found = findInNodes(currentNode.children);
-          if (found) return found;
+        
+        // Recursively search children
+        if (currentNode.children && currentNode.children.length > 0) {
+          if (findPath(currentNode.children, targetNode, newPath)) {
+            return true;
+          }
         }
       }
-      return null;
+      return false;
     };
 
-    return findInNodes(this.dataSource.data);
+    findPath(this.dataSource.data, node, []);
+    console.log('Final path:', path.map(n => `${n.name} (${n.level})`));
+    return path;
   }
 
   isNodeSelected(node: FolderNode): boolean {

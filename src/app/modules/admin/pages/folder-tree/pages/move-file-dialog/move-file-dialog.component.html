@@ -177,6 +177,19 @@
           <span class="badge-text">Selected</span>
         </div>
       </div>
+      
+      <!-- Debug Information -->
+      <div class="debug-info" *ngIf="navigationStack.length > 0 || items.length > 0">
+        <h4>Extracted Parameters:</h4>
+        <div class="debug-params">
+          <div class="param-item" *ngFor="let item of navigationStack">
+            <strong>{{ item.level }}:</strong> {{ item.name }} (ID: {{ item.id }})
+          </div>
+          <div class="param-item" *ngFor="let item of items">
+            <strong>{{ item.level }}:</strong> {{ item.name }} (ID: {{ item.id }})
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 

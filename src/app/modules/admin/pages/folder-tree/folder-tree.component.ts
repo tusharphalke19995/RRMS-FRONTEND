@@ -744,6 +744,10 @@ export class FolderTreeComponent implements OnInit {
     this.updateDisplayItems();
   }
 
+  navigateToFolder(folder: FolderNode): void {
+    this.openFolder(folder);
+  }
+
   viewImage(data) {
     const dialogRef = this.dialog.open(ImagePreviewFolderDailogComponent, {
       data: data,
