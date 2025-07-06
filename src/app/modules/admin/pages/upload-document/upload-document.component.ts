@@ -331,8 +331,19 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         },
       });
   }
-   convertUtcToIst(utcTime: string): string {
+   convertUtcToIst(utcTime: string | null): string | null {
+    // Return null if utcTime is null, undefined, or empty
+    if (!utcTime) {
+      return null;
+    }
+    
     const date = new Date(utcTime);
+    
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+      return null;
+    }
+    
     // Adding 5 hours and 30 minutes to the UTC time
     date.setHours(date.getHours() + 5);
     date.setMinutes(date.getMinutes() + 30);
