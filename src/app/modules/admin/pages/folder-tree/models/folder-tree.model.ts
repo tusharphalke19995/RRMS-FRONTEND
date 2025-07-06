@@ -9,7 +9,9 @@ export interface FolderNode {
   path?: string;
   expanded?: boolean;
   isFolder?: boolean;
-   fileSize?: string;
+  fileSize?: string;
+  uniqueId?: string;
+  fullPath?: string;
 }
 
 export interface FileNode {
