@@ -60,7 +60,14 @@
               <mat-icon matTooltip="View File">
                 {{ file.metadata ? 'check_circle' : 'insert_drive_file' }}
               </mat-icon>
-              <span class="ml-2 text-primary-500 hover:underline cursor-pointer" matTooltip="View File">{{crimeNo}}_{{ file.name || file.fileName}}</span>
+              <span class="ml-2 text-primary-500 hover:underline cursor-pointer" matTooltip="View File">
+                <ng-container *ngIf="checkGetFile">
+                  {{crimeNo}}_{{ file.name || file.fileName }}
+                </ng-container>
+                <ng-container *ngIf="!checkGetFile">
+                  {{ getFileSubject(file) }}
+                </ng-container>
+              </span>
             </div>
 
             <span class="ml-2 text-sm text-gray-500" *ngIf="checkGetFile">
