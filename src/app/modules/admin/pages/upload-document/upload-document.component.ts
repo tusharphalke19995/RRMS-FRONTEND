@@ -345,7 +345,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     if (this.isSaveDraft) return;
     this.isSaveDraft = true;
     this._changeDetectorRef.detectChanges();
-    const finalCaseDate=this.convertUtcToIst(this.uploadDocumentForm.value.caseDate);
+    const finalCaseDate=this.convertUtcToIst(this.uploadDocumentForm.value.caseDate) || null;
     let uploadMetaData = {
       CaseInfoDetailsId: this.draftInfo?.CaseInfoDetailsId ?? 0,
       stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
@@ -354,7 +354,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       Office: this.uploadDocumentForm.value.office,
       letterNo: this.uploadDocumentForm.value.letterNo,
       caseNo: this.uploadDocumentForm.value.caseNo,
-      caseDate: finalCaseDate || null,
+      caseDate: finalCaseDate,
       caseType: this.uploadDocumentForm.value.caseType,
       firNo: this.uploadDocumentForm.value.firNo,
       author: this.uploadDocumentForm.value.author,
@@ -431,7 +431,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
 
     this.isSubmitting = true;
     this._changeDetectorRef.detectChanges();
-     const finalCaseDate=this.convertUtcToIst(this.uploadDocumentForm.value.caseDate);
+     const finalCaseDate=this.convertUtcToIst(this.uploadDocumentForm.value.caseDate) || null;
     let uploadMetaData = {
       CaseInfoDetailsId: this.draftInfo?.CaseInfoDetailsId ?? 0,
       stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
@@ -440,7 +440,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       Office: this.uploadDocumentForm.value.office,
       letterNo: this.uploadDocumentForm.value.letterNo,
       caseNo: this.uploadDocumentForm.value.caseNo,
-      caseDate: finalCaseDate || null,
+      caseDate: finalCaseDate,
       caseType: this.uploadDocumentForm.value.caseType,
       firNo: this.uploadDocumentForm.value.firNo,
       author: this.uploadDocumentForm.value.author,
@@ -525,7 +525,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     }
     this.isSubmitting = true;
     this._changeDetectorRef.detectChanges();
-    const finalCaseDate=this.convertUtcToIst(this.uploadDocumentForm.value.caseDate);
+    const finalCaseDate=this.convertUtcToIst(this.uploadDocumentForm.value.caseDate) || null;
     let uploadMetaData = {
       stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
       districtId: this.uploadDocumentForm.value.districtId,
@@ -533,7 +533,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       Office: this.uploadDocumentForm.value.office,
       letterNo: this.uploadDocumentForm.value.letterNo,
       caseNo: this.uploadDocumentForm.value.caseNo,
-      caseDate: finalCaseDate || null,
+      caseDate: finalCaseDate,
       caseType: this.uploadDocumentForm.value.caseType,
       firNo: this.uploadDocumentForm.value.firNo,
       author: this.uploadDocumentForm.value.author,
