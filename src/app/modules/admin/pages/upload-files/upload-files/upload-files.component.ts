@@ -972,6 +972,11 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   canRequestAccess(file: any): boolean {
+    // Hide request access button when isDraft is true
+    if (this.isDraft) {
+      return false;
+    }
+    
     const hasUserRole = this.authData.Role === "User";
     if (!hasUserRole) {
       return false;

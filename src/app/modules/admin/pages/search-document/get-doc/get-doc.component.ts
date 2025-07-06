@@ -88,6 +88,7 @@ export class GetDocComponent {
   finalUserID: number;
   showRequestConent:boolean=true;
   masterData: any;
+    isDraft: boolean = false;
   constructor(
     private dataService: SharedService,
     private _uploadDocumentService: UploadDocumentService,
