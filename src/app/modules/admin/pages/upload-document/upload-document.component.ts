@@ -504,6 +504,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         this.selectedFiles = [];
         this._uploadDocumentService.clearDraft();
         this.isDraft =false;
+        this.checkFileSatus = true;
+        setTimeout(() => { this.checkFileSatus = false; }, 100);
       },
       error: (error) => {
         this._snackBar.open(error.message || "Error creating user", "Close", {
