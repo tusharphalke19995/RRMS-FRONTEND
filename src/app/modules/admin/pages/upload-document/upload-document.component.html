@@ -229,7 +229,7 @@
                             <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{t('registerDate')}}</mat-label>
                                 <input matInput [matDatepicker]="picker1" [placeholder]="'Choose a date'"
-                                    [formControlName]="'caseDate'">
+                                    [formControlName]="'caseDate'" [max]="maxDate">
                                 <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
                                 <mat-datepicker #picker1></mat-datepicker>
                             </mat-form-field>

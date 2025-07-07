@@ -151,6 +151,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   files: any[] = [];
   isPatchSearchPage: boolean;
   isDraft: boolean = false;
+  maxDate: Date = new Date();
 
   // selectedFiles: any;
   /**
