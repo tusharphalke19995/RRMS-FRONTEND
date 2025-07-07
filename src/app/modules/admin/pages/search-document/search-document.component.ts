@@ -211,6 +211,7 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
   masterData: any;
   yearDropDown: { yearId: number; yearName: number }[] = [];
   yearToDropDown: { yearId: number; yearName: number }[] = [];
+  isResettingForm = false;
   /**
    * Constructor
    */
@@ -302,8 +303,9 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
    * Clear the form
    */
   clearForm(): void {
-    // Reset the form
-    this.addcitizenInformationNgForm.resetForm();
+    this.searchDocumentForm.reset({}, { emitEvent: false });
+    this.dataSource.data = [];
+    this.alert = undefined;
   }
 
   SelectDataCase(value) {}
@@ -741,7 +743,9 @@ export class SearchDocumentComponent implements OnInit, OnDestroy {
     this.searchDocumentForm.valueChanges
       .pipe(debounceTime(400), distinctUntilChanged())
       .subscribe(() => {
-        this.getUploadMetaDataFiles();
+        if (!this.isResettingForm) {
+          this.getUploadMetaDataFiles();
+        }
       });
   }
 }
