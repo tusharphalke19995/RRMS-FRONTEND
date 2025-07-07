@@ -45,7 +45,7 @@ fuse-loading-bar {
 .fuse-loading-logo {
     width: 60px;
     height: 60px;
-    margin-bottom: 8px;
+    margin-bottom: 0px;
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -69,6 +69,25 @@ fuse-loading-bar {
     margin-top: 0;
     position: static;
     transform: none;
+}
+
+.fuse-loading-title {
+    font-size: 0.95rem;
+    color: #2d3a4a;
+    font-weight: 600;
+    margin-top: 10px;
+    margin-bottom: 0;
+    text-align: center;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    padding: 0 2px;
+    word-break: break-word;
+}
+
+.rrms-accent {
+    color: #1565C0; /* RRMS accent color, matches loader theme */
+    font-weight: 700;
+    letter-spacing: 0.03em;
 }
 
 @keyframes fadeIn {
