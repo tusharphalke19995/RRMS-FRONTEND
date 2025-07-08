@@ -245,39 +245,42 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     }
     this.showTextNoData = !this.filesData?.length;
     this.selectedFiles = this.getfiles;
-    console.log('getfiles',this.getfiles)
     if (this.checkFileSatus == true) {
       this.metadataForm.reset();
       this.selectedFiles = [];
       this.filesWithMetadataSelected.emit({ files: [], metadata: [] });
     }
-    if(this.selectedFiles.length>0){
+    // Ensure all files have proper fileName and subject with fallback
+    if (this.selectedFiles.length > 0) {
       this.showEditUserUpload = true;
-      
-      // Ensure all files have proper subjects from API data or create default
-      this.selectedFiles.forEach((file) => {
+      const firstSubject = this.selectedFiles[0].subject;
+      this.selectedFiles.forEach((file, idx) => {
+        // Always set fileName with fallback
+        file.fileName = file.fileName || file.name || `File${idx+1}`;
+        // Always set subject with fallback
+        if (!file.subject || file.subject === firstSubject || file.subject === undefined) {
+          file.subject = file.fileName;
+        }
+        // Always set metadata and metadata.subject with fallback
         if (!file.metadata) {
           file.metadata = {
-            subject: file.subject || `${this.crimeNo}_${file.name || file.fileName}`,
+            subject: file.subject || file.fileName || `File${idx+1}`,
             fileType: (file as any).fileType || "",
             classification: (file as any).classification || "",
             hashTag: (file as any).hashTag || "",
             documentType: (file as any).documentType || "",
           };
         } else {
-          // Use the subject from API data if available, otherwise use existing or create default
           const apiSubject = file.subject;
           const existingSubject = file.metadata.subject;
-          file.metadata.subject = apiSubject || existingSubject || `${this.crimeNo}_${file.name || file.fileName}`;
+          file.metadata.subject = apiSubject || existingSubject || file.fileName || `File${idx+1}`;
         }
       });
-      
       this.filesWithMetadataSelected.emit({
         files: this.selectedFiles,
         metadata: this.selectedFiles.map((file) => file.metadata),
       });
     }
-
   }
 
   patchData(formData: any) {
@@ -465,16 +468,11 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   getFileSubject(file: FileWithMetadata): string {
-    // First check if there's a subject directly from API data
-    if (file.subject) {
-      return file.subject;
+    const fileName = file.name || file.fileName || 'UnknownFile';
+    if (!file.subject || (this.selectedFiles.length > 0 && file.subject === this.selectedFiles[0].subject) || file.subject === undefined) {
+      return fileName;
     }
-    // Then check if there's a subject in metadata
-    if (file.metadata?.subject) {
-      return file.metadata.subject;
-    }
-    // If no subject is available, construct it with case number and file name
-    return `${this.crimeNo}_${file.name || file.fileName}`;
+    return file.subject;
   }
 
   submitMetadata(): void {
