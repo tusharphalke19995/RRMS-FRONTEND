@@ -92,14 +92,15 @@
 
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label *transloco="let t" class="font-medium">{{ t('userEmail') }}</mat-label>
-                        <input matInput formControlName="emailID" placeholder="Enter email" [disabled]="isView" />
-                        <mat-progress-spinner matSuffix [mode]="'indeterminate'" [diameter]="20"
-                            *ngIf="emailID?.pending"></mat-progress-spinner>
+                        <input matInput formControlName="emailID" placeholder="Enter email" [disabled]="isView" (blur)="onEmailBlur()" />
+                        <!-- <mat-progress-spinner matSuffix [mode]="'indeterminate'" [diameter]="20"
+                            *ngIf="emailID?.pending"></mat-progress-spinner> -->
                         <mat-error *ngIf="emailID?.hasError('required')">{{ 'Required' }}</mat-error>
                         <mat-error *ngIf="emailID?.hasError('email')">{{ 'Please enter a valid email address'
                             }}</mat-error>
                         <mat-error *ngIf="emailID?.hasError('domainNotAllowed')">{{ 'Email domain is not allowed'
                             }}</mat-error>
+                        <mat-error *ngIf="emailID?.hasError('emailTaken')">This email is already taken.</mat-error>
                     </mat-form-field>
 
 

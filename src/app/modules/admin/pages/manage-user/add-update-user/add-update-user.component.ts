@@ -35,6 +35,7 @@ import { SharedService } from "app/shared/shared.service";
 import { notGmailValidator } from "app/shared/validators/notGmailValidator";
 import { emailDomainValidator } from "app/shared/validators/emailDomainValidator";
 import { HttpClient } from "@angular/common/http";
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: "app-add-update-user",
@@ -118,6 +119,18 @@ export class AddUpdateUserComponent {
     this.getUserRoleDropdown();
     this.getDivisionDropdown();
     this.getDesignationsData();
+
+    // Debounced email check
+    this.addUpdateUserForm.get('emailID').valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged()
+      )
+      .subscribe(value => {
+        if (this.addUpdateUserForm.get('emailID').valid) {
+          this.checkEmailAvailability(value);
+        }
+      });
   }
 
   checkViewBoolean() {
@@ -438,4 +451,31 @@ export class AddUpdateUserComponent {
     event.preventDefault();
   }
 }
+
+  checkEmailAvailability(email: string) {
+    this._searchUserService.checkEmailExists(email).subscribe({
+      next: (exists: boolean) => {
+        if (exists) {
+          this.addUpdateUserForm.get('emailID').setErrors({ ...this.addUpdateUserForm.get('emailID').errors, emailTaken: true });
+        } else {
+          const errors = this.addUpdateUserForm.get('emailID').errors;
+          if (errors) {
+            delete errors.emailTaken;
+            if (Object.keys(errors).length === 0) {
+              this.addUpdateUserForm.get('emailID').setErrors(null);
+            } else {
+              this.addUpdateUserForm.get('emailID').setErrors(errors);
+            }
+          }
+        }
+      }
+    });
+  }
+
+  onEmailBlur() {
+    const email = this.addUpdateUserForm.get('emailID').value;
+    if (this.addUpdateUserForm.get('emailID').valid) {
+    this.checkEmailAvailability(email);
+    }
+  }
 }

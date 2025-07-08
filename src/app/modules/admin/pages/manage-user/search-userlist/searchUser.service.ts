@@ -141,4 +141,12 @@ getallRequests() {
     console.error(error);
     return throwError(() => error);
   }
+
+  checkEmailExists(email: string): Observable<boolean> {
+    const url = `${apiurls.checkEmailExists}?email=${encodeURIComponent(email)}`;
+    return this._httpClient.get<{ exists: boolean }>(url).pipe(
+      switchMap(res => of(res.exists)),
+      catchError(() => of(false))
+    );
+  }
 }

@@ -83,4 +83,5 @@ export const apiurls = {
     `${environment.userApiUrl}casedata/upload-approval/${id}/send-reminder`,
   withdrawPendingApproval: (id: number | string) =>
     `${environment.userApiUrl}casedata/withdraw-upload-approval/${id}`,
+  checkEmailExists: `${environment.userApiUrl}users/check-email-exists`,
 } as const;
