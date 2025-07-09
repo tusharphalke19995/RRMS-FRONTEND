@@ -80,7 +80,7 @@ export interface FileWithMetadata extends File {
   classification?: string | number;
   documentType?: string | number;
   hashTag?: string;
-
+fileName?:string;
   metadata?: Metadata;            
 }
   export interface CustomFile extends File {

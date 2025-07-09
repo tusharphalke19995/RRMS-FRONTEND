@@ -333,23 +333,15 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       });
   }
    convertUtcToIst(utcTime: string | null): string | null {
-    // Return null if utcTime is null, undefined, or empty
     if (!utcTime) {
       return null;
     }
-    
     const date = new Date(utcTime);
-    
-    // Check if the date is valid
     if (isNaN(date.getTime())) {
       return null;
     }
-    
-    // Adding 5 hours and 30 minutes to the UTC time
     date.setHours(date.getHours() + 5);
     date.setMinutes(date.getMinutes() + 30);
-
-    // Returning in ISO string format (you can change the format as needed)
     return date.toISOString();
   }
 
@@ -977,5 +969,19 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
 
   viewDrafts() {
     this._router.navigateByUrl("upload-document/draft-details");
+  }
+
+  getFileSubject(file: FileWithMetadata): string {
+    const caseNo = this.crimeNo || 'undefined';
+    const fileName = file.name || file.fileName || 'UnknownFile';
+    const base = (!file.subject || (this.selectedFiles.length > 0 && file.subject === this.selectedFiles[0].subject) || file.subject === undefined)
+      ? fileName
+      : file.subject;
+
+    // If base already starts with caseNo, don't prepend
+    if (base.startsWith(caseNo)) {
+      return base;
+    }
+    return `${caseNo}_${base}`;
   }
 }

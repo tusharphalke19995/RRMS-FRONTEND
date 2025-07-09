@@ -468,11 +468,21 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   getFileSubject(file: FileWithMetadata): string {
+    const caseNo = this.crimeNo && this.crimeNo !== 'undefined' ? this.crimeNo : '';
     const fileName = file.name || file.fileName || 'UnknownFile';
-    if (!file.subject || (this.selectedFiles.length > 0 && file.subject === this.selectedFiles[0].subject) || file.subject === undefined) {
-      return fileName;
+    const base = (!file.subject || (this.selectedFiles.length > 0 && file.subject === this.selectedFiles[0].subject) || file.subject === undefined)
+      ? fileName
+      : file.subject;
+
+    // If caseNo is missing, just return base
+    if (!caseNo) {
+      return base;
     }
-    return file.subject;
+    // If base already starts with caseNo, don't prepend
+    if (base.startsWith(caseNo)) {
+      return base;
+    }
+    return `${caseNo}_${base}`;
   }
 
   submitMetadata(): void {
