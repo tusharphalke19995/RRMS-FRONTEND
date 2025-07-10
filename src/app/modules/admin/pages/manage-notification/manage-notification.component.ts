@@ -98,7 +98,8 @@ export class ManageNotificationComponent implements AfterViewInit {
   displayedColumns: string[] = [
     "requestedByDepartments",
     "requestedByDivisions",
-    "recipientDepartments",
+        "recipientDepartments",
+    // "ownerDivision",
     "type",
     "created_at",
     "message",
@@ -219,4 +220,14 @@ getDivisionNames(designationDetail: any): string {
   const uniqueDivisions = Array.from(new Set(divisions));
   return uniqueDivisions.join(", ");
 }
+
+ getUserDivisionNames(designationDetail: any): string {
+       console.log('designationDetail', designationDetail);
+       if (!Array.isArray(designationDetail)) return "";
+       const divisions = designationDetail
+         .flatMap((d: any) => d.division || [])
+         .map((div: any) => div.divisionName);
+       const uniqueDivisions = Array.from(new Set(divisions));
+       return uniqueDivisions.join(", ");
+     }
 }

@@ -11,51 +11,68 @@
 
         <div class="flex-1 min-w-0">
             <!-- Breadcrumbs -->
-            <div>
-                <div class="hidden sm:flex flex-wrap items-center font-medium example-full-width">
-                    <ng-container *transloco="let t">
-                        <div>
-                            <a class="whitespace-nowrap text-primary-500 cursor-pointer" [routerLink]="'/dashboard'">
-                                {{t('Home')}} </a>
-                        </div>
-                    </ng-container>
-
-                    <div class="flex items-center ml-1 whitespace-nowrap">
-                        <mat-icon class="icon-size-5 text-secondary"
-                            [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
-                        <ng-container *transloco="let t">
-                            <span class="ml-1 text-secondary">
-                                {{t('uploadDoc')}}</span>
-                        </ng-container>
+            <div class="hidden sm:flex flex-wrap items-center font-medium mb-4">
+                 <ng-container *ngIf="isPatchSearchPage">
+                    <div>
+                        <a class="whitespace-nowrap text-primary-500 cursor-pointer" [routerLink]="'/dashboard'">
+                            Home </a>
                     </div>
-
+                </ng-container>
+                 <mat-icon  *ngIf="isPatchSearchPage" class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                <ng-container *ngIf="isPatchSearchPage">
+                    <div>
+                        <a class="whitespace-nowrap text-primary-500 cursor-pointer" [routerLink]="'/search-document'">
+                            Search Document
+                        </a>
+                    </div>
+                </ng-container>
+               
+                <ng-container *ngIf="!isPatchSearchPage">
+                    <div>
+                        <a class="whitespace-nowrap text-primary-500 cursor-pointer" [routerLink]="'/dashboard'">
+                            Home </a>
+                    </div>
+                </ng-container>
+                <div class="flex items-center ml-1 whitespace-nowrap" *ngIf="isPatchSearchPage">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                    <ng-container>
+                        <span class="ml-1 text-secondary">
+                            <a [routerLink]="'/search-document/get-doc'">
+                                Get Document
+                            </a>
+                        </span>
+                    </ng-container>
                 </div>
-                <div class="flex sm:hidden">
-                    <a class="inline-flex items-center -ml-1.5 text-secondary font-medium example-full-width">
-                        <mat-icon class="icon-size-5 text-secondary"
-                            [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
-                        <span class="ml-1">Back</span>
-                    </a>
+                <div class="flex items-center ml-1 whitespace-nowrap">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                    <ng-container *transloco="let t">
+                        <span class="ml-1 text-secondary font-bold">
+                            Upload Document
+                        </span>
+                    </ng-container>
                 </div>
+            </div>
+            <div class="flex sm:hidden">
+                <a class="inline-flex items-center -ml-1.5 text-secondary font-medium example-full-width">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
+                    <span class="ml-1">Back</span>
+                </a>
             </div>
             <!-- Title -->
 
-              <div class="mt-2 flex items-center justify-between">
+            <div class="mt-2 flex items-center justify-between">
                 <ng-container *transloco="let t">
                     <div class="text-3xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
                         {{t('uploadDoc')}}
                     </div>
                 </ng-container>
-                
-                
+
+
                 <!-- Add User button -->
-                <button *ngIf="!isPatchSearchPage"
-                        mat-flat-button 
-                        [color]="'primary'"
-                        class="min-w-[120px]"
-                        (click)="viewDrafts()">
+                <button *ngIf="!isPatchSearchPage" mat-flat-button [color]="'primary'" class="min-w-[120px]"
+                    (click)="viewDrafts()">
                     <mat-icon class="icon-size-5 mr-2" [svgIcon]="'heroicons_solid:plus'"></mat-icon>
-                   View Drafts
+                    View Drafts
                 </button>
             </div>
         </div>
@@ -74,24 +91,21 @@
                 <div class="flex font-semibold text-2xl whitespace-nowrap my-2 ">
                     <div>Case information</div>
                 </div>
-                <table  class="example-full-width" cellspacing="0">
+                <table class="example-full-width" cellspacing="0">
                     <tr>
 
 
                         <td>
                             <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('state')}}</mat-label>
+                                <mat-label *transloco="let t"
+                                    class="font-medium example-full-width">{{t('state')}}</mat-label>
                                 <mat-select [formControlName]="'stateIDInfo'"
                                     (selectionChange)="onStateChange($event.value)"
                                     [panelClass]="'custom-select-panel'">
                                     <div class="px-3 py-2">
                                         <mat-form-field class="w-full">
-                                            <input matInput
-                                                (keyup)="filterStates($event)"
-                                                placeholder="Search state..."
-                                                #stateSearchInput
-                                                [value]="''"
-                                                autocomplete="off">
+                                            <input matInput (keyup)="filterStates($event)" placeholder="Search state..."
+                                                #stateSearchInput [value]="''" autocomplete="off">
                                         </mat-form-field>
                                     </div>
                                     <mat-option [value]="null">Please Select</mat-option>
@@ -106,23 +120,22 @@
                         </td>
                         <td>
                             <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('district')}}</mat-label>
+                                <mat-label *transloco="let t"
+                                    class="font-medium example-full-width">{{t('district')}}</mat-label>
                                 <mat-select [formControlName]="'districtId'"
                                     (selectionChange)="onDisctrictChange($event.value)"
                                     [panelClass]="'custom-select-panel'">
                                     <div class="px-3 py-2">
                                         <mat-form-field class="w-full">
-                                            <input matInput
-                                                (keyup)="filterDistricts($event)"
-                                                placeholder="Search district..."
-                                                #districtSearchInput
-                                                [value]="''"
+                                            <input matInput (keyup)="filterDistricts($event)"
+                                                placeholder="Search district..." #districtSearchInput [value]="''"
                                                 autocomplete="off">
                                         </mat-form-field>
                                     </div>
                                     <mat-option [value]="null">Please Select</mat-option>
                                     <ng-container *ngFor="let districtIData of filteredDistricts; trackBy: trackByFn">
-                                        <mat-option [value]="districtIData.districtId">{{districtIData.districtName}}</mat-option>
+                                        <mat-option
+                                            [value]="districtIData.districtId">{{districtIData.districtName}}</mat-option>
                                     </ng-container>
                                 </mat-select>
                                 <mat-error *ngIf="uploadDocumentForm.get('districtId').hasError('required')">
@@ -132,17 +145,14 @@
                         </td>
                         <td>
                             <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('policeStation')}}</mat-label>
-                                <mat-select [formControlName]="'unitsId'"
-                                    (selectionChange)="onUnitChange($event.value)"
+                                <mat-label *transloco="let t"
+                                    class="font-medium example-full-width">{{t('policeStation')}}</mat-label>
+                                <mat-select [formControlName]="'unitsId'" (selectionChange)="onUnitChange($event.value)"
                                     [panelClass]="'custom-select-panel'">
                                     <div class="px-3 py-2">
                                         <mat-form-field class="w-full">
-                                            <input matInput
-                                                (keyup)="filterUnits($event)"
-                                                placeholder="Search police station..."
-                                                #searchInput
-                                                [value]="''"
+                                            <input matInput (keyup)="filterUnits($event)"
+                                                placeholder="Search police station..." #searchInput [value]="''"
                                                 autocomplete="off">
                                         </mat-form-field>
                                     </div>
@@ -156,19 +166,17 @@
                                 </mat-error>
                             </mat-form-field>
                         </td>
-                       
+
                         <td>
-                             <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('caseType')}}</mat-label>
-                                <mat-select [formControlName]="'caseType'"  (selectionChange)="onCaseTypeChange($event)"
+                            <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t"
+                                    class="font-medium example-full-width">{{t('caseType')}}</mat-label>
+                                <mat-select [formControlName]="'caseType'" (selectionChange)="onCaseTypeChange($event)"
                                     [panelClass]="'custom-select-panel'">
                                     <div class="px-3 py-2">
                                         <mat-form-field class="w-full">
-                                            <input matInput
-                                                (keyup)="filterCaseTypes($event)"
-                                                placeholder="Search case type..."
-                                                #caseTypeSearchInput
-                                                [value]="''"
+                                            <input matInput (keyup)="filterCaseTypes($event)"
+                                                placeholder="Search case type..." #caseTypeSearchInput [value]="''"
                                                 autocomplete="off">
                                         </mat-form-field>
                                     </div>
@@ -188,29 +196,27 @@
                 <table class="example-full-width" cellspacing="0">
                     <tr>
                         <td>
-                             <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('firNo')}}</mat-label>
-                                <input (blur)="generateFIRNo()" matInput matInput maxlength="4" [formControlName]="'firNo'"
-                                    [required]="true"  (keypress)="allowOnlyNumbers($event)">
+                            <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium example-full-width">{{
+                                    t('firNo')}}</mat-label>
+                                <input (blur)="generateFIRNo()" matInput matInput maxlength="4"
+                                    [formControlName]="'firNo'" [required]="true" (keypress)="allowOnlyNumbers($event)">
                                 <mat-error *ngIf="uploadDocumentForm.get('firNo').hasError('required')">
                                     Required
                                 </mat-error>
                             </mat-form-field>
                         </td>
-                      
+
                         <td>
-                           <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('year')}}</mat-label>
+                            <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t"
+                                    class="font-medium example-full-width">{{t('year')}}</mat-label>
                                 <mat-select [formControlName]="'yearId'" (selectionChange)="onYearChange($event.value)"
                                     [panelClass]="'custom-select-panel'">
                                     <div class="px-3 py-2">
                                         <mat-form-field class="w-full">
-                                            <input matInput
-                                                (keyup)="filterYears($event)"
-                                                placeholder="Search year..."
-                                                #yearSearchInput
-                                                [value]="''"
-                                                autocomplete="off">
+                                            <input matInput (keyup)="filterYears($event)" placeholder="Search year..."
+                                                #yearSearchInput [value]="''" autocomplete="off">
                                         </mat-form-field>
                                     </div>
                                     <mat-option [value]="null">Please Select</mat-option>
@@ -223,11 +229,12 @@
                                 </mat-error>
                             </mat-form-field>
                         </td>
-                       
+
 
                         <td>
                             <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('registerDate')}}</mat-label>
+                                <mat-label *transloco="let t"
+                                    class="font-medium example-full-width">{{t('registerDate')}}</mat-label>
                                 <input matInput [matDatepicker]="picker1" [placeholder]="'Choose a date'"
                                     [formControlName]="'caseDate'" [max]="maxDate">
                                 <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
@@ -235,18 +242,15 @@
                             </mat-form-field>
                         </td>
 
-                          <td>
-                             <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('caseStatus')}}</mat-label>
-                                <mat-select [formControlName]="'statusId'"
-                                    [panelClass]="'custom-select-panel'">
+                        <td>
+                            <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t"
+                                    class="font-medium example-full-width">{{t('caseStatus')}}</mat-label>
+                                <mat-select [formControlName]="'statusId'" [panelClass]="'custom-select-panel'">
                                     <div class="px-3 py-2">
                                         <mat-form-field class="w-full">
-                                            <input matInput
-                                                (keyup)="filterCaseStatus($event)"
-                                                placeholder="Search case status..."
-                                                #caseStatusSearchInput
-                                                [value]="''"
+                                            <input matInput (keyup)="filterCaseStatus($event)"
+                                                placeholder="Search case status..." #caseStatusSearchInput [value]="''"
                                                 autocomplete="off">
                                         </mat-form-field>
                                     </div>
@@ -267,8 +271,10 @@
                     <tr>
                         <td>
                             <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{t('office')}}</mat-label>
-                                <input matInput matInput [formControlName]="'office'" maxlength="30" (keypress)="allowOnlyLetters($event)">
+                                <mat-label *transloco="let t"
+                                    class="font-medium example-full-width">{{t('office')}}</mat-label>
+                                <input matInput matInput [formControlName]="'office'" maxlength="30"
+                                    (keypress)="allowOnlyLetters($event)">
                                 <mat-error *ngIf="uploadDocumentForm.get('office').hasError('required')">
                                     Required
                                 </mat-error>
@@ -276,32 +282,37 @@
                         </td>
                         <td>
                             <mat-form-field appearance="outline" class="example-full-width">
-                            <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('letterNo')}}</mat-label>
-                            <input matInput matInput [formControlName]="'letterNo'" [required]="true">
-                            <mat-error *ngIf="uploadDocumentForm.get('letterNo').hasError('required')">
-                                Required
-                            </mat-error>
-                        </mat-form-field>
-                        </td>
-                        <td>
-                            <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('location')}}</mat-label>
-                                <input matInput matInput [formControlName]="'toAddr'" maxlength="100" [required]="true" (keypress)="allowOnlyLetters($event)">
-                                <mat-error *ngIf="uploadDocumentForm.get('toAddr').hasError('required')">
-                                    Required 
+                                <mat-label *transloco="let t" class="font-medium example-full-width">{{
+                                    t('letterNo')}}</mat-label>
+                                <input matInput matInput [formControlName]="'letterNo'" [required]="true">
+                                <mat-error *ngIf="uploadDocumentForm.get('letterNo').hasError('required')">
+                                    Required
                                 </mat-error>
                             </mat-form-field>
                         </td>
                         <td>
-                            
                             <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('author')}}</mat-label>
-                                <input matInput matInput [formControlName]="'author'" [required]="true" maxlength="20" (keypress)="allowOnlyLetters($event)">
+                                <mat-label *transloco="let t" class="font-medium example-full-width">{{
+                                    t('location')}}</mat-label>
+                                <input matInput matInput [formControlName]="'toAddr'" maxlength="100" [required]="true"
+                                    (keypress)="allowOnlyLetters($event)">
+                                <mat-error *ngIf="uploadDocumentForm.get('toAddr').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td>
+
+                            <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t" class="font-medium example-full-width">{{
+                                    t('author')}}</mat-label>
+                                <input matInput matInput [formControlName]="'author'" [required]="true" maxlength="20"
+                                    (keypress)="allowOnlyLetters($event)">
                                 <mat-error *ngIf="uploadDocumentForm.get('author').hasError('required')">
                                     Required
                                 </mat-error>
                             </mat-form-field>
-                           
+
                         </td>
                         <!-- <td>
                     <tr>
@@ -312,32 +323,86 @@
                         </mat-form-field>
                     </tr>
                     </td> -->
-             
+
                     </tr>
                 </table>
 
                 <table class="example-full-width" cellspacing="0">
 
                     <tr>
-                         <td><mat-form-field appearance="outline"  class="col-md-3" >
-                        <mat-label *transloco="let t" class="font-medium example-full-width">{{ t('caseNo')}}</mat-label>
-                        <input matInput matInput [formControlName]="'caseNo'" readonly class="dark:bg-gray-600">
-                        <mat-error *ngIf="uploadDocumentForm.get('caseNo').hasError('required')">
-                            Required
-                        </mat-error>
-                    </mat-form-field>
-                    </td>
+                        <td><mat-form-field appearance="outline" class="col-md-3">
+                                <mat-label *transloco="let t" class="font-medium example-full-width">{{
+                                    t('caseNo')}}</mat-label>
+                                <input matInput matInput [formControlName]="'caseNo'" readonly class="dark:bg-gray-600">
+                                <mat-error *ngIf="uploadDocumentForm.get('caseNo').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
                     </tr>
-                        
-                   
+
+
                 </table>
 
                 <div class="flex font-semibold text-2xl  whitespace-nowrap my-5 ">
                     <div>Files/Documents</div>
                 </div>
 
-                <app-upload-files [getfiles]="patchDetailsfiles" [getfiles]="dfaftfiles" (filesWithMetadataSelected)="onFilesWithMetadataSelected($event)"
-                    [DocumentTypeDropDown]="DocumentTypeDropDown" [crimeNo]="crimeNo" [FileTypeDropDown]="FileTypeDropDown" [ClassificationTypeDropDown]="ClassificationTypeDropDown" [masterData]="masterData" [checkFileSatus]="checkFileSatus" [isDraft]="isDraft">
+
+                <!-- Show files passed from get-doc -->
+                <div *ngIf="patchDetailsfiles && patchDetailsfiles.length > 0" class="mb-4">
+                    <div class="font-semibold mb-2">Files from previous page:</div>
+                    <table class="w-full border mb-2">
+                        <thead>
+                            <tr>
+                                <th class="border px-2 py-1 text-left bg-primary-300 dark:bg-slate-500 text-blac">File
+                                    Name</th>
+                                <th class="border px-2 py-1 text-left bg-primary-300 dark:bg-slate-500 text-blac">
+                                    Subject</th>
+                                <th class="border px-2 py-1 text-left bg-primary-300 dark:bg-slate-500 text-blac">
+                                    HashTag</th>
+                                <th class="border px-2 py-1 text-left bg-primary-300 dark:bg-slate-500 text-blac">Folder
+                                    Type Name</th>
+                                <th class="border px-2 py-1 text-left bg-primary-300 dark:bg-slate-500 text-blac">
+                                    Document Type Name</th>
+                                <th class="border px-2 py-1 text-left bg-primary-300 dark:bg-slate-500 text-blac">
+                                    Classification Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let file of patchDetailsfiles">
+                                <td class="border px-2 py-1">
+                                    <span [matTooltip]="file.name || file.fileName">
+                                        {{ (file.name || file.fileName)?.length > 10 ? (file.name ||
+                                        file.fileName).slice(0, 10) + '...' : (file.name || file.fileName) }}
+                                    </span>
+                                </td>
+
+                                <td class="border px-2 py-1">
+                                    <span [matTooltip]="file.metadata?.subject || file.subject">
+                                        {{ (file.metadata?.subject || file.subject)?.length > 10 ?
+                                        (file.metadata?.subject || file.subject).slice(0, 10) + '...' :
+                                        (file.metadata?.subject || file.subject) }}
+                                    </span>
+                                </td>
+                                <td class="border px-2 py-1">{{file.metadata?.hashTag || file.hashTag}}</td>
+                                <td class="border px-2 py-1">{{file.metadata.filetypeName || file.filetypeName}}</td>
+
+                                <td class="border px-2 py-1">{{file.metadata?.documentTypeName ||
+                                    file.documentTypeName}}</td>
+                                <td class="border px-2 py-1">{{file.metadata?.classificationName ||
+                                    file.classificationName}}</td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <app-upload-files [getfiles]="patchDetailsfiles" [getfiles]="dfaftfiles"
+                    (filesWithMetadataSelected)="onFilesWithMetadataSelected($event)"
+                    [DocumentTypeDropDown]="DocumentTypeDropDown" [crimeNo]="crimeNo"
+                    [FileTypeDropDown]="FileTypeDropDown" [ClassificationTypeDropDown]="ClassificationTypeDropDown"
+                    [masterData]="masterData" [checkFileSatus]="checkFileSatus" [isDraft]="isDraft">
                 </app-upload-files>
 
                 <div class="flex items-center justify-end py-3">
@@ -345,22 +410,22 @@
                         [disabled]="uploadDocumentForm.pristine || uploadDocumentForm.untouched" (click)="clearForm()">
                         {{t('clear')}}
                     </button>
-                     <button *ngIf="!isPatchSearchPage" class="ml-2" mat-flat-button [color]="'primary'"
-                    [disabled]="!canisSaveDraft" (click)="saveDraftUpload()">
+                    <button *ngIf="!isPatchSearchPage" class="ml-2" mat-flat-button [color]="'primary'"
+                        [disabled]="!canisSaveDraft" (click)="saveDraftUpload()">
                         <mat-spinner *ngIf="isSaveDraft" diameter="20" class="mr-2"></mat-spinner>
                         <span *ngIf="!isSaveDraft">Save Draft</span>
                         <span *ngIf="isSaveDraft">Uploading</span>
                     </button>
                     <button *ngIf="!isPatchSearchPage" class="ml-2" mat-flat-button [color]="'primary'"
-                    [disabled]="!canSubmit" (click)="sumbitUpload()">
+                        [disabled]="!canSubmit" (click)="sumbitUpload()">
                         <mat-spinner *ngIf="isSubmitting" diameter="20" class="mr-2"></mat-spinner>
                         <span *ngIf="!isSubmitting">Submit</span>
                         <span *ngIf="isSubmitting">Uploading</span>
                     </button>
-                    
 
-                     <button *ngIf="isPatchSearchPage"  class="ml-2" mat-flat-button [color]="'primary'"
-                     (click)="updateUpload()">
+
+                    <button *ngIf="isPatchSearchPage" class="ml-2" mat-flat-button [color]="'primary'"
+                        (click)="updateUpload()">
                         <mat-spinner *ngIf="isSubmitting" diameter="20" class="mr-2"></mat-spinner>
                         <span *ngIf="!isSubmitting">Update</span>
                         <span *ngIf="isSubmitting">Uploading</span>

@@ -30,7 +30,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { fuseAnimations } from "@fuse/animations";
 import { FuseConfirmationService } from "@fuse/services/confirmation";
-import { Subject } from "rxjs";
+import { Subject, timeout } from "rxjs";
 import { InventoryVendor } from "./uploadDoc.types";
 import { MatDividerModule } from "@angular/material/divider";
 import { TranslocoModule } from "@ngneat/transloco";
@@ -45,6 +45,7 @@ import { SharedService } from "app/shared/shared.service";
 import { MasterService } from "../Master/master.service";
 import { AuthService } from "app/core/auth/auth.service";
 import { DraftDetailsComponent } from "./draft-details/draft-details.component";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 interface State {
   stateId: number;
@@ -100,6 +101,7 @@ interface CaseStatus {
     MatDatepickerModule,
     UploadFilesComponent,
     DraftDetailsComponent,
+    MatTooltipModule
   ],
 })
 export class UploadDocumentComponent implements OnInit, OnDestroy {
@@ -349,6 +351,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     if (this.isSaveDraft) return;
     this.isSaveDraft = true;
     this._changeDetectorRef.detectChanges();
+    this.crimeNo = this.uploadDocumentForm.value.caseNo;
     const finalCaseDate=this.convertUtcToIst(this.uploadDocumentForm.value.caseDate) || null;
     let uploadMetaData = {
       CaseInfoDetailsId: this.draftInfo?.CaseInfoDetailsId ?? 0,
@@ -893,13 +896,10 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.files = state.files;
     this.caseMetaData = state.caseData;
     this.isPatchSearchPage = state.isPatch;
-    console.log("this.caseMetaData", this.caseMetaData);
-    console.log("this.files", this.files);
     if (this.files) {
       this.patchDetailsfiles = this.files;
     }
     if (this.caseMetaData) {
-      console.log("this.caseMetaData", this.caseMetaData);
       this.dataPatch(this.caseMetaData);
     }
     // Clear state after loading
@@ -924,25 +924,32 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }
 
   dataPatch(data) {
-    debugger;
     if (data) {
-      const uploadDataPach = data;
+      console.log("data",data)
+      this.crimeNo = data.caseNo;
       this.uploadDocumentForm.patchValue({
-        stateIDInfo: uploadDataPach.stateId,
-        yearId: uploadDataPach.year,
-        districtId: uploadDataPach.districtId,
-        unitsId: uploadDataPach.unitId,
-        office: uploadDataPach.Office,
-        caseDate: uploadDataPach.caseDate,
-        caseNo: uploadDataPach.caseNo,
-        firNo: uploadDataPach.firNo,
-        letterNo: uploadDataPach.letterNo,
-        caseType: Number(uploadDataPach.caseType),
-        author: uploadDataPach.author,
-        toAddr: uploadDataPach.toAddr,
-        statusId: uploadDataPach.caseStatus,
+        stateIDInfo: data.stateId,
+        districtId: data.districtId,
+        unitsId: data.unitId,
+        office: data.Office,
+        caseDate: data.caseDate,
+        caseNo: data.caseNo,
+        firNo: data.firNo,
+        letterNo: data.letterNo,
+        caseType: Number(data.caseType),
+        author: data.author,
+        toAddr: data.toAddr,
+        statusId: data.caseStatus,
       });
+      setTimeout(() => {
+         this.uploadDocumentForm.patchValue({
+        caseType: Number(data.caseType),
+        yearId:data.year,
+      });
+      }, 2000);
       this.uploadDocumentForm.disable();
+      this._changeDetectorRef.detectChanges();
+       this._uploadDocumentService.clearState();
     }
   }
 
