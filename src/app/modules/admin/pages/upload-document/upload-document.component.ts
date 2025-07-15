@@ -157,6 +157,43 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
 
   // selectedFiles: any;
   /**
+   * Ensures all files have the correct fileName and subject with the current caseNo.
+   * Updates both new and old files in selectedFiles.
+   */
+  private getBaseFileName(file: any): string {
+    if (file.originalFileName && file.originalFileName !== 'undefined') return file.originalFileName;
+    if (file.name && file.name !== 'undefined') return file.name;
+    if (file.fileName && file.fileName !== 'undefined') return file.fileName;
+    if (file.subject && file.subject !== 'undefined') return file.subject;
+    return 'UnknownFile';
+  }
+
+  private updateFileNamesWithCaseNo(): void {
+    const caseNo = this.crimeNo || this.uploadDocumentForm.value.caseNo || 'undefined';
+    this.selectedFiles.forEach((file: any) => {
+      const baseName = this.getBaseFileName(file);
+
+      // Update subject if needed
+      if (!file.subject || !file.subject.startsWith(caseNo)) {
+        file.subject = `${caseNo}_${baseName}`;
+      }
+
+      // Update metadata.subject if needed
+      if (file.metadata) {
+        if (!file.metadata.subject || !file.metadata.subject.startsWith(caseNo)) {
+          file.metadata.subject = `${caseNo}_${baseName}`;
+        }
+      } else {
+        file.metadata = { subject: `${caseNo}_${baseName}` };
+      }
+
+      // Update fileName if needed
+      if (!file.fileName || !file.fileName.startsWith(caseNo)) {
+        file.fileName = `${caseNo}_${baseName}`;
+      }
+    });
+  }
+  /**
    * Constructor
    */
   constructor(
@@ -348,6 +385,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }
 
   saveDraftUpload() {
+    this.updateFileNamesWithCaseNo();
     if (this.isSaveDraft) return;
     this.isSaveDraft = true;
     this._changeDetectorRef.detectChanges();
@@ -394,8 +432,12 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     formData.append("fileDetails", JSON.stringify(fileDetailsArray));
     formData.append("dept_id", sessionStorage.getItem("departmentID"));
     this.selectedFiles.forEach((file) => {
-      const newFileName =
-        this.uploadDocumentForm.value.caseNo + "_" + file.name;
+      const baseName = this.getBaseFileName(file);
+      const caseNo = this.uploadDocumentForm.value.caseNo;
+      let newFileName = baseName;
+      if (!baseName.startsWith(caseNo + "_")) {
+        newFileName = caseNo + "_" + baseName;
+      }
       const newFile = new File([file], newFileName, { type: file.type });
       formData.append("Files", newFile);
     });
@@ -434,6 +476,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }
 
   sumbitUpload() {
+    this.updateFileNamesWithCaseNo();
     if (this.isSubmitting) return;
 
     this.isSubmitting = true;
@@ -479,8 +522,12 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     formData.append("division_id", sessionStorage.getItem("divisionID"));
     formData.append("dept_id", sessionStorage.getItem("departmentID"));
     this.selectedFiles.forEach((file) => {
-      const newFileName =
-        this.uploadDocumentForm.value.caseNo + "_" + file.name;
+      const baseName = this.getBaseFileName(file);
+      const caseNo = this.uploadDocumentForm.value.caseNo;
+      let newFileName = baseName;
+      if (!baseName.startsWith(caseNo + "_")) {
+        newFileName = caseNo + "_" + baseName;
+      }
       const newFile = new File([file], newFileName, { type: file.type });
       formData.append("Files", newFile);
     });
@@ -518,6 +565,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }
 
   updateUpload() {
+    this.updateFileNamesWithCaseNo();
     if (this.isSubmitting) return;
     if (!this.selectedFiles || this.selectedFiles.length === 0) {
       this._snackBar.open(
@@ -577,8 +625,12 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     formData.append("dept_id", sessionStorage.getItem("departmentID"));
 
     this.selectedFiles.forEach((file) => {
-      const newFileName =
-        this.uploadDocumentForm.value.caseNo + "_" + file.name;
+      const baseName = this.getBaseFileName(file);
+      const caseNo = this.uploadDocumentForm.value.caseNo;
+      let newFileName = baseName;
+      if (!baseName.startsWith(caseNo + "_")) {
+        newFileName = caseNo + "_" + baseName;
+      }
       const newFile = new File([file], newFileName, { type: file.type });
       formData.append("Files", newFile);
     });
