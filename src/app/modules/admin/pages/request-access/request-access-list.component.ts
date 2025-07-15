@@ -141,7 +141,6 @@ export class RequestAccessListComponent implements OnInit, AfterViewInit {
   displayedColumnsDenied: string[] = [
     "file_name",
     "requested_by",
-    "reviewed_by",
     "created_at",
     "approved_by",
     "comments",
