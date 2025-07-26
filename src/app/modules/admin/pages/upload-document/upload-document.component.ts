@@ -390,8 +390,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.isSaveDraft = true;
     this._changeDetectorRef.detectChanges();
     this.crimeNo = this.uploadDocumentForm.value.caseNo;
-    const finalCaseDate=this.convertUtcToIst(this.uploadDocumentForm.value.caseDate) || null;
-    let uploadMetaData = {
+    const caseDateValue = this.uploadDocumentForm.value.caseDate;
+    const finalCaseDate = this.convertUtcToIst(caseDateValue) || null;
+    let uploadMetaData: any = {
       CaseInfoDetailsId: this.draftInfo?.CaseInfoDetailsId ?? 0,
       stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
       districtId: this.uploadDocumentForm.value.districtId,
@@ -399,7 +400,6 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       Office: this.uploadDocumentForm.value.office,
       letterNo: this.uploadDocumentForm.value.letterNo,
       caseNo: this.uploadDocumentForm.value.caseNo,
-      caseDate: finalCaseDate,
       caseType: this.uploadDocumentForm.value.caseType,
       firNo: this.uploadDocumentForm.value.firNo,
       author: this.uploadDocumentForm.value.author,
@@ -407,6 +407,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       caseStatus: this.uploadDocumentForm.value.statusId,
       year: this.uploadDocumentForm.value.yearId,
     };
+    if (caseDateValue) {
+      uploadMetaData.caseDate = finalCaseDate;
+    }
     const formData = new FormData();
     formData.append("division_id", sessionStorage.getItem("divisionID"));
     formData.append("caseDetails", JSON.stringify(uploadMetaData));
@@ -481,8 +484,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
 
     this.isSubmitting = true;
     this._changeDetectorRef.detectChanges();
-     const finalCaseDate=this.convertUtcToIst(this.uploadDocumentForm.value.caseDate) || null;
-    let uploadMetaData = {
+    const caseDateValue = this.uploadDocumentForm.value.caseDate;
+    const finalCaseDate = this.convertUtcToIst(caseDateValue) || null;
+    let uploadMetaData: any = {
       CaseInfoDetailsId: this.draftInfo?.CaseInfoDetailsId ?? 0,
       stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
       districtId: this.uploadDocumentForm.value.districtId,
@@ -490,7 +494,6 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       Office: this.uploadDocumentForm.value.office,
       letterNo: this.uploadDocumentForm.value.letterNo,
       caseNo: this.uploadDocumentForm.value.caseNo,
-      caseDate: finalCaseDate,
       caseType: this.uploadDocumentForm.value.caseType,
       firNo: this.uploadDocumentForm.value.firNo,
       author: this.uploadDocumentForm.value.author,
@@ -498,6 +501,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       caseStatus: this.uploadDocumentForm.value.statusId,
       year: this.uploadDocumentForm.value.yearId,
     };
+    if (caseDateValue) {
+      uploadMetaData.caseDate = finalCaseDate;
+    }
     const formData = new FormData();
     formData.append("caseDetails", JSON.stringify(uploadMetaData));
     const fileDetailsArray = this.selectedFiles.map((file: any) => {
@@ -582,15 +588,15 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     }
     this.isSubmitting = true;
     this._changeDetectorRef.detectChanges();
-    const finalCaseDate=this.convertUtcToIst(this.uploadDocumentForm.value.caseDate) || null;
-    let uploadMetaData = {
+    const caseDateValue = this.uploadDocumentForm.value.caseDate;
+    const finalCaseDate = this.convertUtcToIst(caseDateValue) || null;
+    let uploadMetaData: any = {
       stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
       districtId: this.uploadDocumentForm.value.districtId,
       unitId: this.uploadDocumentForm.value.unitsId,
       Office: this.uploadDocumentForm.value.office,
       letterNo: this.uploadDocumentForm.value.letterNo,
       caseNo: this.uploadDocumentForm.value.caseNo,
-      caseDate: finalCaseDate,
       caseType: this.uploadDocumentForm.value.caseType,
       firNo: this.uploadDocumentForm.value.firNo,
       author: this.uploadDocumentForm.value.author,
@@ -598,6 +604,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       caseStatus: this.uploadDocumentForm.value.statusId,
       year: this.uploadDocumentForm.value.yearId,
     };
+    if (caseDateValue) {
+      uploadMetaData.caseDate = finalCaseDate;
+    }
 
     const formData = new FormData();
     formData.append("caseDetails", JSON.stringify(uploadMetaData));
