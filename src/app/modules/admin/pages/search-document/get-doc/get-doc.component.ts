@@ -31,6 +31,9 @@ import { AuthService } from "app/core/auth/auth.service";
 import { MasterService } from "../../Master/master.service";
 import { SearchDocService } from "../searchDoc.service";
 import { CaseDataApprovalService } from "../../case-data-approvals/case-data-approvals.service";
+import { Dialog } from "@angular/cdk/dialog";
+import { MatDialog } from "@angular/material/dialog";
+import { CaseTransferDialogComponent } from "../../case-tranfer/case-tranfer-dialog.component";
 
 @Component({
   selector: "app-get-doc",
@@ -97,7 +100,8 @@ export class GetDocComponent {
     private _masterService:MasterService,
     private authenticationService:AuthService,
     private searchDocService:SearchDocService,
-    private caseDataApprovalService:CaseDataApprovalService
+    private caseDataApprovalService:CaseDataApprovalService,
+     private dialog: MatDialog
   ) {
     this.authData = this.authenticationService.getAuthData();
   
@@ -336,5 +340,15 @@ export class GetDocComponent {
       return ['classification', 'documentType', 'hashTag', 'fileType', 'subject']
         .some(key => metadata[key] !== originalMetadata[key]);
     }).length;
+  }
+
+  caseTransfer(data){
+      this.caseMetaData = data;
+    const dialogRef = this.dialog.open(CaseTransferDialogComponent, {
+        width: "799px",
+        data:  this.caseMetaData,
+      });
+      dialogRef.afterClosed().subscribe((result) => {
+      });
   }
 }

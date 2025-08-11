@@ -51,6 +51,11 @@
           <div class="text-3xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
             {{t('getDoc')}}</div>
         </ng-container>
+        <div class="mr-3 flex items-center justify-end" *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin')">
+          <button *transloco="let t" mat-flat-button [color]="'primary'" class="min-w-[120px]" (click)="caseTransfer(caseMetaData)">
+            Case Transfer
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -111,14 +116,16 @@
         <p class="text-center text-3xl text-primary-500  font-extrabold">The data will appear only after the Content
           Manager has approved the request.</p>
       </div>
-      <div class="mr-3 flex items-center justify-end py-2"  *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin')">
+      <div class="mr-3 flex items-center justify-end py-2"
+        *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin')">
         <button *transloco="let t" mat-flat-button [color]="'primary'" class="min-w-[120px]" (click)="goToAddDoc()">
           <mat-icon class="icon-size-5 mr-2" [svgIcon]="'heroicons_solid:plus'"></mat-icon>
           Add Documents
         </button>
       </div>
-     
-      <app-upload-files [caseMetaData]="caseMetaData" [getfiles]="files" (filesWithMetadataSelected)="onFilesWithMetadataSelectedUpdate($event)"
+
+      <app-upload-files [caseMetaData]="caseMetaData" [getfiles]="files"
+        (filesWithMetadataSelected)="onFilesWithMetadataSelectedUpdate($event)"
         [ClassificationTypeDropDown]="fileClassificationDropDown" [FileTypeDropDown]="fileTypesDropDown"
         [finalUserID]="finalUserID" [masterData]="masterData" [isDraft]="isDraft">
       </app-upload-files>
@@ -134,9 +141,8 @@
             Modified: {{ getChangedFilesCount() }}
           </span>
         </div>
-        <button *transloco="let t" class="mr-3" mat-flat-button [color]="'primary'" 
-                [disabled]="getChangedFilesCount() === 0"
-                (click)="updateUploadedFile()">
+        <button *transloco="let t" class="mr-3" mat-flat-button [color]="'primary'"
+          [disabled]="getChangedFilesCount() === 0" (click)="updateUploadedFile()">
           {{t('Update')}} {{ getChangedFilesCount() > 0 ? '(' + getChangedFilesCount() + ')' : '' }}
         </button>
       </div>

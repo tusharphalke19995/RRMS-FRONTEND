@@ -1,0 +1,55 @@
+.example-form {
+    width: 100%;
+  }
+  
+  .example-full-width {
+    width: 100%;
+  }
+  
+  td {
+    padding-right: 8px;
+  }
+
+  .mat-mdc-dialog-container {
+    .mat-mdc-dialog-surface {
+        padding: 0 !important;
+    }
+}
+.text-white{
+    color: white !important;
+}
+
+.custom-select-panel {
+    .mat-mdc-select-panel {
+        max-height: 400px !important;
+    }
+
+    .mat-mdc-form-field {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+    }
+
+    .mat-mdc-form-field-infix {
+        padding: 8px 0;
+    }
+
+    .mat-mdc-text-field-wrapper {
+        padding: 0 8px;
+    }
+
+    .mat-mdc-form-field-flex {
+        padding: 0;
+    }
+}
+
+// Hide the search input's underline
+::ng-deep .custom-select-panel {
+    .mat-mdc-form-field-underline {
+        display: none;
+    }
+}
