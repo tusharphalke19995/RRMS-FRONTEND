@@ -17,6 +17,25 @@
   <form [formGroup]="caseTransferForm" class="flex flex-col flex-auto p-6 overflow-y-auto">
     <!-- First Row -->
     <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mb-4">
+        <mat-form-field  class="w-full text-white" appearance="outline">
+                <mat-label>Department Name</mat-label>
+                <mat-select [formControlName]="'departmentId'" [panelClass]="'custom-select-panel'"    (selectionChange)="onDepartmentSelect($event.value)">
+                    <div class="px-3 py-2 ">
+                        <mat-form-field class="w-full ">
+                            <input matInput (keyup)="filterDepartment($event)" placeholder="Search Department..."
+                                #roleSearchInput [value]="''" autocomplete="off">
+                        </mat-form-field>
+                    </div>
+                    <mat-option [value]="null">Please Select</mat-option>
+                    <ng-container *ngFor="let deptData of filteredDepartment; trackBy: trackByFn">
+                        <mat-option [value]="deptData.departmentId">{{deptData.departmentName}}</mat-option>
+                    </ng-container>
+                </mat-select>
+                <mat-error *ngIf="caseTransferForm.get('departmentId').hasError('required')">
+                    Required
+                </mat-error>
+            </mat-form-field>
+
       <mat-form-field class="w-full" appearance="outline" >
         <mat-label>Division Name</mat-label>
         <mat-select [formControlName]="'divisionId'" [panelClass]="'custom-select-panel'"

@@ -53,6 +53,9 @@ export class CaseTransferDialogComponent {
   divisionDropdown = [];
   caseMetaData: any;
   DivisionIdsUserLogin: [];
+    filteredDepartment = [];
+      departmentDropdown = [];
+  departmentSearchTimeout: any;
   constructor(
     private masterService: MasterService,
     private _formBuilder: FormBuilder,
@@ -64,14 +67,13 @@ export class CaseTransferDialogComponent {
   ) {
     console.log("Data received in dialog:", data);
     this.initiateForm();
-    this.getdivisionsFilterByDepartmentId(
-      sessionStorage.getItem("departmentID")
-    );
+    this.getDepartmentsInfo()
   }
 
   initiateForm() {
     this.caseTransferForm = this._formBuilder.group({
       divisionId: ["", [Validators.required]],
+      departmentId: ["", [Validators.required]],
       remarks: ["", [Validators.required]],
     });
   }
@@ -147,5 +149,43 @@ export class CaseTransferDialogComponent {
 
     onDivisionSelect(data: any) {
     console.log("Selected Division ID:", data)
+  }
+
+    onDepartmentSelect(data: any) {
+    this.getdivisionsFilterByDepartmentId(data)
+    sessionStorage.setItem("departmentID", data);
+  }
+
+    filterDepartment(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+
+    if (this.departmentSearchTimeout) {
+      clearTimeout(this.departmentSearchTimeout);
+    }
+
+    this.departmentSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredDepartment = [...this.departmentDropdown];
+      } else {
+        this.filteredDepartment = this.departmentDropdown.filter((role) => {
+          const roleName = (role.departmentName || "").toLowerCase();
+          return roleName.includes(searchText);
+        });
+      }
+    }, 300);
+  }
+
+
+  getDepartmentsInfo() {
+    this.masterService.getDepartments().subscribe({
+      next: (response: any[]) => {
+        // Filter departments by allowed IDs
+        this.departmentDropdown = response;
+        this.filteredDepartment = [...this.departmentDropdown];
+        // Patch if only one department
+        
+      },
+      error: (error) => {},
+    });
   }
 }
