@@ -85,31 +85,30 @@ export class CaseTransferDialogComponent {
 
   caseTransfer(): void {
     let payload = {
-      fileHash: this.data.fileHash,
-      requested_to: this.caseTransferForm.value.contentMangId,
-      comments: this.caseTransferForm.value.remarks,
-      division_id: sessionStorage.getItem("divisionID"),
-      case_id: this.caseMetaData.CaseInfoDetailsId,
+     caseDetailsId: this.data.CaseInfoDetailsId,
+   toDeptId: this.caseTransferForm.value.departmentId,
+   todivisionId: this.caseTransferForm.value.divisionId,
+   fromdivisionId:sessionStorage.getItem("divisionID")
     };
-    // this._caseTransferService.filePrevieAccessReqByUser(payload).subscribe({
-    //   next: (response: any) => {
-    //       this._snackBar.open('Access request sent. Waiting for approval.', "Close", {
-    //         duration: 3000,
-    //         horizontalPosition: "right",
-    //         verticalPosition: "top",
-    //         panelClass: ["green-snackbar"],
-    //       });
-    //       this.dialogRef.close(true);
-    //   },
-    //   error: (error) => {
-    //     this._snackBar.open(error.message || "Error creating user", "Close", {
-    //       duration: 3000,
-    //       horizontalPosition: "right",
-    //       verticalPosition: "top",
-    //       panelClass: ["error-snackbar"],
-    //     });
-    //   },
-    // });
+    this._caseTransferService.caseTransferData(payload).subscribe({
+      next: (response: any) => {
+          this._snackBar.open('Case Transfer saved successfully. ', "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["green-snackbar"],
+          });
+          this.dialogRef.close(true);
+      },
+      error: (error) => {
+        this._snackBar.open(error.message || "Error creating user", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["error-snackbar"],
+        });
+      },
+    });
   }
 
   filterDivision(event: any): void {

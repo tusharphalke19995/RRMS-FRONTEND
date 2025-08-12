@@ -13,8 +13,8 @@ export class CaseTransferService
   ) {}
 
 
-getContentManagerReqData(data:any) {
-  const url = `${apiurls.getContentManagerReq}`
+caseTransferData(data:any) {
+  const url = `${apiurls.caseTransfer}`
   return this._httpClient.post(url,data,{
       headers: new HttpHeaders({
           'Content-Type': 'application/json',
