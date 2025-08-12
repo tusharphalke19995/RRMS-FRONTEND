@@ -1,4 +1,4 @@
-import { Component, Inject, ViewEncapsulation } from "@angular/core";
+import { ChangeDetectorRef, Component, Inject, ViewEncapsulation } from "@angular/core";
 import { CommonModule, NgIf } from "@angular/common";
 import {
   ReactiveFormsModule,
@@ -53,21 +53,22 @@ export class CaseTransferDialogComponent {
   divisionDropdown = [];
   caseMetaData: any;
   DivisionIdsUserLogin: [];
-    filteredDepartment = [];
-      departmentDropdown = [];
+  filteredDepartment = [];
+  departmentDropdown = [];
   departmentSearchTimeout: any;
   constructor(
     private masterService: MasterService,
     private _formBuilder: FormBuilder,
     private _caseTransferService: CaseTransferService,
     private _snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef,
     public dialogRef: MatDialogRef<CaseTransferDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dataService: SharedService
   ) {
     console.log("Data received in dialog:", data);
     this.initiateForm();
-    this.getDepartmentsInfo()
+    this.getDepartmentsInfo();
   }
 
   initiateForm() {
@@ -111,7 +112,6 @@ export class CaseTransferDialogComponent {
     // });
   }
 
-  
   filterDivision(event: any): void {
     const searchText = event.target.value.toLowerCase().trim();
 
@@ -142,39 +142,39 @@ export class CaseTransferDialogComponent {
     });
   }
 
-
   trackByFn(index: number, item: any): any {
     return item.id || index;
   }
 
-    onDivisionSelect(data: any) {
-    console.log("Selected Division ID:", data)
+  onDivisionSelect(data: any) {
+    console.log("Selected Division ID:", data);
   }
 
-    onDepartmentSelect(data: any) {
-    this.getdivisionsFilterByDepartmentId(data)
+  onDepartmentSelect(data: any) {
+    this.getdivisionsFilterByDepartmentId(data);
     sessionStorage.setItem("departmentID", data);
   }
 
-    filterDepartment(event: any): void {
-    const searchText = event.target.value.toLowerCase().trim();
+ filterDepartment(event: any): void {
+  const searchText = event.target.value.toLowerCase().trim();
 
-    if (this.departmentSearchTimeout) {
-      clearTimeout(this.departmentSearchTimeout);
-    }
-
-    this.departmentSearchTimeout = setTimeout(() => {
-      if (!searchText) {
-        this.filteredDepartment = [...this.departmentDropdown];
-      } else {
-        this.filteredDepartment = this.departmentDropdown.filter((role) => {
-          const roleName = (role.departmentName || "").toLowerCase();
-          return roleName.includes(searchText);
-        });
-      }
-    }, 300);
+  if (this.departmentSearchTimeout) {
+    clearTimeout(this.departmentSearchTimeout);
   }
 
+  this.departmentSearchTimeout = setTimeout(() => {
+    if (!searchText) {
+      this.filteredDepartment = [...this.departmentDropdown];
+    } else {
+      this.filteredDepartment = this.departmentDropdown.filter((role) => {
+        const roleName = (role.departmentName || "").toLowerCase();
+        return roleName.includes(searchText);
+      });
+    }
+
+    this.cdr.detectChanges();
+  }, 300);
+}
 
   getDepartmentsInfo() {
     this.masterService.getDepartments().subscribe({
@@ -182,10 +182,17 @@ export class CaseTransferDialogComponent {
         // Filter departments by allowed IDs
         this.departmentDropdown = response;
         this.filteredDepartment = [...this.departmentDropdown];
-        // Patch if only one department
-        
+        const departmentID = sessionStorage.getItem("departmentID");
+        if (departmentID) {
+          this.filteredDepartment = this.departmentDropdown.filter(
+            (dept) => dept.departmentId === Number(departmentID)
+          );
+          console.log("Filtered Department:", this.filteredDepartment);
+          this.caseTransferForm.patchValue({
+            departmentId: departmentID,
+          });
+        }
       },
-      error: (error) => {},
     });
   }
 }
