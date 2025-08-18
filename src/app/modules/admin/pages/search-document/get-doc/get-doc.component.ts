@@ -91,7 +91,8 @@ export class GetDocComponent {
   finalUserID: number;
   showRequestConent:boolean=true;
   masterData: any;
-    isDraft: boolean = false;
+  isDraft: boolean = false;
+  isCheckDIG:boolean;
   constructor(
     private dataService: SharedService,
     private _uploadDocumentService: UploadDocumentService,
@@ -104,7 +105,7 @@ export class GetDocComponent {
      private dialog: MatDialog
   ) {
     this.authData = this.authenticationService.getAuthData();
-  
+    console.log("this.authData",this.authData)
   }
 
   ngOnInit() {
@@ -114,7 +115,14 @@ export class GetDocComponent {
     this.getMasterDropDown()
     this.getFilesCheck();
     this.finalUserID =  this.authData.UserID;
+    this.checkDIGUser();
   }
+  
+checkDIGUser() {
+  this.isCheckDIG = (this.authData?.DesignationName || [])
+    .some(d => /ADG|DIG/.test(d.designationName));
+}
+
 
   getFilesWithMetadataSelected() {
     this.dataService.getFilesData().subscribe((files) => {

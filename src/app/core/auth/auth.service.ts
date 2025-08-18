@@ -214,7 +214,7 @@ export class AuthService
                 Role: decodedToken.role,
                 Permission: decodedToken.permissions,
                 RoleName: decodedToken.role_name,
-                DesignationName: decodedToken.designation_name,
+                DesignationName: decodedToken.designations,
                 DivisionsRoles:decodedToken.divisions_roles,
                 SuperAdmin:decodedToken.is_superadmin,
                 DivisionIds:decodedToken.divisionIds,

@@ -51,7 +51,7 @@
           <div class="text-3xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
             {{t('getDoc')}}</div>
         </ng-container>
-        <div class="mr-3 flex items-center justify-end" *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin')">
+        <div class="mr-3 flex items-center justify-end" *ngIf="isCheckDIG">
           <button *transloco="let t" mat-flat-button [color]="'primary'" class="min-w-[120px]" (click)="caseTransfer(caseMetaData)">
             Case Transfer
           </button>

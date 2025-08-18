@@ -1,4 +1,9 @@
-import { ChangeDetectorRef, Component, Inject, ViewEncapsulation } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  ViewEncapsulation,
+} from "@angular/core";
 import { CommonModule, NgIf } from "@angular/common";
 import {
   ReactiveFormsModule,
@@ -22,6 +27,7 @@ import { TranslocoModule } from "@ngneat/transloco";
 import { SharedService } from "app/shared/shared.service";
 import { CaseTransferService } from "./case-transfer.service";
 import { MasterService } from "../Master/master.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-case-tranfer-dialog",
@@ -62,6 +68,7 @@ export class CaseTransferDialogComponent {
     private _caseTransferService: CaseTransferService,
     private _snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
+    private router: Router,
     public dialogRef: MatDialogRef<CaseTransferDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dataService: SharedService
@@ -85,20 +92,21 @@ export class CaseTransferDialogComponent {
 
   caseTransfer(): void {
     let payload = {
-     caseDetailsId: this.data.CaseInfoDetailsId,
-   toDeptId: this.caseTransferForm.value.departmentId,
-   todivisionId: this.caseTransferForm.value.divisionId,
-   fromdivisionId:sessionStorage.getItem("divisionID")
+      caseDetailsId: this.data.CaseInfoDetailsId,
+      toDeptId: this.caseTransferForm.value.departmentId,
+      todivisionId: this.caseTransferForm.value.divisionId,
+      fromdivisionId: sessionStorage.getItem("divisionID"),
     };
     this._caseTransferService.caseTransferData(payload).subscribe({
       next: (response: any) => {
-          this._snackBar.open('Case Transfer saved successfully. ', "Close", {
-            duration: 3000,
-            horizontalPosition: "right",
-            verticalPosition: "top",
-            panelClass: ["green-snackbar"],
-          });
-          this.dialogRef.close(true);
+        this._snackBar.open("Case Transfer saved successfully. ", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["green-snackbar"],
+        });
+        this.dialogRef.close(true);
+        this.router.navigateByUrl("search-document");
       },
       error: (error) => {
         this._snackBar.open(error.message || "Error creating user", "Close", {
@@ -133,7 +141,12 @@ export class CaseTransferDialogComponent {
     this.masterService.divisionsFilterByDepartmentId(dpeptID).subscribe({
       next: (response: any) => {
         this.divisionDropdown = response;
-        this.filteredDivision = [...this.divisionDropdown];
+        const divisionID = sessionStorage.getItem("divisionID");
+
+        // Filter out the logged-in user's division
+        this.filteredDivision = this.divisionDropdown.filter(
+          (a: any) => a.divisionId != divisionID
+        );
       },
       error: (error) => {
         console.error("Error fetching favorites:", error);
@@ -154,26 +167,26 @@ export class CaseTransferDialogComponent {
     sessionStorage.setItem("departmentID", data);
   }
 
- filterDepartment(event: any): void {
-  const searchText = event.target.value.toLowerCase().trim();
+  filterDepartment(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
 
-  if (this.departmentSearchTimeout) {
-    clearTimeout(this.departmentSearchTimeout);
-  }
-
-  this.departmentSearchTimeout = setTimeout(() => {
-    if (!searchText) {
-      this.filteredDepartment = [...this.departmentDropdown];
-    } else {
-      this.filteredDepartment = this.departmentDropdown.filter((role) => {
-        const roleName = (role.departmentName || "").toLowerCase();
-        return roleName.includes(searchText);
-      });
+    if (this.departmentSearchTimeout) {
+      clearTimeout(this.departmentSearchTimeout);
     }
 
-    this.cdr.detectChanges();
-  }, 300);
-}
+    this.departmentSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredDepartment = [...this.departmentDropdown];
+      } else {
+        this.filteredDepartment = this.departmentDropdown.filter((role) => {
+          const roleName = (role.departmentName || "").toLowerCase();
+          return roleName.includes(searchText);
+        });
+      }
+
+      this.cdr.detectChanges();
+    }, 300);
+  }
 
   getDepartmentsInfo() {
     this.masterService.getDepartments().subscribe({
