@@ -28,6 +28,7 @@ import { SharedService } from "app/shared/shared.service";
 import { CaseTransferService } from "./case-transfer.service";
 import { MasterService } from "../Master/master.service";
 import { Router } from "@angular/router";
+import { AuthService } from "app/core/auth/auth.service";
 
 @Component({
   selector: "app-case-tranfer-dialog",
@@ -61,21 +62,29 @@ export class CaseTransferDialogComponent {
   DivisionIdsUserLogin: [];
   filteredDepartment = [];
   departmentDropdown = [];
+  DepartmentIdsUserLogin: [];
   departmentSearchTimeout: any;
+    authData: any;
   constructor(
     private masterService: MasterService,
     private _formBuilder: FormBuilder,
     private _caseTransferService: CaseTransferService,
     private _snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
-    private router: Router,
+    private router: Router,  private _authService: AuthService,
     public dialogRef: MatDialogRef<CaseTransferDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dataService: SharedService
   ) {
-    console.log("Data received in dialog:", data);
+    this.extractDivisionAndDepartmentIds();
     this.initiateForm();
     this.getDepartmentsInfo();
+  }
+
+
+   extractDivisionAndDepartmentIds(): void {
+     this.authData = this._authService.getAuthData();
+    this.DepartmentIdsUserLogin = this.authData.Divisions.flatMap(division => division.departmentIds);
   }
 
   initiateForm() {
@@ -188,23 +197,36 @@ export class CaseTransferDialogComponent {
     }, 300);
   }
 
-  getDepartmentsInfo() {
+  // getDepartmentsInfo() {
+  //   this.masterService.getDepartments().subscribe({
+  //     next: (response: any[]) => {
+  //       // Filter departments by allowed IDs
+  //       this.departmentDropdown = response;
+  //       this.filteredDepartment = [...this.departmentDropdown];
+      
+  //     },
+  //   });
+  // }
+    getDepartmentsInfo() {
     this.masterService.getDepartments().subscribe({
       next: (response: any[]) => {
         // Filter departments by allowed IDs
-        this.departmentDropdown = response;
+
+        this.departmentDropdown = response.filter((res: any) =>
+          this.DepartmentIdsUserLogin.map(Number).includes(
+            Number(res.departmentId)
+          )
+        );
         this.filteredDepartment = [...this.departmentDropdown];
-        const departmentID = sessionStorage.getItem("departmentID");
-        if (departmentID) {
-          this.filteredDepartment = this.departmentDropdown.filter(
-            (dept) => dept.departmentId === Number(departmentID)
-          );
-          console.log("Filtered Department:", this.filteredDepartment);
+        // Patch if only one department
+        if (this.departmentDropdown.length === 1) {
+          const singleDeptId = this.departmentDropdown[0].departmentId;
           this.caseTransferForm.patchValue({
-            departmentId: departmentID,
+            departmentId: [singleDeptId],
           });
         }
       },
+      error: (error) => {},
     });
   }
 }
