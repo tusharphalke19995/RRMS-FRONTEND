@@ -204,7 +204,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     private dataService: SharedService,
     private _router: Router,
     private _masterService: MasterService,
-    private authenticationService: AuthService
+    private authenticationService: AuthService,
+    private _fuseConfirmationService: FuseConfirmationService
   ) {
     this.authData = this.authenticationService.getAuthData();
     this.dataService.setFileBoolean(true);
@@ -241,6 +242,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
    * On destroy
    */
   ngOnDestroy(): void {
+    // Clear all data when component is destroyed
+    this.clearAllData();
+    
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next(null);
     this._unsubscribeAll.complete();
@@ -1052,4 +1056,108 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     }
     return `${caseNo}_${base}`;
   }
+
+  /**
+   * Clear existing files from previous page
+   */
+  clearExistingFiles(): void {
+    // Show confirmation dialog
+    const confirmation = this._fuseConfirmationService.open({
+      title: 'Clear Existing Files',
+      message: `Are you sure you want to clear all ${this.patchDetailsfiles.length} existing files? This action cannot be undone.`,
+      actions: {
+        confirm: {
+          label: 'Clear Files',
+          color: 'warn'
+        },
+        cancel: {
+          label: 'Cancel'
+        }
+      }
+    });
+
+    confirmation.afterClosed().subscribe((result) => {
+      if (result === 'confirmed') {
+        this._snackBar.open('Clearing existing files...', 'Close', {
+          duration: 2000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+        });
+        
+        this.patchDetailsfiles = [];
+        this.files = [];
+        this.selectedFiles = [];
+        this.selectedMetadata = [];
+        
+        // Clear the state service
+        this._uploadDocumentService.clearState();
+        
+        this._snackBar.open('Existing files cleared successfully', 'Close', {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["green-snackbar"],
+        });
+        
+        this._changeDetectorRef.detectChanges();
+      }
+    });
+  }
+
+  /**
+   * Redirect back to get-doc page
+   */
+  redirectToGetDoc(): void {
+    // Show confirmation dialog before redirecting
+    const confirmation = this._fuseConfirmationService.open({
+      title: 'Navigate Back',
+      message: 'You will be redirected back to the document view page. Any unsaved changes will be lost. Do you want to continue?',
+      actions: {
+        confirm: {
+          label: 'Continue',
+          color: 'primary'
+        },
+        cancel: {
+          label: 'Cancel'
+        }
+      }
+    });
+
+    confirmation.afterClosed().subscribe((result) => {
+      if (result === 'confirmed') {
+        // Clear current state before redirecting
+        this.clearAllData();
+        
+        // Navigate back to get-doc page
+        this._router.navigateByUrl('/search-document/get-doc');
+      }
+    });
+  }
+
+  /**
+   * Clear all data when navigating away
+   */
+  clearAllData(): void {
+    this.patchDetailsfiles = [];
+    this.files = [];
+    this.selectedFiles = [];
+    this.selectedMetadata = [];
+    this.dfaftfiles = [];
+    this.draftInfo = null;
+    this.caseMetaData = null;
+    this.isPatchSearchPage = false;
+    this.isDraft = false;
+    
+    // Clear form
+    if (this.uploadDocumentForm) {
+      this.uploadDocumentForm.reset();
+    }
+    
+    // Clear services
+    this._uploadDocumentService.clearState();
+    this._uploadDocumentService.clearDraft();
+    
+    this._changeDetectorRef.detectChanges();
+  }
+
 }
