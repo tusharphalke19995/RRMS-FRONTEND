@@ -33,6 +33,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfirmationDialogComponent } from "./confirmation-dialog/confirmation-dialog.component";
 import { DashbaordService } from "../../dashbaord/dashboard.service";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatTabsModule } from "@angular/material/tabs";
 
 @Component({
   selector: "app-manage-notification",
@@ -60,7 +61,8 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     MatPaginatorModule,
     MatSortModule,
     CommonModule,
-     MatTooltipModule
+    MatTooltipModule,
+    MatTabsModule
   ],
   templateUrl: "./manage-notification.component.html",
   styleUrl: "./manage-notification.component.scss",
@@ -68,11 +70,18 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 export class ManageNotificationComponent implements AfterViewInit {
   alert: { type: string; message: string };
   isLoading: boolean = false;
+  selectedTabIndex: number = 0;
+  readNotifications: any[] = [];
+  unreadNotifications: any[] = [];
 
   @ViewChild("sort1") sort1: MatSort;
   @ViewChild("paginator1") paginator1: MatPaginator;
+  @ViewChild("sort2") sort2: MatSort;
+  @ViewChild("paginator2") paginator2: MatPaginator;
 
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
+  readDataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
+  unreadDataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
 
   columns: any[] = [
     {
@@ -129,9 +138,12 @@ export class ManageNotificationComponent implements AfterViewInit {
     const divisionID = Number(sessionStorage.getItem("divisionID"));
     this._dashbaordService.getNotificationsCount(divisionID).subscribe({
       next: (response: any[]) => {
-        // const onlyRead = (response || []).filter((n) => n.is_read === false);
-        this.dataSource = new MatTableDataSource(response);
-        this.setupPagination();
+        // Separate read and unread notifications
+        this.readNotifications = (response || []).filter((n) => n.is_read === true);
+        this.unreadNotifications = (response || []).filter((n) => n.is_read === false);
+        
+        // Set initial data based on selected tab
+        this.updateDataSource();
         this.cdr.detectChanges();
       },
       error: (error) => {
@@ -142,12 +154,37 @@ export class ManageNotificationComponent implements AfterViewInit {
 
   getNotificationList() {
     this.sharedService.getnotificationData$.subscribe((userInfo: any[]) => {
-      const onlyRead = (userInfo || []).filter((n) => n.is_read === false);
-      this.notificationInfo = onlyRead;
-      this.dataSource = new MatTableDataSource(this.notificationInfo);
-      this.setupPagination();
+      // Separate read and unread notifications
+      this.readNotifications = (userInfo || []).filter((n) => n.is_read === true);
+      this.unreadNotifications = (userInfo || []).filter((n) => n.is_read === false);
+      
+      // Set initial data based on selected tab
+      this.updateDataSource();
       this.cdr.detectChanges();
     });
+  }
+
+  updateDataSource(): void {
+    // Update both data sources
+    this.unreadDataSource = new MatTableDataSource(this.unreadNotifications);
+    this.readDataSource = new MatTableDataSource(this.readNotifications);
+    
+    // Set the current data source based on selected tab
+    if (this.selectedTabIndex === 0) {
+      // Unread tab
+      this.dataSource = this.unreadDataSource;
+    } else {
+      // Read tab
+      this.dataSource = this.readDataSource;
+    }
+    
+    this.setupPagination();
+  }
+
+  onTabChange(event: any): void {
+    this.selectedTabIndex = event.index;
+    this.updateDataSource();
+    this.cdr.detectChanges();
   }
 
   viewImage(data) {
@@ -184,6 +221,32 @@ export class ManageNotificationComponent implements AfterViewInit {
   } else {
     console.error('Unknown redirect path:', url.pathname);
   }
+  
+  // Mark notification as read and refresh data
+  this.markAsRead(row);
+}
+
+markAsRead(notification: any): void {
+  // Update the notification status locally
+  notification.is_read = true;
+  
+  // Move from unread to read array
+  const unreadIndex = this.unreadNotifications.findIndex(n => n.id === notification.id);
+  if (unreadIndex > -1) {
+    this.unreadNotifications.splice(unreadIndex, 1);
+    this.readNotifications.unshift(notification); // Add to beginning of read array
+  }
+  
+  // Update the data source
+  this.updateDataSource();
+  
+  // Show success message
+  this._snackBar.open('Notification marked as read', 'Close', {
+    duration: 2000,
+    horizontalPosition: 'end',
+    verticalPosition: 'top',
+    panelClass: ['green-snackbar']
+  });
 }
 
 
@@ -192,11 +255,19 @@ export class ManageNotificationComponent implements AfterViewInit {
   }
 
   private setupPagination(): void {
-    if (this.dataSource) {
-      this.dataSource.paginator = this.paginator1;
-      this.dataSource.sort = this.sort1;
-      this.cdr.detectChanges();
+    // Setup pagination for unread data source
+    if (this.unreadDataSource) {
+      this.unreadDataSource.paginator = this.paginator1;
+      this.unreadDataSource.sort = this.sort1;
     }
+    
+    // Setup pagination for read data source
+    if (this.readDataSource) {
+      this.readDataSource.paginator = this.paginator2;
+      this.readDataSource.sort = this.sort2;
+    }
+    
+    this.cdr.detectChanges();
   }
 
 getDepartmentNames(designationDetail: any): string {
