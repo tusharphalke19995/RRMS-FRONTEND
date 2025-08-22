@@ -85,6 +85,7 @@ export class GetDocComponent {
   canEdit: boolean = false;
   fileClassificationDropDown: [];
   fileTypesDropDown: [];
+  isOwner: boolean = false;
 
   fileToView: any = null;
   checkGetFile: boolean;
@@ -129,6 +130,9 @@ checkDIGUser() {
       this.files = files;
       this.originalFiles = JSON.parse(JSON.stringify(files));
       
+      // Check if current user is the owner of any files
+      this.checkIfUserIsOwner();
+      
       // Ensure files have proper metadata structure with API subjects
       this.files.forEach((file) => {
         if (!file.metadata) {
@@ -151,6 +155,15 @@ checkDIGUser() {
         this.showRequestConent= false;
       }
     })
+  }
+
+  checkIfUserIsOwner(): void {
+    if (this.files && this.files.length > 0 && this.authData?.UserID) {
+      // Check if any file has uploaded_by matching the current user's UserID
+      this.isOwner = this.files.some(file => file.uploaded_by === this.authData.UserID);
+    } else {
+      this.isOwner = false;
+    }
   }
 
 

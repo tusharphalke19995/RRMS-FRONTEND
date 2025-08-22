@@ -117,7 +117,7 @@
           Manager has approved the request.</p>
       </div>
       <div class="mr-3 flex items-center justify-end py-2"
-        *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin')">
+        *ngIf="!checkGetFile && (hasRoleInDivision('ContentManager', 'Admin') || isOwner)">
         <button *transloco="let t" mat-flat-button [color]="'primary'" class="min-w-[120px]" (click)="goToAddDoc()">
           <mat-icon class="icon-size-5 mr-2" [svgIcon]="'heroicons_solid:plus'"></mat-icon>
           Add Documents
@@ -131,8 +131,9 @@
       </app-upload-files>
 
 
+
       <div class="flex items-center justify-end py-2 mr-2"
-        *ngIf="!checkGetFile && hasRoleInDivision('ContentManager', 'Admin')">
+        *ngIf="!checkGetFile && (hasRoleInDivision('ContentManager', 'Admin') || isOwner)">
         <div class="flex items-center space-x-4 mr-4">
           <span class="text-sm text-gray-600">
             Total Files: {{ getTrackingSummary().totalFiles }}
