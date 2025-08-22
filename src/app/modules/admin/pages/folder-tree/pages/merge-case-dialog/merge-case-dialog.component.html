@@ -23,29 +23,93 @@
       <!-- Source Case Number -->
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Source Case Number</mat-label>
-        <mat-select formControlName="sourceCaseNo" [disabled]="isLoading">
-          <mat-option *ngFor="let caseNo of availableCaseNumbers" [value]="caseNo">
-            {{ caseNo }}
+        <input type="text"
+               matInput
+               formControlName="sourceCaseNo"
+               [matAutocomplete]="sourceAuto"
+               placeholder="Search case numbers..."
+               [disabled]="isLoading"
+               (input)="onSourceCaseInput($event)">
+        <mat-autocomplete #sourceAuto="matAutocomplete" 
+                         (optionSelected)="onSourceCaseSelected($event)"
+                         [displayWith]="displayFn">
+          <mat-option *ngFor="let caseNo of filteredSourceCases" [value]="caseNo">
+            <div class="flex items-center">
+              <mat-icon class="mr-2 text-gray-500">folder</mat-icon>
+              <span>{{ caseNo }}</span>
+            </div>
           </mat-option>
-        </mat-select>
+          <mat-option *ngIf="filteredSourceCases.length === 0" disabled>
+            <div class="flex items-center text-gray-500">
+              <mat-icon class="mr-2">search_off</mat-icon>
+              <span>No case numbers found</span>
+            </div>
+          </mat-option>
+        </mat-autocomplete>
+        <button mat-icon-button 
+                matSuffix 
+                type="button"
+                *ngIf="hasSourceValue()"
+                (click)="clearSourceCase()"
+                class="clear-button">
+          <mat-icon class="text-gray-400 hover:text-red-500">close</mat-icon>
+        </button>
+        <mat-icon matSuffix class="text-gray-400" *ngIf="!hasSourceValue()">search</mat-icon>
         <mat-error *ngIf="mergeCaseForm.get('sourceCaseNo')?.hasError('required')">
           Source case number is required
         </mat-error>
-        <mat-hint>Select the case number to merge from</mat-hint>
+        <mat-hint>
+          <span *ngIf="filteredSourceCases.length > 0">
+            {{ filteredSourceCases.length }} of {{ availableCaseNumbers.length }} case numbers
+          </span>
+          <span *ngIf="filteredSourceCases.length === 0">No case numbers found</span>
+        </mat-hint>
       </mat-form-field>
 
       <!-- Destination Case Number -->
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Destination Case Number</mat-label>
-        <mat-select formControlName="destinationCaseNo" [disabled]="isLoading">
-          <mat-option *ngFor="let caseNo of availableCaseNumbers" [value]="caseNo">
-            {{ caseNo }}
+        <input type="text"
+               matInput
+               formControlName="destinationCaseNo"
+               [matAutocomplete]="destinationAuto"
+               placeholder="Search case numbers..."
+               [disabled]="isLoading"
+               (input)="onDestinationCaseInput($event)">
+        <mat-autocomplete #destinationAuto="matAutocomplete" 
+                         (optionSelected)="onDestinationCaseSelected($event)"
+                         [displayWith]="displayFn">
+          <mat-option *ngFor="let caseNo of filteredDestinationCases" [value]="caseNo">
+            <div class="flex items-center">
+              <mat-icon class="mr-2 text-gray-500">folder</mat-icon>
+              <span>{{ caseNo }}</span>
+            </div>
           </mat-option>
-        </mat-select>
+          <mat-option *ngIf="filteredDestinationCases.length === 0" disabled>
+            <div class="flex items-center text-gray-500">
+              <mat-icon class="mr-2">search_off</mat-icon>
+              <span>No case numbers found</span>
+            </div>
+          </mat-option>
+        </mat-autocomplete>
+        <button mat-icon-button 
+                matSuffix 
+                type="button"
+                *ngIf="hasDestinationValue()"
+                (click)="clearDestinationCase()"
+                class="clear-button">
+          <mat-icon class="text-gray-400 hover:text-red-500">close</mat-icon>
+        </button>
+        <mat-icon matSuffix class="text-gray-400" *ngIf="!hasDestinationValue()">search</mat-icon>
         <mat-error *ngIf="mergeCaseForm.get('destinationCaseNo')?.hasError('required')">
           Destination case number is required
         </mat-error>
-        <mat-hint>Select the case number to merge into</mat-hint>
+        <mat-hint>
+          <span *ngIf="filteredDestinationCases.length > 0">
+            {{ filteredDestinationCases.length }} of {{ availableCaseNumbers.length }} case numbers
+          </span>
+          <span *ngIf="filteredDestinationCases.length === 0">No case numbers found</span>
+        </mat-hint>
       </mat-form-field>
 
       <!-- Form-level error -->

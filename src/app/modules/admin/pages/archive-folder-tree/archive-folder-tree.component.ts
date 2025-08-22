@@ -12,6 +12,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { fuseAnimations } from '@fuse/animations';
 import { FolderNode, FileNode } from '../folder-tree/models/folder-tree.model';
 import { FolderTreeService } from '../folder-tree/services/folder-tree.service';
@@ -31,7 +32,8 @@ import { MoveFileDialogComponent } from '../folder-tree/pages/move-file-dialog/m
       MatFormFieldModule,
       MatInputModule,
       MatTooltipModule,
-      MatMenuModule
+      MatMenuModule,
+      MatProgressSpinnerModule
     ],
     animations: [
       fuseAnimations,
@@ -39,6 +41,15 @@ import { MoveFileDialogComponent } from '../folder-tree/pages/move-file-dialog/m
         state('collapsed', style({ transform: 'rotate(0deg)' })),
         state('expanded', style({ transform: 'rotate(90deg)' })),
         transition('collapsed <=> expanded', animate('200ms ease-in-out'))
+      ]),
+      trigger('fadeInOut', [
+        transition(':enter', [
+          style({ opacity: 0, transform: 'translateY(20px)' }),
+          animate('200ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+        ]),
+        transition(':leave', [
+          animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(20px)' }))
+        ])
       ])
     ],
   templateUrl: './archive-folder-tree.component.html',
@@ -62,6 +73,9 @@ export class ArchiveFolderTreeComponent implements OnInit {
   selectedFiles: FileNode[] = [];
   selectedFileIds: number[] = [];
   currentFolder: FolderNode | null = null;
+  isLoading: boolean = false;
+  showScrollToTop: boolean = false;
+  scrollProgress: number = 0;
 
   constructor(
    private archiveTreeService:ArchiveTreeService,
@@ -79,6 +93,7 @@ export class ArchiveFolderTreeComponent implements OnInit {
   hasChild = (_: number, node: FolderNode) => !!node.children && node.children.length > 0;
 
   loadFolderTree(): void {
+    this.isLoading = true;
     this.archiveTreeService.getArchiveFolderTree(Number(sessionStorage.getItem("divisionID"))).subscribe({
       next: (response: any) => {
         if (response) {
@@ -92,13 +107,17 @@ export class ArchiveFolderTreeComponent implements OnInit {
           this.dataSource.data = processedData;
           this.treeControl.dataNodes = processedData;
           
-          // Auto-expand all folders to show files
-          setTimeout(() => this.treeControl.expandAll());
-          
+          // Keep tree collapsed initially - removed expandAll()
           this.updateDisplayItems();
           // Set root as current folder
           this.currentFolder = null;
           this.breadcrumbs = [];
+          this.isLoading = false;
+          
+          // Restore scroll position after data loads
+          setTimeout(() => {
+            this.restoreScrollPosition();
+          }, 200);
         } else {
           console.error('Invalid data format received');
           this.snackBar.open('Error loading folder tree: Invalid data format', 'Close', {
@@ -107,6 +126,7 @@ export class ArchiveFolderTreeComponent implements OnInit {
             verticalPosition: 'top'
           });
         }
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading folder tree:', error);
@@ -115,6 +135,7 @@ export class ArchiveFolderTreeComponent implements OnInit {
           horizontalPosition: 'end',
           verticalPosition: 'top'
         });
+        this.isLoading = false;
       }
     });
   }
@@ -151,6 +172,16 @@ export class ArchiveFolderTreeComponent implements OnInit {
 
   toggleNode(node: FolderNode, event: Event): void {
     event.stopPropagation(); // Prevent node selection when toggling
+    
+    // Add visual feedback
+    const button = event.target as HTMLElement;
+    if (button) {
+      button.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        button.style.transform = '';
+      }, 150);
+    }
+    
     if (this.treeControl.isExpanded(node)) {
       this.treeControl.collapse(node);
     } else {
@@ -161,12 +192,153 @@ export class ArchiveFolderTreeComponent implements OnInit {
   expandAll(): void {
     if (this.treeControl.dataNodes) {
       this.treeControl.expandAll();
+      this.snackBar.open('All folders expanded', 'Close', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+      });
     }
   }
 
   collapseAll(): void {
     if (this.treeControl.dataNodes) {
       this.treeControl.collapseAll();
+      this.snackBar.open('All folders collapsed', 'Close', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+      });
+    }
+  }
+
+  // Expand specific node with animation
+  expandNode(node: FolderNode): void {
+    if (!this.treeControl.isExpanded(node)) {
+      this.treeControl.expand(node);
+    }
+  }
+
+  // Collapse specific node with animation
+  collapseNode(node: FolderNode): void {
+    if (this.treeControl.isExpanded(node)) {
+      this.treeControl.collapse(node);
+    }
+  }
+
+  // Get node level for better visual hierarchy
+  getNodeLevel(node: FolderNode): number {
+    return node.level ? parseInt(node.level) : 0;
+  }
+
+  // Check if node has children or files
+  hasContent(node: FolderNode): boolean {
+    return (node.children && node.children.length > 0) || (node.files && node.files.length > 0);
+  }
+
+  // Get total count of items in a node (folders + files)
+  getNodeItemCount(node: FolderNode): number {
+    const folderCount = node.children ? node.children.length : 0;
+    const fileCount = node.files ? node.files.length : 0;
+    return folderCount + fileCount;
+  }
+
+  // Check if node is a leaf (no children or files)
+  isLeafNode(node: FolderNode): boolean {
+    return !this.hasContent(node);
+  }
+
+  // Handle keyboard navigation
+  onKeyDown(event: KeyboardEvent, node: FolderNode): void {
+    switch (event.key) {
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        this.toggleNode(node, event);
+        break;
+      case 'ArrowRight':
+        if (!this.treeControl.isExpanded(node)) {
+          event.preventDefault();
+          this.treeControl.expand(node);
+        }
+        break;
+      case 'ArrowLeft':
+        if (this.treeControl.isExpanded(node)) {
+          event.preventDefault();
+          this.treeControl.collapse(node);
+        }
+        break;
+    }
+  }
+
+  // Scroll to top functionality
+  scrollToTop(): void {
+    const treeSection = document.querySelector('.tree-section') as HTMLElement;
+    if (treeSection) {
+      treeSection.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  }
+
+  // Scroll to specific node
+  scrollToNode(node: FolderNode): void {
+    setTimeout(() => {
+      const nodeElement = document.querySelector(`[data-node-id="${node.id}"]`) as HTMLElement;
+      if (nodeElement) {
+        nodeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }, 100);
+  }
+
+  // Handle scroll events
+  onScroll(event: Event): void {
+    const target = event.target as HTMLElement;
+    this.showScrollToTop = target.scrollTop > 300;
+    
+    // Calculate scroll progress
+    const scrollHeight = target.scrollHeight - target.clientHeight;
+    this.scrollProgress = scrollHeight > 0 ? (target.scrollTop / scrollHeight) * 100 : 0;
+    
+    // Throttle scroll events for better performance
+    this.throttleScrollEvent();
+  }
+
+  // Throttle scroll events
+  private scrollTimeout: any;
+  private throttleScrollEvent(): void {
+    if (this.scrollTimeout) {
+      clearTimeout(this.scrollTimeout);
+    }
+    
+    this.scrollTimeout = setTimeout(() => {
+      // Additional scroll-based optimizations can be added here
+      this.updateScrollPosition();
+    }, 100);
+  }
+
+  // Update scroll position for performance optimizations
+  private updateScrollPosition(): void {
+    const treeSection = document.querySelector('.tree-section') as HTMLElement;
+    if (treeSection) {
+      // Store scroll position for potential restoration
+      sessionStorage.setItem('archiveFolderTreeScrollPosition', treeSection.scrollTop.toString());
+    }
+  }
+
+  // Restore scroll position
+  restoreScrollPosition(): void {
+    const savedPosition = sessionStorage.getItem('archiveFolderTreeScrollPosition');
+    if (savedPosition) {
+      const treeSection = document.querySelector('.tree-section') as HTMLElement;
+      if (treeSection) {
+        setTimeout(() => {
+          treeSection.scrollTop = parseInt(savedPosition);
+        }, 100);
+      }
     }
   }
 

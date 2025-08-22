@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { TranslocoModule } from '@ngneat/transloco';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FolderTreeService } from '../../services/folder-tree.service';
@@ -31,6 +32,7 @@ export interface MergeCaseDialogResult {
     MatSelectModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    MatAutocompleteModule,
     TranslocoModule,
   ],
   encapsulation: ViewEncapsulation.None,
@@ -40,6 +42,8 @@ export interface MergeCaseDialogResult {
 export class MergeCaseDialogComponent {
   mergeCaseForm: FormGroup;
   availableCaseNumbers: string[] = [];
+  filteredSourceCases: string[] = [];
+  filteredDestinationCases: string[] = [];
   isLoading = false;
 
   constructor(
@@ -58,6 +62,36 @@ export class MergeCaseDialogComponent {
       sourceCaseNo: ['', [Validators.required]],
       destinationCaseNo: ['', [Validators.required]]
     }, { validators: this.caseNumberValidator });
+
+    // Set up search filtering
+    this.setupSearchFiltering();
+  }
+
+  private setupSearchFiltering(): void {
+    // Filter source cases based on search input
+    this.mergeCaseForm.get('sourceCaseNo')?.valueChanges.subscribe(value => {
+      if (typeof value === 'string') {
+        this.filteredSourceCases = this.filterCaseNumbers(value);
+      }
+    });
+
+    // Filter destination cases based on search input
+    this.mergeCaseForm.get('destinationCaseNo')?.valueChanges.subscribe(value => {
+      if (typeof value === 'string') {
+        this.filteredDestinationCases = this.filterCaseNumbers(value);
+      }
+    });
+  }
+
+  private filterCaseNumbers(searchTerm: string): string[] {
+    if (!searchTerm) {
+      return this.availableCaseNumbers;
+    }
+    
+    const filterValue = searchTerm.toLowerCase();
+    return this.availableCaseNumbers.filter(caseNo => 
+      caseNo.toLowerCase().includes(filterValue)
+    );
   }
 
   private loadAvailableCaseNumbers(): void {
@@ -116,6 +150,10 @@ export class MergeCaseDialogComponent {
     nodes.forEach(extractFromNode);
     this.availableCaseNumbers = Array.from(caseNumbers).sort();
     
+    // Initialize filtered arrays
+    this.filteredSourceCases = [...this.availableCaseNumbers];
+    this.filteredDestinationCases = [...this.availableCaseNumbers];
+    
     if (this.availableCaseNumbers.length >= 2) {
       this.mergeCaseForm.patchValue({
         sourceCaseNo: this.availableCaseNumbers[0],
@@ -170,5 +208,61 @@ export class MergeCaseDialogComponent {
       return 'Source and destination case numbers cannot be the same';
     }
     return '';
+  }
+
+  // Handle option selection
+  onSourceCaseSelected(event: any): void {
+    this.mergeCaseForm.patchValue({
+      sourceCaseNo: event.option.value
+    });
+  }
+
+  onDestinationCaseSelected(event: any): void {
+    this.mergeCaseForm.patchValue({
+      destinationCaseNo: event.option.value
+    });
+  }
+
+  // Display function for autocomplete
+  displayFn = (caseNo: string): string => {
+    return caseNo || '';
+  }
+
+  // Clear search when input is cleared
+  onSourceCaseInput(event: any): void {
+    const value = event.target.value;
+    if (!value) {
+      this.filteredSourceCases = [...this.availableCaseNumbers];
+    }
+  }
+
+  onDestinationCaseInput(event: any): void {
+    const value = event.target.value;
+    if (!value) {
+      this.filteredDestinationCases = [...this.availableCaseNumbers];
+    }
+  }
+
+  // Clear source case input
+  clearSourceCase(): void {
+    this.mergeCaseForm.patchValue({ sourceCaseNo: '' });
+    this.filteredSourceCases = [...this.availableCaseNumbers];
+  }
+
+  // Clear destination case input
+  clearDestinationCase(): void {
+    this.mergeCaseForm.patchValue({ destinationCaseNo: '' });
+    this.filteredDestinationCases = [...this.availableCaseNumbers];
+  }
+
+  // Check if input has value
+  hasSourceValue(): boolean {
+    return this.mergeCaseForm.get('sourceCaseNo')?.value && 
+           this.mergeCaseForm.get('sourceCaseNo')?.value.length > 0;
+  }
+
+  hasDestinationValue(): boolean {
+    return this.mergeCaseForm.get('destinationCaseNo')?.value && 
+           this.mergeCaseForm.get('destinationCaseNo')?.value.length > 0;
   }
 } 
