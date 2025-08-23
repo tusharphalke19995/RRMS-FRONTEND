@@ -107,12 +107,23 @@ export class ManageNotificationComponent implements AfterViewInit {
   displayedColumns: string[] = [
     "requestedByDepartments",
     "requestedByDivisions",
-        "recipientDepartments",
+    "recipientDepartments",
     // "ownerDivision",
     "type",
     "created_at",
     "message",
     "action",
+  ];
+
+  // Separate columns for read notifications (without action)
+  readDisplayedColumns: string[] = [
+    "requestedByDepartments",
+    "requestedByDivisions",
+    "recipientDepartments",
+    // "ownerDivision",
+    "type",
+    "created_at",
+    "message",
   ];
   notificationInfo: any;
   constructor(
@@ -202,52 +213,66 @@ export class ManageNotificationComponent implements AfterViewInit {
 // }
 
  goToProcess(row: any): void {
-  const url = new URL(row.redirect_url, window.location.origin); // Safely parse URL
-  const tab = url.searchParams.get('tab');
-  let selectedTab = 0;
-  if (tab === 'approved') {
-    selectedTab = 1;
-  } else if (tab === 'denied') {
-    selectedTab = 2;
+  console.log('Notification type:', row.type);
+  console.log('Object ID:', row.object_id);
+  console.log('Status:', row.status);
+  
+  // Determine the selected tab based on status
+  let selectedTab = 0; // Default to pending tab
+  
+  if (row.status === 'approved') {
+    selectedTab = 1; // Approved tab
+  } else if (row.status === 'denied' || row.status === 'rejected') {
+    selectedTab = 2; // Denied/Rejected tab
   }
-  if (url.pathname.includes('upload-approvals')) {
-    this.router.navigate(['upload-approval'], {
-      queryParams: { object_id: row.object_id, selectedTab: selectedTab }
-    });
-  } else if (url.pathname.includes('access')) {
-    this.router.navigate(['request-access'], {
-      queryParams: { object_id: row.object_id, selectedTab: selectedTab }
-    });
-  } else {
-    console.error('Unknown redirect path:', url.pathname);
+  
+  // Determine the route based on notification type
+  switch (row.type) {
+    case 'UPLOAD_APPROVAL':
+      this.router.navigate(['upload-approval'], {
+        queryParams: { object_id: row.object_id, selectedTab: selectedTab }
+      });
+      break;
+    case 'ACCESS_REQUEST':
+      this.router.navigate(['request-access'], {
+        queryParams: { object_id: row.object_id, selectedTab: selectedTab }
+      });
+      break;
+    default:
+      console.error('Unknown notification type:', row.type);
+      // Fallback to upload-approval if type is not recognized
+      this.router.navigate(['upload-approval'], {
+        queryParams: { object_id: row.object_id, selectedTab: selectedTab }
+      });
+      break;
   }
   
   // Mark notification as read and refresh data
-  this.markAsRead(row);
+  // this.markAsRead(row);
 }
 
-markAsRead(notification: any): void {
-  // Update the notification status locally
-  notification.is_read = true;
+// markAsRead(notification: any): void {
+//   // Update the notification status locally
+//   notification.is_read = true;
   
-  // Move from unread to read array
-  const unreadIndex = this.unreadNotifications.findIndex(n => n.id === notification.id);
-  if (unreadIndex > -1) {
-    this.unreadNotifications.splice(unreadIndex, 1);
-    this.readNotifications.unshift(notification); // Add to beginning of read array
-  }
+//   // Move from unread to read array
+//   const unreadIndex = this.unreadNotifications.findIndex(n => n.id === notification.id);
+//   if (unreadIndex > -1) {
+//     this.unreadNotifications.splice(unreadIndex, 1);
+//     this.readNotifications.unshift(notification); // Add to beginning of read array
+//   }
   
-  // Update the data source
-  this.updateDataSource();
+//   // Update the data source
+//   this.updateDataSource();
   
-  // Show success message
-  this._snackBar.open('Notification marked as read', 'Close', {
-    duration: 2000,
-    horizontalPosition: 'end',
-    verticalPosition: 'top',
-    panelClass: ['green-snackbar']
-  });
-}
+//   // Show success message
+//   this._snackBar.open('Notification marked as read', 'Close', {
+//     duration: 2000,
+//     horizontalPosition: 'end',
+//     verticalPosition: 'top',
+//     panelClass: ['green-snackbar']
+//   });
+// }
 
 
   ngAfterViewInit(): void {
@@ -293,7 +318,7 @@ getDivisionNames(designationDetail: any): string {
 }
 
  getUserDivisionNames(designationDetail: any): string {
-       console.log('designationDetail', designationDetail);
+      //  console.log('designationDetail', designationDetail);
        if (!Array.isArray(designationDetail)) return "";
        const divisions = designationDetail
          .flatMap((d: any) => d.division || [])

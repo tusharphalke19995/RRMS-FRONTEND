@@ -294,22 +294,10 @@
               <td mat-cell *matCellDef="let row"> {{row.created_at | date:'dd-MM-yyyy'}} </td>
             </ng-container>
 
-            <!-- Action Column -->
-            <ng-container matColumnDef="action">
-              <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black"> Action </th>
-              <td mat-cell *matCellDef="let row">
-                <div class="flex justify-center gap-2">
-                  <button mat-flat-button class="min-w-[90px] px-6 py-2 rounded-full transition-colors duration-200 bg-primary-600 text-white hover:bg-primary-700"
-                      (click)="goToProcess(row)"
-                    matTooltip="{{ row.is_read ? t('already_read') : t('perform_action') }}" *transloco="let t">
-                    {{ t('action') }}
-                  </button>
-                </div>
-              </td>
-            </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"   [ngClass]="{
+
+            <tr mat-header-row *matHeaderRowDef="readDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: readDisplayedColumns;"   [ngClass]="{
             'bg-read': row.is_read,
             'bg-unread': !row.is_read
           }"
