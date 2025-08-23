@@ -148,15 +148,15 @@ export class ManageNotificationComponent implements AfterViewInit {
   getNotificationsCount() {
     const divisionID = Number(sessionStorage.getItem("divisionID"));
     this._dashbaordService.getNotificationsCount(divisionID).subscribe({
-      next: (response: any[]) => {
-        // Separate read and unread notifications
-        this.readNotifications = (response || []).filter((n) => n.is_read === true);
-        this.unreadNotifications = (response || []).filter((n) => n.is_read === false);
-        
-        // Set initial data based on selected tab
-        this.updateDataSource();
-        this.cdr.detectChanges();
-      },
+              next: (response: any[]) => {
+          // Separate read and unread notifications
+          this.readNotifications = (response || []).filter((n) => n.is_read === true || n.status === 'approved');
+          this.unreadNotifications = (response || []).filter((n) => n.is_read === false && n.status !== 'approved' && n.status !== 'rejected' && n.status !== 'denied');
+          
+          // Set initial data based on selected tab
+          this.updateDataSource();
+          this.cdr.detectChanges();
+        },
       error: (error) => {
         console.error("Error fetching latest files:", error);
       },
@@ -166,8 +166,8 @@ export class ManageNotificationComponent implements AfterViewInit {
   getNotificationList() {
     this.sharedService.getnotificationData$.subscribe((userInfo: any[]) => {
       // Separate read and unread notifications
-      this.readNotifications = (userInfo || []).filter((n) => n.is_read === true);
-      this.unreadNotifications = (userInfo || []).filter((n) => n.is_read === false);
+      this.readNotifications = (userInfo || []).filter((n) => n.is_read === true || n.status === 'approved');
+      this.unreadNotifications = (userInfo || []).filter((n) => n.is_read === false && n.status !== 'approved');
       
       // Set initial data based on selected tab
       this.updateDataSource();
