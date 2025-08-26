@@ -60,16 +60,18 @@
 
     <!-- Notification Tabs -->
     <mat-tab-group 
+      #tabGroup
       [selectedIndex]="selectedTabIndex" 
       (selectedIndexChange)="onTabChange($event)"
       class="notification-tabs"
       mat-align-tabs="start"
-      mat-stretch-tabs="false">
+      mat-stretch-tabs="false"
+      [preserveContent]="true">
       
       <!-- Unread Notifications Tab -->
-      <mat-tab>
+      <mat-tab *ngIf="showUnreadTab">
         <ng-template mat-tab-label>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2" (click)="onTabClick(0)">
             <mat-icon class="text-red-500">mark_email_unread</mat-icon>
             <span>Unread</span>
             <span class="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
@@ -201,9 +203,9 @@
       </mat-tab>
       
       <!-- Read Notifications Tab -->
-      <mat-tab>
+      <mat-tab *ngIf="showReadTab">
         <ng-template mat-tab-label>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2" (click)="onTabClick(showUnreadTab ? 1 : 0)">
             <mat-icon class="text-green-500">mark_email_read</mat-icon>
             <span>Read</span>
             <span class="bg-green-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">

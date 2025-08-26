@@ -34,6 +34,7 @@ import { ConfirmationDialogComponent } from "./confirmation-dialog/confirmation-
 import { DashbaordService } from "../../dashbaord/dashboard.service";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatTabsModule } from "@angular/material/tabs";
+import { AuthService } from "app/core/auth/auth.service";
 
 @Component({
   selector: "app-manage-notification",
@@ -78,6 +79,7 @@ export class ManageNotificationComponent implements AfterViewInit {
   @ViewChild("paginator1") paginator1: MatPaginator;
   @ViewChild("sort2") sort2: MatSort;
   @ViewChild("paginator2") paginator2: MatPaginator;
+  @ViewChild('tabGroup') tabGroup: any;
 
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
   readDataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
@@ -126,16 +128,33 @@ export class ManageNotificationComponent implements AfterViewInit {
     "message",
   ];
   notificationInfo: any;
+  authData: import("/Users/tusharphalke/Documents/Freelancing_Work/RRMS-FRONTEND/src/app/core/auth/auth.service").UserModel;
+  currentRole: any;
+  showUnreadTab: boolean = true;
+  showReadTab: boolean = true;
   constructor(
     private _dialog: MatDialog,
     private notificationService: NotificationService,
     private sharedService: SharedService,
-
     private cdr: ChangeDetectorRef,
     private _dashbaordService: DashbaordService,
     private _snackBar: MatSnackBar,
-    private router: Router
-  ) {}
+    private router: Router,
+    private authenticationService: AuthService
+  ) {
+     this.authData = this.authenticationService.getAuthData();
+       this.currentRole = this.authData.Role;
+      console.log('currentRole', this.currentRole);
+      if(this.currentRole =='User'){
+        this.showUnreadTab = false;
+        this.showReadTab = true;
+        this.selectedTabIndex = 0; // Set to read tab since unread tab will be hidden
+      }else{
+        this.showUnreadTab = true;
+        this.showReadTab = true;
+        this.selectedTabIndex = 0;
+        }
+  }
 
   /**
    * On init
@@ -155,6 +174,7 @@ export class ManageNotificationComponent implements AfterViewInit {
           
           // Set initial data based on selected tab
           this.updateDataSource();
+          this.logCurrentState();
           this.cdr.detectChanges();
         },
       error: (error) => {
@@ -171,6 +191,7 @@ export class ManageNotificationComponent implements AfterViewInit {
       
       // Set initial data based on selected tab
       this.updateDataSource();
+      this.logCurrentState();
       this.cdr.detectChanges();
     });
   }
@@ -180,22 +201,85 @@ export class ManageNotificationComponent implements AfterViewInit {
     this.unreadDataSource = new MatTableDataSource(this.unreadNotifications);
     this.readDataSource = new MatTableDataSource(this.readNotifications);
     
-    // Set the current data source based on selected tab
-    if (this.selectedTabIndex === 0) {
-      // Unread tab
-      this.dataSource = this.unreadDataSource;
-    } else {
-      // Read tab
+    // Set the current data source based on selected tab and user role
+    if (this.currentRole === 'User') {
+      // For User role, always show read notifications
       this.dataSource = this.readDataSource;
+      this.selectedTabIndex = 0;
+    } else {
+      // For other roles, show based on selected tab
+      if (this.selectedTabIndex === 0) {
+        // Unread tab
+        this.dataSource = this.unreadDataSource;
+      } else {
+        // Read tab
+        this.dataSource = this.readDataSource;
+      }
     }
     
-    this.setupPagination();
+    // Setup pagination after a short delay to ensure DOM is ready
+    setTimeout(() => {
+      this.setupPagination();
+    }, 100);
   }
 
   onTabChange(event: any): void {
     this.selectedTabIndex = event.index;
-    this.updateDataSource();
-    this.cdr.detectChanges();
+    console.log('Tab changed to index:', this.selectedTabIndex);
+    
+    // Update the current data source based on selected tab
+    if (this.currentRole === 'User') {
+      // For User role, always show read notifications regardless of tab index
+      this.dataSource = this.readDataSource;
+    } else {
+      // For other roles, show based on selected tab
+      if (this.selectedTabIndex === 0) {
+        // Unread tab
+        this.dataSource = this.unreadDataSource;
+      } else {
+        // Read tab
+        this.dataSource = this.readDataSource;
+      }
+    }
+    
+    // Setup pagination for the current tab
+    this.setupPagination();
+    
+    // Ensure proper focus and rendering
+    setTimeout(() => {
+      this.cdr.detectChanges();
+      this.cdr.markForCheck();
+    }, 50);
+  }
+
+  // Method to handle tab click events
+  onTabClick(tabIndex: number): void {
+    console.log('Tab clicked:', tabIndex);
+    this.selectedTabIndex = tabIndex;
+    
+    this.onTabChange({ index: tabIndex });
+    
+    // Ensure the tab group is properly focused
+    if (this.tabGroup) {
+      setTimeout(() => {
+        this.tabGroup.selectedIndex = tabIndex;
+        this.cdr.detectChanges();
+      }, 10);
+    }
+  }
+
+  // Debug method to log current state
+  logCurrentState(): void {
+    console.log('Current state:', {
+      currentRole: this.currentRole,
+      showUnreadTab: this.showUnreadTab,
+      showReadTab: this.showReadTab,
+      selectedTabIndex: this.selectedTabIndex,
+      unreadCount: this.unreadNotifications.length,
+      readCount: this.readNotifications.length,
+      unreadDataSource: this.unreadDataSource?.data?.length,
+      readDataSource: this.readDataSource?.data?.length
+    });
   }
 
   viewImage(data) {
@@ -276,22 +360,33 @@ export class ManageNotificationComponent implements AfterViewInit {
 
 
   ngAfterViewInit(): void {
-    this.setupPagination();
+    // Ensure proper initialization
+    setTimeout(() => {
+      this.setupPagination();
+      this.cdr.detectChanges();
+      
+      // Ensure tab group is properly initialized
+      if (this.tabGroup) {
+        this.tabGroup.selectedIndex = this.selectedTabIndex;
+        this.cdr.detectChanges();
+      }
+    }, 100);
   }
 
   private setupPagination(): void {
     // Setup pagination for unread data source
-    if (this.unreadDataSource) {
+    if (this.unreadDataSource && this.paginator1 && this.sort1) {
       this.unreadDataSource.paginator = this.paginator1;
       this.unreadDataSource.sort = this.sort1;
     }
     
     // Setup pagination for read data source
-    if (this.readDataSource) {
+    if (this.readDataSource && this.paginator2 && this.sort2) {
       this.readDataSource.paginator = this.paginator2;
       this.readDataSource.sort = this.sort2;
     }
     
+    // Force change detection
     this.cdr.detectChanges();
   }
 
