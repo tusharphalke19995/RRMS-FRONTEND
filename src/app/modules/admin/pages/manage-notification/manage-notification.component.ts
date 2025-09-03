@@ -80,7 +80,6 @@ export class ManageNotificationComponent implements AfterViewInit {
   @ViewChild("sort2") sort2: MatSort;
   @ViewChild("paginator2") paginator2: MatPaginator;
   @ViewChild('tabGroup') tabGroup: any;
-
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
   readDataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
   unreadDataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
