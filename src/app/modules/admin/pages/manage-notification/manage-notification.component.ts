@@ -411,7 +411,6 @@ getDivisionNames(designationDetail: any): string {
 }
 
  getUserDivisionNames(designationDetail: any): string {
-      //  console.log('designationDetail', designationDetail);
        if (!Array.isArray(designationDetail)) return "";
        const divisions = designationDetail
          .flatMap((d: any) => d.division || [])
