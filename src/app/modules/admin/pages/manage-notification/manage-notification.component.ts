@@ -141,6 +141,7 @@ export class ManageNotificationComponent implements AfterViewInit {
     private router: Router,
     private authenticationService: AuthService
   ) {
+    
      this.authData = this.authenticationService.getAuthData();
        this.currentRole = this.authData.Role;
       if(this.currentRole =='User'){
