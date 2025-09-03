@@ -34,7 +34,8 @@ import { ConfirmationDialogComponent } from "./confirmation-dialog/confirmation-
 import { DashbaordService } from "../../dashbaord/dashboard.service";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatTabsModule } from "@angular/material/tabs";
-import { AuthService } from "app/core/auth/auth.service";
+import { AuthService } from "/Users/tusharphalke/Documents/Freelancing_Work/RRMS-FRONTEND/src/app/core/auth/auth.service";
+
 
 @Component({
   selector: "app-manage-notification",
