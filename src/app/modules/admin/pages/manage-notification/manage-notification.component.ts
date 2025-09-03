@@ -141,7 +141,7 @@ export class ManageNotificationComponent implements AfterViewInit {
     private router: Router,
     private authenticationService: AuthService
   ) {
-    
+
      this.authData = this.authenticationService.getAuthData();
        this.currentRole = this.authData.Role;
       if(this.currentRole =='User'){
@@ -170,7 +170,6 @@ export class ManageNotificationComponent implements AfterViewInit {
           // Separate read and unread notifications
           this.readNotifications = (response || []).filter((n) => n.is_read === true || n.status === 'approved');
           this.unreadNotifications = (response || []).filter((n) => n.is_read === false && n.status !== 'approved' && n.status !== 'rejected' && n.status !== 'denied');
-          
           // Set initial data based on selected tab
           this.updateDataSource();
           this.logCurrentState();
