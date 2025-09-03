@@ -410,6 +410,7 @@ getDivisionNames(designationDetail: any): string {
   return uniqueDivisions.join(", ");
 }
 
+
  getUserDivisionNames(designationDetail: any): string {
        if (!Array.isArray(designationDetail)) return "";
        const divisions = designationDetail
