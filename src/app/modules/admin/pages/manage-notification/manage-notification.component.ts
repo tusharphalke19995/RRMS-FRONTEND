@@ -128,7 +128,7 @@ export class ManageNotificationComponent implements AfterViewInit {
     "message",
   ];
   notificationInfo: any;
-  authData: import("/Users/tusharphalke/Documents/Freelancing_Work/RRMS-FRONTEND/src/app/core/auth/auth.service").UserModel;
+  authData: any;
   currentRole: any;
   showUnreadTab: boolean = true;
   showReadTab: boolean = true;
