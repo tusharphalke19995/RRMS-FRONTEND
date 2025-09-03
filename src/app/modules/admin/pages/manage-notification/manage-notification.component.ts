@@ -141,7 +141,6 @@ export class ManageNotificationComponent implements AfterViewInit {
     private router: Router,
     private authenticationService: AuthService
   ) {
-
      this.authData = this.authenticationService.getAuthData();
        this.currentRole = this.authData.Role;
       if(this.currentRole =='User'){
@@ -409,7 +408,6 @@ getDivisionNames(designationDetail: any): string {
   const uniqueDivisions = Array.from(new Set(divisions));
   return uniqueDivisions.join(", ");
 }
-
 
  getUserDivisionNames(designationDetail: any): string {
        if (!Array.isArray(designationDetail)) return "";
