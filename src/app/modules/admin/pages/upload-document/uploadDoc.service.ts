@@ -149,8 +149,7 @@ getUnitsByDistictIdData(
   }
 
   clearDraft() {
-    this.draftInfo = [];
-
+    this.draftInfo = null;
   }
   
    /**

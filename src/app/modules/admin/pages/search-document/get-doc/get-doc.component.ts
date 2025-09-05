@@ -327,7 +327,21 @@ checkDIGUser() {
   } 
 
   goToAddDoc(){
-    this._uploadDocumentService.setState(this.files, this.caseMetaData,true);
+    // Ensure case data has proper structure for upload-document component
+    const formattedCaseData = {
+      ...this.caseMetaData,
+      // Map the correct field names for upload-document component
+      stateId: this.caseMetaData.stateId || this.caseMetaData.stateID,
+      districtId: this.caseMetaData.districtId || this.caseMetaData.districtID,
+      unitId: this.caseMetaData.unitId || this.caseMetaData.unitID,
+      Office: this.caseMetaData.Office || this.caseMetaData.office,
+      caseType: this.caseMetaData.caseType || this.caseMetaData.caseTypeId,
+      caseStatus: this.caseMetaData.caseStatus || this.caseMetaData.statusId,
+      year: this.caseMetaData.year || this.caseMetaData.yearId
+    };
+    
+    console.log('Formatted case data for upload:', formattedCaseData);
+    this._uploadDocumentService.setState(this.files, formattedCaseData, true);
     this._router.navigateByUrl('upload-document');
   }
   

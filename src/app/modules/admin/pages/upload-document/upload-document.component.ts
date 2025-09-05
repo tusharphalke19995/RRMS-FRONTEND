@@ -225,17 +225,24 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.initForm();
     this.getUserDistrictDropdown();
     this.getUserStateDropdown();
-    this.onStateChange(16);
-    this.onDisctrictChange(443);
     this.getMasterDropDown();
-    this.getDataSearchForPatch();
-    this.getDraftDataPatch();
+    
     // Initialize filtered arrays
     this.filteredStates = this.stateDropdown || [];
     this.filteredDistricts = this.districtDropdown || [];
     this.filteredCaseTypes = this.caseTypeDropDown || [];
     this.filteredCaseStatus = this.caseStatusDropdown || [];
     this.filteredYears = [...this.yearDropDown];
+    
+    // Load data immediately - the methods will handle whether there's data to patch
+    this.getDataSearchForPatch();
+    this.getDraftDataPatch();
+    
+    // Initialize default values only for fresh uploads (not when patching)
+    if (!this.isPatchSearchPage && !this.isDraft) {
+      this.onStateChange(16);
+      this.onDisctrictChange(443);
+    }
   }
 
   /**
@@ -343,7 +350,12 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           (districts: any) => {
             this.districtDropdown = districts.responseData as District[];
             this.filteredDistricts = [...this.districtDropdown];
-            this.uploadDocumentForm.get("districtId")?.setValue(443);
+            
+            // Only set default district 443 for fresh uploads, not when patching from search
+            if (!this.isPatchSearchPage) {
+              this.uploadDocumentForm.get("districtId")?.setValue(443);
+            }
+            
             this._changeDetectorRef.detectChanges();
           },
           (error) => {
@@ -386,6 +398,81 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     date.setHours(date.getHours() + 5);
     date.setMinutes(date.getMinutes() + 30);
     return date.toISOString();
+  }
+
+  /**
+   * Convert date string to Date object for Angular Material datepicker
+   */
+  convertToDatePickerFormat(dateString: string | null): Date | null {
+    if (!dateString) {
+      return null;
+    }
+    
+    try {
+      // Handle different date formats
+      let date: Date;
+      
+      // If it's already a valid date string with time
+      if (dateString.includes('T') || dateString.includes('Z')) {
+        // ISO format or UTC format
+        date = new Date(dateString);
+      } else if (dateString.includes('/')) {
+        // MM/DD/YYYY or DD/MM/YYYY format
+        date = new Date(dateString);
+      } else if (dateString.includes('-')) {
+        // Handle DD-MM-YYYY format (common in Indian date format)
+        const parts = dateString.split('-');
+        if (parts.length === 3) {
+          const day = parseInt(parts[0], 10);
+          const month = parseInt(parts[1], 10);
+          const year = parseInt(parts[2], 10);
+          
+          // Check if it's DD-MM-YYYY format (day > 12 indicates DD-MM-YYYY)
+          if (day > 12 && month <= 12) {
+            // DD-MM-YYYY format
+            date = new Date(year, month - 1, day); // month is 0-indexed
+            console.log(`Parsed DD-MM-YYYY: ${dateString} -> ${date.toDateString()}`);
+          } else if (month > 12 && day <= 12) {
+            // MM-DD-YYYY format
+            date = new Date(year, day - 1, month); // day and month swapped
+            console.log(`Parsed MM-DD-YYYY: ${dateString} -> ${date.toDateString()}`);
+          } else if (day <= 12 && month <= 12) {
+            // Ambiguous case - prioritize DD-MM-YYYY for Indian date format
+            // Check if the first part (day) is more likely to be a day
+            if (day <= 31 && month <= 12) {
+              // Assume DD-MM-YYYY format (Indian standard)
+              date = new Date(year, month - 1, day);
+              console.log(`Parsed DD-MM-YYYY (ambiguous): ${dateString} -> ${date.toDateString()}`);
+            } else {
+              // Fallback to standard parsing
+              date = new Date(dateString);
+              console.log(`Standard parsing (ambiguous): ${dateString} -> ${date.toDateString()}`);
+            }
+          } else {
+            // Try standard parsing (assumes YYYY-MM-DD or MM-DD-YYYY)
+            date = new Date(dateString);
+            console.log(`Standard parsing: ${dateString} -> ${date.toDateString()}`);
+          }
+        } else {
+          // Try standard parsing
+          date = new Date(dateString);
+        }
+      } else {
+        // Try parsing as is
+        date = new Date(dateString);
+      }
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date format:', dateString);
+        return null;
+      }
+      
+      return date;
+    } catch (error) {
+      console.error('Error converting date:', dateString, error);
+      return null;
+    }
   }
 
   saveDraftUpload() {
@@ -974,14 +1061,24 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   getDraftDataPatch() {
     const state = this._uploadDocumentService.getDraftData();
     this.draftInfo = state.draftInfo;
-    console.log("clearDraft", this.draftInfo);
-    console.log("isDraft", this.isDraft);
+    console.log("Draft data received:", this.draftInfo);
+    
     if (this.draftInfo) {
-      this.dataPatchDraft(this.draftInfo);
-    }
-    if (this.draftInfo?.file_details) {
-      this.dfaftfiles = this.draftInfo?.file_details;
+      // Set isDraft flag before patching
       this.isDraft = true;
+      console.log("isDraft set to true");
+      
+      // Patch the draft data
+      this.dataPatchDraft(this.draftInfo);
+      
+      // Handle draft files if available
+      if (this.draftInfo?.file_details) {
+        this.dfaftfiles = this.draftInfo?.file_details;
+        console.log("Draft files loaded:", this.dfaftfiles);
+      }
+    } else {
+      this.isDraft = false;
+      console.log("No draft data found, isDraft set to false");
     }
     
     // Clear state after loading
@@ -989,53 +1086,175 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }
 
   dataPatch(data) {
-    if (data) {
+    if (data && this.isPatchSearchPage) {
       console.log("data",data)
       this.crimeNo = data.caseNo;
+      
+      // Ensure proper field mapping with fallbacks
+      const stateId = data.stateId || data.stateID || data.stateIdInfo;
+      const districtId = data.districtId || data.districtID;
+      const unitId = data.unitId || data.unitID || data.unitsId;
+      const office = data.Office || data.office;
+      const caseType = data.caseType || data.caseTypeId;
+      const caseStatus = data.caseStatus || data.statusId;
+      const year = data.year || data.yearId;
+      
+      // Convert caseDate to proper format for datepicker
+      const formattedCaseDate = this.convertToDatePickerFormat(data.caseDate);
+      console.log('Original caseDate:', data.caseDate, 'Formatted caseDate:', formattedCaseDate);
+      
+      // First patch the state and trigger district loading
       this.uploadDocumentForm.patchValue({
-        stateIDInfo: data.stateId,
-        districtId: data.districtId,
-        unitsId: data.unitId,
-        office: data.Office,
-        caseDate: data.caseDate,
+        stateIDInfo: stateId,
+        office: office,
+        caseDate: formattedCaseDate,
         caseNo: data.caseNo,
         firNo: data.firNo,
         letterNo: data.letterNo,
-        caseType: Number(data.caseType),
         author: data.author,
         toAddr: data.toAddr,
-        statusId: data.caseStatus,
       });
-      setTimeout(() => {
-         this.uploadDocumentForm.patchValue({
-        caseType: Number(data.caseType),
-        yearId:data.year,
-      });
-      }, 2000);
-      this.uploadDocumentForm.disable();
-      this._changeDetectorRef.detectChanges();
-       this._uploadDocumentService.clearState();
+      
+      // Load districts for the selected state
+      if (stateId) {
+        console.log('Loading districts for stateId:', stateId);
+        this.onStateChange(stateId);
+        
+        // Wait for districts to load, then patch district and load units
+        setTimeout(() => {
+          console.log('Patching districtId:', districtId, 'Available districts:', this.districtDropdown);
+          this.uploadDocumentForm.patchValue({
+            districtId: districtId,
+          });
+          
+          // Load units for the selected district
+          if (districtId) {
+            console.log('Loading units for districtId:', districtId);
+            this.onDisctrictChange(districtId);
+            
+            // Wait for units to load, then patch unit
+            setTimeout(() => {
+              console.log('Patching unitId:', unitId, 'Available units:', this.unitsDropdown);
+              this.uploadDocumentForm.patchValue({
+                unitsId: unitId,
+                caseType: Number(caseType),
+                statusId: caseStatus,
+                yearId: year,
+              });
+              
+              this.uploadDocumentForm.disable();
+              this._changeDetectorRef.detectChanges();
+            }, 1000);
+          } else {
+            this.uploadDocumentForm.patchValue({
+              caseType: Number(caseType),
+              statusId: caseStatus,
+              yearId: year,
+            });
+            this.uploadDocumentForm.disable();
+            this._changeDetectorRef.detectChanges();
+          }
+        }, 1000);
+      } else {
+        // If no state, just patch the other values
+        this.uploadDocumentForm.patchValue({
+          districtId: districtId,
+          unitsId: unitId,
+          caseType: Number(caseType),
+          statusId: caseStatus,
+          yearId: year,
+        });
+        this.uploadDocumentForm.disable();
+        this._changeDetectorRef.detectChanges();
+      }
+      
+      this._uploadDocumentService.clearState();
     }
   }
 
   dataPatchDraft(data) {
-    if (data) {
+    if (data && this.isDraft) {
+      console.log('Patching draft data:', data);
       const uploadDataPach = data;
+      
+      // Ensure proper field mapping with fallbacks
+      const stateId = uploadDataPach.stateId || uploadDataPach.stateID || uploadDataPach.stateIdInfo;
+      const districtId = uploadDataPach.districtId || uploadDataPach.districtID;
+      const unitId = uploadDataPach.unitId || uploadDataPach.unitID || uploadDataPach.unitsId;
+      const office = uploadDataPach.Office || uploadDataPach.office;
+      const caseType = uploadDataPach.caseType || uploadDataPach.caseTypeId;
+      const caseStatus = uploadDataPach.caseStatus || uploadDataPach.statusId;
+      const year = uploadDataPach.year || uploadDataPach.yearId;
+      
+      console.log('Draft field mapping:', {
+        stateId, districtId, unitId, office, caseType, caseStatus, year
+      });
+      
+      // Convert caseDate to proper format for datepicker
+      const formattedCaseDate = this.convertToDatePickerFormat(uploadDataPach.caseDate);
+      console.log('Draft - Original caseDate:', uploadDataPach.caseDate, 'Formatted caseDate:', formattedCaseDate);
+      
+      // First patch the state and trigger district loading
       this.uploadDocumentForm.patchValue({
-        stateIDInfo: uploadDataPach.stateId,
-        yearId: uploadDataPach.year,
-        districtId: uploadDataPach.districtId,
-        unitsId: uploadDataPach.unitId,
-        office: uploadDataPach.Office,
-        caseDate: uploadDataPach.caseDate,
+        stateIDInfo: stateId,
+        office: office,
+        caseDate: formattedCaseDate,
         caseNo: uploadDataPach.caseNo,
         firNo: uploadDataPach.firNo,
         letterNo: uploadDataPach.letterNo,
-        caseType: Number(uploadDataPach.caseType),
         author: uploadDataPach.author,
         toAddr: uploadDataPach.toAddr,
-        statusId: uploadDataPach.caseStatus,
       });
+      
+      // Load districts for the selected state
+      if (stateId) {
+        console.log('Draft - Loading districts for stateId:', stateId);
+        this.onStateChange(stateId);
+        
+        // Wait for districts to load, then patch district and load units
+        setTimeout(() => {
+          console.log('Draft - Patching districtId:', districtId, 'Available districts:', this.districtDropdown);
+          this.uploadDocumentForm.patchValue({
+            districtId: districtId,
+          });
+          
+          // Load units for the selected district
+          if (districtId) {
+            console.log('Draft - Loading units for districtId:', districtId);
+            this.onDisctrictChange(districtId);
+            
+            // Wait for units to load, then patch unit
+            setTimeout(() => {
+              console.log('Draft - Patching unitId:', unitId, 'Available units:', this.unitsDropdown);
+              this.uploadDocumentForm.patchValue({
+                unitsId: unitId,
+                caseType: Number(caseType),
+                statusId: caseStatus,
+                yearId: year,
+              });
+              
+              this._changeDetectorRef.detectChanges();
+            }, 1000);
+          } else {
+            this.uploadDocumentForm.patchValue({
+              caseType: Number(caseType),
+              statusId: caseStatus,
+              yearId: year,
+            });
+            this._changeDetectorRef.detectChanges();
+          }
+        }, 1000);
+      } else {
+        // If no state, just patch the other values
+        this.uploadDocumentForm.patchValue({
+          districtId: districtId,
+          unitsId: unitId,
+          caseType: Number(caseType),
+          statusId: caseStatus,
+          yearId: year,
+        });
+        this._changeDetectorRef.detectChanges();
+      }
     }
   }
 
