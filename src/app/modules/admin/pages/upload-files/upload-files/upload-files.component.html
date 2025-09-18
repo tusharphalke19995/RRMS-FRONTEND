@@ -61,7 +61,7 @@
                 {{ file.metadata ? 'check_circle' : 'insert_drive_file' }}
               </mat-icon>
               <span class="ml-2 text-primary-500 hover:underline cursor-pointer" matTooltip="View File">
-                {{ crimeNo }}_{{ file.name || file.fileName }}
+                {{ getFileSubject(file) }}
               </span>
             </div>
 
@@ -226,8 +226,7 @@
     </div>
 
     <div class="p-2 mt-4 bg-gray-50 rounded-lg">
-      <p class="text-sm text-gray-600">File/Document Name: <span class="font-semibold text-gray-800">{{crimeNo}}_{{ fileToEdit?.fileName ||
-          fileToEdit?.name}}</span></p>
+      <p class="text-sm text-gray-600">File/Document Name: <span class="font-semibold text-gray-800">{{ fileToEdit ? getFileSubject(fileToEdit) : 'No file selected' }}</span></p>
     </div>
   </form>
   <div class="flex justify-end space-x-2 mt-6 pt-4 border-t py-4 mr-3">

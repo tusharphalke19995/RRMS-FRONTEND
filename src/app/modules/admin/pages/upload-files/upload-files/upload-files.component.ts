@@ -244,12 +244,20 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       this.patchData(this.formGroup.value);
     }
     this.showTextNoData = !this.filesData?.length;
-    this.selectedFiles = this.getfiles;
+    
+    // Handle file changes - either from getfiles input or filesData
+    if (changes["getfiles"] && this.getfiles) {
+      this.selectedFiles = [...this.getfiles];
+    } else if (changes["filesData"] && this.filesData) {
+      this.selectedFiles = [...this.filesData];
+    }
+    
     if (this.checkFileSatus == true) {
       this.metadataForm.reset();
       this.selectedFiles = [];
       this.filesWithMetadataSelected.emit({ files: [], metadata: [] });
     }
+    
     // Ensure all files have proper fileName and subject with fallback
     if (this.selectedFiles.length > 0) {
       this.showEditUserUpload = true;
@@ -468,6 +476,11 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   getFileSubject(file: FileWithMetadata): string {
+    // Handle null or undefined file
+    if (!file) {
+      return 'UnknownFile';
+    }
+    
     const caseNo = this.crimeNo && this.crimeNo !== 'undefined' ? this.crimeNo : '';
     const fileName = file.name || file.fileName || 'UnknownFile';
     const base = (!file.subject || (this.selectedFiles.length > 0 && file.subject === this.selectedFiles[0].subject) || file.subject === undefined)
@@ -478,11 +491,16 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     if (!caseNo) {
       return base;
     }
+    
+    // Clean the base name by removing any existing case numbers
+    const cleanBase = base.replace(/^\d+_/, '');
+    
     // If base already starts with caseNo, don't prepend
     if (base.startsWith(caseNo)) {
       return base;
     }
-    return `${caseNo}_${base}`;
+    
+    return `${caseNo}_${cleanBase}`;
   }
 
   submitMetadata(): void {
@@ -553,9 +571,12 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       
       // Add default metadata with subject for new files
       newFiles.forEach((file) => {
+        const fileName = file.name || file.fileName || 'UnknownFile';
+        const subjectWithCaseNo = file.subject || `${this.crimeNo}_${fileName}`;
+        
         if (!file.metadata) {
           file.metadata = {
-            subject: file.subject || `${this.crimeNo}_${file.name || file.fileName}`,
+            subject: subjectWithCaseNo,
             fileType: "",
             classification: "",
             hashTag: "",
@@ -563,8 +584,11 @@ export class UploadFilesComponent implements OnInit, OnChanges {
           };
         } else if (!file.metadata.subject) {
           // If metadata exists but no subject, use API subject or create default
-          file.metadata.subject = file.subject || `${this.crimeNo}_${file.name || file.fileName}`;
+          file.metadata.subject = subjectWithCaseNo;
         }
+        
+        // Set the subject on the file as well
+        file.subject = subjectWithCaseNo;
       });
       
       this.selectedFiles = [...this.selectedFiles, ...newFiles];

@@ -173,15 +173,19 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.selectedFiles.forEach((file: any) => {
       const baseName = this.getBaseFileName(file);
 
-      // Update subject if needed
+      // Update subject if needed - check if it already has case number
       if (!file.subject || !file.subject.startsWith(caseNo)) {
-        file.subject = `${caseNo}_${baseName}`;
+        // Remove existing case number if present before adding new one
+        const cleanSubject = file.subject ? file.subject.replace(/^\d+_/, '') : baseName;
+        file.subject = `${caseNo}_${cleanSubject}`;
       }
 
       // Update metadata.subject if needed
       if (file.metadata) {
         if (!file.metadata.subject || !file.metadata.subject.startsWith(caseNo)) {
-          file.metadata.subject = `${caseNo}_${baseName}`;
+          // Remove existing case number if present before adding new one
+          const cleanMetadataSubject = file.metadata.subject ? file.metadata.subject.replace(/^\d+_/, '') : baseName;
+          file.metadata.subject = `${caseNo}_${cleanMetadataSubject}`;
         }
       } else {
         file.metadata = { subject: `${caseNo}_${baseName}` };
@@ -189,7 +193,9 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
 
       // Update fileName if needed
       if (!file.fileName || !file.fileName.startsWith(caseNo)) {
-        file.fileName = `${caseNo}_${baseName}`;
+        // Remove existing case number if present before adding new one
+        const cleanFileName = file.fileName ? file.fileName.replace(/^\d+_/, '') : baseName;
+        file.fileName = `${caseNo}_${cleanFileName}`;
       }
     });
   }
@@ -289,7 +295,21 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   }) {
     this.selectedFiles = data.files;
     this.selectedMetadata = data.metadata;
-    console.log("  this.selectedFiles ", this.selectedFiles);
+    console.log("Files with metadata selected:", this.selectedFiles);
+    
+    // If we're in draft mode, update the dfaftfiles array to keep it in sync
+    if (this.isDraft && this.selectedFiles.length > 0) {
+      this.dfaftfiles = this.selectedFiles.map(file => ({
+        fileId: (file as any).fileId,
+        fileName: file.fileName || file.name,
+        subject: file.subject,
+        fileType: file.metadata?.fileType || (file as any).fileType,
+        classification: file.metadata?.classification || (file as any).classification,
+        hashTag: file.metadata?.hashTag || (file as any).hashTag,
+        documentType: file.metadata?.documentType || (file as any).documentType,
+        mimeType: file.type
+      }));
+    }
   }
 
   /**
@@ -1075,6 +1095,11 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       if (this.draftInfo?.file_details) {
         this.dfaftfiles = this.draftInfo?.file_details;
         console.log("Draft files loaded:", this.dfaftfiles);
+        
+        // Convert draft files to FileWithMetadata format and set as selectedFiles
+        this.selectedFiles = this.convertDraftFilesToFileWithMetadata(this.dfaftfiles);
+        this.selectedMetadata = this.selectedFiles.map(file => file.metadata);
+        console.log("Converted draft files to selectedFiles:", this.selectedFiles);
       }
     } else {
       this.isDraft = false;
@@ -1177,6 +1202,14 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       console.log('Patching draft data:', data);
       const uploadDataPach = data;
       
+      // Set crimeNo from draft data - this is crucial for displaying Case No
+      this.crimeNo = uploadDataPach.caseNo;
+      console.log('Draft - Setting crimeNo:', this.crimeNo);
+      
+      // Set finalFIRValue for case number generation
+      this.finalFIRValue = uploadDataPach.firNo;
+      console.log('Draft - Setting finalFIRValue:', this.finalFIRValue);
+      
       // Ensure proper field mapping with fallbacks
       const stateId = uploadDataPach.stateId || uploadDataPach.stateID || uploadDataPach.stateIdInfo;
       const districtId = uploadDataPach.districtId || uploadDataPach.districtID;
@@ -1185,6 +1218,14 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       const caseType = uploadDataPach.caseType || uploadDataPach.caseTypeId;
       const caseStatus = uploadDataPach.caseStatus || uploadDataPach.statusId;
       const year = uploadDataPach.year || uploadDataPach.yearId;
+      
+      // Set caseTypeFinalId for case number generation
+      if (caseType == 1) {
+        this.caseTypeFinalId = 10;
+      } else if (caseType == 2) {
+        this.caseTypeFinalId = 20;
+      }
+      console.log('Draft - Setting caseTypeFinalId:', this.caseTypeFinalId);
       
       console.log('Draft field mapping:', {
         stateId, districtId, unitId, office, caseType, caseStatus, year
@@ -1350,6 +1391,49 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         // Navigate back to get-doc page
         this._router.navigateByUrl('/search-document/get-doc');
       }
+    });
+  }
+
+  /**
+   * Convert draft files from API format to FileWithMetadata format
+   */
+  convertDraftFilesToFileWithMetadata(draftFiles: any[]): FileWithMetadata[] {
+    if (!draftFiles || draftFiles.length === 0) {
+      return [];
+    }
+
+    return draftFiles.map((draftFile, index) => {
+      // Create a mock File object for the draft file
+      const mockFile = new File([''], draftFile.fileName || draftFile.name || `DraftFile${index + 1}`, {
+        type: draftFile.mimeType || 'application/octet-stream'
+      });
+
+      // Add properties to make it compatible with FileWithMetadata
+      const fileWithMetadata = mockFile as FileWithMetadata;
+      
+      // Set file properties
+      fileWithMetadata.fileName = draftFile.fileName || draftFile.name || `DraftFile${index + 1}`;
+      fileWithMetadata.fileId = draftFile.fileId;
+      
+      // Set subject
+      fileWithMetadata.subject = draftFile.subject || draftFile.fileName || `DraftFile${index + 1}`;
+      
+      // Create metadata object
+      fileWithMetadata.metadata = {
+        subject: draftFile.subject || draftFile.fileName || `DraftFile${index + 1}`,
+        fileType: draftFile.fileType || draftFile.fileTypeId || "",
+        classification: draftFile.classification || draftFile.classificationId || "",
+        hashTag: draftFile.hashTag || "",
+        documentType: draftFile.documentType || draftFile.documentTypeId || "",
+      };
+
+      // Also set properties directly on the file for backward compatibility
+      (fileWithMetadata as any).fileType = draftFile.fileType || draftFile.fileTypeId || "";
+      (fileWithMetadata as any).classification = draftFile.classification || draftFile.classificationId || "";
+      (fileWithMetadata as any).hashTag = draftFile.hashTag || "";
+      (fileWithMetadata as any).documentType = draftFile.documentType || draftFile.documentTypeId || "";
+
+      return fileWithMetadata;
     });
   }
 
