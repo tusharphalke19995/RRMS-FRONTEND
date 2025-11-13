@@ -216,7 +216,7 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   initializeFormControls() {
-    if (!this?.formGroup.get("file")) {
+    if (this.formGroup && !this.formGroup.get("file")) {
       this.formGroup.addControl(
         "file",
         this.fb.control("", Validators.required)
@@ -599,9 +599,11 @@ export class UploadFilesComponent implements OnInit, OnChanges {
         metadata: this.selectedFiles.map((file) => file.metadata),
       });
 
-      this.formGroup.patchValue({
-        file: this.selectedFiles,
-      });
+      if (this.formGroup) {
+        this.formGroup.patchValue({
+          file: this.selectedFiles,
+        });
+      }
     }
   }
 
@@ -670,14 +672,16 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   uploadFiles() {
-    if (this.formGroup.valid && this.selectedFiles.length > 0) {
+    if (this.formGroup && this.formGroup.valid && this.selectedFiles.length > 0) {
       this.loadingVisible = true;
 
       setTimeout(() => {
         // console.log("Files uploaded:", this.selectedFiles);
         this.loadingVisible = false;
         this.selectedFiles = [];
-        this.formGroup.reset();
+        if (this.formGroup) {
+          this.formGroup.reset();
+        }
       }, 2000);
     }
   }
@@ -705,9 +709,10 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     if (this.checkGetFile === true) {
       const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
         data: data,
-        width: "850px",
-        maxWidth: "100vw",
-        height: "90vh",
+        width: '90vw',
+        maxWidth: '90vw',
+        height: '95vh',
+        maxHeight: '95vh',
         panelClass: "custom-dialog-class",
       });
 
