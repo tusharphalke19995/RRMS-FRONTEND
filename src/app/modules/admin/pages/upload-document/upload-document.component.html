@@ -284,7 +284,7 @@
                             <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{
                                     t('letterNo')}}</mat-label>
-                                <input matInput matInput [formControlName]="'letterNo'" [required]="true">
+                                <input matInput matInput [formControlName]="'letterNo'">
                                 <mat-error *ngIf="uploadDocumentForm.get('letterNo').hasError('required')">
                                     Required
                                 </mat-error>
@@ -294,7 +294,7 @@
                             <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{
                                     t('location')}}</mat-label>
-                                <input matInput matInput [formControlName]="'toAddr'" maxlength="100" [required]="true"
+                                <input matInput matInput [formControlName]="'toAddr'" maxlength="100"
                                     (keypress)="allowOnlyLetters($event)">
                                 <mat-error *ngIf="uploadDocumentForm.get('toAddr').hasError('required')">
                                     Required
@@ -306,7 +306,7 @@
                             <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t" class="font-medium example-full-width">{{
                                     t('author')}}</mat-label>
-                                <input matInput matInput [formControlName]="'author'" [required]="true" maxlength="20"
+                                <input matInput matInput [formControlName]="'author'" maxlength="20"
                                     (keypress)="allowOnlyLetters($event)">
                                 <mat-error *ngIf="uploadDocumentForm.get('author').hasError('required')">
                                     Required
