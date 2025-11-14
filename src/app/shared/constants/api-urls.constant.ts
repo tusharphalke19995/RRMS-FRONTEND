@@ -85,4 +85,5 @@ export const apiurls = {
     `${environment.userApiUrl}casedata/withdraw-upload-approval/${id}`,
   checkEmailExists: `${environment.userApiUrl}users/check-email-exists`,
    caseTransfer: `${environment.userApiUrl}casedata/case-transfer`,
+   finalreportCaseStatus: `${environment.userApiUrl}mdm/finalreport-caseStatus?categoryId`,
 } as const;

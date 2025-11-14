@@ -246,7 +246,7 @@
                             <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t"
                                     class="font-medium example-full-width">{{t('caseStatus')}}</mat-label>
-                                <mat-select [formControlName]="'statusId'" [panelClass]="'custom-select-panel'">
+                                <mat-select (selectionChange)="onCaseStatusChange($event.value)" [formControlName]="'statusId'" [panelClass]="'custom-select-panel'">
                                     <div class="px-3 py-2">
                                         <mat-form-field class="w-full">
                                             <input matInput (keyup)="filterCaseStatus($event)"
@@ -269,6 +269,28 @@
 
                 <table class="example-full-width" cellspacing="0">
                     <tr>
+                          <td>
+                            <mat-form-field appearance="outline" class="example-full-width">
+                                <mat-label *transloco="let t"
+                                    class="font-medium example-full-width">Final Report State</mat-label>
+                                <mat-select    [formControlName]="'statusIdDependent'" [panelClass]="'custom-select-panel'">
+                                    <div class="px-3 py-2">
+                                        <mat-form-field class="w-full">
+                                            <input matInput (keyup)="filterCaseStatusDependentDropdown($event)"
+                                                placeholder="Search ..." #caseStatusSearchInputDependent [value]="''"
+                                                autocomplete="off">
+                                        </mat-form-field>
+                                    </div>
+                                    <mat-option [value]="null">Please Select</mat-option>
+                                    <ng-container *ngFor="let csStatus of filteredCaseStatusDependent; trackBy: trackByFn">
+                                        <mat-option [value]="csStatus.id">{{csStatus.value}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                                <mat-error *ngIf="uploadDocumentForm.get('statusIdDependent').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
                         <td>
                             <mat-form-field appearance="outline" class="example-full-width">
                                 <mat-label *transloco="let t"
@@ -301,19 +323,7 @@
                                 </mat-error>
                             </mat-form-field>
                         </td>
-                        <td>
-
-                            <mat-form-field appearance="outline" class="example-full-width">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{
-                                    t('author')}}</mat-label>
-                                <input matInput matInput [formControlName]="'author'" maxlength="20"
-                                    (keypress)="allowOnlyLetters($event)">
-                                <mat-error *ngIf="uploadDocumentForm.get('author').hasError('required')">
-                                    Required
-                                </mat-error>
-                            </mat-form-field>
-
-                        </td>
+                      
                         <!-- <td>
                     <tr>
 
@@ -327,11 +337,22 @@
                     </tr>
                 </table>
 
-                <table class="example-full-width" cellspacing="0">
-
+                <table class="col-md-6" cellspacing="0">
                     <tr>
-                        <td><mat-form-field appearance="outline" class="col-md-3">
-                                <mat-label *transloco="let t" class="font-medium example-full-width">{{
+                          <td>
+                            <mat-form-field appearance="outline" class="col-md-3">
+                                <mat-label *transloco="let t" class="font-medium col-md-3">Author/IO/EO</mat-label>
+                                <input matInput matInput [formControlName]="'author'" maxlength="20"
+                                    (keypress)="allowOnlyLetters($event)">
+                                <mat-error *ngIf="uploadDocumentForm.get('author').hasError('required')">
+                                    Required
+                                </mat-error>
+                            </mat-form-field>
+
+                        </td>
+                        <td>
+                            <mat-form-field appearance="outline" class="col-md-3">
+                                <mat-label *transloco="let t" class="font-medium col-md-3">{{
                                     t('caseNo')}}</mat-label>
                                 <input matInput matInput [formControlName]="'caseNo'" readonly class="dark:bg-gray-600">
                                 <mat-error *ngIf="uploadDocumentForm.get('caseNo').hasError('required')">
@@ -339,6 +360,7 @@
                                 </mat-error>
                             </mat-form-field>
                         </td>
+                       
                     </tr>
 
 
