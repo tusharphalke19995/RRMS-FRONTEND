@@ -144,6 +144,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   filteredYears: { yearId: number; yearName: number }[] = [];
   private yearSearchTimeout: any;
   authData: any;
+  showFinalReportState: boolean = false;
   ClassificationTypeDropDown: any[] = [];
   FileTypeDropDown: any[] = [];
   DocumentTypeDropDown: any[] = [];
@@ -286,7 +287,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       caseDate: [""],
       statusId: ["", [Validators.required]],
       yearId: ["", [Validators.required]],
-      statusIdDependent:["", [Validators.required]]
+      statusIdDependent:[""]
     });
   }
 
@@ -526,7 +527,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       toAddr: this.uploadDocumentForm.value.toAddr || null,
       caseStatus: this.uploadDocumentForm.value.statusId,
       year: this.uploadDocumentForm.value.yearId,
-      finalReportCaseStatus:this.uploadDocumentForm.value.statusIdDependent
+      finalReportCaseStatus:this.uploadDocumentForm.value.statusIdDependent || 0
     };
     if (caseDateValue) {
       uploadMetaData.caseDate = finalCaseDate;
@@ -621,7 +622,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       toAddr: this.uploadDocumentForm.value.toAddr || null,
       caseStatus: this.uploadDocumentForm.value.statusId,
       year: this.uploadDocumentForm.value.yearId,
-      finalReportCaseStatus:this.uploadDocumentForm.value.statusIdDependent
+      finalReportCaseStatus:this.uploadDocumentForm.value.statusIdDependent ||0
     };
     if (caseDateValue) {
       uploadMetaData.caseDate = finalCaseDate;
@@ -725,7 +726,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       toAddr: this.uploadDocumentForm.value.toAddr || null,
       caseStatus: this.uploadDocumentForm.value.statusId,
       year: this.uploadDocumentForm.value.yearId,
-      finalReportCaseStatus:this.uploadDocumentForm.value.statusIdDependent
+      finalReportCaseStatus:this.uploadDocumentForm.value.statusIdDependent || 0
     };
     if (caseDateValue) {
       uploadMetaData.caseDate = finalCaseDate;
@@ -1201,6 +1202,21 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
                 yearId: year,
               });
               
+              // Check if case status requires Final Report State dropdown
+              if (caseStatus) {
+                const selectedCaseStatus = this.caseStatusDropdown.find(status => status.id === caseStatus);
+                const shouldShowFinalReportState = caseStatus === 33 || selectedCaseStatus?.value === 'Final Report A';
+                if (shouldShowFinalReportState) {
+                  this.onCaseStatusChange(caseStatus);
+                } else {
+                  // Ensure dropdown is hidden if status doesn't match
+                  this.showFinalReportState = false;
+                  const statusIdDependentControl = this.uploadDocumentForm.get('statusIdDependent');
+                  statusIdDependentControl?.clearValidators();
+                  statusIdDependentControl?.updateValueAndValidity();
+                }
+              }
+              
               this.uploadDocumentForm.disable();
               this._changeDetectorRef.detectChanges();
             }, 1000);
@@ -1211,6 +1227,12 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
               statusIdDependent:finalReportCaseStatus,
               yearId: year,
             });
+            
+            // Check if case status requires Final Report State dropdown
+            if (caseStatus) {
+              this.onCaseStatusChange(caseStatus);
+            }
+            
             this.uploadDocumentForm.disable();
             this._changeDetectorRef.detectChanges();
           }
@@ -1225,6 +1247,12 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           statusIdDependent:finalReportCaseStatus,
           yearId: year,
         });
+        
+        // Check if case status requires Final Report State dropdown
+        if (caseStatus) {
+          this.onCaseStatusChange(caseStatus);
+        }
+        
         this.uploadDocumentForm.disable();
         this._changeDetectorRef.detectChanges();
       }
@@ -1282,7 +1310,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         letterNo: uploadDataPach.letterNo,
         author: uploadDataPach.author,
         toAddr: uploadDataPach.toAddr,
-         statusIdDependent:finalReportCaseStatus
+         statusIdDependent:uploadDataPach.finalReportCaseStatus
       });
       
       // Load districts for the selected state
@@ -1313,6 +1341,21 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
                 statusIdDependent:finalReportCaseStatus
               });
               
+              // Check if case status requires Final Report State dropdown
+              if (caseStatus) {
+                const selectedCaseStatus = this.caseStatusDropdown.find(status => status.id === caseStatus);
+                const shouldShowFinalReportState = caseStatus === 33 || selectedCaseStatus?.value === 'Final Report A';
+                if (shouldShowFinalReportState) {
+                  this.onCaseStatusChange(caseStatus);
+                } else {
+                  // Ensure dropdown is hidden if status doesn't match
+                  this.showFinalReportState = false;
+                  const statusIdDependentControl = this.uploadDocumentForm.get('statusIdDependent');
+                  statusIdDependentControl?.clearValidators();
+                  statusIdDependentControl?.updateValueAndValidity();
+                }
+              }
+              
               this._changeDetectorRef.detectChanges();
             }, 1000);
           } else {
@@ -1322,6 +1365,12 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
               yearId: year,
               statusIdDependent:finalReportCaseStatus
             });
+            
+            // Check if case status requires Final Report State dropdown
+            if (caseStatus) {
+              this.onCaseStatusChange(caseStatus);
+            }
+            
             this._changeDetectorRef.detectChanges();
           }
         }, 1000);
@@ -1335,6 +1384,12 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           yearId: year,
           statusIdDependent:finalReportCaseStatus
         });
+        
+        // Check if case status requires Final Report State dropdown
+        if (caseStatus) {
+          this.onCaseStatusChange(caseStatus);
+        }
+        
         this._changeDetectorRef.detectChanges();
       }
     }
@@ -1506,21 +1561,46 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
 
 
   onCaseStatusChange (caseStatusId: number): void {
-    if (caseStatusId) {
-      this._uploadDocumentService
-        .finalreportCaseStatusById(caseStatusId)
-        .subscribe(
-          (data: any) => {
-            this.caseStatusDeptDropdown = data as CaseStatusDependent[];
-            this.filteredCaseStatusDependent = [...this.caseStatusDeptDropdown];
-            this._changeDetectorRef.detectChanges();
-          },
-          (error) => {
-            console.error("Error fetching districts:", error);
-          }
-        );
+    // Find the selected case status to check its value
+    const selectedCaseStatus = this.caseStatusDropdown.find(status => status.id === caseStatusId);
+    
+    // Check if the selected status id is 33 or value is 'Final Report A'
+    const shouldShowFinalReportState = caseStatusId === 33 || selectedCaseStatus?.value === 'Final Report A';
+    
+    // Update visibility flag
+    this.showFinalReportState = shouldShowFinalReportState;
+    
+    // Manage required validator based on visibility
+    const statusIdDependentControl = this.uploadDocumentForm.get('statusIdDependent');
+    if (shouldShowFinalReportState) {
+      // Add required validator when dropdown should be shown
+      statusIdDependentControl?.setValidators([Validators.required]);
+      statusIdDependentControl?.updateValueAndValidity();
+      
+      // Load the dependent dropdown data
+      if (caseStatusId) {
+        this._uploadDocumentService
+          .finalreportCaseStatusById(caseStatusId)
+          .subscribe(
+            (data: any) => {
+              this.caseStatusDeptDropdown = data as CaseStatusDependent[];
+              this.filteredCaseStatusDependent = [...this.caseStatusDeptDropdown];
+              this._changeDetectorRef.detectChanges();
+            },
+            (error) => {
+              console.error("Error fetching final report case status:", error);
+            }
+          );
+      }
     } else {
+      // Remove required validator and clear value when dropdown should be hidden
+      statusIdDependentControl?.clearValidators();
+      statusIdDependentControl?.setValue('');
+      statusIdDependentControl?.updateValueAndValidity();
       this.filteredCaseStatusDependent = [];
+      this.caseStatusDeptDropdown = [];
     }
+    
+    this._changeDetectorRef.detectChanges();
   }
 }
