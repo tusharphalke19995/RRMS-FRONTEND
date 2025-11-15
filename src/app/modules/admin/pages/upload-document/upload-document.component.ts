@@ -73,8 +73,8 @@ interface CaseStatus {
 }
 
 interface CaseStatusDependent {
-  id: number;
-  value: string;
+  frstatusId: number;
+  frstatusName: string;
 }
 
 @Component({
@@ -526,7 +526,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       toAddr: this.uploadDocumentForm.value.toAddr || null,
       caseStatus: this.uploadDocumentForm.value.statusId,
       year: this.uploadDocumentForm.value.yearId,
-      statusIdDependent:this.uploadDocumentForm.value.statusIdDependent
+      finalReportCaseStatus:this.uploadDocumentForm.value.statusIdDependent
     };
     if (caseDateValue) {
       uploadMetaData.caseDate = finalCaseDate;
@@ -621,7 +621,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       toAddr: this.uploadDocumentForm.value.toAddr || null,
       caseStatus: this.uploadDocumentForm.value.statusId,
       year: this.uploadDocumentForm.value.yearId,
-      statusIdDependent:this.uploadDocumentForm.value.statusIdDependent
+      finalReportCaseStatus:this.uploadDocumentForm.value.statusIdDependent
     };
     if (caseDateValue) {
       uploadMetaData.caseDate = finalCaseDate;
@@ -725,7 +725,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       toAddr: this.uploadDocumentForm.value.toAddr || null,
       caseStatus: this.uploadDocumentForm.value.statusId,
       year: this.uploadDocumentForm.value.yearId,
-      statusIdDependent:this.uploadDocumentForm.value.statusIdDependent
+      finalReportCaseStatus:this.uploadDocumentForm.value.statusIdDependent
     };
     if (caseDateValue) {
       uploadMetaData.caseDate = finalCaseDate;
@@ -1053,7 +1053,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         this.filteredCaseStatusDependent = this.caseStatusDeptDropdown;
       } else {
         this.filteredCaseStatusDependent = this.caseStatusDeptDropdown.filter((status) => {
-          const statusName = (status.value || "").toLowerCase();
+          const statusName = (status.frstatusName || "").toLowerCase();
           return statusName.includes(searchText);
         });
       }
@@ -1154,7 +1154,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       const office = data.Office || data.office;
       const caseType = data.caseType || data.caseTypeId;
       const caseStatus = data.caseStatus || data.statusId;
-      const  statusIdDependent= data.caseStatus || data.statusId;
+      const  finalReportCaseStatus= data.finalReportCaseStatus || data.finalReportCaseStatus;
       const year = data.year || data.yearId;
       
       // Convert caseDate to proper format for datepicker
@@ -1197,7 +1197,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
                 unitsId: unitId,
                 caseType: Number(caseType),
                 statusId: caseStatus,
-                statusIdDependent:caseStatus,
+                statusIdDependent:finalReportCaseStatus,
                 yearId: year,
               });
               
@@ -1208,7 +1208,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
             this.uploadDocumentForm.patchValue({
               caseType: Number(caseType),
               statusId: caseStatus,
-              statusIdDependent:caseStatus,
+              statusIdDependent:finalReportCaseStatus,
               yearId: year,
             });
             this.uploadDocumentForm.disable();
@@ -1222,6 +1222,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           unitsId: unitId,
           caseType: Number(caseType),
           statusId: caseStatus,
+          statusIdDependent:finalReportCaseStatus,
           yearId: year,
         });
         this.uploadDocumentForm.disable();
@@ -1252,7 +1253,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       const office = uploadDataPach.Office || uploadDataPach.office;
       const caseType = uploadDataPach.caseType || uploadDataPach.caseTypeId;
       const caseStatus = uploadDataPach.caseStatus || uploadDataPach.statusId;
-      const statusIdDependent = uploadDataPach.caseStatus || uploadDataPach.statusId;
+      const finalReportCaseStatus = uploadDataPach.finalReportCaseStatus || uploadDataPach.finalReportCaseStatus;
       const year = uploadDataPach.year || uploadDataPach.yearId;
       
       // Set caseTypeFinalId for case number generation
@@ -1281,6 +1282,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
         letterNo: uploadDataPach.letterNo,
         author: uploadDataPach.author,
         toAddr: uploadDataPach.toAddr,
+         statusIdDependent:finalReportCaseStatus
       });
       
       // Load districts for the selected state
@@ -1308,7 +1310,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
                 caseType: Number(caseType),
                 statusId: caseStatus,
                 yearId: year,
-                statusIdDependent:caseStatus
+                statusIdDependent:finalReportCaseStatus
               });
               
               this._changeDetectorRef.detectChanges();
@@ -1318,7 +1320,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
               caseType: Number(caseType),
               statusId: caseStatus,
               yearId: year,
-              statusIdDependent:caseStatus
+              statusIdDependent:finalReportCaseStatus
             });
             this._changeDetectorRef.detectChanges();
           }
@@ -1331,7 +1333,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           caseType: Number(caseType),
           statusId: caseStatus,
           yearId: year,
-          statusIdDependent:caseStatus
+          statusIdDependent:finalReportCaseStatus
         });
         this._changeDetectorRef.detectChanges();
       }
@@ -1508,8 +1510,8 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
       this._uploadDocumentService
         .finalreportCaseStatusById(caseStatusId)
         .subscribe(
-          (districts: any) => {
-            this.caseStatusDeptDropdown = districts.responseData as CaseStatusDependent[];
+          (data: any) => {
+            this.caseStatusDeptDropdown = data as CaseStatusDependent[];
             this.filteredCaseStatusDependent = [...this.caseStatusDeptDropdown];
             this._changeDetectorRef.detectChanges();
           },

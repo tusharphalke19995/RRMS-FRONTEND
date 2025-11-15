@@ -283,7 +283,7 @@
                                     </div>
                                     <mat-option [value]="null">Please Select</mat-option>
                                     <ng-container *ngFor="let csStatus of filteredCaseStatusDependent; trackBy: trackByFn">
-                                        <mat-option [value]="csStatus.id">{{csStatus.value}}</mat-option>
+                                        <mat-option [value]="csStatus.frstatusId">{{csStatus.frstatusName}}</mat-option>
                                     </ng-container>
                                 </mat-select>
                                 <mat-error *ngIf="uploadDocumentForm.get('statusIdDependent').hasError('required')">
