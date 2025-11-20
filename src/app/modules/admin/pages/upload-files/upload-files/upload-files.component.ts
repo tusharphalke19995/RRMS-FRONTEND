@@ -9,6 +9,8 @@ import {
   ViewChildren,
   QueryList,
   ChangeDetectorRef,
+  ViewChild,
+  AfterViewInit,
 } from "@angular/core";
 import {
   CommonModule,
@@ -51,6 +53,8 @@ import { ContentManagerDialogComponent } from "../component/content-manager-dial
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { ImagePreviewDailogComponent } from "../component/image-preview-dailog/image-preview-dailog.component";
 import { SearchDocService } from "../../search-document/searchDoc.service";
+import { FuseDrawerComponent } from "@fuse/components/drawer";
+import { FuseDrawerService } from "@fuse/components/drawer";
 // import { saveAs } from 'file-saver';
 
 interface CustomFile extends File {
@@ -94,11 +98,13 @@ interface FileWithMetadata extends CustomFile {
     MatDialogModule,
     MatCheckboxModule,
     CommonModule,
+    FuseDrawerComponent,
+    ImagePreviewDailogComponent,
   ],
   templateUrl: "./upload-files.component.html",
   styleUrls: ["./upload-files.component.scss"],
 })
-export class UploadFilesComponent implements OnInit, OnChanges {
+export class UploadFilesComponent implements OnInit, OnChanges, AfterViewInit {
   @Output() filesWithMetadataSelected = new EventEmitter<{
     files: FileWithMetadata[];
     metadata: any;
@@ -117,6 +123,8 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   @Output() formReady = new EventEmitter<FormGroup>();
   @Output() filesSelected = new EventEmitter<IVerificationFileUploadModel[]>();
   // @ViewChildren(UploadDocsComponent) childGames!: QueryList<UploadDocsComponent>;
+  @ViewChild('pdfPreviewDrawer') pdfPreviewDrawer: FuseDrawerComponent;
+  previewData: any = null;
   @Input() loadingVisible: boolean;
   @Input() isCheckModalConfirmaion: boolean;
   @Input() checkFileSatus: boolean;
@@ -197,7 +205,8 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     private authenticationService: AuthService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _uploadDocumentService: UploadDocumentService,
-    private _searchDocService: SearchDocService
+    private _searchDocService: SearchDocService,
+    private _fuseDrawerService: FuseDrawerService
   ) {
     this.authData = this.authenticationService.getAuthData();
     this.metadataForm = this.fb.group({
@@ -213,6 +222,19 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     this.getFilesCheck();
     this.initializeFormControls();
     this.updateViewState();
+  }
+
+  ngAfterViewInit() {
+    // ViewChild is now available
+    // Drawer will be ready when viewImage is called
+  }
+
+  onDrawerClose() {
+    this.previewData = null;
+    if (this.pdfPreviewDrawer) {
+      this.pdfPreviewDrawer.close();
+    }
+    this._changeDetectorRef.detectChanges();
   }
 
   initializeFormControls() {
@@ -706,23 +728,167 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   viewImage(data) {
-    if (this.checkGetFile === true) {
-      const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
-        data: data,
-        width: '90vw',
-        maxWidth: '90vw',
-        height: '95vh',
-        maxHeight: '95vh',
-        panelClass: "custom-dialog-class",
-      });
+    // Check file type first - try multiple possible locations
+    const fileType = data?.file?.mime_type || data?.file?.type || data?.mime_type || data?.type || data?.file?.mimeType;
+    console.log('viewImage - fileType:', fileType, 'checkGetFile:', this.checkGetFile, 'data keys:', Object.keys(data || {}));
+    
+    const isImage = fileType?.toLowerCase()?.startsWith("image/");
+    const isVideo = fileType?.toLowerCase()?.startsWith("video/");
+    const isAudio = fileType?.toLowerCase()?.startsWith("audio/");
+    const isPdf = fileType?.toLowerCase() === "application/pdf";
 
-      dialogRef.afterClosed().subscribe(() => {
-        this._changeDetectorRef.detectChanges();
+    console.log('viewImage - isImage:', isImage, 'isVideo:', isVideo, 'isAudio:', isAudio, 'isPdf:', isPdf);
+
+    // For images, videos, and audio - open in dialog
+    if (isImage || isVideo || isAudio) {
+      console.log('Opening image/video/audio in dialog');
+    if (this.checkGetFile === true) {
+        // Open dialog directly with the data
+      const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
+          width: '96vw',
+          maxWidth: '1400px',
+          height: '96vh',
+          maxHeight: '96vh',
+          panelClass: 'pdf-preview-dialog',
+        data: data,
+          disableClose: false,
+          autoFocus: false
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          console.log('Preview dialog closed');
       });
       return;
     }
 
-    // If checkGetFile is false, proceed with API call
+      // If checkGetFile is false, fetch from API and open dialog
+      const payload = {
+        fileHash: data?.file?.fileHash || data?.fileHash,
+        requested_to: 0,
+        comments: "",
+        division_id: sessionStorage.getItem("divisionID"),
+        case_id: this.caseMetaData?.CaseInfoDetailsId,
+      };
+
+      this._searchDocService.filePreviewData(payload).subscribe({
+        next: (res: any) => {
+          if (!res) {
+            console.error("No file data received");
+            return;
+          }
+
+          // Check file type from API response
+          const resFileType = res.mime_type || res.type;
+          const resIsImage = resFileType?.startsWith("image/");
+          const resIsVideo = resFileType?.startsWith("video/");
+          const resIsAudio = resFileType?.startsWith("audio/");
+          
+          console.log('API response - fileType:', resFileType, 'isImage:', resIsImage, 'isVideo:', resIsVideo, 'isAudio:', resIsAudio);
+
+          // Only open dialog if it's actually an image, video, or audio
+          if (resIsImage || resIsVideo || resIsAudio) {
+            const previewData = {
+              base64_content: res.base64_content,
+              mime_type: resFileType,
+              type: resFileType,
+              file_name: res.file_name || "document",
+              fileName: res.file_name || "document",
+              file: {
+                base64_content: res.base64_content,
+                mime_type: resFileType,
+                type: resFileType,
+                file_name: res.file_name || "document",
+                fileName: res.file_name || "document"
+              }
+            };
+
+            console.log('Opening dialog with previewData');
+            const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
+              width: '96vw',
+              maxWidth: '1400px',
+              height: '96vh',
+              maxHeight: '96vh',
+              panelClass: 'pdf-preview-dialog',
+              data: previewData,
+              disableClose: false,
+              autoFocus: false
+            });
+
+            dialogRef.afterClosed().subscribe(result => {
+              console.log('Preview dialog closed');
+            });
+          } else {
+            // If API returns a different file type (like PDF), handle it as PDF
+            console.log('API returned non-media file type, handling as PDF');
+            const fileType = resFileType;
+            const base64 = res.base64_content;
+            const fileName = res.file_name || "document";
+
+            const officeMimeTypes = [
+              "application/msword",
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              "application/vnd.ms-excel",
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              "application/vnd.ms-powerpoint",
+              "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+             "application/vnd.ms-powerpoint",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            ];
+
+            if (officeMimeTypes.includes(fileType)) {
+              const blob = this.base64ToBlob(base64, fileType);
+              const url = window.URL.createObjectURL(blob);
+
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = fileName;
+              document.body.appendChild(link);
+              link.click();
+              link.remove();
+
+              setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+            } else {
+              // Navigate to PDF preview page
+              const previewData = {
+                base64_content: base64,
+                mime_type: fileType,
+                type: fileType,
+                file_name: fileName,
+                fileName: fileName,
+                file: {
+                  base64_content: base64,
+                  mime_type: fileType,
+                  type: fileType,
+                  file_name: fileName,
+                  fileName: fileName
+                }
+              };
+              this.savePdfPreviewData(previewData);
+              this._router.navigate(['/search-document/pdf-preview'], {
+                state: { data: previewData }
+              });
+            }
+          }
+        },
+        error: (error) => {
+          console.error("Error fetching file preview:", error);
+        },
+      });
+      return; // Always return here to prevent falling through
+    }
+
+    // For PDFs - navigate to full page preview (keep existing behavior)
+    if (isPdf) {
+      if (this.checkGetFile === true) {
+        // Navigate to full page PDF preview
+        this.savePdfPreviewData(data);
+        this._router.navigate(['/search-document/pdf-preview'], {
+          state: { data: data }
+        });
+        return;
+      }
+
+      // If checkGetFile is false, proceed with API call for PDF
     const payload = {
       fileHash: data?.file?.fileHash || data?.fileHash,
       requested_to: 0,
@@ -766,17 +932,106 @@ export class UploadFilesComponent implements OnInit, OnChanges {
 
           setTimeout(() => window.URL.revokeObjectURL(url), 1000);
         } else {
-          // Open UploadedFilesComponent dialog
-          const dialogRef = this.dialog.open(UploadedFilesComponent, {
-            data: data,
-            width: "850px",
-            maxWidth: "100vw",
-            height: "90vh",
-            panelClass: "custom-dialog-class",
-          });
+              // Navigate to PDF preview page instead of opening dialog
+              // Format data to match what PdfPreviewPageComponent expects
+              const previewData = {
+                base64_content: base64,
+                mime_type: fileType,
+                type: fileType,
+                file_name: fileName,
+                fileName: fileName,
+                file: {
+                  base64_content: base64,
+                  mime_type: fileType,
+                  type: fileType,
+                  file_name: fileName,
+                  fileName: fileName
+                }
+              };
+              this.savePdfPreviewData(previewData);
+              this._router.navigate(['/search-document/pdf-preview'], {
+                state: { data: previewData }
+              });
+            }
+        },
+        error: (error) => {
+          console.error("Error fetching file preview:", error);
+        },
+      });
+      return;
+    }
 
-          dialogRef.afterClosed().subscribe(() => {
-            this._changeDetectorRef.detectChanges();
+    // For other file types - navigate to page (fallback)
+    if (this.checkGetFile === true) {
+      this.savePdfPreviewData(data);
+      this._router.navigate(['/search-document/pdf-preview'], {
+        state: { data: data }
+      });
+      return;
+    }
+
+    // If checkGetFile is false, proceed with API call for other file types
+    const payload = {
+      fileHash: data?.file?.fileHash || data?.fileHash,
+      requested_to: 0,
+      comments: "",
+      division_id: sessionStorage.getItem("divisionID"),
+      case_id: this.caseMetaData?.CaseInfoDetailsId,
+    };
+
+    this._searchDocService.filePreviewData(payload).subscribe({
+      next: (res: any) => {
+        if (!res) {
+          console.error("No file data received");
+          return;
+        }
+
+        const fileType = res.mime_type || res.type;
+        const base64 = res.base64_content;
+        const fileName = res.file_name || "document";
+
+        const officeMimeTypes = [
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "application/vnd.ms-powerpoint",
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+         "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        ];
+
+        if (officeMimeTypes.includes(fileType)) {
+          const blob = this.base64ToBlob(base64, fileType);
+          const url = window.URL.createObjectURL(blob);
+
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+
+          setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+        } else {
+          // Navigate to PDF preview page
+          const previewData = {
+            base64_content: base64,
+            mime_type: fileType,
+            type: fileType,
+            file_name: fileName,
+            fileName: fileName,
+            file: {
+              base64_content: base64,
+              mime_type: fileType,
+              type: fileType,
+              file_name: fileName,
+              fileName: fileName
+            }
+          };
+          this.savePdfPreviewData(previewData);
+          this._router.navigate(['/search-document/pdf-preview'], {
+            state: { data: previewData }
           });
         }
       },
@@ -1111,5 +1366,19 @@ export class UploadFilesComponent implements OnInit, OnChanges {
 
   onSubjectChange(event: any): void {
     this.onFieldChange(event, 'subject');
+  }
+
+  private savePdfPreviewData(previewData: any): void {
+    this.dataService.setPdfPreviewData(previewData);
+    try {
+      sessionStorage.setItem('pdfPreviewData', JSON.stringify(previewData));
+    } catch (error) {
+      console.warn('Failed to store pdf preview data in sessionStorage, using SharedService fallback.', error);
+      try {
+        sessionStorage.setItem('pdfPreviewData', JSON.stringify({ useShared: true }));
+      } catch (e) {
+        // ignore
+      }
+    }
   }
 }

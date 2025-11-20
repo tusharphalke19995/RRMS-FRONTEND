@@ -1,0 +1,209 @@
+<div class="pdf-preview-page">
+  <!-- Breadcrumbs -->
+  <div class="breadcrumbs-section">
+    <div class="breadcrumbs-container">
+      <div class="hidden sm:flex flex-wrap items-center font-medium">
+        <ng-container *transloco="let t">
+          <div>
+            <a class="whitespace-nowrap text-primary-500 cursor-pointer" [routerLink]="'/dashboard'">
+              {{t('Home')}}
+            </a>
+          </div>
+        </ng-container>
+
+        <div class="flex items-center ml-1 whitespace-nowrap">
+          <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+          <ng-container *transloco="let t">
+            <span class="ml-1 text-secondary">
+              <a [routerLink]="'/search-document'">
+                {{t('searchDoc')}}
+              </a>
+            </span>
+          </ng-container>
+        </div>
+
+        <div class="flex items-center ml-1 whitespace-nowrap">
+          <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+          <ng-container *transloco="let t">
+            <span class="ml-1 text-secondary">
+              <a [routerLink]="'/search-document/get-doc'">
+                {{t('getDoc')}}
+              </a>
+            </span>
+          </ng-container>
+        </div>
+
+        <div class="flex items-center ml-1 whitespace-nowrap">
+          <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+          <ng-container *transloco="let t">
+            <span class="ml-1 text-secondary">
+              {{t('doc')}}
+            </span>
+          </ng-container>
+        </div>
+      </div>
+      <div class="flex sm:hidden">
+        <a class="inline-flex items-center -ml-1.5 text-secondary font-medium" (click)="goBack()">
+          <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
+          <span class="ml-1">Back</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Bar - Always Visible at Top -->
+  <div class="search-bar-container">
+    <div class="search-controls">
+      <mat-form-field appearance="outline" class="search-input">
+        <mat-label>Search in PDF</mat-label>
+        <input matInput 
+               [(ngModel)]="searchText" 
+               (keyup.enter)="searchInPdf()"
+               (keyup)="onSearchKeyPress($event)"
+               placeholder="Type to search in PDF...">
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+      <button mat-raised-button 
+              color="primary" 
+              (click)="searchInPdf()"
+              [disabled]="!searchText?.trim() || isSearching || !pageLoaded"
+              class="search-button">
+        <mat-icon *ngIf="!isSearching">search</mat-icon>
+        <mat-icon *ngIf="isSearching" class="animate-spin">hourglass_empty</mat-icon>
+        <span>{{ isSearching ? 'Searching...' : 'Search' }}</span>
+      </button>
+    </div>
+    
+    <!-- OCR Language Selector -->
+    <div class="ocr-language-selector">
+      <mat-form-field appearance="outline" class="ocr-language-field">
+        <mat-label>OCR Language</mat-label>
+        <mat-select [(ngModel)]="ocrLanguage" (selectionChange)="onOcrLanguageChange()">
+          <mat-option *ngFor="let lang of ocrLanguages" [value]="lang.code">
+            {{ lang.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    
+    <!-- Navigation Controls - Show when search text exists -->
+    <div *ngIf="searchText?.trim()" class="search-navigation">
+      <div class="navigation-left">
+        <button mat-icon-button 
+                color="accent"
+                (click)="findPrevious()"
+                [disabled]="searchMatches.length === 0 || !pageLoaded || isSearching"
+                matTooltip="Previous match">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        
+        <div *ngIf="searchMatches.length > 0 && !isSearching" class="match-counter">
+          <span>
+            Match <strong>{{ currentMatchIndex + 1 }}</strong> of <strong>{{ searchMatches.length }}</strong>
+            <span *ngIf="searchMatches[currentMatchIndex]?.isOcr" class="ocr-match-badge">
+              <mat-icon class="ocr-icon">scanner</mat-icon>
+              OCR
+            </span>
+          </span>
+        </div>
+        
+        <div *ngIf="!isSearching && searchMatches.length === 0 && searchText?.trim()" 
+             class="no-matches">
+          <span>No matches found</span>
+        </div>
+      </div>
+      
+      <button mat-icon-button 
+              color="accent"
+              (click)="findNext()"
+              [disabled]="searchMatches.length === 0 || !pageLoaded || isSearching"
+              matTooltip="Next match">
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+
+    <div *ngIf="textExtractionMessage" class="text-extraction-warning">
+      <mat-icon color="warn">info</mat-icon>
+      <span>{{ textExtractionMessage }}</span>
+    </div>
+
+    <div *ngIf="ocrInProgressPages.size > 0" class="ocr-status">
+      <mat-icon class="spin">hourglass_empty</mat-icon>
+      <span>Extracting text via OCR… ({{ ocrInProgressPages.size }} page{{ ocrInProgressPages.size === 1 ? '' : 's' }})</span>
+    </div>
+  </div>
+
+  <!-- PDF Preview Area -->
+  <div class="pdf-preview-area">
+    <ng-container *ngIf="pdfSrc || (pdfFiles && pdfFiles.length > 0) || base64pdf">
+      <div class="pdf-viewer-container">
+        <pdf-viewer
+          #pdfViewer
+          [src]="pdfSrc"
+          [render-text]="true"
+          [original-size]="false"
+          [show-all]="false"
+          [page]="currentPage"
+          [zoom]="1"
+          [zoom-scale]="'page-width'"
+          [stick-to-page]="true"
+          (after-load-complete)="afterLoadComplete($event)"
+          (page-rendered)="onPageChange($event)"
+          class="pdf-viewer">
+        </pdf-viewer>
+        
+        <!-- Page Navigation -->
+        <div class="page-navigation">
+          <button mat-icon-button 
+                  (click)="previousPage()" 
+                  [disabled]="currentPage <= 1 || !pageLoaded"
+                  matTooltip="Previous page">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <span class="page-indicator">
+            Page {{ currentPage }} of {{ totalPages }}
+          </span>
+          <button mat-icon-button 
+                  (click)="nextPage()" 
+                  [disabled]="currentPage >= totalPages || !pageLoaded"
+                  matTooltip="Next page">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Image Preview -->
+    <ng-container *ngIf="imageFiles.length > 0">
+      <div class="image-preview-container">
+        <img *ngFor="let data of imageFiles; trackBy: trackByFn" 
+             [src]="data" 
+             alt="Image preview"
+             class="preview-image" />
+      </div>
+    </ng-container>
+
+    <!-- Audio Preview -->
+    <ng-container *ngIf="audioFiles.length > 0">
+      <div class="audio-preview-container">
+        <audio *ngFor="let data of audioFiles; trackBy: trackByFn" 
+               [src]="data" 
+               controls 
+               class="preview-audio"></audio>
+      </div>
+    </ng-container>
+
+    <!-- Video Preview -->
+    <ng-container *ngIf="videoFiles.length > 0">
+      <div class="video-preview-container">
+        <video *ngFor="let data of videoFiles; trackBy: trackByFn" 
+               [src]="data" 
+               controls 
+               class="preview-video"></video>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+
+
