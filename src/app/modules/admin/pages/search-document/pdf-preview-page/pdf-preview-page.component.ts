@@ -87,20 +87,20 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
   ocrLanguage = 'eng';
   
   // Available OCR languages
-  ocrLanguages = [
-    { code: 'eng', name: 'English' },
-    { code: 'spa', name: 'Spanish' },
-    { code: 'fra', name: 'French' },
-    { code: 'deu', name: 'German' },
-    { code: 'ita', name: 'Italian' },
-    { code: 'por', name: 'Portuguese' },
-    { code: 'rus', name: 'Russian' },
-    { code: 'chi_sim', name: 'Chinese (Simplified)' },
-    { code: 'jpn', name: 'Japanese' },
-    { code: 'kor', name: 'Korean' },
-    { code: 'ara', name: 'Arabic' },
-    { code: 'hin', name: 'Hindi' },
-  ];
+  // ocrLanguages = [
+  //   { code: 'eng', name: 'English' },
+  //   { code: 'spa', name: 'Spanish' },
+  //   { code: 'fra', name: 'French' },
+  //   { code: 'deu', name: 'German' },
+  //   { code: 'ita', name: 'Italian' },
+  //   { code: 'por', name: 'Portuguese' },
+  //   { code: 'rus', name: 'Russian' },
+  //   { code: 'chi_sim', name: 'Chinese (Simplified)' },
+  //   { code: 'jpn', name: 'Japanese' },
+  //   { code: 'kor', name: 'Korean' },
+  //   { code: 'ara', name: 'Arabic' },
+  //   { code: 'hin', name: 'Hindi' },
+  // ];
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -110,51 +110,47 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {
-    // Load data from route state or sessionStorage
-    const navigation = this.router.getCurrentNavigation();
-    const state = navigation?.extras?.state || window.history.state;
-
-    let previewData: any = null;
-
-    if (state && state.data) {
-      previewData = state.data;
-    } else {
-      // Check shared service first (handles large payloads)
-      const sharedData = this.dataService.getPdfPreviewData();
-      if (sharedData) {
-        previewData = sharedData;
-        this.dataService.clearPdfPreviewData?.();
-      } else {
-        // Fallback to sessionStorage
-        const storedData = sessionStorage.getItem('pdfPreviewData');
-        if (storedData) {
-          try {
-            const data = JSON.parse(storedData);
-            if (data?.useShared) {
-              const sharedFallback = this.dataService.getPdfPreviewData();
-              if (sharedFallback) {
-                previewData = sharedFallback;
-                this.dataService.clearPdfPreviewData?.();
-              }
-            } else {
-              previewData = data;
-            }
-          } catch (e) {
-            console.error('Error parsing stored data:', e);
-          }
-        }
-      }
-    }
-
-    if (previewData) {
-      this.getUploadMetaDataFiles(previewData);
-    } else {
-      console.error('No preview data available for PDF preview page.');
-    }
+    // Don't load data in constructor - move to ngOnInit to avoid change detection issues
   }
 
   ngOnInit(): void {
-    // Component initialization
+    // Load data from route state or sessionStorage
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation?.extras?.state || window.history.state;
+    
+    let previewData: any = null;
+    
+    if (state && state.data) {
+      previewData = state.data;
+    } else {
+      // Try sessionStorage as fallback
+      const storedData = sessionStorage.getItem('pdfPreviewData');
+      if (storedData) {
+        try {
+          previewData = JSON.parse(storedData);
+        } catch (e) {
+          console.error('Error parsing stored data:', e);
+        }
+      }
+    }
+    
+    // If no data in state, try SharedService
+    if (!previewData) {
+      previewData = this.dataService.getPdfPreviewData();
+    }
+    
+    if (previewData) {
+      // Clear the stored data after reading
+      if (sessionStorage.getItem('pdfPreviewData')) {
+        const stored = JSON.parse(sessionStorage.getItem('pdfPreviewData') || '{}');
+        if (stored.useShared) {
+          // Data is in SharedService, don't clear sessionStorage
+        } else {
+          sessionStorage.removeItem('pdfPreviewData');
+        }
+      }
+      this.getUploadMetaDataFiles(previewData);
+    }
   }
 
   ngAfterViewInit(): void {
@@ -243,7 +239,10 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     this.caseMetaData = res.caseMetaData || res;
-    this.cdr.detectChanges();
+    // Use setTimeout to ensure change detection runs in the correct context
+    setTimeout(() => {
+      this.cdr.detectChanges();
+    }, 0);
   }
 
   loadPdfFromBase64(base64: string) {
@@ -255,7 +254,10 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
       }
       const blob = new Blob([bytes], { type: 'application/pdf' });
       this.pdfSrc = window.URL.createObjectURL(blob);
-      this.cdr.detectChanges();
+      // Use setTimeout to ensure change detection runs in the correct context
+      setTimeout(() => {
+        this.cdr.detectChanges();
+      }, 0);
     } catch (error) {
       console.error('Error loading PDF from base64:', error);
     }
@@ -268,7 +270,10 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
     } else {
       this.pdfSrc = urlOrFile;
     }
-    this.cdr.detectChanges();
+    // Use setTimeout to ensure change detection runs in the correct context
+    setTimeout(() => {
+      this.cdr.detectChanges();
+    }, 0);
   }
 
   base64ToBlob(base64: string, mime: string): Blob {
@@ -289,28 +294,87 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
   afterLoadComplete(event: any) {
     this.totalPages = event.pagesCount;
     this.pageLoaded = true;
-    this.currentPage = 1;
+    // Don't set currentPage here - let it be managed by the viewer
     this.pdfViewerReady = true;
     
-    // Initialize PDF for search after a delay to ensure viewer is ready
+    // Use setTimeout to avoid change detection issues
     setTimeout(() => {
-      this.initializePdfForSearch();
-    }, 1000);
-    
-    this.cdr.detectChanges();
+      this.cdr.detectChanges();
+      
+      // Clean up empty text layers
+      setTimeout(() => {
+        this.cleanupEmptyTextLayers();
+      }, 200);
+      
+      // Initialize PDF for search after a delay to ensure viewer is ready
+      setTimeout(() => {
+        this.initializePdfForSearch();
+        // Clean up again after initialization
+        setTimeout(() => {
+          this.cleanupEmptyTextLayers();
+        }, 300);
+      }, 1000);
+    }, 0);
   }
 
   onPageChange(event: any) {
-    this.currentPage = event.pageNumber || this.currentPage;
-    this.pageLoaded = true;
-    this.cdr.detectChanges();
-    
-    // Re-apply highlights when page changes
-    if (this.searchText?.trim() && this.searchMatches.length > 0) {
-      setTimeout(() => {
-        this.highlightSearchMatches();
-      }, 800);
+    // Safely update current page
+    const newPage = event?.pageNumber || event || this.currentPage;
+    if (newPage !== this.currentPage) {
+      this.currentPage = newPage;
     }
+    this.pageLoaded = true;
+    
+    // Use setTimeout to avoid change detection issues
+    setTimeout(() => {
+      this.cdr.detectChanges();
+      
+      // Clean up empty text layers on page change
+      setTimeout(() => {
+        this.cleanupEmptyTextLayers();
+      }, 100);
+      
+      // Re-apply highlights when page changes
+      if (this.searchText?.trim() && this.searchMatches.length > 0) {
+        setTimeout(() => {
+          this.highlightSearchMatches();
+        }, 800);
+      }
+    }, 0);
+  }
+
+  cleanupEmptyTextLayers() {
+    // Remove empty text layers and endOfContent markers
+    const emptyTextLayers = document.querySelectorAll('.textLayer');
+    emptyTextLayers.forEach((layer: Element) => {
+      const htmlLayer = layer as HTMLElement;
+      const endOfContent = htmlLayer.querySelector('.endOfContent');
+      const hasOnlyEndOfContent = endOfContent && htmlLayer.children.length === 1;
+      const isEmpty = htmlLayer.children.length === 0 || 
+                     (htmlLayer.textContent?.trim() === '' && hasOnlyEndOfContent);
+      
+      if (isEmpty || hasOnlyEndOfContent) {
+        htmlLayer.style.display = 'none';
+        htmlLayer.style.height = '0';
+        htmlLayer.style.width = '0';
+        htmlLayer.style.margin = '0';
+        htmlLayer.style.padding = '0';
+        htmlLayer.style.minHeight = '0';
+        htmlLayer.style.minWidth = '0';
+        htmlLayer.style.overflow = 'hidden';
+      }
+      
+      // Remove endOfContent markers
+      const endMarkers = htmlLayer.querySelectorAll('.endOfContent');
+      endMarkers.forEach(marker => {
+        const markerEl = marker as HTMLElement;
+        markerEl.style.display = 'none';
+        markerEl.style.height = '0';
+        markerEl.style.width = '0';
+        markerEl.style.margin = '0';
+        markerEl.style.padding = '0';
+      });
+    });
   }
 
   async initializePdfForSearch() {

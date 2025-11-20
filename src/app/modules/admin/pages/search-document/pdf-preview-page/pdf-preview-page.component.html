@@ -75,7 +75,7 @@
     </div>
     
     <!-- OCR Language Selector -->
-    <div class="ocr-language-selector">
+    <!-- <div class="ocr-language-selector">
       <mat-form-field appearance="outline" class="ocr-language-field">
         <mat-label>OCR Language</mat-label>
         <mat-select [(ngModel)]="ocrLanguage" (selectionChange)="onOcrLanguageChange()">
@@ -83,8 +83,9 @@
             {{ lang.name }}
           </mat-option>
         </mat-select>
+        <mat-icon matPrefix>language</mat-icon>
       </mat-form-field>
-    </div>
+    </div> -->
     
     <!-- Navigation Controls - Show when search text exists -->
     <div *ngIf="searchText?.trim()" class="search-navigation">
