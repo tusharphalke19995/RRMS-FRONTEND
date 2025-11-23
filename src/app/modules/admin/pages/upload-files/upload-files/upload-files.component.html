@@ -269,3 +269,20 @@
     <button mat-button (click)="isConfirmRemoveOpen = false" color="warn">No</button>
   </div>
 </mat-dialog>
+
+<!-- PDF Preview Drawer -->
+<fuse-drawer
+  #pdfPreviewDrawer
+  class="w-screen min-w-screen sm:w-[95vw] sm:min-w-[95vw] z-999"
+  fixed
+  [mode]="'over'"
+  [name]="'pdfPreviewDrawer'"
+  [position]="'right'">
+  
+  <div class="flex flex-col w-full h-full overflow-y-auto bg-card" *ngIf="previewData" style="overflow-x: hidden;">
+    <app-image-preview-dailog 
+      [data]="previewData"
+      (close)="onDrawerClose()">
+    </app-image-preview-dailog>
+  </div>
+</fuse-drawer>

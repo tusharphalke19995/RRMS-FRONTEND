@@ -925,9 +925,10 @@ export class FolderTreeComponent implements OnInit {
   viewImage(data) {
     const dialogRef = this.dialog.open(ImagePreviewFolderDailogComponent, {
       data: data,
-      width: "850px",
-      maxWidth: "100vw",
-      height: "90vh",
+      width: '90vw',
+      maxWidth: '90vw',
+      height: '95vh',
+      maxHeight: '95vh',
       panelClass: "custom-dialog-class",
     });
 

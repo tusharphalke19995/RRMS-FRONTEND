@@ -99,6 +99,20 @@ import { DOCUMENT } from "@angular/common";
         this.notificationSubject.next(data)
       }
 
+      private pdfPreviewData: any = null;
+
+      setPdfPreviewData(data: any): void {
+        this.pdfPreviewData = data;
+      }
+
+      getPdfPreviewData(): any {
+        return this.pdfPreviewData;
+      }
+
+      clearPdfPreviewData(): void {
+        this.pdfPreviewData = null;
+      }
+
       setPendingApprovalData(data: any[]) {
         this.pendingReqSubject.next(data);
       }

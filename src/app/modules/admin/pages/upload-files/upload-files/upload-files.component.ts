@@ -9,6 +9,8 @@ import {
   ViewChildren,
   QueryList,
   ChangeDetectorRef,
+  ViewChild,
+  AfterViewInit,
 } from "@angular/core";
 import {
   CommonModule,
@@ -51,6 +53,8 @@ import { ContentManagerDialogComponent } from "../component/content-manager-dial
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { ImagePreviewDailogComponent } from "../component/image-preview-dailog/image-preview-dailog.component";
 import { SearchDocService } from "../../search-document/searchDoc.service";
+import { FuseDrawerComponent } from "@fuse/components/drawer";
+import { FuseDrawerService } from "@fuse/components/drawer";
 // import { saveAs } from 'file-saver';
 
 interface CustomFile extends File {
@@ -94,11 +98,13 @@ interface FileWithMetadata extends CustomFile {
     MatDialogModule,
     MatCheckboxModule,
     CommonModule,
+    FuseDrawerComponent,
+    ImagePreviewDailogComponent,
   ],
   templateUrl: "./upload-files.component.html",
   styleUrls: ["./upload-files.component.scss"],
 })
-export class UploadFilesComponent implements OnInit, OnChanges {
+export class UploadFilesComponent implements OnInit, OnChanges, AfterViewInit {
   @Output() filesWithMetadataSelected = new EventEmitter<{
     files: FileWithMetadata[];
     metadata: any;
@@ -117,6 +123,8 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   @Output() formReady = new EventEmitter<FormGroup>();
   @Output() filesSelected = new EventEmitter<IVerificationFileUploadModel[]>();
   // @ViewChildren(UploadDocsComponent) childGames!: QueryList<UploadDocsComponent>;
+  @ViewChild('pdfPreviewDrawer') pdfPreviewDrawer: FuseDrawerComponent;
+  previewData: any = null;
   @Input() loadingVisible: boolean;
   @Input() isCheckModalConfirmaion: boolean;
   @Input() checkFileSatus: boolean;
@@ -197,7 +205,8 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     private authenticationService: AuthService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _uploadDocumentService: UploadDocumentService,
-    private _searchDocService: SearchDocService
+    private _searchDocService: SearchDocService,
+    private _fuseDrawerService: FuseDrawerService
   ) {
     this.authData = this.authenticationService.getAuthData();
     this.metadataForm = this.fb.group({
@@ -215,8 +224,21 @@ export class UploadFilesComponent implements OnInit, OnChanges {
     this.updateViewState();
   }
 
+  ngAfterViewInit() {
+    // ViewChild is now available
+    // Drawer will be ready when viewImage is called
+  }
+
+  onDrawerClose() {
+    this.previewData = null;
+    if (this.pdfPreviewDrawer) {
+      this.pdfPreviewDrawer.close();
+    }
+    this._changeDetectorRef.detectChanges();
+  }
+
   initializeFormControls() {
-    if (!this?.formGroup.get("file")) {
+    if (this.formGroup && !this.formGroup.get("file")) {
       this.formGroup.addControl(
         "file",
         this.fb.control("", Validators.required)
@@ -599,9 +621,11 @@ export class UploadFilesComponent implements OnInit, OnChanges {
         metadata: this.selectedFiles.map((file) => file.metadata),
       });
 
-      this.formGroup.patchValue({
-        file: this.selectedFiles,
-      });
+      if (this.formGroup) {
+        this.formGroup.patchValue({
+          file: this.selectedFiles,
+        });
+      }
     }
   }
 
@@ -670,14 +694,16 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   uploadFiles() {
-    if (this.formGroup.valid && this.selectedFiles.length > 0) {
+    if (this.formGroup && this.formGroup.valid && this.selectedFiles.length > 0) {
       this.loadingVisible = true;
 
       setTimeout(() => {
         // console.log("Files uploaded:", this.selectedFiles);
         this.loadingVisible = false;
         this.selectedFiles = [];
-        this.formGroup.reset();
+        if (this.formGroup) {
+          this.formGroup.reset();
+        }
       }, 2000);
     }
   }
@@ -702,22 +728,53 @@ export class UploadFilesComponent implements OnInit, OnChanges {
   }
 
   viewImage(data) {
-    if (this.checkGetFile === true) {
-      const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
-        data: data,
-        width: "850px",
-        maxWidth: "100vw",
-        height: "90vh",
-        panelClass: "custom-dialog-class",
-      });
+    console.log("Data", data);
 
-      dialogRef.afterClosed().subscribe(() => {
-        this._changeDetectorRef.detectChanges();
+    // If checkGetFile is true, use data directly without API call
+    if (this.checkGetFile === true) {
+      const fileType = data?.file?.mime_type || data?.file?.type || data?.mime_type || data?.type || data?.file?.mimeType;
+      const isImage = fileType?.toLowerCase()?.startsWith("image/");
+      const isVideo = fileType?.toLowerCase()?.startsWith("video/");
+      const isAudio = fileType?.toLowerCase()?.startsWith("audio/");
+      const isPdf = fileType?.toLowerCase() === "application/pdf";
+
+      // For images, videos, and audio - open in dialog
+      if (isImage || isVideo || isAudio) {
+        const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
+          width: '96vw',
+          maxWidth: '1000px',
+          height: '96vh',
+          maxHeight: '96vh',
+          panelClass: 'pdf-preview-dialog',
+          data: data,
+          disableClose: false,
+          autoFocus: false
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          console.log('Preview dialog closed');
+        });
+        return;
+      }
+
+      // For PDFs - navigate to PDF preview page
+      if (isPdf) {
+        this.savePdfPreviewData(data);
+        this._router.navigate(['/search-document/pdf-preview'], {
+          state: { data: data }
+        });
+        return;
+      }
+
+      // For other file types - navigate to PDF preview page (fallback)
+      this.savePdfPreviewData(data);
+      this._router.navigate(['/search-document/pdf-preview'], {
+        state: { data: data }
       });
       return;
     }
 
-    // If checkGetFile is false, proceed with API call
+    // If checkGetFile is false, always call API first and check response mime_type
     const payload = {
       fileHash: data?.file?.fileHash || data?.fileHash,
       requested_to: 0,
@@ -730,26 +787,51 @@ export class UploadFilesComponent implements OnInit, OnChanges {
       next: (res: any) => {
         if (!res) {
           console.error("No file data received");
+          this._snackBar.open("No file data received", "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["error-snackbar"],
+          });
           return;
         }
 
-        const fileType = res.mime_type || res.type;
+        // Check file type from API response
+        const resFileType = res.mime_type || res.type;
         const base64 = res.base64_content;
         const fileName = res.file_name || "document";
 
+        if (!resFileType) {
+          console.error("No mime type in API response");
+          this._snackBar.open("Unable to determine file type", "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["error-snackbar"],
+          });
+          return;
+        }
+
+        const lowerFileType = resFileType.toLowerCase();
+        const isImage = lowerFileType.startsWith("image/");
+        const isVideo = lowerFileType.startsWith("video/");
+        const isAudio = lowerFileType.startsWith("audio/");
+        const isPdf = lowerFileType === "application/pdf";
+
+        console.log('API response - fileType:', resFileType, 'isImage:', isImage, 'isVideo:', isVideo, 'isAudio:', isAudio, 'isPdf:', isPdf);
+
+        // Office document types - download directly
         const officeMimeTypes = [
           "application/msword",
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
           "application/vnd.ms-excel",
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
           "application/vnd.ms-powerpoint",
-          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-         "application/vnd.ms-powerpoint",
-  "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation"
         ];
 
-        if (officeMimeTypes.includes(fileType)) {
-          const blob = this.base64ToBlob(base64, fileType);
+        if (officeMimeTypes.includes(lowerFileType)) {
+          const blob = this.base64ToBlob(base64, resFileType);
           const url = window.URL.createObjectURL(blob);
 
           const link = document.createElement("a");
@@ -760,23 +842,99 @@ export class UploadFilesComponent implements OnInit, OnChanges {
           link.remove();
 
           setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-        } else {
-          // Open UploadedFilesComponent dialog
-          const dialogRef = this.dialog.open(UploadedFilesComponent, {
-            data: data,
-            width: "850px",
-            maxWidth: "100vw",
-            height: "90vh",
-            panelClass: "custom-dialog-class",
+          return;
+        }
+
+        // For images, videos, and audio - open in ImagePreviewDailogComponent
+        if (isImage || isVideo || isAudio) {
+          const previewData = {
+            base64_content: base64,
+            mime_type: resFileType,
+            type: resFileType,
+            file_name: fileName,
+            fileName: fileName,
+            file: {
+              base64_content: base64,
+              mime_type: resFileType,
+              type: resFileType,
+              file_name: fileName,
+              fileName: fileName
+            }
+          };
+
+          console.log('Opening ImagePreviewDailogComponent with previewData');
+          const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
+            width: '96vw',
+            maxWidth: '1400px',
+            height: '96vh',
+            maxHeight: '96vh',
+            panelClass: 'pdf-preview-dialog',
+            data: previewData,
+            disableClose: false,
+            autoFocus: false
           });
 
-          dialogRef.afterClosed().subscribe(() => {
-            this._changeDetectorRef.detectChanges();
+          dialogRef.afterClosed().subscribe(result => {
+            console.log('Preview dialog closed');
           });
+          return;
         }
+
+        // For PDFs - navigate to PdfPreviewPageComponent
+        if (isPdf) {
+          const previewData = {
+            base64_content: base64,
+            mime_type: resFileType,
+            type: resFileType,
+            file_name: fileName,
+            fileName: fileName,
+            file: {
+              base64_content: base64,
+              mime_type: resFileType,
+              type: resFileType,
+              file_name: fileName,
+              fileName: fileName
+            }
+          };
+
+          console.log('Navigating to PdfPreviewPageComponent');
+          this.savePdfPreviewData(previewData);
+          this._router.navigate(['/search-document/pdf-preview'], {
+            state: { data: previewData }
+          });
+          return;
+        }
+
+        // For other file types - navigate to PDF preview page (fallback)
+        const previewData = {
+          base64_content: base64,
+          mime_type: resFileType,
+          type: resFileType,
+          file_name: fileName,
+          fileName: fileName,
+          file: {
+            base64_content: base64,
+            mime_type: resFileType,
+            type: resFileType,
+            file_name: fileName,
+            fileName: fileName
+          }
+        };
+
+        console.log('Navigating to PdfPreviewPageComponent (fallback)');
+        this.savePdfPreviewData(previewData);
+        this._router.navigate(['/search-document/pdf-preview'], {
+          state: { data: previewData }
+        });
       },
       error: (error) => {
         console.error("Error fetching file preview:", error);
+        this._snackBar.open("Error fetching file preview", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["error-snackbar"],
+        });
       },
     });
   }
@@ -1106,5 +1264,19 @@ export class UploadFilesComponent implements OnInit, OnChanges {
 
   onSubjectChange(event: any): void {
     this.onFieldChange(event, 'subject');
+  }
+
+  private savePdfPreviewData(previewData: any): void {
+    this.dataService.setPdfPreviewData(previewData);
+    try {
+      sessionStorage.setItem('pdfPreviewData', JSON.stringify(previewData));
+    } catch (error) {
+      console.warn('Failed to store pdf preview data in sessionStorage, using SharedService fallback.', error);
+      try {
+        sessionStorage.setItem('pdfPreviewData', JSON.stringify({ useShared: true }));
+      } catch (e) {
+        // ignore
+      }
+    }
   }
 }
