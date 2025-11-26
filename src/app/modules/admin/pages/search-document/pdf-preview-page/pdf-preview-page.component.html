@@ -156,18 +156,20 @@
         <!-- Page Navigation -->
         <div class="page-navigation">
           <button mat-icon-button 
-                  (click)="previousPage()" 
+                  (click)="previousPage(); $event.stopPropagation()" 
                   [disabled]="currentPage <= 1 || !pageLoaded"
-                  matTooltip="Previous page">
+                  matTooltip="Previous page"
+                  type="button">
             <mat-icon>chevron_left</mat-icon>
           </button>
           <span class="page-indicator">
             Page {{ currentPage }} of {{ totalPages }}
           </span>
           <button mat-icon-button 
-                  (click)="nextPage()" 
+                  (click)="nextPage(); $event.stopPropagation()" 
                   [disabled]="currentPage >= totalPages || !pageLoaded"
-                  matTooltip="Next page">
+                  matTooltip="Next page"
+                  type="button">
             <mat-icon>chevron_right</mat-icon>
           </button>
         </div>

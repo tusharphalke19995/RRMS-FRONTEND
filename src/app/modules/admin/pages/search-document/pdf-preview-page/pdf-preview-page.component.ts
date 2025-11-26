@@ -70,6 +70,8 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
   totalPages: number = 0;
   currentPage: number = 1;
   pageLoaded: boolean = false;
+  private isInitialLoad: boolean = true;
+  private isManualNavigation: boolean = false;
   
   // PDF.js document for custom search
   pdfDoc: any = null;
@@ -173,6 +175,9 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
   getUploadMetaDataFiles(res: any) {
     console.log("PdfPreviewPageComponent - Data received:", res);
     
+    // Reset to page 1 when loading new file
+    this.currentPage = 1;
+    this.isInitialLoad = true; // Reset initial load flag
     this.pdfFiles = [];
     this.audioFiles = [];
     this.videoFiles = [];
@@ -254,6 +259,8 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
       }
       const blob = new Blob([bytes], { type: 'application/pdf' });
       this.pdfSrc = window.URL.createObjectURL(blob);
+      // Reset to page 1 when loading new PDF
+      this.currentPage = 1;
       // Use setTimeout to ensure change detection runs in the correct context
       setTimeout(() => {
         this.cdr.detectChanges();
@@ -270,6 +277,8 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
     } else {
       this.pdfSrc = urlOrFile;
     }
+    // Reset to page 1 when loading new PDF
+    this.currentPage = 1;
     // Use setTimeout to ensure change detection runs in the correct context
     setTimeout(() => {
       this.cdr.detectChanges();
@@ -294,34 +303,85 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
   afterLoadComplete(event: any) {
     this.totalPages = event.pagesCount;
     this.pageLoaded = true;
-    // Don't set currentPage here - let it be managed by the viewer
+    // Explicitly set to page 1 when PDF loads - force it multiple times to ensure it sticks
+    this.currentPage = 1;
     this.pdfViewerReady = true;
+    this.isInitialLoad = true; // Mark as initial load
     
     // Use setTimeout to avoid change detection issues
     setTimeout(() => {
+      // Force page to 1 immediately
+      this.currentPage = 1;
       this.cdr.detectChanges();
+      
+      // Force again after a short delay
+      setTimeout(() => {
+        this.currentPage = 1;
+        this.cdr.detectChanges();
+      }, 100);
+      
+      // Ensure page is set to 1 after change detection
+      setTimeout(() => {
+        if (this.currentPage !== 1) {
+          this.currentPage = 1;
+          this.cdr.detectChanges();
+        }
+      }, 200);
       
       // Clean up empty text layers
       setTimeout(() => {
         this.cleanupEmptyTextLayers();
-      }, 200);
+      }, 300);
       
       // Initialize PDF for search after a delay to ensure viewer is ready
       setTimeout(() => {
         this.initializePdfForSearch();
+        // Ensure page is still 1 after initialization
+        if (this.currentPage !== 1) {
+          this.currentPage = 1;
+          this.cdr.detectChanges();
+        }
         // Clean up again after initialization
         setTimeout(() => {
           this.cleanupEmptyTextLayers();
+          // Allow normal page changes after initial load is complete (reduced delay)
+          this.isInitialLoad = false;
         }, 300);
       }, 1000);
     }, 0);
   }
 
   onPageChange(event: any) {
-    // Safely update current page
-    const newPage = event?.pageNumber || event || this.currentPage;
-    if (newPage !== this.currentPage) {
-      this.currentPage = newPage;
+    // Don't interfere with manual navigation - completely ignore events during manual nav
+    if (this.isManualNavigation) {
+      this.pageLoaded = true;
+      return;
+    }
+    
+    // During initial load, prevent page changes that aren't page 1
+    // But only if the change is coming from the PDF viewer itself, not from user clicks
+    if (this.isInitialLoad) {
+      const newPage = event?.pageNumber || event || this.currentPage;
+      // Only allow page 1 during initial load, ignore other pages
+      if (newPage !== 1 && newPage !== this.currentPage) {
+        this.currentPage = 1;
+        this.cdr.detectChanges();
+        return;
+      }
+    }
+    
+    // Only update if not in manual navigation mode
+    // Safely update current page - update if it's different
+    // Don't update if we're in initial load and it's not page 1
+    if (!this.isManualNavigation) {
+      const newPage = event?.pageNumber || event;
+      if (newPage && typeof newPage === 'number') {
+        if (!this.isInitialLoad || newPage === 1) {
+          if (newPage !== this.currentPage) {
+            this.currentPage = newPage;
+          }
+        }
+      }
     }
     this.pageLoaded = true;
     
@@ -1059,17 +1119,53 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   previousPage() {
-    if (this.currentPage > 1 && this.pageLoaded) {
-      this.currentPage--;
-      this.cdr.detectChanges();
+    if (!this.pageLoaded || this.currentPage <= 1) {
+      return;
     }
+    
+    // Clear initial load flag if still set
+    if (this.isInitialLoad) {
+      this.isInitialLoad = false;
+    }
+    
+    // Set manual navigation flag to prevent onPageChange interference
+    this.isManualNavigation = true;
+    
+    // Decrement page
+    this.currentPage = this.currentPage - 1;
+    
+    // Force change detection
+    this.cdr.detectChanges();
+    
+    // Reset manual navigation flag after page has time to render
+    setTimeout(() => {
+      this.isManualNavigation = false;
+    }, 500);
   }
 
   nextPage() {
-    if (this.currentPage < this.totalPages && this.pageLoaded) {
-      this.currentPage++;
-      this.cdr.detectChanges();
+    if (!this.pageLoaded || this.currentPage >= this.totalPages) {
+      return;
     }
+    
+    // Clear initial load flag if still set
+    if (this.isInitialLoad) {
+      this.isInitialLoad = false;
+    }
+    
+    // Set manual navigation flag to prevent onPageChange interference
+    this.isManualNavigation = true;
+    
+    // Increment page
+    this.currentPage = this.currentPage + 1;
+    
+    // Force change detection
+    this.cdr.detectChanges();
+    
+    // Reset manual navigation flag after page has time to render
+    setTimeout(() => {
+      this.isManualNavigation = false;
+    }, 500);
   }
 
   goBack() {
