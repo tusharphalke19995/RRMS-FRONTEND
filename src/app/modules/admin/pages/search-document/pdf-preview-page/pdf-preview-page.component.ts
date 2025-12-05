@@ -14,12 +14,27 @@ import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { SharedService } from 'app/shared/shared.service';
 import { SearchDocService } from '../searchDoc.service';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
-import * as pdfjsLib from 'pdfjs-dist';
-import { createWorker, Worker as TesseractWorker } from 'tesseract.js';
+import { PSM } from 'tesseract.js/src/constants/PSM';
+// import * as pdfjsLib from 'pdfjs-dist';
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
+import { createWorker, Worker as TesseractWorker, RecognizeResult  } from 'tesseract.js';
+
+interface OCRWord {
+  text: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  // startChar?: number;
+  // endChar?: number;
+
+  canvasWidth: number;
+  canvasHeight: number;
+}
 
 // Configure PDF.js worker
 try {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `/assets/pdf.worker.min.mjs`;
+  (pdfjsLib as any).GlobalWorkerOptions.workerSrc = `./assets/pdf.worker.js`;
 } catch (e) {
   console.warn('Failed to set PDF.js worker:', e);
 }
@@ -63,6 +78,7 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
   excelViewerUrl: SafeResourceUrl;
   wordHtml: string;
   wordViewerUrl: SafeResourceUrl;
+  pageRenderedMap: Map<number, boolean> = new Map();
 
   // PDF viewer properties
   pdfSrc: string | ArrayBuffer | Uint8Array | Blob = '';
@@ -84,7 +100,7 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
   // OCR helpers
   private ocrEnabled = true;
   private ocrWorker: TesseractWorker | null = null;
-  private ocrCache = new Map<number, string>();
+  private ocrCache = new Map<number,OCRWord[]>();
   ocrInProgressPages = new Set<number>();
   ocrLanguage = 'eng';
   
@@ -258,7 +274,7 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
         bytes[i] = binaryString.charCodeAt(i);
       }
       const blob = new Blob([bytes], { type: 'application/pdf' });
-      this.pdfSrc = window.URL.createObjectURL(blob);
+       this.pdfSrc = window.URL.createObjectURL(blob);
       // Reset to page 1 when loading new PDF
       this.currentPage = 1;
       // Use setTimeout to ensure change detection runs in the correct context
@@ -300,108 +316,117 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
     return new Blob(byteArrays, { type: mime });
   }
 
-  afterLoadComplete(event: any) {
-    this.totalPages = event.pagesCount;
+ 
+  afterLoadComplete(pdf: any) {
     this.pageLoaded = true;
-    // Explicitly set to page 1 when PDF loads - force it multiple times to ensure it sticks
+    this.totalPages = pdf.numPages;
     this.currentPage = 1;
     this.pdfViewerReady = true;
-    this.isInitialLoad = true; // Mark as initial load
-    
-    // Use setTimeout to avoid change detection issues
-    setTimeout(() => {
-      // Force page to 1 immediately
-      this.currentPage = 1;
-      this.cdr.detectChanges();
-      
-      // Force again after a short delay
-      setTimeout(() => {
-        this.currentPage = 1;
-        this.cdr.detectChanges();
-      }, 100);
-      
-      // Ensure page is set to 1 after change detection
-      setTimeout(() => {
-        if (this.currentPage !== 1) {
-          this.currentPage = 1;
-          this.cdr.detectChanges();
-        }
-      }, 200);
-      
-      // Clean up empty text layers
-      setTimeout(() => {
-        this.cleanupEmptyTextLayers();
-      }, 300);
-      
-      // Initialize PDF for search after a delay to ensure viewer is ready
-      setTimeout(() => {
-        this.initializePdfForSearch();
-        // Ensure page is still 1 after initialization
-        if (this.currentPage !== 1) {
-          this.currentPage = 1;
-          this.cdr.detectChanges();
-        }
-        // Clean up again after initialization
-        setTimeout(() => {
-          this.cleanupEmptyTextLayers();
-          // Allow normal page changes after initial load is complete (reduced delay)
-          this.isInitialLoad = false;
-        }, 300);
-      }, 1000);
-    }, 0);
+    this.isInitialLoad = true;
   }
 
-  onPageChange(event: any) {
-    // Don't interfere with manual navigation - completely ignore events during manual nav
-    if (this.isManualNavigation) {
-      this.pageLoaded = true;
-      return;
-    }
-    
-    // During initial load, prevent page changes that aren't page 1
-    // But only if the change is coming from the PDF viewer itself, not from user clicks
-    if (this.isInitialLoad) {
-      const newPage = event?.pageNumber || event || this.currentPage;
-      // Only allow page 1 during initial load, ignore other pages
-      if (newPage !== 1 && newPage !== this.currentPage) {
-        this.currentPage = 1;
-        this.cdr.detectChanges();
-        return;
-      }
-    }
-    
-    // Only update if not in manual navigation mode
-    // Safely update current page - update if it's different
-    // Don't update if we're in initial load and it's not page 1
-    if (!this.isManualNavigation) {
-      const newPage = event?.pageNumber || event;
-      if (newPage && typeof newPage === 'number') {
-        if (!this.isInitialLoad || newPage === 1) {
-          if (newPage !== this.currentPage) {
-            this.currentPage = newPage;
-          }
-        }
-      }
-    }
-    this.pageLoaded = true;
-    
-    // Use setTimeout to avoid change detection issues
-    setTimeout(() => {
-      this.cdr.detectChanges();
-      
-      // Clean up empty text layers on page change
-      setTimeout(() => {
-        this.cleanupEmptyTextLayers();
-      }, 100);
-      
-      // Re-apply highlights when page changes
-      if (this.searchText?.trim() && this.searchMatches.length > 0) {
-        setTimeout(() => {
-          this.highlightSearchMatches();
-        }, 800);
-      }
-    }, 0);
+  async onPageRendered(event: any) {
+     this.pageLoaded = true;
+     this.pageRenderedMap.set(this.currentPage, true);
+  //  await this.waitForTextLayer(this.currentPage);
+  // this.highlightCurrentPage();
   }
+
+   highlightCurrentPage() {
+    const pageTextLayer = document.querySelector(
+      `.page[data-page-number="${this.currentPage}"] .textLayer`
+    );
+
+    if (!pageTextLayer) return;
+
+    // Remove old highlights
+    pageTextLayer.querySelectorAll('.highlight').forEach(el => {
+      const parent = el.parentNode!;
+      parent.replaceChild(document.createTextNode(el.textContent!), el);
+    });
+
+    // Apply new highlights
+    const term = this.searchText.toLowerCase();
+    const spans = pageTextLayer ? pageTextLayer.querySelectorAll("span") : [];
+
+    spans.forEach((span: HTMLElement) => {
+      const txt = span.textContent?.toLowerCase() || '';
+
+      if (txt.includes(term)) {
+        const inner = span.textContent!;
+        const highlighted = inner.replace(
+          new RegExp(`(${this.searchText})`, 'ig'),
+          `<mark class="highlight">$1</mark>`
+        );
+        span.innerHTML = highlighted;
+      }
+    });
+
+    this.scrollToCurrentMatch();
+  }
+
+  // private waitForTextLayer(pageNumber: number): Promise<void> {
+  //   return new Promise(resolve => {
+  //     let attempts = 0;
+
+  //     const interval = setInterval(() => {
+  //       const layer = document.querySelector(
+  //         `.page[data-page-number="${pageNumber}"] .textLayer`
+  //       ) as HTMLElement;
+
+  //       debugger;
+  //       if (layer) {
+  //         const spans = layer.querySelectorAll('span');
+  //         if (spans.length > 0) {
+  //           clearInterval(interval);
+  //           resolve();
+  //         }
+  //       }
+
+  //       attempts++;
+  //       if (attempts > 20) {
+  //         clearInterval(interval);
+  //         console.warn("Text layer unavailable after max retries");
+  //         resolve();
+  //       }
+  //     }, 150);
+  //   });
+  // }
+ 
+//   scrollToCurrentMatch() {
+//   const match = this.searchMatches[this.currentMatchIndex];
+//   if (!match) return;
+
+//   if (match.page !== this.currentPage) return;
+
+//   const pdfContainer = document.querySelector('.pdf-viewer-container');
+//   if (!pdfContainer) return;
+
+//   // Convert match.y into container scroll position
+//   // const scrollTop = match.y - pdfContainer.clientHeight / 2;
+// let scrollTop = match.y;
+
+//    if (scrollTop < 0) scrollTop = 0;
+
+//   // Prevent scrolling below bottom
+//   const maxScroll = pdfContainer.scrollHeight - pdfContainer.clientHeight;
+//   if (scrollTop > maxScroll) scrollTop = maxScroll;
+
+//   pdfContainer.scrollTo({
+//     top: scrollTop,
+//     behavior: 'smooth'
+//   });
+// }
+
+scrollToCurrentMatch() {
+  const match = this.searchMatches[this.currentMatchIndex];
+  if (!match || !match.element) return;
+
+  match.element.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+}
 
   cleanupEmptyTextLayers() {
     // Remove empty text layers and endOfContent markers
@@ -438,11 +463,12 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   async initializePdfForSearch() {
+    debugger;
+
     if (this.pdfDoc) {
       console.log('PDF already loaded for search');
       return;
     }
-    
     try {
       let loadingTask: any;
       
@@ -613,11 +639,47 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
           
           if (isOcrPage) {
             console.log(`Page ${pageNum}: No text items found (extraction method: ${extractionMethod}), attempting OCR...`);
-            fullPageText = await this.runOcrOnPage(page, pageNum);
-            if (!fullPageText) {
-              continue;
-            }
-            pagesWithOcrText++;
+          const  ocrWords  = await this.runOcrOnPage(page, pageNum);
+
+          const viewport = page.getViewport({ scale: 1 });
+
+  const pageContainer = document.querySelector(`.page[data-page-number="${pageNum}"]`);
+  const pdfCanvas = pageContainer?.querySelector("canvas");
+
+  let renderedWidth = viewport.width;
+  let renderedHeight = viewport.height;
+
+  if (pdfCanvas) {
+    renderedWidth = pdfCanvas.width;
+    renderedHeight = pdfCanvas.height;
+  }
+
+  // OCR canvas dimensions
+  const ocrCanvasWidth = ocrWords[0]?.canvasWidth || viewport.width;
+  const ocrCanvasHeight = ocrWords[0]?.canvasHeight || viewport.height;
+
+  // SCALE FACTORS
+  const scaleX = renderedWidth / ocrCanvasWidth;
+  const scaleY = renderedHeight / ocrCanvasHeight;
+
+ocrWords.forEach(word => {
+  if (word.text.toLowerCase().includes(this.searchText.toLowerCase())) {
+    this.searchMatches.push({
+      page: pageNum,
+      text: word.text,
+     x: word.x * scaleX,
+        y: word.y * scaleY,
+        width: word.width * scaleX,
+        height: word.height * scaleY,
+      isOcr: true,
+    });
+  }
+});
+
+            if (ocrWords.length > 0) {
+  pagesWithOcrText++;
+}
+            continue;
           } else {
             pagesWithTextLayer++;
             console.log(`Page ${pageNum}: Extracted ${textItems.length} text items using ${extractionMethod} method`);
@@ -772,15 +834,17 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
         console.log(`✓ Navigated to first match on page ${this.searchMatches[0].page}`);
         
         // Highlight matches after search - multiple attempts
-        setTimeout(() => {
+        // setTimeout(() => {
+        //   this.highlightSearchMatches();
+        // }, 500);
+        // setTimeout(() => {
+        //   this.highlightSearchMatches();
+        // }, 1500);
+        // setTimeout(() => {
+        //   this.highlightSearchMatches();
+        // }, 2500);
           this.highlightSearchMatches();
-        }, 500);
-        setTimeout(() => {
-          this.highlightSearchMatches();
-        }, 1500);
-        setTimeout(() => {
-          this.highlightSearchMatches();
-        }, 2500);
+       
       } else {
         console.warn(`⚠ No matches found for "${searchQuery}" in the entire PDF`);
         console.log('This might be because:');
@@ -833,56 +897,75 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
     
     // If there's a current search, re-run it with new language
     if (this.searchText?.trim()) {
-      this.searchInPdf();
+      // this.searchInPdf();
     }
   }
 
-  private async runOcrOnPage(page: any, pageNum: number): Promise<string> {
-    if (!this.ocrEnabled) {
-      return '';
-    }
+private async runOcrOnPage(page: any, pageNum: number): Promise<OCRWord[]> {
+  if (this.ocrCache.has(pageNum)) return this.ocrCache.get(pageNum)!;
 
-    if (this.ocrCache.has(pageNum)) {
-      return this.ocrCache.get(pageNum)!;
-    }
+  const worker = await this.ensureOcrWorker();
+  if (!worker) return [];
+try{
+  const scale = 2;
+  const viewport = page.getViewport({ scale });
 
-    const worker = await this.ensureOcrWorker();
-    if (!worker) {
-      return '';
-    }
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return [];
 
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
     this.ocrInProgressPages.add(pageNum);
-    this.cdr.detectChanges();
 
-    try {
-      const viewport = page.getViewport({ scale: 1.5 });
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      if (!context) {
-        return '';
-      }
+  await page.render({ canvasContext: ctx, viewport }).promise;
 
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
+  await worker.setParameters({ tessedit_pageseg_mode: 3 as any });
 
-      await page.render({ canvasContext: context, viewport }).promise;
-      const {
-        data: { text },
-      } = await worker.recognize(canvas);
+  const result = await worker.recognize(canvas, {}, { hocr: true });
 
-      const cleanedText = text?.replace(/\s+/g, ' ').trim() || '';
-      this.ocrCache.set(pageNum, cleanedText);
-      return cleanedText;
-    } catch (error) {
-      console.error(`OCR failed on page ${pageNum}`, error);
-      return '';
-    } finally {
+  const words: OCRWord[] = [];
+
+  if (result.data.hocr && typeof result.data.hocr === "string") {
+    const doc = new DOMParser().parseFromString(result.data.hocr, "text/html");
+    const spans = doc.querySelectorAll("span.ocrx_word, span.ocr_word");
+
+    spans.forEach(span => {
+      const text = span.textContent?.trim() || "";
+      const title = span.getAttribute("title");
+
+      if (!text || !title) return;
+
+      const match = title.match(/bbox (\d+) (\d+) (\d+) (\d+)/);
+      if (!match) return;
+
+      const [, x0, y0, x1, y1] = match.map(Number);
+
+      words.push({
+        text,
+        x: x0,
+        y: y0,
+        width: x1 - x0,
+        height: y1 - y0,
+        canvasWidth: canvas.width,
+  canvasHeight: canvas.height
+      });
+    });
+  }
+
+  this.ocrCache.set(pageNum, words);
+  return words;
+}
+finally {
       this.ocrInProgressPages.delete(pageNum);
       this.cdr.detectChanges();
     }
-  }
+}
 
-  navigateToMatch(index: number) {
+
+
+
+  async navigateToMatch(index: number) {
     if (index < 0 || index >= this.searchMatches.length) return;
     
     this.currentMatchIndex = index;
@@ -894,9 +977,17 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
       this.cdr.detectChanges();
       
       // Wait for page to render, then highlight
-      setTimeout(() => {
-        this.highlightSearchMatches();
-      }, 1500);
+    //   const waitForRender = () => {
+    //   if (this.pageRenderedMap.get(this.currentPage)) {
+    //     this.highlightSearchMatches();
+    //   } else {
+    //     setTimeout(waitForRender, 100);
+    //   }
+    // };
+
+    // waitForRender();
+    // await this.waitForTextLayer(this.currentPage);
+    this.highlightSearchMatches();
     }
   }
 
@@ -916,188 +1007,147 @@ export class PdfPreviewPageComponent implements OnInit, AfterViewInit, OnDestroy
 
   onSearchKeyPress(event: any) {
     if (event.key === 'Enter') {
-      this.searchInPdf();
+      // this.searchInPdf();
     } else if (!this.searchText?.trim()) {
       this.clearHighlights();
     }
   }
-
-  highlightSearchMatches() {
-    const searchText = this.searchText?.toLowerCase().trim();
-    if (!searchText || this.searchMatches.length === 0) {
-      this.clearHighlights();
-      return;
-    }
-
-    const retryHighlight = (attempt: number = 0) => {
-      const maxAttempts = 15;
-      const delays = [100, 200, 300, 500, 800, 1000, 1500, 2000, 2500, 3000];
-      const delay = delays[Math.min(attempt, delays.length - 1)] || 3000;
-
-      setTimeout(() => {
-        const selectors = [
-          '.textLayer span',
-          'span[role="presentation"]',
-          '.textLayer > span',
-          'pdf-viewer .textLayer span'
-        ];
-
-        let spans: NodeListOf<HTMLElement> | null = null;
-        for (const selector of selectors) {
-          spans = document.querySelectorAll<HTMLElement>(selector);
-          if (spans.length > 0) {
-            console.log(`Found ${spans.length} spans using selector: ${selector}`);
-            break;
-          }
-        }
-
-        if (!spans || spans.length === 0) {
-          if (attempt < maxAttempts) {
-            console.log(`Retry ${attempt + 1}/${maxAttempts} - No spans found yet`);
-            retryHighlight(attempt + 1);
-          } else {
-            console.warn('Max retries reached, text layer not available');
-          }
-          return;
-        }
-
-        // Clear previous highlights
-        this.clearHighlights();
-
-        // Build full text from all spans on current page
-        const fullText = Array.from(spans).map(span => span.textContent || '').join(' ');
-        const searchLower = searchText.toLowerCase();
-        const fullTextLower = fullText.toLowerCase();
-        
-        console.log(`Searching for "${searchText}" in text of length ${fullText.length}`);
-        console.log(`Sample text: ${fullText.substring(0, 200)}...`);
-        
-        // Get matches for current page
-        const pageMatches = this.searchMatches.filter(m => m.page === this.currentPage);
-        
-        // Find all match positions in the full text
-        const matches: Array<{start: number, match: any}> = [];
-        let index = fullTextLower.indexOf(searchLower);
-        
-        while (index !== -1) {
-          // Try to find corresponding match object
-          const matchObj = pageMatches.find(m => {
-            const matchStartInText = fullTextLower.indexOf(searchLower, Math.max(0, index - 50));
-            return Math.abs(matchStartInText - index) < 10; // Allow some tolerance
-          }) || pageMatches[matches.length % pageMatches.length]; // Fallback to round-robin
-          
-          matches.push({ start: index, match: matchObj });
-          index = fullTextLower.indexOf(searchLower, index + 1);
-        }
-
-        console.log(`Found ${matches.length} text occurrences of "${searchText}" on page ${this.currentPage}`);
-
-        // Highlight matches by mapping character positions to spans
-        let currentCharIndex = 0;
-        let highlightedCount = 0;
-
-        Array.from(spans).forEach((span) => {
-          const spanText = span.textContent || '';
-          const spanStart = currentCharIndex;
-          const spanEnd = currentCharIndex + spanText.length;
-
-          // Check if any match overlaps with this span
-          matches.forEach((matchData, matchIdx) => {
-            const matchStart = matchData.start;
-            const matchEnd = matchStart + searchLower.length;
-            const matchObj = matchData.match;
-            
-            // Check if match overlaps with this span
-            if (matchStart < spanEnd && matchEnd > spanStart) {
-              const isOcrMatch = matchObj?.isOcr === true;
-              
-              span.classList.add('pdf-search-match');
-              if (isOcrMatch) {
-                span.classList.add('pdf-search-match-ocr');
-              }
-              
-              // Check if this is the current match
-              const currentMatch = this.searchMatches[this.currentMatchIndex];
-              const matchOnCurrentPage = currentMatch?.page === this.currentPage;
-              const isCurrentMatch = currentMatch && matchObj && 
-                currentMatch.page === matchObj.page && 
-                Math.abs(currentMatch.charIndex - matchStart) < 5;
-              
-              if (isCurrentMatch && matchOnCurrentPage) {
-                span.classList.add('pdf-search-match-current');
-              }
-              
-              // Apply inline styles - different colors for OCR matches
-              const isCurrent = isCurrentMatch && matchOnCurrentPage;
-              const bgColor = isOcrMatch 
-                ? (isCurrent ? '#ff6b6b' : '#ffd93d')  // Red/orange for OCR matches
-                : (isCurrent ? '#ff9800' : '#ffff00'); // Orange/yellow for native matches
-              
-              span.style.cssText += `
-                background-color: ${bgColor} !important;
-                color: #000000 !important;
-                padding: 2px 4px !important;
-                border-radius: 3px !important;
-                font-weight: bold !important;
-                box-shadow: 0 0 2px rgba(0,0,0,0.3) !important;
-                z-index: 1000 !important;
-                opacity: 1 !important;
-                visibility: visible !important;
-                display: inline-block !important;
-                position: relative !important;
-              `;
-              
-              // Add OCR badge if it's an OCR match
-              if (isOcrMatch && !span.querySelector('.ocr-badge')) {
-                const badge = document.createElement('span');
-                badge.className = 'ocr-badge';
-                badge.textContent = 'OCR';
-                badge.style.cssText = `
-                  position: absolute;
-                  top: -8px;
-                  right: -8px;
-                  background: #e74c3c;
-                  color: white;
-                  font-size: 8px;
-                  padding: 1px 3px;
-                  border-radius: 3px;
-                  font-weight: bold;
-                  z-index: 1001;
-                  line-height: 1;
-                `;
-                span.style.position = 'relative';
-                span.appendChild(badge);
-              }
-              highlightedCount++;
-            }
-          });
-
-          currentCharIndex = spanEnd + 1; // +1 for space between spans
-        });
-
-        console.log(`Successfully highlighted ${highlightedCount} spans`);
-
-        // If no highlights and we have matches, try again
-        if (highlightedCount === 0 && matches.length > 0 && attempt < maxAttempts) {
-          console.log(`No highlights applied, retrying... (attempt ${attempt + 1})`);
-          retryHighlight(attempt + 1);
-        } else if (highlightedCount > 0) {
-          // Scroll to current match if on current page
-          const currentMatch = this.searchMatches[this.currentMatchIndex];
-          if (currentMatch && currentMatch.page === this.currentPage) {
-            const currentMatchSpan = Array.from(spans).find(span => 
-              span.classList.contains('pdf-search-match-current')
-            );
-            if (currentMatchSpan) {
-              currentMatchSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-          }
-        }
-      }, delay);
-    };
-
-    retryHighlight();
+private async highlightSearchMatches() {
+  const searchText = this.searchText?.trim().toLowerCase();
+  if (!searchText) {
+    this.clearHighlights();
+    return;
   }
+
+  const pageContainer = document.querySelector(
+    `.page[data-page-number="${this.currentPage}"]`
+  ) as HTMLElement;
+
+  if (!pageContainer) return;
+
+  pageContainer.style.position = "relative";
+
+  // remove old overlay
+  const oldOverlay = pageContainer.querySelector(".pdf-highlight-overlay");
+  if (oldOverlay) oldOverlay.remove();
+
+  const overlay = document.createElement("div");
+  overlay.className = "pdf-highlight-overlay";
+  Object.assign(overlay.style, {
+    position: "absolute",
+    top: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
+    pointerEvents: "none",
+    zIndex: "20",
+  });
+
+  pageContainer.appendChild(overlay);
+  pageContainer.style.position = "relative";
+
+  // OCR words for this page
+  const page = await this.pdfDoc.getPage(this.currentPage);
+  const ocrWords = await this.runOcrOnPage(page, this.currentPage);
+
+  if (!ocrWords || ocrWords.length === 0) return;
+
+  // --- IMPORTANT: compute scaling factors ---
+  const viewport = page.getViewport({ scale: 1 });
+
+  const renderedWidth = pageContainer.offsetWidth;
+  const renderedHeight = pageContainer.offsetHeight;
+
+  const ocrCanvasWidth = ocrWords[0].canvasWidth;
+  const ocrCanvasHeight = ocrWords[0].canvasHeight;
+
+  const scaleX = renderedWidth / ocrCanvasWidth;
+  const scaleY = renderedHeight / ocrCanvasHeight;
+
+  // find matching OCR words
+  const matchedWords = ocrWords.filter(w =>
+    w.text.toLowerCase().includes(searchText)
+  );
+
+  // matchedWords.forEach(w => {
+  //   const rect = document.createElement("div");
+
+  //   Object.assign(rect.style, {
+  //     position: "absolute",
+  //     top: `${w.y * scaleY}px`,
+  //     left: `${w.x * scaleX}px`,
+  //     width: `${w.width * scaleX}px`,
+  //     height: `${w.height * scaleY}px`,
+  //     backgroundColor: "yellow",
+  //     opacity: "0.45",
+  //     borderRadius: "3px",
+  //     pointerEvents: "none",
+  //   });
+
+  //   overlay.appendChild(rect);
+  // });
+ matchedWords.forEach((w) => {
+  const rect = document.createElement("div");
+
+  Object.assign(rect.style, {
+    position: "absolute",
+    top: `${w.y * scaleY}px`,
+    left: `${w.x * scaleX}px`,
+    width: `${w.width * scaleX}px`,
+    height: `${w.height * scaleY}px`,
+    backgroundColor: "yellow",
+    opacity: "0.45",
+    borderRadius: "3px",
+    pointerEvents: "none",
+  });
+
+  overlay.appendChild(rect);
+
+  const matchIndex = this.searchMatches.findIndex(m =>
+    m.page === this.currentPage &&
+    m.x === w.x &&
+    m.y === w.y &&
+    m.text === w.text
+  );
+
+  if (matchIndex !== -1) {
+    this.searchMatches[matchIndex].element = rect;
+  }
+});
+
+  // if (matchedWords.length > 0) {
+  //   pageContainer.scrollIntoView({ behavior: "smooth", block: "center" });
+  // }
+}
+
+  /**
+ * Waits for the textLayer of the current page to be rendered and returns all span elements.
+ * Retries until max attempts or timeout.
+ */
+// private async getTextLayerSpans(pageNumber: number): Promise<NodeListOf<HTMLElement>> {
+//   return new Promise((resolve) => {
+//     let attempts = 0;
+//     const maxAttempts = 20;
+
+//     const interval = setInterval(() => {
+//       const selector = `.page[data-page-number="${pageNumber}"] .textLayer span`;
+//       const spans = document.querySelectorAll<HTMLElement>(selector);
+
+//       if (spans.length > 0) {
+//         clearInterval(interval);
+//         console.log(`Found ${spans.length} spans on page ${pageNumber}`);
+//         resolve(spans);
+//       } else {
+//         attempts++;
+//         if (attempts > maxAttempts) {
+//           clearInterval(interval);
+//           console.warn(`Text layer not available for page ${pageNumber} after ${maxAttempts} attempts`);
+//           resolve(spans); // returns empty NodeList
+//         }
+//       }
+//     }, 150); // check every 150ms
+//   });
+// }
 
   clearHighlights() {
     const selectors = ['.textLayer span', 'span[role="presentation"]', '.textLayer > span', '.pdf-search-match'];
