@@ -1565,7 +1565,7 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     const selectedCaseStatus = this.caseStatusDropdown.find(status => status.id === caseStatusId);
     
     // Check if the selected status id is 33 or value is 'Final Report A'
-    const shouldShowFinalReportState = caseStatusId === 33 || selectedCaseStatus?.value === 'Final Report A';
+    const shouldShowFinalReportState = caseStatusId === 11 || selectedCaseStatus?.value === 'Final Report A';
     
     // Update visibility flag
     this.showFinalReportState = shouldShowFinalReportState;
