@@ -738,8 +738,8 @@ export class UploadFilesComponent implements OnInit, OnChanges, AfterViewInit {
       const isAudio = fileType?.toLowerCase()?.startsWith("audio/");
       const isPdf = fileType?.toLowerCase() === "application/pdf";
 
-      // For images, videos, and audio - open in dialog
-      if (isImage || isVideo || isAudio) {
+      // For images, videos, audio, and PDFs - open in dialog (normal preview, no search)
+      if (isImage || isVideo || isAudio || isPdf) {
         const dialogRef = this.dialog.open(ImagePreviewDailogComponent, {
           width: '96vw',
           maxWidth: '1000px',
@@ -753,15 +753,6 @@ export class UploadFilesComponent implements OnInit, OnChanges, AfterViewInit {
 
         dialogRef.afterClosed().subscribe(result => {
           console.log('Preview dialog closed');
-        });
-        return;
-      }
-
-      // For PDFs - navigate to PDF preview page
-      if (isPdf) {
-        this.savePdfPreviewData(data);
-        this._router.navigate(['/search-document/pdf-preview'], {
-          state: { data: data }
         });
         return;
       }
