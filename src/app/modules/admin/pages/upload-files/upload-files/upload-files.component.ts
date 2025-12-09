@@ -733,10 +733,32 @@ export class UploadFilesComponent implements OnInit, OnChanges, AfterViewInit {
     // If checkGetFile is true, use data directly without API call
     if (this.checkGetFile === true) {
       const fileType = data?.file?.mime_type || data?.file?.type || data?.mime_type || data?.type || data?.file?.mimeType;
-      const isImage = fileType?.toLowerCase()?.startsWith("image/");
-      const isVideo = fileType?.toLowerCase()?.startsWith("video/");
-      const isAudio = fileType?.toLowerCase()?.startsWith("audio/");
-      const isPdf = fileType?.toLowerCase() === "application/pdf";
+      const lowerFileType = fileType?.toLowerCase() || '';
+      const isImage = lowerFileType?.startsWith("image/");
+      const isVideo = lowerFileType?.startsWith("video/");
+      const isAudio = lowerFileType?.startsWith("audio/");
+      const isPdf = lowerFileType === "application/pdf";
+
+      // Office document types (xlsx, docx) - no preview at upload time
+      const officeMimeTypes = [
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+      ];
+
+      if (officeMimeTypes.includes(lowerFileType)) {
+        // No preview for office documents at upload time
+        this._snackBar.open("Preview not available for this file type. File will be available after upload.", "Close", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["info-snackbar"],
+        });
+        return;
+      }
 
       // For images, videos, audio, and PDFs - open in dialog (normal preview, no search)
       if (isImage || isVideo || isAudio || isPdf) {
