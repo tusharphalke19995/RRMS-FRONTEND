@@ -5,6 +5,6 @@ import { RevokeApprovalListComponent } from './revoke-approval-list.component';
 export default [
     {
         path     : '',
-        component: RevokeApprovalListComponent,
+        component: RevokeApprovalListComponent
     },
 ] as Routes;

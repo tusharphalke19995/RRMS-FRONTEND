@@ -1,151 +1,302 @@
-<div class="flex flex-col max-w-340 md:min-w-160 max-h-screen">
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent">
 
-    
-    <!-- Header with improved styling -->
-    <div class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md"
-        cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle cdkDrag>
-        <div class="flex items-center">
-            <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('addUser')}}</span>
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-2 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
         </div>
-        <button mat-icon-button class=" rounded-full transition-colors duration-200" (click)="onNoClose()" [tabIndex]="-1">
-            <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-        </button>
+        <!-- Title -->
+
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
+            <div>
+                <div class="hidden sm:flex flex-wrap items-center font-medium">
+                    <ng-container *transloco="let t">
+                        <div>
+                            <a class="whitespace-nowrap text-primary-500 cursor-pointer" [routerLink]="'/dashboard'">
+                                {{t('Home')}} </a>
+                        </div>
+                    </ng-container>
+
+                    <div class="flex items-center ml-1 whitespace-nowrap">
+                        <mat-icon class="icon-size-5 text-secondary"
+                            [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                        <ng-container *transloco="let t">
+                            <span class="ml-1 text-secondary">
+                                {{t('addUser')}}</span>
+                        </ng-container>
+                    </div>
+
+                </div>
+                <div class="flex" (click)="goToUserList()">
+                    <a class="inline-flex items-center -ml-1.5 text-secondary font-medium cursor-pointer">
+                        <mat-icon class="icon-size-5 text-secondary"
+                            [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
+                        <span class="ml-1">Back</span>
+                    </a>
+                </div>
+            </div>
+            <!-- Title -->
+            <!-- <div class="mt-2">
+                <ng-container *transloco="let t">
+                    <div class="text-3xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        {{t('addUser')}}</div>
+                </ng-container>
+            </div> -->
+
+            <div class="flex items-center">
+                <span class="text-xl font-semibold tracking-tight" *ngIf="updateBool; else addRoleTemplate">
+                    <span *transloco="let t">{{ t('updateUser') }}</span>
+                </span>
+                <ng-template #addRoleTemplate>
+                    <span class="text-xl font-semibold tracking-tight" *transloco="let t">
+                        {{t ('addUser') }}
+                    </span>
+                </ng-template>
+            </div>
+        </div>
+
+
     </div>
 
-    <!-- Form Content -->
-    <form [formGroup]="addUpdateUserForm" class="flex flex-col flex-auto p-6 overflow-y-auto">
-        <!-- First Row -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('firstName')}}</mat-label>
-                <input matInput [formControlName]="'firstName'" placeholder="Enter employee name">
-                <mat-error *ngIf="addUpdateUserForm.get('firstName').hasError('required')">
-                    Required
-                </mat-error>
-            </mat-form-field>
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10 overflow-y-auto" cdkScrollable>
+        <div class="flex flex-auto overflow-hidden">
+            <fuse-alert class="mb-8" *ngIf="alert" [type]="alert.type" [showIcon]="false">
+                {{alert.message}}
+            </fuse-alert>
+            <!-- Form Content -->
+            <form [formGroup]="addUpdateUserForm" class="flex flex-col flex-auto p-6 overflow-y-auto">
+                <!-- First Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label *transloco="let t" class="font-medium">{{t('firstName')}}</mat-label>
+                        <input matInput [formControlName]="'firstName'" (keypress)="allowOnlyLetters($event)"
+                            minlength="3" placeholder="Enter First name" [disabled]="isView">
+                        <mat-error *ngIf="addUpdateUserForm.get('firstName').hasError('required')">
+                            Required
+                        </mat-error>
+                    </mat-form-field>
 
-            <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('lastName')}}</mat-label>
-                <input matInput [formControlName]="'lastName'" placeholder="Enter employee name">
-                <mat-error *ngIf="addUpdateUserForm.get('lastName').hasError('required')">
-                    Required
-                </mat-error>
-            </mat-form-field>
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label *transloco="let t" class="font-medium">{{t('lastName')}}</mat-label>
+                        <input matInput [formControlName]="'lastName'" (keypress)="allowOnlyLetters($event)"
+                            minlength="3" placeholder="Enter Last name" [disabled]="isView">
+                        <mat-error *ngIf="addUpdateUserForm.get('lastName').hasError('required')">
+                            Required
+                        </mat-error>
+                    </mat-form-field>
 
 
-            <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('userEmail')}}</mat-label>
-                <input matInput [formControlName]="'emailID'" placeholder="Enter email">
-                <mat-error *ngIf="addUpdateUserForm.get('emailID').hasError('required')">
-                    Required
-                </mat-error>
-            </mat-form-field>
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label *transloco="let t" class="font-medium">{{ t('userEmail') }}</mat-label>
+                        <input matInput formControlName="emailID" placeholder="Enter email" [disabled]="isView" (blur)="onEmailBlur()" />
+                        <!-- <mat-progress-spinner matSuffix [mode]="'indeterminate'" [diameter]="20"
+                            *ngIf="emailID?.pending"></mat-progress-spinner> -->
+                        <mat-error *ngIf="emailID?.hasError('required')">{{ 'Required' }}</mat-error>
+                        <mat-error *ngIf="emailID?.hasError('email')">{{ 'Please enter a valid email address'
+                            }}</mat-error>
+                        <mat-error *ngIf="emailID?.hasError('domainNotAllowed')">{{ 'Email domain is not allowed'
+                            }}</mat-error>
+                        <mat-error *ngIf="emailID?.hasError('emailTaken')">This email is already taken.</mat-error>
+                    </mat-form-field>
 
-            <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('kgId')}}</mat-label>
-                <input matInput [formControlName]="'kgid'" placeholder="Enter KG ID">
-                <mat-error *ngIf="addUpdateUserForm.get('kgid').hasError('required')">
-                    Required
-                </mat-error>
-            </mat-form-field>
 
-            <!-- <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('designation')}}</mat-label>
-                <input matInput [formControlName]="'designation'" placeholder="Enter designation">
-                <mat-error *ngIf="addUpdateUserForm.get('designation').hasError('required')">
-                    This field is required
-                </mat-error>
-            </mat-form-field> -->
-        </div>
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label *transloco="let t" class="font-medium">{{t('kgId')}}</mat-label>
+                        <input matInput [formControlName]="'kgid'" (keypress)="allowNumbersAndLetters($event)"
+                            placeholder="Enter KG ID" maxlength="12" minlength="6" [disabled]="isView">
+                        <mat-error *ngIf="addUpdateUserForm.get('kgid').hasError('required')">
+                            Required
+                        </mat-error>
+                    </mat-form-field>
 
-        <!-- Second Row -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('userName')}}</mat-label>
-                <input matInput [formControlName]="'userName'" placeholder="Enter username">
-                <mat-error *ngIf="addUpdateUserForm.get('userName').hasError('required')">
-                    This field is required
-                </mat-error>
-            </mat-form-field> -->
+                </div>
 
-            <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('empMobileno')}}</mat-label>
-                <input matInput [formControlName]="'mobileNo'" placeholder="Enter mobile number">
-                <mat-error *ngIf="addUpdateUserForm.get('mobileNo').hasError('required')">
-                    Required
-                </mat-error>
-            </mat-form-field>
+                <!-- Second Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-            <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('role')}}</mat-label>
-                <mat-select [formControlName]="'roleId'">
-                    <mat-option [value]="null">Please Select</mat-option>
-                    <ng-container *ngFor="let roleInfo of userRoleDropdown; trackBy: trackByFn">
-                        <mat-option [value]="roleInfo.roleId">{{roleInfo.roleName}}</mat-option>
-                    </ng-container>
-                </mat-select>
-                <mat-error *ngIf="addUpdateUserForm.get('roleId').hasError('required')">
-                      Required
-                </mat-error>
-            </mat-form-field>
 
-            <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('division')}}</mat-label>
-                <mat-select [formControlName]="'divisionId'">
-                    <mat-option [value]="null">Please Select</mat-option>
-                    <ng-container *ngFor="let roleInfo of divisionDropdown; trackBy: trackByFn">
-                        <mat-option [value]="roleInfo.divisionId">{{roleInfo.divisionName}}</mat-option>
-                    </ng-container>
-                </mat-select>
-                <mat-error *ngIf="addUpdateUserForm.get('divisionId').hasError('required')">
-                      Required
-                </mat-error>
-            </mat-form-field>
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label *transloco="let t" class="font-medium">{{t('empMobileno')}}</mat-label>
+                        <input matInput [formControlName]="'mobileNo'" (keypress)="allowOnlyNumbers($event)"
+                            maxlength="10" placeholder="Enter mobile number" [disabled]="isView">
+                        <mat-error *ngIf="addUpdateUserForm.get('mobileNo').hasError('required')">
+                            Required
+                        </mat-error>
+                    </mat-form-field>
 
-            <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('designations')}}</mat-label>
-                <mat-select [formControlName]="'designationId'">
-                    <mat-option [value]="null">Please Select</mat-option>
-                    <ng-container *ngFor="let designationInfo of designationsDropdown; trackBy: trackByFn">
-                        <mat-option [value]="designationInfo.designationId">{{designationInfo.designationName}}</mat-option>
-                    </ng-container>
-                </mat-select>
-                <mat-error *ngIf="addUpdateUserForm.get('designationId').hasError('required')">
-                      Required
-                </mat-error>
-            </mat-form-field>
 
-            <mat-form-field appearance="outline" class="w-full">
-                <mat-label *transloco="let t" class="font-medium">{{t('password')}}</mat-label>
-                <input matInput [type]="hidePassword ? 'Password' : 'text'" 
-                       [formControlName]="'password'" 
-                       placeholder="Enter password">
-                <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword" type="button">
-                    <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-                </button>
-                <mat-error *ngIf="addUpdateUserForm.get('password').hasError('required')">
-                    Password is required
-                </mat-error>
-                <mat-error *ngIf="addUpdateUserForm.get('password').hasError('pattern')">
-                    Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character
-                </mat-error>
-            </mat-form-field>
-        </div>
+                    <!-- <mat-form-field appearance="outline" class="w-full" *ngIf="!updateBool">
+                        <mat-label *transloco="let t" class="font-medium">{{t('password')}}</mat-label>
+                        <input matInput [type]="hidePassword ? 'password' : 'text'" [formControlName]="'password'"
+                            placeholder="Enter password" [disabled]="isView">
+                        <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword"
+                            [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword" type="button">
+                            <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                        </button>
+                        <mat-error *ngIf="addUpdateUserForm.get('password').hasError('required')">
+                            Password is required
+                        </mat-error>
+                        <mat-error *ngIf="addUpdateUserForm.get('password').hasError('pattern')">
+                            Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one
+                            number and one special character
+                        </mat-error>
+                    </mat-form-field> -->
 
-        <!-- Action Buttons -->
-        <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
-            <button mat-flat-button
-                    class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
-                    (click)="userSave()"
-                    [disabled]="this.addUpdateUserForm.invalid" *transloco="let t" >
-                   {{t('submit')}}
-            </button>
-            <button mat-stroked-button
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label *transloco="let t" class="font-medium">{{t('role')}}</mat-label>
+                        <mat-select [formControlName]="'roleId'" [panelClass]="'custom-select-panel'"
+                            [disabled]="isView">
+                            <div class="px-3 py-2">
+                                <mat-form-field class="w-full">
+                                    <input matInput (keyup)="filterUserRoles($event)" placeholder="Search role..."
+                                        #roleSearchInput [value]="''" autocomplete="off">
+                                </mat-form-field>
+                            </div>
+                            <mat-option [value]="null">Please Select</mat-option>
+                            <ng-container *ngFor="let roleInfo of filteredUserRoles; trackBy: trackByFn">
+                                <mat-option [value]="roleInfo.roleId">{{roleInfo.roleName}}</mat-option>
+                            </ng-container>
+                        </mat-select>
+                        <mat-error *ngIf="addUpdateUserForm.get('roleId').hasError('required')">
+                            Required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label *transloco="let t" class="font-medium">{{t('designations')}}</mat-label>
+                        <mat-select [formControlName]="'designation'" [panelClass]="'custom-select-panel'"
+                            (selectionChange)="onDesignationSelect($event.value)" multiple [disabled]="isView">
+                            <div class="px-3 py-2">
+                                <mat-form-field class="w-full">
+                                    <input matInput (keyup)="filterDesignations($event)"
+                                        placeholder="Search designation..." #designationSearchInput [value]="''"
+                                        autocomplete="off">
+                                </mat-form-field>
+                            </div>
+                            <mat-option [value]="null">Please Select</mat-option>
+                            <ng-container *ngFor="let designationInfo of filteredDesignations; trackBy: trackByFn">
+                                <mat-option
+                                    [value]="designationInfo.designationId">{{designationInfo.designationName}}</mat-option>
+                            </ng-container>
+                        </mat-select>
+                        <mat-error *ngIf="addUpdateUserForm.get('designation').hasError('required')">
+                            Required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div *ngIf="selectedDesignations.length">
+                    <h2>Selected Designation Details</h2>
+                    <table mat-table [dataSource]="selectedDesignations" class="w-full mt-4">
+                        <!-- Designation Name -->
+                        <ng-container matColumnDef="designationName">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="border px-4 py-2 bg-primary-300 dark:bg-slate-500 text-black">Designation</th>
+                            <td mat-cell *matCellDef="let row">{{ row.designationName }}</td>
+                        </ng-container>
+                        <!-- Department(s) -->
+                        <ng-container matColumnDef="department">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="border px-4 py-2 bg-primary-300 dark:bg-slate-500 text-black">Department</th>
+                            <td mat-cell *matCellDef="let row">
+                                {{ getDepartmentNames(row) }}
+                            </td>
+                        </ng-container>
+                        <!-- Division(s) -->
+                        <ng-container matColumnDef="division">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="border px-4 py-2 bg-primary-300 dark:bg-slate-500 text-black">Division</th>
+                            <td mat-cell *matCellDef="let row">
+                                {{ getDivisionNames(row) }}
+                            </td>
+                        </ng-container>
+                        <!-- Superdivision(s) (if available) -->
+                        <ng-container matColumnDef="superdivision">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="border px-4 py-2 bg-primary-300 dark:bg-slate-500 text-black">Superdivision</th>
+                            <td mat-cell *matCellDef="let row">
+                                {{ getSuperdivisionNames(row) }}
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row
+                            *matHeaderRowDef="['designationName', 'department', 'division', 'superdivision']"></tr>
+                        <tr mat-row
+                            *matRowDef="let row; columns: ['designationName', 'department', 'division', 'superdivision'];">
+                        </tr>
+                    </table>
+                </div>
+                <!-- 
+                <div class="overflow-x-auto">
+                    <button *transloco="let t" mat-flat-button [color]="'primary'" class="min-w-[120px]"
+                        (click)="addMultiplesDivision()">
+                        <mat-icon class="icon-size-5 mr-2" [svgIcon]="'heroicons_solid:plus'"></mat-icon>
+                        {{t('addDivision')}}
+                    </button>
+
+                    <table mat-table [dataSource]="dataSource" matSort #sort1="matSort" class="w-full mt-[10px]">
+              
+
+                        <ng-container matColumnDef="roleId">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Role Name</th>
+                            <td mat-cell *matCellDef="let row"> {{ getRoleName(row.roleId) }} </td>
+                        </ng-container>
+                    
+                        <ng-container matColumnDef="divisionId">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Division Name</th>
+                            <td mat-cell *matCellDef="let row"> {{ getDivisionName(row.divisionId) }} </td>
+                        </ng-container>
+                    
+                      
+                        <ng-container matColumnDef="designationId">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Designation Name</th>
+                            <td mat-cell *matCellDef="let row"> {{ getDesignationName(row.designationId) }} </td>
+                        </ng-container>
+                    
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                            class="hover:bg-hover cursor-pointer"></tr>
+                    </table>
+
+                
+                    <div *ngIf="dataSource?.data?.length === 0" class="p-8 text-center">
+                        No records found
+                    </div>
+                </div>
+                <div class="flex justify-end w-full dark:bg-gray-800 bg-card">
+                    <mat-paginator #paginator1="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10"
+                        showFirstLastButtons>
+                    </mat-paginator>
+                </div> -->
+
+                <!-- Action Buttons -->
+                <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
+                    <button mat-flat-button *ngIf="!updateBool"
+                        class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
+                        (click)="userSave()" [disabled]="this.addUpdateUserForm.invalid">
+                        Submit
+                    </button>
+                    <button mat-flat-button *ngIf="updateBool"
+                        class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
+                        (click)="userUpdate()" [disabled]="isView">
+                        Update
+                    </button>
+
+                    <!-- <button mat-stroked-button
                     class="min-w-[90px] px-6 py-2 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                     (click)="onNoClose()" *transloco="let t" >
                 
                 {{t('cancel')}}
-            </button>
+            </button> -->
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
+
+    <!-- Buttons -->
+
 </div>

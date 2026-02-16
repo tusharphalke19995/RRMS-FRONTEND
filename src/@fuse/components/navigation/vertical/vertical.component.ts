@@ -797,17 +797,41 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
         this.openedChanged.next(open);
     }
 
+    // setNavigation(): void {
+    //     const isSuperAdmin = this.authData.SuperAdmin;
+    //     const roles = this.authData.DivisionsRoles
+    //         .filter(a => a.role_name) // Filter out the roles that have a truthy `role_name`
+    //         .map(a => a.role_name);    // Map to an array of role names
+    //     const isAdmin = roles.length === 0 || roles.includes("Admin");
+    //     this.navigation = this.navigation.filter(item => {
+    //         if (isSuperAdmin) {
+    //             return ['Master', 'orgMapping', 'notification', 'userMng', 'home'].includes(item.id);
+    //         } else if (isAdmin) {
+    //            return ['searchDocument', 'home', 'uploadDocument', 'notification'].includes(item.id);
+    //         } else if (roles.includes("ContentManager")) {
+    //             return ['searchDocument', 'home', 'uploadDocument', 'notification'].includes(item.id);
+    //         } else if (roles.includes("User")) {
+    //             return ['searchDocument', 'home', 'uploadDocument'].includes(item.id);
+    //         }
+    //         return false;
+    //     });
+    // }
+
     setNavigation(): void {
-        const roleName = this.authData.RoleName;
+        const isSuperAdmin = this.authData.SuperAdmin;
+        const currentRole = this.authData.Role;
         this.navigation = this.navigation.filter(item => {
-          if (roleName === "Admin") {
-            return true;
-          } else if (roleName==="User") {
-            return item.id === 'searchDocument' || item.id === 'home' || item.id ==='uploadDocument';
-          } else if (roleName ==="ContentManager") {
-            return item.id === 'searchDocument' || item.id === 'home' || item.id ==='uploadDocument';
-          }
-          return false;
+            if (isSuperAdmin) {
+                return ['master', 'orgMapping', 'userMng', 'home'].includes(item.id);
+            } else if ( currentRole ==="Admin") {
+                return ['searchDocument', 'home', 'uploadDocument', 'notification','caseApproval','reqAccess'].includes(item.id);
+            } else if (currentRole === "ContentManager") {
+                return ['searchDocument', 'home', 'uploadDocument', 'notification','caseApproval','reqAccess','contentMng','archiveMng'].includes(item.id);
+            } else if (currentRole === "User") {
+                return ['searchDocument', 'home', 'uploadDocument','notification','caseApproval','reqAccess'].includes(item.id);
+            }
+            return false;
         });
-      }
+    }
+    
 }

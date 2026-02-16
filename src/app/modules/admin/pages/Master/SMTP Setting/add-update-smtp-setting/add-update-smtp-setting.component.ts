@@ -1,0 +1,182 @@
+import { Component, Inject, ViewEncapsulation } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import {
+  ReactiveFormsModule,
+  FormsModule,
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  Validators,
+} from "@angular/forms";
+import { MatButtonModule } from "@angular/material/button";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from "@angular/material/dialog";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatIconModule } from "@angular/material/icon";
+import { MatInputModule } from "@angular/material/input";
+import { MatSelectModule } from "@angular/material/select";
+import { TranslocoModule } from "@ngneat/transloco";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { MasterService } from "../../master.service";
+
+@Component({
+  selector: "add-update-smtp-setting",
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatIconModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    TranslocoModule,
+  ],
+  encapsulation: ViewEncapsulation.None,
+  templateUrl: "./add-update-smtp-setting.component.html",
+  styleUrl: "./add-update-smtp-setting.component.scss",
+})
+export class AddUpdateSMTPSettingComponent {
+  SMTPSettingForm: UntypedFormGroup;
+  hidePassword: boolean = true;
+  userRoleDropdown = [];
+  divisionDropdown = [];
+  designationsDropdown = [];
+  updateBool: boolean = false;
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private masterService: MasterService,
+    private _formBuilder: UntypedFormBuilder,
+    public dialogRef: MatDialogRef<AddUpdateSMTPSettingComponent>,
+    private _snackBar: MatSnackBar
+  ) {}
+
+  ngOnInit(): void {
+    this.initiateForm();
+    if (this.data) {
+      this.updateBool = true;
+      this.dataPatch();
+    }
+  }
+
+  initiateForm() {
+    this.SMTPSettingForm = this._formBuilder.group({
+      smtpServerName: ["", Validators.required],
+      portNo: ["", Validators.required],
+      encryption: ["", Validators.required],
+      username: ["", Validators.required],
+      password: [
+        "",
+        [
+          Validators.required,
+          Validators.pattern(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+          ),
+        ],
+      ],
+    });
+  }
+
+  onNoClose(): void {
+    this.dialogRef.close({ data: false });
+  }
+
+  reqRejected() {}
+
+  saveSMTPSetting() {
+    if (this.SMTPSettingForm.valid) {
+      const data = {
+        smtpServerName: this.SMTPSettingForm.value.smtpServerName,
+        portNo: this.SMTPSettingForm.value.portNo,
+        encryption: this.SMTPSettingForm.value.encryption,
+        username: this.SMTPSettingForm.value.username,
+        password: this.SMTPSettingForm.value.password,
+      };
+      this.masterService.createSMTP(data).subscribe({
+        next: (response: any) => {
+          this._snackBar.open("SMTP Created Successfully", "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["green-snackbar"],
+          });
+          this.onNoClose();
+        },
+        error: (error) => {
+          this._snackBar.open(error.message || "Error creating user", "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["error-snackbar"],
+          });
+        },
+      });
+    }
+  }
+
+  updateSMTPSetting() {
+    if (this.SMTPSettingForm.valid) {
+      const data = {
+        smtpId:this.data.smtpId,
+           smtpServerName: this.SMTPSettingForm.value.smtpServerName,
+        portNo: this.SMTPSettingForm.value.portNo,
+        encryption: this.SMTPSettingForm.value.encryption,
+        username: this.SMTPSettingForm.value.username,
+        password: this.SMTPSettingForm.value.password,
+      };
+      this.masterService.updateSMTPById(this.data.smtpId, data).subscribe({
+        next: (response: any) => {
+          this._snackBar.open("SMTP Updated successfully", "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["green-snackbar"],
+          });
+          this.onNoClose();
+        },
+        error: (error) => {
+          this._snackBar.open(error.message || "Error creating user", "Close", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            panelClass: ["error-snackbar"],
+          });
+        },
+      });
+    }
+  }
+
+  /**
+   * Track by function for ngFor loops
+   *
+   * @param index
+   * @param item
+   */
+  trackByFn(index: number, item: any): any {
+    return item.id || index;
+  }
+
+  dataPatch() {
+    if (this.data) {
+      const userData = this.data;
+      this.SMTPSettingForm.patchValue({
+        smtpServerName: userData.smtpServerName,
+        portNo: userData.portNo,
+        encryption: userData.encryption,
+        username: userData.username,
+        password: userData.password,
+      });
+    }
+  }
+      allowOnlyNumbers(event: KeyboardEvent): void {
+    const charCode = event.key.charCodeAt(0);
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
+  }
+
+}

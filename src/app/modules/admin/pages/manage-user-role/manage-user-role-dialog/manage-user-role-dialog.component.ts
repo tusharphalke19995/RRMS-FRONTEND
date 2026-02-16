@@ -84,6 +84,7 @@ import { ManageroleService } from "../search-user-role/managerole.service";
 
 
     getUserRoleDropdown() {
+      
       this._manageroleService.getUserRole().subscribe({
         next: (response: any) => {
           if(response.statusCode==200){
@@ -95,7 +96,8 @@ import { ManageroleService } from "../search-user-role/managerole.service";
     }
 
     getDivisionDropdown() {
-      this._manageroleService.getUserDivision().subscribe({
+    const divisionId =Number(sessionStorage.getItem('divisionID'));
+      this._manageroleService.getDivision(divisionId).subscribe({
         next: (response: any) => {
           if(response.statusCode==200){
             this.divisionDropdown= response.responseData;
@@ -106,7 +108,8 @@ import { ManageroleService } from "../search-user-role/managerole.service";
     }
 
     getDesignationsDropDown() {
-      this._manageroleService.getDesignationsInfo().subscribe({
+    const divisionId =Number(sessionStorage.getItem('divisionID'));
+      this._manageroleService.getDesignationsInfo(divisionId).subscribe({
         next: (response: any) => {
           if(response.statusCode==200){
             this.designationsDropdown= response.responseData;
@@ -130,7 +133,7 @@ import { ManageroleService } from "../search-user-role/managerole.service";
               duration: 3000,
               horizontalPosition: "right",
               verticalPosition: "top",
-              panelClass: ["success-snackbar"],
+              panelClass: ["green-snackbar"],
             });
             this.onNoClose();
           },

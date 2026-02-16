@@ -1,0 +1,174 @@
+:host {
+  display: block;
+}
+
+.icon-white {
+  color: white !important;
+}
+
+.mat-mdc-dialog-container {
+  .mat-mdc-dialog-surface {
+    padding: 0 !important;
+  }
+}
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+.mat-mdc-select {
+  width: 100%;
+}
+
+// Autocomplete styles
+.mat-mdc-autocomplete-panel {
+  max-height: 200px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.mat-mdc-option {
+  padding: 8px 16px !important;
+  min-height: 48px !important;
+  
+  &:hover {
+    background-color: #f5f5f5 !important;
+  }
+  
+  &.mat-mdc-option-active {
+    background-color: #e3f2fd !important;
+  }
+}
+
+// Search input styles
+.mat-mdc-form-field {
+  .mat-mdc-form-field-flex {
+    background-color: #fafafa;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: #f5f5f5;
+    }
+    
+    &.mat-focused {
+      background-color: white;
+      box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+    }
+  }
+  
+  .mat-mdc-text-field-wrapper {
+    padding: 0 16px;
+  }
+  
+  .mat-mdc-form-field-infix {
+    padding: 12px 0;
+  }
+}
+
+// Search icon styles
+.mat-icon[matSuffix] {
+  color: #9e9e9e;
+  transition: color 0.2s ease;
+}
+
+.mat-mdc-form-field.mat-focused .mat-icon[matSuffix] {
+  color: #1976d2;
+}
+
+// Clear button styles
+.clear-button {
+  width: 24px !important;
+  height: 24px !important;
+  line-height: 24px !important;
+  
+  .mat-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    line-height: 18px !important;
+  }
+  
+  &:hover {
+    background-color: rgba(244, 67, 54, 0.1) !important;
+    
+    .mat-icon {
+      color: #f44336 !important;
+    }
+  }
+}
+
+// Enhanced autocomplete panel
+.mat-mdc-autocomplete-panel {
+  .mat-mdc-option {
+    .flex {
+      align-items: center;
+      
+      .mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+// Custom styles for the dialog
+.cdk-overlay-pane {
+  max-width: 90vw !important;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .max-w-500 {
+    max-width: 95vw !important;
+  }
+  
+  .md\:min-w-400 {
+    min-width: 95vw !important;
+  }
+}
+
+// Animation for loading spinner
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+mat-spinner {
+  animation: spin 1s linear infinite;
+}
+
+// Custom button styles
+.mat-mdc-raised-button.mat-primary {
+  background-color: #1976d2;
+  color: white;
+  
+  &:hover {
+    background-color: #1565c0;
+  }
+  
+  &:disabled {
+    background-color: #bdbdbd;
+    color: #757575;
+  }
+}
+
+.mat-mdc-stroked-button {
+  border-color: #e0e0e0;
+  color: #424242;
+  
+  &:hover {
+    background-color: #f5f5f5;
+  }
+  
+  &:disabled {
+    border-color: #e0e0e0;
+    color: #bdbdbd;
+  }
+} 

@@ -64,10 +64,7 @@ export class FileClassificationComponent implements OnInit {
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
   columns: any[] = [
-    { labelen: "Role Id", labelhi: "Role Id", property: "fileClassificationId" },
     { labelen: "Role Name", labelhi: "Role Name", property: "fileClassificationName" },
-    { labelen: "Role Name", labelhi: "Role Name", property: "lastModifiedDate" },
-    { labelen: "Role Name", labelhi: "Role Name", property: "active" },
     {
       labelen: "Action",
       labelhi: "Action",
@@ -77,11 +74,8 @@ export class FileClassificationComponent implements OnInit {
   ];
 
   displayedColumns: string[] = [
-    "fileClassificationId",
     "fileClassificationName",
-    "lastModifiedDate",
-    "active",
-    "action",
+ "action"
   ];
   userRoleDropdown: [];
   designationsDropdown: [];
@@ -189,7 +183,7 @@ export class FileClassificationComponent implements OnInit {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
-            panelClass: ["success-snackbar"],
+            panelClass: ["green-snackbar"],
           });
           this.getFileClassificationInfo();
         },

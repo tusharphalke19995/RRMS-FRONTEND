@@ -1,7 +1,7 @@
 import { Component, Inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -36,11 +36,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       encapsulation: ViewEncapsulation.None
 })
 export class ConfirmationDialogComponent {
-
-
-  constructor( private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any )
+  manageNotificationConfirmation:FormGroup;
+  paloadApproveDenied:any;
+  payloadAppDenied: { file_id: any; division_id: number; is_approved: boolean; comments: any; };
+  constructor( private _snackBar: MatSnackBar,private notificationService:NotificationService,public dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any , private _formBuilder:FormBuilder)
 {
-console.log("data",this.data)
+
 }
 
 
@@ -48,21 +49,53 @@ onCancel(): void {
   this.dialogRef.close(false);
 }
 
+ngOnInit(): void {
+  this.initiateForm();
+}
 
-onApprove(){
-  this.notificationService.approveNotification(this.data.file.fileId).subscribe({
+initiateForm() {
+  this.manageNotificationConfirmation = this._formBuilder.group({
+    remarks: [""],
+  });
+}
+
+onApprove(status: string): void {
+  console.log("status",status)
+  const remarksControl = this.manageNotificationConfirmation.get('remarks');
+  remarksControl?.clearValidators();
+  remarksControl?.updateValueAndValidity();
+
+  const divisionID = Number(sessionStorage.getItem('divisionID') || 'null');
+
+  if(status==="true"){
+    this.payloadAppDenied =  {
+      file_id: this.data.id,
+      division_id: divisionID,
+      is_approved:true,
+      comments: remarksControl?.value || ''
+    };
+  }else if(status==="false"){
+     this.payloadAppDenied = {
+      file_id: this.data.file.id,
+      division_id: divisionID,
+      is_approved:false,
+      comments: remarksControl?.value || ''
+    };
+  }
+  this.notificationService.approveNotification(this.payloadAppDenied).subscribe({
     next: (response: any) => {
-      this._snackBar.open("Request Approved successfully", "Close", {
+      const message = status === 'true' ? "Request Approved successfully" : "Request Denied successfully";
+      this._snackBar.open(message, "Close", {
         duration: 3000,
         horizontalPosition: "right",
         verticalPosition: "top",
-        panelClass: ["success-snackbar"],
+        panelClass: ["green-snackbar"],
       });
       this.dialogRef.close(true);
-     
+      this.markAsRead();
     },
     error: (error) => {
-      this._snackBar.open(error.message || "Error creating user", "Close", {
+      this._snackBar.open(error.message || "Error processing request", "Close", {
         duration: 3000,
         horizontalPosition: "right",
         verticalPosition: "top",
@@ -71,4 +104,19 @@ onApprove(){
     },
   });
 }
+
+markAsRead() {
+  let paloadData={
+   notification_id:this.data.id
+  }
+   this.notificationService.markasreadNotificationInfo(paloadData).subscribe({
+       next: (response: any) => {
+  
+       },
+       error: (error) => {
+           console.error("Error fetching latest files:", error);
+       },
+   });
+ }
+   
 }

@@ -16,6 +16,7 @@ import {
 } from "@angular/core";
 import {
   FormsModule,
+  MaxLengthValidator,
   NgForm,
   ReactiveFormsModule,
   UntypedFormBuilder,
@@ -29,7 +30,8 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { fuseAnimations } from "@fuse/animations";
 import { FuseConfirmationService } from "@fuse/services/confirmation";
-import { Subject } from "rxjs";
+import { Subject, timeout } from "rxjs";
+import { HttpEvent, HttpEventType } from "@angular/common/http";
 import { InventoryVendor } from "./uploadDoc.types";
 import { MatDividerModule } from "@angular/material/divider";
 import { TranslocoModule } from "@ngneat/transloco";
@@ -43,6 +45,39 @@ import { FileWithMetadata } from "../upload-files/model/upload-files.models";
 import { SharedService } from "app/shared/shared.service";
 import { MasterService } from "../Master/master.service";
 import { AuthService } from "app/core/auth/auth.service";
+import { DraftDetailsComponent } from "./draft-details/draft-details.component";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatProgressBarModule } from "@angular/material/progress-bar";
+
+interface State {
+  stateId: number;
+  stateName: string;
+}
+
+interface District {
+  districtId: number;
+  districtName: string;
+}
+
+interface Unit {
+  unitId: number;
+  unitName: string;
+}
+
+interface CaseType {
+  id: number;
+  value: string;
+}
+
+interface CaseStatus {
+  id: number;
+  value: string;
+}
+
+interface CaseStatusDependent {
+  frstatusId: number;
+  frstatusName: string;
+}
 
 @Component({
   selector: "app-upload-document",
@@ -71,7 +106,10 @@ import { AuthService } from "app/core/auth/auth.service";
     MatButtonModule,
     MatSelectModule,
     MatDatepickerModule,
-    UploadFilesComponent
+    UploadFilesComponent,
+    DraftDetailsComponent,
+    MatTooltipModule,
+    MatProgressBarModule
   ],
 })
 export class UploadDocumentComponent implements OnInit, OnDestroy {
@@ -79,25 +117,104 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   selectedMetadata: any[] = []; // Store metadata
   uploadDocumentForm: UntypedFormGroup;
   @ViewChild("addcitizenfeedbackNgForm") addcitizenfeedbackNgForm: NgForm;
-  maxFileSize = 10737418240;
+  maxFileSize = 3221225472; // 1GB in bytes
+  crimeNo: string = "";
   isLoading: boolean = false;
   formFieldHelpers: string[] = [""];
   vendors: InventoryVendor[];
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   alert: { type: string; message: string };
-  unitsDropdown: any;
+  unitsDropdown: Unit[] = [];
+  filteredUnits: Unit[] = [];
+  filteredStates: State[] = [];
+  filteredDistricts: District[] = [];
+  filteredCaseTypes: CaseType[] = [];
+  filteredCaseStatus: CaseStatus[] = [];
+  filteredCaseStatusDependent: CaseStatusDependent[] = [];
+  private searchTimeout: any;
+  private stateSearchTimeout: any;
+  private districtSearchTimeout: any;
+  private caseTypeSearchTimeout: any;
+  private caseStatusSearchTimeout: any;
+  private caseStatuDependentsSearchTimeout: any;
 
-  districtDropdown: any;
-  stateDropdown: [];
-  caseStatusDropdown: any;
-  yearDropDown=[{yearId:2025,yearName:2025},
-    {yearId:2024,yearName:2024},
-    {yearId:2023,yearName:2023}
-  ]
-  fileTypesDropDown: [];
-  fileClassificationDropDown: [];
-  authData:any;
+  districtDropdown: District[] = [];
+  stateDropdown: State[] = [];
+  caseStatusDropdown: CaseStatus[] = [];
+  caseTypeDropDown: CaseType[] = [];
+  caseStatusDeptDropdown: CaseStatusDependent[] = [];
+  yearDropDown: { yearId: number; yearName: number }[] = [];
+  filteredYears: { yearId: number; yearName: number }[] = [];
+  private yearSearchTimeout: any;
+  authData: any;
+  showFinalReportState: boolean = false;
+  ClassificationTypeDropDown: any[] = [];
+  FileTypeDropDown: any[] = [];
+  DocumentTypeDropDown: any[] = [];
+  selectedFCaseType: any;
+  caseTypeFinalId: number;
+  masterData: any;
+  isSubmitting: boolean = false;
+  isSaveDraft: boolean = false;
+  checkFileSatus: boolean;
+  uploadProgress: number = 0;
+  isUploading: boolean = false;
+  uploadStatusMessage: string = '';
+  private uploadStartTime: number = 0;
+  finalFIRValue: any;
+  patchDetailsfiles: any[] = [];
+  dfaftfiles: any[] = [];
+  caseMetaData: any;
+  draftInfo: any;
+  files: any[] = [];
+  isPatchSearchPage: boolean;
+  isDraft: boolean = false;
+  maxDate: Date = new Date();
+
   // selectedFiles: any;
+  /**
+   * Ensures all files have the correct fileName and subject with the current caseNo.
+   * Updates both new and old files in selectedFiles.
+   */
+  private getBaseFileName(file: any): string {
+    if (file.originalFileName && file.originalFileName !== 'undefined') return file.originalFileName;
+    if (file.name && file.name !== 'undefined') return file.name;
+    if (file.fileName && file.fileName !== 'undefined') return file.fileName;
+    if (file.subject && file.subject !== 'undefined') return file.subject;
+    return 'UnknownFile';
+  }
+
+  private updateFileNamesWithCaseNo(): void {
+    const caseNo = this.crimeNo || this.uploadDocumentForm.value.caseNo || 'undefined';
+    this.selectedFiles.forEach((file: any) => {
+      const baseName = this.getBaseFileName(file);
+
+      // Update subject if needed - check if it already has case number
+      if (!file.subject || !file.subject.startsWith(caseNo)) {
+        // Remove existing case number if present before adding new one
+        const cleanSubject = file.subject ? file.subject.replace(/^\d+_/, '') : baseName;
+        file.subject = `${caseNo}_${cleanSubject}`;
+      }
+
+      // Update metadata.subject if needed
+      if (file.metadata) {
+        if (!file.metadata.subject || !file.metadata.subject.startsWith(caseNo)) {
+          // Remove existing case number if present before adding new one
+          const cleanMetadataSubject = file.metadata.subject ? file.metadata.subject.replace(/^\d+_/, '') : baseName;
+          file.metadata.subject = `${caseNo}_${cleanMetadataSubject}`;
+        }
+      } else {
+        file.metadata = { subject: `${caseNo}_${baseName}` };
+      }
+
+      // Update fileName if needed
+      if (!file.fileName || !file.fileName.startsWith(caseNo)) {
+        // Remove existing case number if present before adding new one
+        const cleanFileName = file.fileName ? file.fileName.replace(/^\d+_/, '') : baseName;
+        file.fileName = `${caseNo}_${cleanFileName}`;
+      }
+    });
+  }
   /**
    * Constructor
    */
@@ -106,14 +223,18 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     private _formBuilder: UntypedFormBuilder,
     private _uploadDocumentService: UploadDocumentService,
     private _snackBar: MatSnackBar,
-    private dataService:SharedService,
+    private dataService: SharedService,
     private _router: Router,
-    private _masterService:MasterService,
-    private authenticationService:AuthService
-
+    private _masterService: MasterService,
+    private authenticationService: AuthService,
+    private _fuseConfirmationService: FuseConfirmationService
   ) {
     this.authData = this.authenticationService.getAuthData();
     this.dataService.setFileBoolean(true);
+    let currentYear = new Date().getFullYear(); 
+    for (let year = currentYear; year >= 1960; year--) {
+      this.yearDropDown.push({ yearId: year, yearName: year });
+    }
   }
 
   // -----------------------------------------------------------------------------------------------------
@@ -127,17 +248,33 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.initForm();
     this.getUserDistrictDropdown();
     this.getUserStateDropdown();
-    this.onStateChange(16);
-    this.onDisctrictChange(443);
-    this.getCaseStatusInfo();
-    this.getFileClassificationInfo();
-    this.getFileTypesInfo();
+    this.getMasterDropDown();
+    
+    // Initialize filtered arrays
+    this.filteredStates = this.stateDropdown || [];
+    this.filteredDistricts = this.districtDropdown || [];
+    this.filteredCaseTypes = this.caseTypeDropDown || [];
+    this.filteredCaseStatus = this.caseStatusDropdown || [];
+    this.filteredYears = [...this.yearDropDown];
+    
+    // Load data immediately - the methods will handle whether there's data to patch
+    this.getDataSearchForPatch();
+    this.getDraftDataPatch();
+    
+    // Initialize default values only for fresh uploads (not when patching)
+    if (!this.isPatchSearchPage && !this.isDraft) {
+      this.onStateChange(16);
+      this.onDisctrictChange(443);
+    }
   }
 
   /**
    * On destroy
    */
   ngOnDestroy(): void {
+    // Clear all data when component is destroyed
+    this.clearAllData();
+    
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next(null);
     this._unsubscribeAll.complete();
@@ -147,24 +284,20 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.uploadDocumentForm = this._formBuilder.group({
       stateIDInfo: ["", [Validators.required]],
       districtId: ["", [Validators.required]],
-      unitsId: [""],
-      office: ["", [Validators.required]],
-      letterNo: ["", [Validators.required]],
+      unitsId: ["", [Validators.required]],
+      office: [""],
+      letterNo: [""],
       caseNo: ["", [Validators.required]],
       caseType: ["", [Validators.required]],
       firNo: ["", [Validators.required]],
-      author: ["", [Validators.required]],
-      toAddr: ["", [Validators.required]],
-      caseDate: ["", [Validators.required]],
-      statusId:[""],
-      yearId:[""]
+      author: [""],
+      toAddr: [""],
+      caseDate: [""],
+      statusId: ["", [Validators.required]],
+      yearId: ["", [Validators.required]],
+      statusIdDependent:[""]
     });
   }
-
-  /**
-   * Citizen Feedback Create
-   */
-  saveCitizenFeedback(): void {}
 
   /**
    * Clear the form
@@ -174,13 +307,67 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
     this.addcitizenfeedbackNgForm.resetForm();
   }
 
-  onFilesWithMetadataSelected(data: { files: FileWithMetadata[], metadata: any[] }) {
-    this.selectedFiles = data.files; // Update the selected files
-    this.selectedMetadata = data.metadata; // Update the metadata
-    console.log('Files selected:', this.selectedFiles); // Log for debugging
-    console.log('Metadata selected:', this.selectedMetadata); // Log for debugging
-  }
+  onFilesWithMetadataSelected(data: {
+    files: FileWithMetadata[];
+    metadata: any[];
+  }) {
+    this.selectedFiles = data.files;
+    this.selectedMetadata = data.metadata;
+    console.log("Files with metadata selected:", this.selectedFiles);
 
+     // Validate file sizes - filter out files exceeding 1GB
+     const validFiles: FileWithMetadata[] = [];
+     const invalidFiles: string[] = [];
+     
+     data.files.forEach((file: FileWithMetadata) => {
+       const fileSize = file.size || 0;
+       if (fileSize > this.maxFileSize) {
+         const fileName = file.name || file.fileName || 'Unknown file';
+         invalidFiles.push(fileName);
+         const fileSizeInGB = (fileSize / (1024 * 1024 * 1024)).toFixed(2);
+         console.warn(`File "${fileName}" (${fileSizeInGB} GB) exceeds the 1GB limit and will not be uploaded.`);
+       } else {
+         validFiles.push(file);
+       }
+     });
+     
+     // Show error message if any files exceed the limit
+     if (invalidFiles.length > 0) {
+       const fileList = invalidFiles.join(', ');
+       this._snackBar.open(
+         `File size limit exceeded: ${fileList}. Maximum file size is 1GB. These files were not added.`,
+         "Close",
+         {
+           duration: 5000,
+           horizontalPosition: "right",
+           verticalPosition: "top",
+           panelClass: ["error-snackbar"],
+         }
+       );
+     }
+     
+     // Only keep valid files
+     this.selectedFiles = validFiles;
+     this.selectedMetadata = data.metadata.filter((_, index) => {
+       return data.files[index].size <= this.maxFileSize;
+     });
+     
+     console.log("Files with metadata selected (after validation):", this.selectedFiles);
+    
+    // If we're in draft mode, update the dfaftfiles array to keep it in sync
+    if (this.isDraft && this.selectedFiles.length > 0) {
+      this.dfaftfiles = this.selectedFiles.map(file => ({
+        fileId: (file as any).fileId,
+        fileName: file.fileName || file.name,
+        subject: file.subject,
+        fileType: file.metadata?.fileType || (file as any).fileType,
+        classification: file.metadata?.classification || (file as any).classification,
+        hashTag: file.metadata?.hashTag || (file as any).hashTag,
+        documentType: file.metadata?.documentType || (file as any).documentType,
+        mimeType: file.type
+      }));
+    }
+  }
 
   /**
    * Track by function for ngFor loops
@@ -197,103 +384,254 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
   filterDropDownData(event) {}
 
   getUserDistrictDropdown() {
-    this._uploadDocumentService.geDistrictByStateData(16).subscribe({
-      next: (response: any) => {
-        console.log("response", response);
-        this.districtDropdown = response.responseData;
-      },
-      error: (error) => {},
-    });
+    const divisionId = Number(sessionStorage.getItem("divisionID"));
+    this._uploadDocumentService
+      .geDistrictByStateData(16, divisionId)
+      .subscribe({
+        next: (response: any) => {
+          console.log("response", response);
+          this.districtDropdown = response.responseData;
+        },
+        error: (error) => {},
+      });
   }
 
   getUserStateDropdown() {
-    this._uploadDocumentService.getState().subscribe({
+    const divisionId = Number(sessionStorage.getItem("divisionID"));
+
+    this._uploadDocumentService.getState(divisionId).subscribe({
       next: (response: any) => {
         console.log("response", response);
-        this.stateDropdown = response.responseData;
-        this.stateDropdown.forEach((element: any) => {
+        this.stateDropdown = response.responseData as State[];
+        this.filteredStates = [...this.stateDropdown];
+        this.stateDropdown.forEach((element: State) => {
           if (element.stateId == 16) {
             this.uploadDocumentForm.patchValue({
               stateIDInfo: element.stateId,
             });
-            this.uploadDocumentForm.get("stateIDInfo").disable();
           }
         });
+        this._changeDetectorRef.detectChanges();
       },
       error: (error) => {},
     });
   }
 
-
   onStateChange(stateId: number): void {
+    this.generateCrimeNo();
     if (stateId) {
-      this._uploadDocumentService.geDistrictByStateData(stateId).subscribe(
-        (districts: any) => {
-          this.districtDropdown = districts.responseData;
-          this.uploadDocumentForm.get("districtId")?.setValue(443);
-        },
-        (error) => {
-          console.error("Error fetching districts:", error);
-        }
-      );
+      const divisionId = Number(sessionStorage.getItem("divisionID"));
+      this._uploadDocumentService
+        .geDistrictByStateData(stateId, divisionId)
+        .subscribe(
+          (districts: any) => {
+            this.districtDropdown = districts.responseData as District[];
+            this.filteredDistricts = [...this.districtDropdown];
+            
+            // Only set default district 443 for fresh uploads, not when patching from search
+            if (!this.isPatchSearchPage) {
+              this.uploadDocumentForm.get("districtId")?.setValue(443);
+            }
+            
+            this._changeDetectorRef.detectChanges();
+          },
+          (error) => {
+            console.error("Error fetching districts:", error);
+          }
+        );
     } else {
       this.districtDropdown = [];
+      this.filteredDistricts = [];
     }
   }
 
   onDisctrictChange(stateId: number): void {
-    this._uploadDocumentService.getUnitsByDistictIdData(stateId).subscribe({
-      next: (response: any) => {
-        if (response.statusCode == 200) {
-          this.unitsDropdown = response.responseData;
-        }
-      },
-      error: (error) => {},
-    });
+    const divisionId = Number(sessionStorage.getItem("divisionID"));
+    this._uploadDocumentService
+      .getUnitsByDistictIdData(stateId, divisionId)
+      .subscribe({
+        next: (response: any) => {
+          if (response.statusCode == 200) {
+            this.unitsDropdown = response.responseData;
+            this.filteredUnits = [...this.unitsDropdown];
+            this._changeDetectorRef.detectChanges();
+          }
+        },
+        error: (error) => {
+          this.unitsDropdown = [];
+          this.filteredUnits = [];
+          this._changeDetectorRef.detectChanges();
+        },
+      });
+  }
+   convertUtcToIst(utcTime: string | null): string | null {
+    if (!utcTime) {
+      return null;
+    }
+    const date = new Date(utcTime);
+    if (isNaN(date.getTime())) {
+      return null;
+    }
+    date.setHours(date.getHours() + 5);
+    date.setMinutes(date.getMinutes() + 30);
+    return date.toISOString();
   }
 
-  sumbitUpload() {
-    let uploadMetaData = {
+  /**
+   * Convert date string to Date object for Angular Material datepicker
+   */
+  convertToDatePickerFormat(dateString: string | null): Date | null {
+    if (!dateString) {
+      return null;
+    }
+    
+    try {
+      // Handle different date formats
+      let date: Date;
+      
+      // If it's already a valid date string with time
+      if (dateString.includes('T') || dateString.includes('Z')) {
+        // ISO format or UTC format
+        date = new Date(dateString);
+      } else if (dateString.includes('/')) {
+        // MM/DD/YYYY or DD/MM/YYYY format
+        date = new Date(dateString);
+      } else if (dateString.includes('-')) {
+        // Handle DD-MM-YYYY format (common in Indian date format)
+        const parts = dateString.split('-');
+        if (parts.length === 3) {
+          const day = parseInt(parts[0], 10);
+          const month = parseInt(parts[1], 10);
+          const year = parseInt(parts[2], 10);
+          
+          // Check if it's DD-MM-YYYY format (day > 12 indicates DD-MM-YYYY)
+          if (day > 12 && month <= 12) {
+            // DD-MM-YYYY format
+            date = new Date(year, month - 1, day); // month is 0-indexed
+            console.log(`Parsed DD-MM-YYYY: ${dateString} -> ${date.toDateString()}`);
+          } else if (month > 12 && day <= 12) {
+            // MM-DD-YYYY format
+            date = new Date(year, day - 1, month); // day and month swapped
+            console.log(`Parsed MM-DD-YYYY: ${dateString} -> ${date.toDateString()}`);
+          } else if (day <= 12 && month <= 12) {
+            // Ambiguous case - prioritize DD-MM-YYYY for Indian date format
+            // Check if the first part (day) is more likely to be a day
+            if (day <= 31 && month <= 12) {
+              // Assume DD-MM-YYYY format (Indian standard)
+              date = new Date(year, month - 1, day);
+              console.log(`Parsed DD-MM-YYYY (ambiguous): ${dateString} -> ${date.toDateString()}`);
+            } else {
+              // Fallback to standard parsing
+              date = new Date(dateString);
+              console.log(`Standard parsing (ambiguous): ${dateString} -> ${date.toDateString()}`);
+            }
+          } else {
+            // Try standard parsing (assumes YYYY-MM-DD or MM-DD-YYYY)
+            date = new Date(dateString);
+            console.log(`Standard parsing: ${dateString} -> ${date.toDateString()}`);
+          }
+        } else {
+          // Try standard parsing
+          date = new Date(dateString);
+        }
+      } else {
+        // Try parsing as is
+        date = new Date(dateString);
+      }
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date format:', dateString);
+        return null;
+      }
+      
+      return date;
+    } catch (error) {
+      console.error('Error converting date:', dateString, error);
+      return null;
+    }
+  }
+
+  saveDraftUpload() {
+    this.updateFileNamesWithCaseNo();
+    if (this.isSaveDraft) return;
+    this.isSaveDraft = true;
+    this._changeDetectorRef.detectChanges();
+    this.crimeNo = this.uploadDocumentForm.value.caseNo;
+    const caseDateValue = this.uploadDocumentForm.value.caseDate;
+    const finalCaseDate = this.convertUtcToIst(caseDateValue) || null;
+    let uploadMetaData: any = {
+      CaseInfoDetailsId: this.draftInfo?.CaseInfoDetailsId ?? 0,
       stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
       districtId: this.uploadDocumentForm.value.districtId,
       unitId: this.uploadDocumentForm.value.unitsId,
-      Office: this.uploadDocumentForm.value.office,
-      letterNo: this.uploadDocumentForm.value.letterNo,
+      Office: this.uploadDocumentForm.value.office || null,
+      letterNo: this.uploadDocumentForm.value.letterNo || null,
       caseNo: this.uploadDocumentForm.value.caseNo,
-      caseDate: this.uploadDocumentForm.value.caseDate,
       caseType: this.uploadDocumentForm.value.caseType,
       firNo: this.uploadDocumentForm.value.firNo,
-      author: this.uploadDocumentForm.value.author,
-      toAddr: this.uploadDocumentForm.value.toAddr,
+      author: this.uploadDocumentForm.value.author || null,
+      toAddr: this.uploadDocumentForm.value.toAddr || null,
+      caseStatus: this.uploadDocumentForm.value.statusId,
+      year: this.uploadDocumentForm.value.yearId,
+      finalReportCaseStatus:this.uploadDocumentForm.value.statusIdDependent || 0
     };
-   debugger
+    if (caseDateValue) {
+      uploadMetaData.caseDate = finalCaseDate;
+    }
     const formData = new FormData();
+    formData.append("division_id", sessionStorage.getItem("divisionID"));
     formData.append("caseDetails", JSON.stringify(uploadMetaData));
-    const fileDetailsArray = this.selectedFiles.map(file => ({
-      fileId:null,
-      hashTag: file.metadata.hashTag ? file.metadata.hashTag.split(',').map(tag => tag.trim()).join(',') : '', 
-      subject: file.metadata.subject || '', 
-      classification: file.metadata.classification || '', 
-      fileType: file.metadata.fileType || ''
-    }));
-    formData.append("fileDetails", JSON.stringify(fileDetailsArray));
+    console.log(" this.selectedFiles", this.selectedFiles);
+    const fileDetailsArray = this.selectedFiles.map((file: any) => {
+      const metadata = file.metadata || file;
 
+      return {
+        fileId: file.fileId || null,
+        hashTag: metadata.hashTag
+          ? metadata.hashTag
+              .split(",")
+              .map((tag) => tag.trim())
+              .join(",")
+          : "",
+        subject: metadata.subject || "",
+        classification: metadata.classification || "",
+        fileType: metadata.fileType || "",
+        documentType: metadata.documentType || "",
+      };
+    });
+    formData.append("is_draft", "true");
+    formData.append("fileDetails", JSON.stringify(fileDetailsArray));
+    formData.append("dept_id", sessionStorage.getItem("departmentID"));
     this.selectedFiles.forEach((file) => {
-    formData.append(`Files`, file); 
-  });
-    this._uploadDocumentService.uploadDocument(formData).subscribe({
+      const baseName = this.getBaseFileName(file);
+      const caseNo = this.uploadDocumentForm.value.caseNo;
+      let newFileName = baseName;
+      if (!baseName.startsWith(caseNo + "_")) {
+        newFileName = caseNo + "_" + baseName;
+      }
+      const newFile = new File([file], newFileName, { type: file.type });
+      formData.append("Files", newFile);
+    });
+
+    this._uploadDocumentService.saveDraftInfo(formData).subscribe({
       next: (response: any) => {
-        this._snackBar.open("File Upload successfully", "Close", {
+        this._snackBar.open("Draft saved successfully", "Close", {
           duration: 3000,
           horizontalPosition: "right",
           verticalPosition: "top",
-          panelClass: ["success-snackbar"],
+          panelClass: ["green-snackbar"],
         });
         this.addcitizenfeedbackNgForm.resetForm();
-        this._router.navigateByUrl("search-document")
+        // this._router.navigateByUrl("search-document");
+        this.resetSelectedFiles();
         this.selectedFiles = [];
-       
+        this._uploadDocumentService.clearDraft();
+        this.getDraftDataPatch()
+        this._changeDetectorRef.detectChanges();
+        this.isDraft =false;
       },
+
       error: (error) => {
         this._snackBar.open(error.message || "Error creating user", "Close", {
           duration: 3000,
@@ -302,34 +640,1128 @@ export class UploadDocumentComponent implements OnInit, OnDestroy {
           panelClass: ["error-snackbar"],
         });
       },
+      complete: () => {
+        this.isSaveDraft = false;
+        this._changeDetectorRef.detectChanges();
+      },
     });
   }
 
-   getCaseStatusInfo() {
-      this._masterService.getCaseStatus().subscribe({
-        next: (response: any) => {
-          this.caseStatusDropdown = response;
-        },
-        error: (error) => {},
-      });
-    }
-  
-    getFileClassificationInfo() {
-      this._masterService.getFileClassification().subscribe({
-        next: (response: any) => {
-          this.fileClassificationDropDown= response;
-        },
-        error: (error) => {},
-      });
-    }
-  
+  private getProgressCallback() {
+    return (progress: number, loaded: number, total: number) => {
+      this.uploadProgress = progress;
+      if (total > 0 && loaded > 0) {
+        const elapsed = Date.now() - this.uploadStartTime;
+        const rate = loaded / elapsed;
+        if (rate > 0) {
+          const remaining = Math.floor((total - loaded) / rate / 60000);
+          const seconds = Math.floor(((total - loaded) / rate % 60000) / 1000);
+          this.uploadStatusMessage = remaining > 0 || seconds > 0 
+            ? `Uploading... ${progress}% (${remaining}m ${seconds}s remaining)`
+            : `Uploading... ${progress}%`;
+        }
+      }
+      this._changeDetectorRef.detectChanges();
+    };
+  }
 
-      getFileTypesInfo() {
-        this._masterService.getFileTypes().subscribe({
-          next: (response: any) => {
-           this.fileTypesDropDown= response;
-          },
-          error: (error) => {},
+  private getErrorHandler(defaultMessage: string) {
+    return (error: any) => {
+      this.isUploading = false;
+      this.uploadProgress = 0;
+      this.uploadStatusMessage = '';
+      this.isSubmitting = false;
+      const totalSizeGB = this.selectedFiles.reduce((sum, file) => sum + (file.size || 0), 0) / (1024 * 1024 * 1024);
+      let errorMessage = defaultMessage;
+      
+      if (error.status === 0) {
+        if (totalSizeGB > 1.5) {
+          errorMessage = `Server rejected ${totalSizeGB.toFixed(2)} GB file immediately. The server has a size limit. Please split files into smaller chunks (max 1.5GB per upload) or contact your administrator to increase server upload limits.`;
+        } else {
+          errorMessage = `Connection reset while uploading ${totalSizeGB.toFixed(2)} GB. Retried automatically. If this persists, the server may have size limits. Try smaller files or contact administrator.`;
+        }
+      } else if (error.status === 408 || error.name === 'TimeoutError') {
+        errorMessage = "Upload timeout. Try again with a better connection.";
+      } else if (error.status === 413) {
+        errorMessage = "File size exceeds server limit. Maximum allowed size is likely 1-2GB. Please split files.";
+      } else if (error.error && typeof error.error === 'string' && error.error.includes('rejecting')) {
+        errorMessage = error.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      this._snackBar.open(errorMessage, "Close", { duration: 10000, horizontalPosition: "right", verticalPosition: "top", panelClass: ["error-snackbar"] });
+      this._changeDetectorRef.detectChanges();
+    };
+  }
+
+  sumbitUpload() {
+    this.updateFileNamesWithCaseNo();
+    if (this.isSubmitting || this.isUploading) return;
+
+    const totalSizeGB = this.selectedFiles.reduce((sum, file) => sum + (file.size || 0), 0) / (1024 * 1024 * 1024);
+    
+    // Block uploads over 2GB - server is rejecting them immediately
+    if (totalSizeGB > 2) {
+      this._snackBar.open(
+        `Cannot upload ${totalSizeGB.toFixed(2)} GB. Maximum allowed size is 2GB. Please split files or contact administrator.`,
+        "Close",
+        { duration: 10000, horizontalPosition: "right", verticalPosition: "top", panelClass: ["error-snackbar"] }
+      );
+      return;
+    }
+    
+    if (totalSizeGB > 1) {
+      const warningMsg = `Warning: Uploading ${totalSizeGB.toFixed(2)} GB. Large uploads may take time.\n\nThe system will automatically retry if connection fails.\n\nContinue?`;
+      if (!confirm(warningMsg)) {
+        return;
+      }
+    }
+
+    this.isSubmitting = true;
+    this._changeDetectorRef.detectChanges();
+    const caseDateValue = this.uploadDocumentForm.value.caseDate;
+    const finalCaseDate = this.convertUtcToIst(caseDateValue) || null;
+    let uploadMetaData: any = {
+      CaseInfoDetailsId: this.draftInfo?.CaseInfoDetailsId ?? 0,
+      stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
+      districtId: this.uploadDocumentForm.value.districtId,
+      unitId: this.uploadDocumentForm.value.unitsId,
+      Office: this.uploadDocumentForm.value.office || null,
+      letterNo: this.uploadDocumentForm.value.letterNo || null,
+      caseNo: this.uploadDocumentForm.value.caseNo,
+      caseType: this.uploadDocumentForm.value.caseType,
+      firNo: this.uploadDocumentForm.value.firNo,
+      author: this.uploadDocumentForm.value.author || null,
+      toAddr: this.uploadDocumentForm.value.toAddr || null,
+      caseStatus: this.uploadDocumentForm.value.statusId,
+      year: this.uploadDocumentForm.value.yearId,
+      finalReportCaseStatus:this.uploadDocumentForm.value.statusIdDependent ||0
+    };
+    if (caseDateValue) {
+      uploadMetaData.caseDate = finalCaseDate;
+    }
+    const formData = new FormData();
+    formData.append("caseDetails", JSON.stringify(uploadMetaData));
+    const fileDetailsArray = this.selectedFiles.map((file: any) => {
+      const metadata = file.metadata || file;
+
+      return {
+        fileId: file.fileId || null,
+        hashTag: metadata.hashTag
+          ? metadata.hashTag
+              .split(",")
+              .map((tag) => tag.trim())
+              .join(",")
+          : "",
+        subject: metadata.subject || "",
+        classification: metadata.classification || "",
+        fileType: metadata.fileType || "",
+        documentType: metadata.documentType || "",
+      };
+    });
+
+    formData.append("fileDetails", JSON.stringify(fileDetailsArray));
+    formData.append("division_id", sessionStorage.getItem("divisionID"));
+    formData.append("dept_id", sessionStorage.getItem("departmentID"));
+    this.selectedFiles.forEach((file) => {
+      const baseName = this.getBaseFileName(file);
+      const caseNo = this.uploadDocumentForm.value.caseNo;
+      let newFileName = baseName;
+      if (!baseName.startsWith(caseNo + "_")) {
+        newFileName = caseNo + "_" + baseName;
+      }
+      const newFile = new File([file], newFileName, { type: file.type });
+      formData.append("Files", newFile);
+    });
+
+    this.isUploading = true;
+    this.uploadProgress = 0;
+    this.uploadStatusMessage = 'Preparing upload...';
+    this._changeDetectorRef.detectChanges();
+
+    this.uploadStartTime = Date.now();
+    this.isUploading = true;
+    this.uploadProgress = 0;
+    this.uploadStatusMessage = 'Preparing upload...';
+    this._changeDetectorRef.detectChanges();
+
+    this._uploadDocumentService.uploadDocument(formData, true, this.getProgressCallback()).subscribe({
+      next: (event: any) => {
+        if (event.type === HttpEventType.Response || event.body) {
+          this.uploadProgress = 100;
+          this._snackBar.open("Case Details saved successfully", "Close", { duration: 3000, horizontalPosition: "right", verticalPosition: "top", panelClass: ["green-snackbar"] });
+          this.addcitizenfeedbackNgForm.resetForm();
+          this.resetSelectedFiles();
+          this.selectedFiles = [];
+          this._uploadDocumentService.clearDraft();
+          this.isDraft = false;
+          this.checkFileSatus = true;
+          setTimeout(() => { this.checkFileSatus = false; }, 100);
+          this.isUploading = false;
+          this.uploadProgress = 0;
+          this.uploadStatusMessage = '';
+          this._changeDetectorRef.detectChanges();
+        }
+      },
+      error: this.getErrorHandler("Error uploading files"),
+      complete: () => {
+        this.isSubmitting = false;
+        this.isUploading = false;
+        this._changeDetectorRef.detectChanges();
+      },
+    });
+  }
+
+  updateUpload() {
+    this.updateFileNamesWithCaseNo();
+    if (this.isSubmitting || this.isUploading) return;
+    if (!this.selectedFiles || this.selectedFiles.length === 0) {
+      this._snackBar.open(
+        "Upload one or more documents before updating the case",
+        "Close",
+        {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["warning-snackbar"],
+        }
+      );
+      return;
+    }
+    this.isSubmitting = true;
+    this._changeDetectorRef.detectChanges();
+    const caseDateValue = this.uploadDocumentForm.value.caseDate;
+    const finalCaseDate = this.convertUtcToIst(caseDateValue) || null;
+    let uploadMetaData: any = {
+      stateId: this.uploadDocumentForm.value.stateIDInfo || 16,
+      districtId: this.uploadDocumentForm.value.districtId,
+      unitId: this.uploadDocumentForm.value.unitsId,
+      Office: this.uploadDocumentForm.value.office || null,
+      letterNo: this.uploadDocumentForm.value.letterNo || null,
+      caseNo: this.uploadDocumentForm.value.caseNo,
+      caseType: this.uploadDocumentForm.value.caseType,
+      firNo: this.uploadDocumentForm.value.firNo,
+      author: this.uploadDocumentForm.value.author || null,
+      toAddr: this.uploadDocumentForm.value.toAddr || null,
+      caseStatus: this.uploadDocumentForm.value.statusId,
+      year: this.uploadDocumentForm.value.yearId,
+      finalReportCaseStatus:this.uploadDocumentForm.value.statusIdDependent || 0
+    };
+    if (caseDateValue) {
+      uploadMetaData.caseDate = finalCaseDate;
+    }
+
+    const formData = new FormData();
+    formData.append("caseDetails", JSON.stringify(uploadMetaData));
+
+    const fileDetailsArray = this.selectedFiles.map((file: any) => {
+      const metadata = file.metadata || file;
+
+      return {
+        fileId: file.fileId || null,
+        hashTag: metadata.hashTag
+          ? metadata.hashTag
+              .split(",")
+              .map((tag) => tag.trim())
+              .join(",")
+          : "",
+        subject: metadata.subject || "",
+        classification: metadata.classification || "",
+        fileType: metadata.fileType || "",
+        documentType: metadata.documentType || "",
+      };
+    });
+
+    formData.append("fileDetails", JSON.stringify(fileDetailsArray));
+    formData.append("division_id", sessionStorage.getItem("divisionID"));
+    formData.append("dept_id", sessionStorage.getItem("departmentID"));
+
+    this.selectedFiles.forEach((file) => {
+      const baseName = this.getBaseFileName(file);
+      const caseNo = this.uploadDocumentForm.value.caseNo;
+      let newFileName = baseName;
+      if (!baseName.startsWith(caseNo + "_")) {
+        newFileName = caseNo + "_" + baseName;
+      }
+      const newFile = new File([file], newFileName, { type: file.type });
+      formData.append("Files", newFile);
+    });
+
+    this.isUploading = true;
+    this.uploadProgress = 0;
+    this.uploadStatusMessage = 'Preparing upload...';
+    this._changeDetectorRef.detectChanges();
+
+    this.uploadStartTime = Date.now();
+    this.isUploading = true;
+    this.uploadProgress = 0;
+    this.uploadStatusMessage = 'Preparing upload...';
+    this._changeDetectorRef.detectChanges();
+
+    this._uploadDocumentService.updateCaseDetailsByIdData(this.caseMetaData.CaseInfoDetailsId, formData, true, this.getProgressCallback()).subscribe({
+      next: (event: any) => {
+        if (event.type === HttpEventType.Response || event.body) {
+          this.uploadProgress = 100;
+          this._snackBar.open("Case Details Updated successfully", "Close", { duration: 3000, horizontalPosition: "right", verticalPosition: "top", panelClass: ["green-snackbar"] });
+          this.addcitizenfeedbackNgForm.resetForm();
+          this._router.navigateByUrl("search-document");
+          this.resetSelectedFiles();
+          this.selectedFiles = [];
+          this._uploadDocumentService.clearDraft();
+          this.isDraft = false;
+          this.isUploading = false;
+          this.uploadProgress = 0;
+          this.uploadStatusMessage = '';
+          this._changeDetectorRef.detectChanges();
+        }
+      },
+      error: this.getErrorHandler("Error updating case"),
+      complete: () => {
+        this.isSubmitting = false;
+        this.isUploading = false;
+        this._changeDetectorRef.detectChanges();
+      },
+    });
+  }
+
+  resetSelectedFiles() {
+    this.checkFileSatus = true;
+    const defaultStateId = 16;
+    this.uploadDocumentForm.patchValue({
+      stateIDInfo: defaultStateId,
+    });
+    this.uploadDocumentForm.get("districtId")?.setValue(443);
+    this.selectedFiles = [];
+    this.selectedMetadata = [];
+  }
+
+  generateCrimeNo(): void {
+    const districtId = this.uploadDocumentForm.get("districtId")?.value;
+    const unitId = this.uploadDocumentForm.get("unitsId")?.value;
+    const yearId = this.uploadDocumentForm.get("yearId")?.value;
+    // const firNo = this.uploadDocumentForm.get("firNo")?.value;
+    if (districtId && unitId != null && yearId && this.finalFIRValue) {
+      const paddedUnitId = String(unitId).padStart(4, "0");
+      this.crimeNo = `${this.caseTypeFinalId}${districtId}${paddedUnitId}${yearId}${this.finalFIRValue}`;
+      this.uploadDocumentForm.get("caseNo")?.setValue(this.crimeNo);
+    }
+  }
+
+  onCaseTypeChange(event: any) {
+    this.selectedFCaseType = event.value;
+    if (this.selectedFCaseType == 1) {
+      this.caseTypeFinalId = 10;
+    } else if (this.selectedFCaseType == 2) {
+      this.caseTypeFinalId = 20;
+    }
+    this.generateCrimeNo();
+  }
+
+  onDistrictChange(districtId: number): void {
+    this.generateCrimeNo();
+  }
+
+  onUnitChange(unitId: number): void {
+    this.generateCrimeNo();
+  }
+
+  onYearChange(yearId: number): void {
+    this.generateCrimeNo();
+  }
+
+  allowOnlyNumbers(event: KeyboardEvent): void {
+    const charCode = event.key.charCodeAt(0);
+    // Allow only digits (0–9)
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
+  }
+
+  allowOnlyLetters(event: KeyboardEvent): void {
+    const char = event.key;
+    if (!/^[a-zA-Z\s]$/.test(char)) {
+      event.preventDefault();
+    }
+  }
+
+  // get canSubmit(): boolean {
+  //   if (this.isSubmitting) return false;
+  //   if (this.uploadDocumentForm.invalid) return false;
+  //   console.log("this.selectedFiles",this.selectedFiles)
+  //   if (!this.selectedFiles || this.selectedFiles.length === 0) return false;
+  //   for (const file of this.selectedFiles) {
+  //     const meta = file.metadata;
+  //     console.log("meta",meta)
+  //     if (
+  //       !meta ||
+  //       !meta.subject ||
+  //       !meta.fileType ||
+  //       !meta.classification ||
+  //       !meta.documentType
+  //     ) {
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // }
+
+  get canSubmit(): boolean {
+    if (this.isSubmitting) return false;
+
+    if (this.uploadDocumentForm.invalid) return false;
+
+    if (!Array.isArray(this.selectedFiles) || this.selectedFiles.length === 0)
+      return false;
+
+    for (const file of this.selectedFiles) {
+      const meta = file.metadata ?? file; // Use metadata if available, otherwise fall back to file
+
+      if (
+        !meta.subject ||
+        !meta.fileType ||
+        !meta.classification ||
+        !meta.documentType
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  get canisSaveDraft(): boolean {
+    if (this.isSaveDraft) return false;
+    if (this.uploadDocumentForm.invalid) return false;
+    // if (!this.selectedFiles || this.selectedFiles.length === 0) return false;
+    for (const file of this.selectedFiles) {
+      const meta = file.metadata;
+      // if (
+      //   !meta ||
+      //   !meta.subject ||
+      //   !meta.fileType ||
+      //   !meta.classification ||
+      //   !meta.documentType
+      // ) {
+      //   return false;
+      // }
+    }
+    return true;
+  }
+
+  getMasterDropDown() {
+    this._uploadDocumentService.getMasterDropDownData().subscribe({
+      next: (response: any) => {
+        this.masterData = response;
+        this.caseTypeDropDown = response.CaseType as CaseType[];
+        this.filteredCaseTypes = [...this.caseTypeDropDown];
+        this.ClassificationTypeDropDown = response.ClassificationType;
+        this.FileTypeDropDown = response.FileType;
+        this.DocumentTypeDropDown = response.Category_4;
+        this.caseStatusDropdown = response.CaseStatus as CaseStatus[];
+        this.filteredCaseStatus = [...this.caseStatusDropdown];
+        this._changeDetectorRef.detectChanges();
+      },
+      error: (error) => {},
+    });
+  }
+
+  filterStates(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+
+    if (this.stateSearchTimeout) {
+      clearTimeout(this.stateSearchTimeout);
+    }
+
+    this.stateSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredStates = this.stateDropdown;
+      } else {
+        this.filteredStates = this.stateDropdown.filter((state) => {
+          const stateName = (state.stateName || "").toLowerCase();
+          return stateName.includes(searchText);
         });
-      }    
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
+  }
+
+  filterDistricts(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+
+    if (this.districtSearchTimeout) {
+      clearTimeout(this.districtSearchTimeout);
+    }
+
+    this.districtSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredDistricts = this.districtDropdown;
+      } else {
+        this.filteredDistricts = this.districtDropdown.filter((district) => {
+          const districtName = (district.districtName || "").toLowerCase();
+          return districtName.includes(searchText);
+        });
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
+  }
+
+  filterUnits(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+
+    this.searchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredUnits = this.unitsDropdown;
+      } else {
+        this.filteredUnits = this.unitsDropdown.filter((unit) => {
+          const unitName = (unit.unitName || "").toLowerCase();
+          return unitName.includes(searchText);
+        });
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
+  }
+
+  filterCaseTypes(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+
+    if (this.caseTypeSearchTimeout) {
+      clearTimeout(this.caseTypeSearchTimeout);
+    }
+
+    this.caseTypeSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredCaseTypes = this.caseTypeDropDown;
+      } else {
+        this.filteredCaseTypes = this.caseTypeDropDown.filter((caseType) => {
+          const caseTypeName = (caseType.value || "").toLowerCase();
+          return caseTypeName.includes(searchText);
+        });
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
+  }
+
+  filterCaseStatus(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+
+    if (this.caseStatusSearchTimeout) {
+      clearTimeout(this.caseStatusSearchTimeout);
+    }
+
+    this.caseStatusSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredCaseStatus = this.caseStatusDropdown;
+      } else {
+        this.filteredCaseStatus = this.caseStatusDropdown.filter((status) => {
+          const statusName = (status.value || "").toLowerCase();
+          return statusName.includes(searchText);
+        });
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
+  }
+
+  filterCaseStatusDependentDropdown(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+
+    if (this.caseStatuDependentsSearchTimeout) {
+      clearTimeout(this.caseStatuDependentsSearchTimeout);
+    }
+
+    this.caseStatuDependentsSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredCaseStatusDependent = this.caseStatusDeptDropdown;
+      } else {
+        this.filteredCaseStatusDependent = this.caseStatusDeptDropdown.filter((status) => {
+          const statusName = (status.frstatusName || "").toLowerCase();
+          return statusName.includes(searchText);
+        });
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
+  }
+
+  filterYears(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+
+    if (this.yearSearchTimeout) {
+      clearTimeout(this.yearSearchTimeout);
+    }
+
+    this.yearSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredYears = [...this.yearDropDown];
+      } else {
+        this.filteredYears = this.yearDropDown.filter((year) => {
+          const yearName = year.yearName.toString().toLowerCase();
+          return yearName.includes(searchText);
+        });
+      }
+      this._changeDetectorRef.detectChanges();
+    }, 300);
+  }
+
+  generateFIRNo(): void {
+    const firControl = this.uploadDocumentForm.get("firNo");
+    if (firControl) {
+      let value = firControl.value;
+      value = value?.replace(/\D/g, "");
+      if (value && value.length < 4) {
+        value = value.padStart(4, "0");
+        firControl.setValue(value, { emitEvent: false });
+      }
+      this.finalFIRValue = value;
+    }
+    this.generateCrimeNo();
+  }
+
+  getDataSearchForPatch() {
+    const state = this._uploadDocumentService.getStateData();
+    this.files = state.files;
+    this.caseMetaData = state.caseData;
+    this.isPatchSearchPage = state.isPatch;
+    if (this.files) {
+      this.patchDetailsfiles = this.files;
+    }
+    if (this.caseMetaData) {
+      this.dataPatch(this.caseMetaData);
+    }
+    // Clear state after loading
+    this._uploadDocumentService.clearState();
+  }
+
+  getDraftDataPatch() {
+    const state = this._uploadDocumentService.getDraftData();
+    this.draftInfo = state.draftInfo;
+    console.log("Draft data received:", this.draftInfo);
+    
+    if (this.draftInfo) {
+      // Set isDraft flag before patching
+      this.isDraft = true;
+      console.log("isDraft set to true");
+      
+      // Patch the draft data
+      this.dataPatchDraft(this.draftInfo);
+      
+      // Handle draft files if available
+      if (this.draftInfo?.file_details) {
+        this.dfaftfiles = this.draftInfo?.file_details;
+        console.log("Draft files loaded:", this.dfaftfiles);
+        
+        // Convert draft files to FileWithMetadata format and set as selectedFiles
+        this.selectedFiles = this.convertDraftFilesToFileWithMetadata(this.dfaftfiles);
+        this.selectedMetadata = this.selectedFiles.map(file => file.metadata);
+        console.log("Converted draft files to selectedFiles:", this.selectedFiles);
+      }
+    } else {
+      this.isDraft = false;
+      console.log("No draft data found, isDraft set to false");
+    }
+    
+    // Clear state after loading
+    this._uploadDocumentService.clearDraft();
+  }
+
+  dataPatch(data) {
+    if (data && this.isPatchSearchPage) {
+      console.log("data",data)
+      this.crimeNo = data.caseNo;
+      
+      // Ensure proper field mapping with fallbacks
+      const stateId = data.stateId || data.stateID || data.stateIdInfo;
+      const districtId = data.districtId || data.districtID;
+      const unitId = data.unitId || data.unitID || data.unitsId;
+      const office = data.Office || data.office;
+      const caseType = data.caseType || data.caseTypeId;
+      const caseStatus = data.caseStatus || data.statusId;
+      const  finalReportCaseStatus= data.finalReportCaseStatus || data.finalReportCaseStatus;
+      const year = data.year || data.yearId;
+      
+      // Convert caseDate to proper format for datepicker
+      const formattedCaseDate = this.convertToDatePickerFormat(data.caseDate);
+      console.log('Original caseDate:', data.caseDate, 'Formatted caseDate:', formattedCaseDate);
+      
+      // First patch the state and trigger district loading
+      this.uploadDocumentForm.patchValue({
+        stateIDInfo: stateId,
+        office: office,
+        caseDate: formattedCaseDate,
+        caseNo: data.caseNo,
+        firNo: data.firNo,
+        letterNo: data.letterNo,
+        author: data.author,
+        toAddr: data.toAddr,
+      });
+      
+      // Load districts for the selected state
+      if (stateId) {
+        console.log('Loading districts for stateId:', stateId);
+        this.onStateChange(stateId);
+        
+        // Wait for districts to load, then patch district and load units
+        setTimeout(() => {
+          console.log('Patching districtId:', districtId, 'Available districts:', this.districtDropdown);
+          this.uploadDocumentForm.patchValue({
+            districtId: districtId,
+          });
+          
+          // Load units for the selected district
+          if (districtId) {
+            console.log('Loading units for districtId:', districtId);
+            this.onDisctrictChange(districtId);
+            
+            // Wait for units to load, then patch unit
+            setTimeout(() => {
+              console.log('Patching unitId:', unitId, 'Available units:', this.unitsDropdown);
+              this.uploadDocumentForm.patchValue({
+                unitsId: unitId,
+                caseType: Number(caseType),
+                statusId: caseStatus,
+                statusIdDependent:finalReportCaseStatus,
+                yearId: year,
+              });
+              
+              // Check if case status requires Final Report State dropdown
+              if (caseStatus) {
+                const selectedCaseStatus = this.caseStatusDropdown.find(status => status.id === caseStatus);
+                const shouldShowFinalReportState = caseStatus === 33 || selectedCaseStatus?.value === 'Final Report A';
+                if (shouldShowFinalReportState) {
+                  this.onCaseStatusChange(caseStatus);
+                } else {
+                  // Ensure dropdown is hidden if status doesn't match
+                  this.showFinalReportState = false;
+                  const statusIdDependentControl = this.uploadDocumentForm.get('statusIdDependent');
+                  statusIdDependentControl?.clearValidators();
+                  statusIdDependentControl?.updateValueAndValidity();
+                }
+              }
+              
+              this.uploadDocumentForm.disable();
+              this._changeDetectorRef.detectChanges();
+            }, 1000);
+          } else {
+            this.uploadDocumentForm.patchValue({
+              caseType: Number(caseType),
+              statusId: caseStatus,
+              statusIdDependent:finalReportCaseStatus,
+              yearId: year,
+            });
+            
+            // Check if case status requires Final Report State dropdown
+            if (caseStatus) {
+              this.onCaseStatusChange(caseStatus);
+            }
+            
+            this.uploadDocumentForm.disable();
+            this._changeDetectorRef.detectChanges();
+          }
+        }, 1000);
+      } else {
+        // If no state, just patch the other values
+        this.uploadDocumentForm.patchValue({
+          districtId: districtId,
+          unitsId: unitId,
+          caseType: Number(caseType),
+          statusId: caseStatus,
+          statusIdDependent:finalReportCaseStatus,
+          yearId: year,
+        });
+        
+        // Check if case status requires Final Report State dropdown
+        if (caseStatus) {
+          this.onCaseStatusChange(caseStatus);
+        }
+        
+        this.uploadDocumentForm.disable();
+        this._changeDetectorRef.detectChanges();
+      }
+      
+      this._uploadDocumentService.clearState();
+    }
+  }
+
+  dataPatchDraft(data) {
+    if (data && this.isDraft) {
+      console.log('Patching draft data:', data);
+      const uploadDataPach = data;
+      
+      // Set crimeNo from draft data - this is crucial for displaying Case No
+      this.crimeNo = uploadDataPach.caseNo;
+      console.log('Draft - Setting crimeNo:', this.crimeNo);
+      
+      // Set finalFIRValue for case number generation
+      this.finalFIRValue = uploadDataPach.firNo;
+      console.log('Draft - Setting finalFIRValue:', this.finalFIRValue);
+      
+      // Ensure proper field mapping with fallbacks
+      const stateId = uploadDataPach.stateId || uploadDataPach.stateID || uploadDataPach.stateIdInfo;
+      const districtId = uploadDataPach.districtId || uploadDataPach.districtID;
+      const unitId = uploadDataPach.unitId || uploadDataPach.unitID || uploadDataPach.unitsId;
+      const office = uploadDataPach.Office || uploadDataPach.office;
+      const caseType = uploadDataPach.caseType || uploadDataPach.caseTypeId;
+      const caseStatus = uploadDataPach.caseStatus || uploadDataPach.statusId;
+      const finalReportCaseStatus = uploadDataPach.finalReportCaseStatus || uploadDataPach.finalReportCaseStatus;
+      const year = uploadDataPach.year || uploadDataPach.yearId;
+      
+      // Set caseTypeFinalId for case number generation
+      if (caseType == 1) {
+        this.caseTypeFinalId = 10;
+      } else if (caseType == 2) {
+        this.caseTypeFinalId = 20;
+      }
+      console.log('Draft - Setting caseTypeFinalId:', this.caseTypeFinalId);
+      
+      console.log('Draft field mapping:', {
+        stateId, districtId, unitId, office, caseType, caseStatus, year
+      });
+      
+      // Convert caseDate to proper format for datepicker
+      const formattedCaseDate = this.convertToDatePickerFormat(uploadDataPach.caseDate);
+      console.log('Draft - Original caseDate:', uploadDataPach.caseDate, 'Formatted caseDate:', formattedCaseDate);
+      
+      // First patch the state and trigger district loading
+      this.uploadDocumentForm.patchValue({
+        stateIDInfo: stateId,
+        office: office,
+        caseDate: formattedCaseDate,
+        caseNo: uploadDataPach.caseNo,
+        firNo: uploadDataPach.firNo,
+        letterNo: uploadDataPach.letterNo,
+        author: uploadDataPach.author,
+        toAddr: uploadDataPach.toAddr,
+         statusIdDependent:uploadDataPach.finalReportCaseStatus
+      });
+      
+      // Load districts for the selected state
+      if (stateId) {
+        console.log('Draft - Loading districts for stateId:', stateId);
+        this.onStateChange(stateId);
+        
+        // Wait for districts to load, then patch district and load units
+        setTimeout(() => {
+          console.log('Draft - Patching districtId:', districtId, 'Available districts:', this.districtDropdown);
+          this.uploadDocumentForm.patchValue({
+            districtId: districtId,
+          });
+          
+          // Load units for the selected district
+          if (districtId) {
+            console.log('Draft - Loading units for districtId:', districtId);
+            this.onDisctrictChange(districtId);
+            
+            // Wait for units to load, then patch unit
+            setTimeout(() => {
+              console.log('Draft - Patching unitId:', unitId, 'Available units:', this.unitsDropdown);
+              this.uploadDocumentForm.patchValue({
+                unitsId: unitId,
+                caseType: Number(caseType),
+                statusId: caseStatus,
+                yearId: year,
+                statusIdDependent:finalReportCaseStatus
+              });
+              
+              // Check if case status requires Final Report State dropdown
+              if (caseStatus) {
+                const selectedCaseStatus = this.caseStatusDropdown.find(status => status.id === caseStatus);
+                const shouldShowFinalReportState = caseStatus === 33 || selectedCaseStatus?.value === 'Final Report A';
+                if (shouldShowFinalReportState) {
+                  this.onCaseStatusChange(caseStatus);
+                } else {
+                  // Ensure dropdown is hidden if status doesn't match
+                  this.showFinalReportState = false;
+                  const statusIdDependentControl = this.uploadDocumentForm.get('statusIdDependent');
+                  statusIdDependentControl?.clearValidators();
+                  statusIdDependentControl?.updateValueAndValidity();
+                }
+              }
+              
+              this._changeDetectorRef.detectChanges();
+            }, 1000);
+          } else {
+            this.uploadDocumentForm.patchValue({
+              caseType: Number(caseType),
+              statusId: caseStatus,
+              yearId: year,
+              statusIdDependent:finalReportCaseStatus
+            });
+            
+            // Check if case status requires Final Report State dropdown
+            if (caseStatus) {
+              this.onCaseStatusChange(caseStatus);
+            }
+            
+            this._changeDetectorRef.detectChanges();
+          }
+        }, 1000);
+      } else {
+        // If no state, just patch the other values
+        this.uploadDocumentForm.patchValue({
+          districtId: districtId,
+          unitsId: unitId,
+          caseType: Number(caseType),
+          statusId: caseStatus,
+          yearId: year,
+          statusIdDependent:finalReportCaseStatus
+        });
+        
+        // Check if case status requires Final Report State dropdown
+        if (caseStatus) {
+          this.onCaseStatusChange(caseStatus);
+        }
+        
+        this._changeDetectorRef.detectChanges();
+      }
+    }
+  }
+
+  viewDrafts() {
+    this._router.navigateByUrl("upload-document/draft-details");
+  }
+
+  getFileSubject(file: FileWithMetadata): string {
+    const caseNo = this.crimeNo || 'undefined';
+    const fileName = file.name || file.fileName || 'UnknownFile';
+    const base = (!file.subject || (this.selectedFiles.length > 0 && file.subject === this.selectedFiles[0].subject) || file.subject === undefined)
+      ? fileName
+      : file.subject;
+
+    // If base already starts with caseNo, don't prepend
+    if (base.startsWith(caseNo)) {
+      return base;
+    }
+    return `${caseNo}_${base}`;
+  }
+
+  /**
+   * Clear existing files from previous page
+   */
+  clearExistingFiles(): void {
+    // Show confirmation dialog
+    const confirmation = this._fuseConfirmationService.open({
+      title: 'Clear Existing Files',
+      message: `Are you sure you want to clear all ${this.patchDetailsfiles.length} existing files? This action cannot be undone.`,
+      actions: {
+        confirm: {
+          label: 'Clear Files',
+          color: 'warn'
+        },
+        cancel: {
+          label: 'Cancel'
+        }
+      }
+    });
+
+    confirmation.afterClosed().subscribe((result) => {
+      if (result === 'confirmed') {
+        this._snackBar.open('Clearing existing files...', 'Close', {
+          duration: 2000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+        });
+        
+        this.patchDetailsfiles = [];
+        this.files = [];
+        this.selectedFiles = [];
+        this.selectedMetadata = [];
+        
+        // Clear the state service
+        this._uploadDocumentService.clearState();
+        
+        this._snackBar.open('Existing files cleared successfully', 'Close', {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          panelClass: ["green-snackbar"],
+        });
+        
+        this._changeDetectorRef.detectChanges();
+      }
+    });
+  }
+
+  /**
+   * Redirect back to get-doc page
+   */
+  redirectToGetDoc(): void {
+    // Show confirmation dialog before redirecting
+    const confirmation = this._fuseConfirmationService.open({
+      title: 'Navigate Back',
+      message: 'You will be redirected back to the document view page. Any unsaved changes will be lost. Do you want to continue?',
+      actions: {
+        confirm: {
+          label: 'Continue',
+          color: 'primary'
+        },
+        cancel: {
+          label: 'Cancel'
+        }
+      }
+    });
+
+    confirmation.afterClosed().subscribe((result) => {
+      if (result === 'confirmed') {
+        // Clear current state before redirecting
+        this.clearAllData();
+        
+        // Navigate back to get-doc page
+        this._router.navigateByUrl('/search-document/get-doc');
+      }
+    });
+  }
+
+  /**
+   * Convert draft files from API format to FileWithMetadata format
+   */
+  convertDraftFilesToFileWithMetadata(draftFiles: any[]): FileWithMetadata[] {
+    if (!draftFiles || draftFiles.length === 0) {
+      return [];
+    }
+
+    return draftFiles.map((draftFile, index) => {
+      // Create a mock File object for the draft file
+      const mockFile = new File([''], draftFile.fileName || draftFile.name || `DraftFile${index + 1}`, {
+        type: draftFile.mimeType || 'application/octet-stream'
+      });
+
+      // Add properties to make it compatible with FileWithMetadata
+      const fileWithMetadata = mockFile as FileWithMetadata;
+      
+      // Set file properties
+      fileWithMetadata.fileName = draftFile.fileName || draftFile.name || `DraftFile${index + 1}`;
+      fileWithMetadata.fileId = draftFile.fileId;
+      
+      // Set subject
+      fileWithMetadata.subject = draftFile.subject || draftFile.fileName || `DraftFile${index + 1}`;
+      
+      // Create metadata object
+      fileWithMetadata.metadata = {
+        subject: draftFile.subject || draftFile.fileName || `DraftFile${index + 1}`,
+        fileType: draftFile.fileType || draftFile.fileTypeId || "",
+        classification: draftFile.classification || draftFile.classificationId || "",
+        hashTag: draftFile.hashTag || "",
+        documentType: draftFile.documentType || draftFile.documentTypeId || "",
+      };
+
+      // Also set properties directly on the file for backward compatibility
+      (fileWithMetadata as any).fileType = draftFile.fileType || draftFile.fileTypeId || "";
+      (fileWithMetadata as any).classification = draftFile.classification || draftFile.classificationId || "";
+      (fileWithMetadata as any).hashTag = draftFile.hashTag || "";
+      (fileWithMetadata as any).documentType = draftFile.documentType || draftFile.documentTypeId || "";
+
+      return fileWithMetadata;
+    });
+  }
+
+  /**
+   * Clear all data when navigating away
+   */
+  clearAllData(): void {
+    this.patchDetailsfiles = [];
+    this.files = [];
+    this.selectedFiles = [];
+    this.selectedMetadata = [];
+    this.dfaftfiles = [];
+    this.draftInfo = null;
+    this.caseMetaData = null;
+    this.isPatchSearchPage = false;
+    this.isDraft = false;
+    
+    // Clear form
+    if (this.uploadDocumentForm) {
+      this.uploadDocumentForm.reset();
+    }
+    
+    // Clear services
+    this._uploadDocumentService.clearState();
+    this._uploadDocumentService.clearDraft();
+    
+    this._changeDetectorRef.detectChanges();
+  }
+
+
+  onCaseStatusChange (caseStatusId: number): void {
+    // Find the selected case status to check its value
+    const selectedCaseStatus = this.caseStatusDropdown.find(status => status.id === caseStatusId);
+    
+    // Check if the selected status id is 33 or value is 'Final Report A'
+    const shouldShowFinalReportState = caseStatusId === 11 || selectedCaseStatus?.value === 'Final Report A';
+    
+    // Update visibility flag
+    this.showFinalReportState = shouldShowFinalReportState;
+    
+    // Manage required validator based on visibility
+    const statusIdDependentControl = this.uploadDocumentForm.get('statusIdDependent');
+    if (shouldShowFinalReportState) {
+      // Add required validator when dropdown should be shown
+      statusIdDependentControl?.setValidators([Validators.required]);
+      statusIdDependentControl?.updateValueAndValidity();
+      
+      // Load the dependent dropdown data
+      if (caseStatusId) {
+        this._uploadDocumentService
+          .finalreportCaseStatusById(caseStatusId)
+          .subscribe(
+            (data: any) => {
+              this.caseStatusDeptDropdown = data as CaseStatusDependent[];
+              this.filteredCaseStatusDependent = [...this.caseStatusDeptDropdown];
+              this._changeDetectorRef.detectChanges();
+            },
+            (error) => {
+              console.error("Error fetching final report case status:", error);
+            }
+          );
+      }
+    } else {
+      // Remove required validator and clear value when dropdown should be hidden
+      statusIdDependentControl?.clearValidators();
+      statusIdDependentControl?.setValue('');
+      statusIdDependentControl?.updateValueAndValidity();
+      this.filteredCaseStatusDependent = [];
+      this.caseStatusDeptDropdown = [];
+    }
+    
+    this._changeDetectorRef.detectChanges();
+  }
+
+  getDocNameById(file: any): string {
+    // First check if documentTypeName is available directly from the file (from API)
+    if (file?.documentTypeName || file?.metadata?.documentTypeName) {
+      return file.documentTypeName || file.metadata.documentTypeName;
+    }
+    
+    // Get document type ID
+    const documentTypeId = file?.metadata?.documentType || file?.documentType;
+    if (!documentTypeId) {
+      return "Unknown";
+    }
+    
+    // Get file type to determine which dropdown to use
+    const fileTypeId = file?.metadata?.fileType || file?.fileType;
+    
+    // Determine which document type dropdown to search based on file type
+    let documentTypesToSearch: any[] = [];
+    if (fileTypeId === 3) {
+      // Case Files
+      documentTypesToSearch = this.masterData?.CaseFiles || [];
+    } else if (fileTypeId === 4) {
+      // Correspondence
+      documentTypesToSearch = this.masterData?.Correspondence || [];
+    } else {
+      // Fallback to general DocumentTypeDropDown
+      documentTypesToSearch = this.DocumentTypeDropDown || [];
+    }
+    
+    // Look up document type by ID
+    const docType = documentTypesToSearch.find((dt: any) => dt.id === documentTypeId);
+    if (docType) {
+      return docType.value;
+    }
+    
+    return "Unknown";
+  }
 }

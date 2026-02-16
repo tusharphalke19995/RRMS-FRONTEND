@@ -39,20 +39,17 @@
                 </div>
             </div>
             <!-- Title -->
-        
+
             <div class="mt-2 flex items-center justify-between">
                 <ng-container *transloco="let t">
                     <div class="text-3xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
                         {{t('designationManagement')}}
                     </div>
                 </ng-container>
-                
+
                 <!-- Add User button -->
-                <button *transloco="let t" 
-                        mat-flat-button 
-                        [color]="'primary'"
-                        class="min-w-[120px]"
-                        (click)="addNewUser()">
+                <button *transloco="let t" mat-flat-button [color]="'primary'" class="min-w-[120px]"
+                    (click)="addNewUser()">
                     <mat-icon class="icon-size-5 mr-2" [svgIcon]="'heroicons_solid:plus'"></mat-icon>
                     {{t('addDesignation')}}
                 </button>
@@ -68,35 +65,53 @@
             <fuse-alert class="mb-8" *ngIf="alert" [type]="alert.type" [showIcon]="false">
                 {{alert.message}}
             </fuse-alert>
-        
+
         </div>
         <div class="overflow-x-auto">
             <table mat-table [dataSource]="dataSource" matSort #sort1="matSort" class="w-full mt-[10px]">
                 <!-- ID Column -->
-               
-                
-                <!-- KGID Column -->
-                <ng-container matColumnDef="designationId">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black"> Designation Id </th>
-                    <td mat-cell *matCellDef="let row"> {{row.designationId}} </td>
-                </ng-container>
 
-                  <!-- Role Column -->
-                  <ng-container matColumnDef="designationName">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black"> Designation Name </th>
+
+                <!-- KGID Column -->
+                <!-- <ng-container matColumnDef="designationId">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header
+                        class="bg-primary-300 dark:bg-slate-500 text-black"> Designation Id </th>
+                    <td mat-cell *matCellDef="let row"> {{row.designationId}} </td>
+                </ng-container> -->
+
+                <!-- Role Column -->
+                <ng-container matColumnDef="designationName">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header
+                        class="bg-primary-300 dark:bg-slate-500 text-black"> Designation Name </th>
                     <td mat-cell *matCellDef="let row"> {{row.designationName}} </td>
                 </ng-container>
 
+                <ng-container matColumnDef="departmentName">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header
+                        class="bg-primary-300 dark:bg-slate-500 text-black">
+                        Department Name
+                    </th>
+                    <td mat-cell *matCellDef="let row">
+                        {{ getDepartmentNames(row) }}
+                    </td>
+                </ng-container>
 
-                <!-- Mobile Column -->
-                <!-- <ng-container matColumnDef="active">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="bg-primary-300 dark:bg-slate-500 text-black">Active </th>
-                    <td mat-cell *matCellDef="let row"> {{row.active}} </td>
-                </ng-container> -->
+                <!-- Division Name Column -->
+                <ng-container matColumnDef="divisionName">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header
+                        class="bg-primary-300 dark:bg-slate-500 text-black">
+                        Division Name
+                    </th>
+                    <td mat-cell *matCellDef="let row">
+                        {{ getDivisionNames(row) }}
+                    </td>
+                </ng-container>
+
 
                 <!-- Action Column -->
                 <ng-container matColumnDef="action">
-                    <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black"> Action </th>
+                    <th mat-header-cell *matHeaderCellDef class="bg-primary-300 dark:bg-slate-500 text-black"> Action
+                    </th>
                     <td mat-cell *matCellDef="let row">
                         <div class="flex justify-center gap-2">
                             <button mat-icon-button color="primary" (click)="editUser(row)" matTooltip="Edit">
@@ -110,8 +125,7 @@
                 </ng-container>
 
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                    class="hover:bg-hover cursor-pointer"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-hover cursor-pointer"></tr>
             </table>
 
             <!-- No data message -->
@@ -120,10 +134,8 @@
             </div>
         </div>
         <div class="flex justify-end w-full dark:bg-gray-800 bg-card">
-            <mat-paginator #paginator1="matPaginator" 
-                           [pageSizeOptions]="[5, 10, 25, 100]" 
-                           [pageSize]="10"
-                           showFirstLastButtons>
+            <mat-paginator #paginator1="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10"
+                showFirstLastButtons>
             </mat-paginator>
         </div>
     </div>

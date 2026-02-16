@@ -19,104 +19,131 @@ export class MasterService {
     private commonApiCallService: CommonApiCallService
   ) {}
 
-
   updateRole(role_id: number, data: any) {
     const url = `${apiurls.saveRole}/${role_id}`; // Construct the full URL with user ID
-    return this._httpClient.put(url, data, {
+    return this._httpClient
+      .put(url, data, {
         headers: new HttpHeaders({
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        })
-    }).pipe(catchError(this.handleError));
-}
-
-updateDesignations(designation_id: number, data: any) {
-  const url = `${apiurls.saveDesignations}/${designation_id}`; // Construct the full URL with user ID
-  return this._httpClient.put(url, data,{
-      headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
       })
-  }).pipe(catchError(this.handleError));
-}
-
-updateDivision(division_id: number, data: any) {
-  const url = `${apiurls.saveDivision}/${division_id}`; // Construct the full URL with user ID
-  return this._httpClient.put(url, data, {
-      headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-      })
-  }).pipe(catchError(this.handleError));
-}
-
-
-deleteRole(role_id: number) {
-  const url = `${apiurls.saveRole}/${role_id}`; // Construct the full URL with user ID
-  return this._httpClient.delete(url, {
-      headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-      })
-  }).pipe(catchError(this.handleError));
-}
-
-deleteDesignations(designation_id: number) {
-const url = `${apiurls.saveDesignations}/${designation_id}`; // Construct the full URL with user ID
-return this._httpClient.delete(url,{
-    headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    })
-}).pipe(catchError(this.handleError));
-}
-
-deleteDivision(division_id: number) {
-const url = `${apiurls.saveDivision}/${division_id}`; // Construct the full URL with user ID
-return this._httpClient.delete(url, {
-    headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    })
-}).pipe(catchError(this.handleError));
-}
-
-createDivision(data) {
-  return this._httpClient
-    .post(apiurls.saveDivision, data,)
-    .pipe(catchError(this.handleError));
-}
-
-createDesignations(data) {
-  return this._httpClient
-    .post(apiurls.saveDesignations, data,)
-    .pipe(catchError(this.handleError));
-}
-
-createRole(data) {
-  return this._httpClient
-    .post(apiurls.saveRole, data,)
-    .pipe(catchError(this.handleError));
-}
-
-  getRole() {
-    return this._httpClient
-      .get(apiurls.getRolesMatser)
       .pipe(catchError(this.handleError));
   }
 
-  getDivision() {
+  updateDesignations(designation_id: number, data: any) {
+    const url = `${apiurls.saveDesignations}/${designation_id}`; // Construct the full URL with user ID
     return this._httpClient
-      .get(apiurls.getDivisionsMaster)
+      .put(url, data, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
       .pipe(catchError(this.handleError));
   }
 
-  getDesignationsInfo() {
+  updateDivision(division_id: number, data: any) {
+    const url = `${apiurls.saveDivision}/${division_id}`; // Construct the full URL with user ID
     return this._httpClient
-      .get(apiurls.getDesignationsMaster)
+      .put(url, data, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
       .pipe(catchError(this.handleError));
   }
 
+  deleteRole(role_id: number) {
+    const url = `${apiurls.saveRole}/${role_id}`; // Construct the full URL with user ID
+    return this._httpClient
+      .delete(url, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteDesignations(designation_id: number) {
+    const url = `${apiurls.saveDesignations}/${designation_id}`; // Construct the full URL with user ID
+    return this._httpClient
+      .delete(url, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteDivision(division_id: number) {
+    const url = `${apiurls.saveDivision}/${division_id}`; // Construct the full URL with user ID
+    return this._httpClient
+      .delete(url, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  createDivision(data) {
+    return this._httpClient
+      .post(apiurls.saveDivision, data)
+      .pipe(catchError(this.handleError));
+  }
+
+  createDesignations(data) {
+    return this._httpClient
+      .post(apiurls.saveDesignations, data)
+      .pipe(catchError(this.handleError));
+  }
+
+  createRole(data) {
+    return this._httpClient
+      .post(apiurls.saveRole, data)
+      .pipe(catchError(this.handleError));
+  }
+
+  getRole(id: number) {
+    const url = `${apiurls.getRolesMatser}=${id}`;
+    return this._httpClient
+      .get(url, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getDivision(id: number) {
+    const url = `${apiurls.getDivisionsMaster}=${id}`;
+    return this._httpClient
+      .get(url, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getDesignationsInfo(id: number) {
+    const url = `${apiurls.getDesignationsMaster}=${id}`;
+    return this._httpClient
+      .get(url, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
 
   getFileTypes() {
     return this._httpClient
@@ -124,107 +151,332 @@ createRole(data) {
       .pipe(catchError(this.handleError));
   }
 
-  
-deleteFileTypes(fileTypeId: number) {
-  const url = `${apiurls.getFileTypes}/${fileTypeId}`; // Construct the full URL with user ID
-  return this._httpClient.delete(url, {
-      headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+  deleteFileTypes(fileTypeId: number) {
+    const url = `${apiurls.getFileTypes}/${fileTypeId}`; // Construct the full URL with user ID
+    return this._httpClient
+      .delete(url, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
       })
-  }).pipe(catchError(this.handleError));
-}
+      .pipe(catchError(this.handleError));
+  }
 
-updateFilesTypeById(fileTypeId: number, data: any) {
-  const url = `${apiurls.getFileTypes}/${fileTypeId}`; // Construct the full URL with user ID
-  return this._httpClient.put(url, data,{
-      headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+  updateFilesTypeById(fileTypeId: number, data: any) {
+    const url = `${apiurls.getFileTypes}/${fileTypeId}`; // Construct the full URL with user ID
+    return this._httpClient
+      .put(url, data, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
       })
-  }).pipe(catchError(this.handleError));
-}
+      .pipe(catchError(this.handleError));
+  }
 
+  createFileType(data) {
+    return this._httpClient
+      .post(apiurls.getFileTypes, data)
+      .pipe(catchError(this.handleError));
+  }
 
-createFileType(data) {
-  return this._httpClient
-    .post(apiurls.getFileTypes, data,)
-    .pipe(catchError(this.handleError));
-}
+  getFileClassification() {
+    return this._httpClient
+      .get(apiurls.getFileClassification)
+      .pipe(catchError(this.handleError));
+  }
 
+  deleteFileClassification(fileTypeId: number) {
+    const url = `${apiurls.getFileClassification}/${fileTypeId}`; // Construct the full URL with user ID
+    return this._httpClient
+      .delete(url, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
 
+  updateFileClassificationById(fileTypeId: number, data: any) {
+    const url = `${apiurls.getFileClassification}/${fileTypeId}`; // Construct the full URL with user ID
+    return this._httpClient
+      .put(url, data, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
 
+  createFileClassification(data) {
+    return this._httpClient
+      .post(apiurls.getFileClassification, data)
+      .pipe(catchError(this.handleError));
+  }
 
+  getCaseStatus() {
+    return this._httpClient
+      .get(apiurls.getCaseStatus)
+      .pipe(catchError(this.handleError));
+  }
 
-getFileClassification() {
-  return this._httpClient
-    .get(apiurls.getFileClassification)
-    .pipe(catchError(this.handleError));
-}
+  deleteCaseStatusById(caseStatusId: number) {
+    const url = `${apiurls.getCaseStatus}/${caseStatusId}`; // Construct the full URL with user ID
+    return this._httpClient
+      .delete(url, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
 
+  updateCaseStatusById(caseStatusId: number, data: any) {
+    const url = `${apiurls.getCaseStatus}/${caseStatusId}`; // Construct the full URL with user ID
+    return this._httpClient
+      .put(url, data, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
 
-deleteFileClassification(fileTypeId: number) {
-const url = `${apiurls.getFileClassification}/${fileTypeId}`; // Construct the full URL with user ID
-return this._httpClient.delete(url, {
-    headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    })
-}).pipe(catchError(this.handleError));
-}
+  createCaseStatus(data) {
+    return this._httpClient
+      .post(apiurls.getCaseStatus, data)
+      .pipe(catchError(this.handleError));
+  }
 
-updateFileClassificationById(fileTypeId: number, data: any) {
-const url = `${apiurls.getFileClassification}/${fileTypeId}`; // Construct the full URL with user ID
-return this._httpClient.put(url, data,{
-    headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    })
-}).pipe(catchError(this.handleError));
-}
+  getDepartments() {
+    return this._httpClient
+      .get(apiurls.departmentsAddUpdateDelete)
+      .pipe(catchError(this.handleError));
+  }
 
+  deleteDepartmentById(departmentId: number) {
+    const url = `${apiurls.departmentsAddUpdateDelete}/${departmentId}`; // Construct the full URL with user ID
+    return this._httpClient
+      .delete(url, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
 
-createFileClassification(data) {
-return this._httpClient
-  .post(apiurls.getFileClassification, data,)
-  .pipe(catchError(this.handleError));
-}
+  updatDepartmentById(departmentId: number, data: any) {
+    const url = `${apiurls.departmentsAddUpdateDelete}/${departmentId}`; // Construct the full URL with user ID
+    return this._httpClient
+      .put(url, data, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
 
+  createDepartments(data) {
+    return this._httpClient
+      .post(apiurls.departmentsAddUpdateDelete, data)
+      .pipe(catchError(this.handleError));
+  }
 
+  getDesignationHierachy() {
+    return this._httpClient
+      .get(apiurls.designationsHierachyAdd)
+      .pipe(catchError(this.handleError));
+  }
 
-getCaseStatus() {
-  return this._httpClient
-    .get(apiurls.getCaseStatus)
-    .pipe(catchError(this.handleError));
-}
+  updatDesignationHierachyById(data: any) {
+    const url = `${apiurls.designationsHierachyAdd}`; // Construct the full URL with user ID
+    return this._httpClient
+      .put(url, data, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
 
+  createDesignationHierachy(data) {
+    return this._httpClient
+      .post(apiurls.designationsHierachyAdd, data)
+      .pipe(catchError(this.handleError));
+  }
 
-deleteCaseStatusById(caseStatusId: number) {
-const url = `${apiurls.getCaseStatus}/${caseStatusId}`; // Construct the full URL with user ID
-return this._httpClient.delete(url, {
-    headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    })
-}).pipe(catchError(this.handleError));
-}
+  getCaseFiles() {
+    return this._httpClient
+      .get(apiurls.caseFiles)
+      .pipe(catchError(this.handleError));
+  }
 
-updateCaseStatusById(caseStatusId: number, data: any) {
-const url = `${apiurls.getCaseStatus}/${caseStatusId}`; // Construct the full URL with user ID
-return this._httpClient.put(url, data,{
-    headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    })
-}).pipe(catchError(this.handleError));
-}
+  deleteCaseFilesById(fileTypeId: number) {
+    const url = `${apiurls.caseFiles}/${fileTypeId}`; // Construct the full URL with user ID
+    return this._httpClient
+      .delete(url, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
 
+  updateCaseFilesById(fileTypeId: number, data: any) {
+    const url = `${apiurls.caseFiles}/${fileTypeId}`; // Construct the full URL with user ID
+    return this._httpClient
+      .put(url, data, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
 
-createCaseStatus(data) {
-return this._httpClient
-  .post(apiurls.getCaseStatus, data,)
-  .pipe(catchError(this.handleError));
-}
+  createCaseFiles(data) {
+    return this._httpClient
+      .post(apiurls.caseFiles, data)
+      .pipe(catchError(this.handleError));
+  }
+
+  getCorrespondenceFiles() {
+    return this._httpClient
+      .get(apiurls.correspondenceFiles)
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteCorrespondenceFilesById(fileTypeId: number) {
+    const url = `${apiurls.correspondenceFiles}/${fileTypeId}`; // Construct the full URL with user ID
+    return this._httpClient
+      .delete(url, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  updateCorrespondenceFilesById(fileTypeId: number, data: any) {
+    const url = `${apiurls.correspondenceFiles}/${fileTypeId}`; // Construct the full URL with user ID
+    return this._httpClient
+      .put(url, data, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  createCorrespondenceFilesdata(data: any) {
+    return this._httpClient
+      .post(apiurls.correspondenceFiles, data)
+      .pipe(catchError(this.handleError));
+  }
+
+  designationsFilterByDepartmentId(id: number) {
+    const url = `${apiurls.designationsFilterByDepartmentId}=${id}`;
+    return this._httpClient.get(url, {}).pipe(catchError(this.handleError));
+  }
+
+  divisionsFilterByDepartmentId(id: number) {
+    const url = `${apiurls.divisionsFilterByDepartmentId}=${id}`;
+    return this._httpClient.get(url, {}).pipe(catchError(this.handleError));
+  }
+
+  designationsFilterByDivisionId(id: number) {
+    const url = `${apiurls.designationsFilterByDivisionId}=${id}`;
+    return this._httpClient.get(url, {}).pipe(catchError(this.handleError));
+  }
+
+  getSMTP() {
+    return this._httpClient
+      .get(apiurls.manageSMTP)
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteSMTPById(id: number) {
+    const url = `${apiurls.manageSMTP}/${id}`;
+    return this._httpClient
+      .delete(url, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  updateSMTPById(id: number, data: any) {
+    const url = `${apiurls.manageSMTP}/${id}`;
+    return this._httpClient
+      .put(url, data, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  createSMTP(data) {
+    return this._httpClient
+      .post(apiurls.manageSMTP, data)
+      .pipe(catchError(this.handleError));
+  }
+
+  getDomain() {
+    return this._httpClient
+      .get(apiurls.getDomain)
+      .pipe(catchError(this.handleError));
+  }
+
+   getDomainNames() {
+    return this._httpClient
+      .get(apiurls.getDomainNames)
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteDomain(fileTypeId: number) {
+    const url = `${apiurls.getDomain}/${fileTypeId}`; // Construct the full URL with user ID
+    return this._httpClient
+      .delete(url, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  updateDomainById(id: number, data: any) {
+    const url = `${apiurls.getDomain}/${id}`; // Construct the full URL with user ID
+    return this._httpClient
+      .put(url, data, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  createDomain(data) {
+    return this._httpClient
+      .post(apiurls.getDomain, data)
+      .pipe(catchError(this.handleError));
+  }
 
   /**
    * The error handler.

@@ -1,0 +1,49 @@
+<div class="flex flex-col flex-auto items-center sm:justify-center min-w-0 bg-cover bg-center"
+    style="background-image: url('../../../../assets/images/rrms.jpg');">
+
+    <div class="flex flex-col flex-auto items-start sm:justify-center min-w-0 bg-cover bg-center pl-6 sm:pl-16 ">
+        <div
+            class="w-full bg-white/0.1 backdrop-blur-md  border-2 border-solid border-primary-900 p-6 sm:mx-0 rounded-2xl attractive-shadow animate-fade-in">
+            <!-- Logo -->
+            <div class="w-20 h-20 flex items-center justify-center rounded-full bg-white mx-auto">
+                <img src="assets/images/KSPPCW-logo.png" class="object-contain w-20 h-20 " />
+            </div>
+
+            <!-- Title -->
+            <div
+                class="mt-2 text-4xl  font-extrabold tracking-tight bg-gradient-to-r  text-center bg-clip-text drop-shadow-lg tracking-wider text-blue-800">
+                OTP Verification</div>
+
+            <!-- Alert -->
+            <fuse-alert class="mt-2" *ngIf="showAlert" [appearance]="'outline'" [showIcon]="false" [type]="alert.type"
+                [@shake]="alert.type === 'error'">
+                {{alert.message}}
+            </fuse-alert>
+
+            <!-- Sign in form -->
+            <form [formGroup]="otpForm" class="flex justify-between gap-2" (submit)="onSubmit()">
+                <input *ngFor="let control of otpControls; let i = index" type="text" maxlength="1"
+                    class="otp-input text-white" [formControl]="control" (input)="onInput($event, i)"
+                    (keydown)="onKeyDown($event, i)" #otpInput (keypress)="allowOnlyNumbers($event)" />
+
+                <!-- Submit button -->
+            </form>
+
+            <!-- Countdown Timer Display -->
+            <div *ngIf="countdown > 0" class="mt-2 text-lg font-medium text-white">
+                OTP expires in: <span class="text-red-600">{{ timer() }}</span>
+            </div>
+
+            <!-- Verify Button -->
+            <button class="fuse-mat-button-large w-full mt-8" mat-flat-button [color]="'primary'"
+                [disabled]="otpForm.invalid || isTimerExpired()" (click)="onSubmit()">
+                <span *ngIf="countdown > 0 && !otpForm.invalid">
+                    Verify
+                </span>
+                <mat-progress-spinner *ngIf="otpForm.invalid || isTimerExpired()" [diameter]="24"
+                    [mode]="'indeterminate'"></mat-progress-spinner>
+            </button>
+        </div>
+    </div>
+
+</div>

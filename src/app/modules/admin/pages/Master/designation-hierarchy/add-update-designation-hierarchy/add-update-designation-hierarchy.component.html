@@ -1,0 +1,283 @@
+<div class="flex flex-col max-w-450 md:min-w-100 max-h-screen">
+  <!-- Header with improved styling -->
+  <div
+    class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md"
+    cdkDragRootElement=".cdk-overlay-pane"
+    cdkDragHandle
+    cdkDrag
+  >
+     <div class="flex items-center">
+            <span class="text-xl font-semibold tracking-tight" *ngIf="updateBool; else addRoleTemplate">
+               <span *transloco="let t">{{ 'updateHierarchy' | transloco }}</span> 
+            </span>
+            <ng-template #addRoleTemplate>
+                <span class="text-xl font-semibold tracking-tight" *transloco="let t">
+                    {{ 'addHierarchy' | transloco }}
+                </span>
+            </ng-template>
+        </div>
+    <button
+      mat-icon-button
+      class="rounded-full transition-colors duration-200"
+      (click)="onNoClose()"
+      [tabIndex]="-1"
+    >
+      <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+    </button>
+  </div>
+
+  <!-- Form Content -->
+  <form
+    [formGroup]="addUpdateDesignationHierachyForm"
+    class="flex flex-col flex-auto p-6 overflow-y-auto"
+  >
+    <!-- First Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- <mat-form-field appearance="outline" class="w-full">
+        <mat-label *transloco="let t" class="font-medium">{{
+          t("officierDesignations")
+        }}</mat-label>
+        <mat-select
+          [formControlName]="'designationParentId'"
+          [panelClass]="'custom-select-panel'"
+          (selectionChange)="onDesignationSelect($event.value)"
+        >
+          <div class="px-3 py-2">
+            <mat-form-field class="w-full">
+              <input
+                matInput
+                (keyup)="filterDesignationParent($event)"
+                placeholder="Search Department..."
+                #roleSearchInput
+                [value]="''"
+                autocomplete="off"
+              />
+            </mat-form-field>
+          </div>
+          <mat-option [value]="null">Please Select</mat-option>
+          <ng-container
+            *ngFor="
+              let designationDataParent of filterDesignationsParent;
+              trackBy: trackByFn
+            "
+          >
+            <mat-option [value]="designationDataParent.designationId">{{
+              designationDataParent.designationName
+            }}</mat-option>
+          </ng-container>
+        </mat-select>
+        <mat-error
+          *ngIf="
+            addUpdateDesignationHierachyForm
+              .get('designationParentId')
+              .hasError('required')
+          "
+        >
+          Required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label *transloco="let t" class="font-medium">{{
+          t("supervisorDesignations")
+        }}</mat-label>
+        <mat-select
+          [formControlName]="'designationChildId'"
+          [panelClass]="'custom-select-panel'"
+        >
+          <div class="px-3 py-2">
+            <mat-form-field class="w-full">
+              <input
+                matInput
+                (keyup)="filterDesignationDataChild($event)"
+                placeholder="Search Department..."
+                #roleSearchInput
+                [value]="''"
+                autocomplete="off"
+              />
+            </mat-form-field>
+          </div>
+          <mat-option [value]="null">Please Select</mat-option>
+          <ng-container
+            *ngFor="
+              let designationDataChild of filterDesignationschild;
+              trackBy: trackByFn
+            "
+          >
+            <mat-option [value]="designationDataChild.designationId">{{
+              designationDataChild.designationName
+            }}</mat-option>
+          </ng-container>
+        </mat-select>
+        <mat-error
+          *ngIf="
+            addUpdateDesignationHierachyForm
+              .get('designationChildId')
+              .hasError('required')
+          "
+        >
+          Required
+        </mat-error>
+      </mat-form-field> -->
+           <mat-form-field appearance="outline" class="w-full">
+        <mat-label *transloco="let t" class="font-medium">{{
+          t("officierDesignations")
+        }}</mat-label>
+        <mat-select
+          [formControlName]="'designationChildId'"
+          [panelClass]="'custom-select-panel'"
+          (selectionChange)="onDesignationSelect($event.value)"
+        >
+          <div class="px-3 py-2">
+            <mat-form-field class="w-full">
+              <input
+                matInput
+                (keyup)="filterDesignationDataChild($event)"
+                placeholder="Search Department..."
+                #roleSearchInput
+                [value]="''"
+                autocomplete="off"
+              />
+            </mat-form-field>
+          </div>
+          <mat-option [value]="null">Please Select</mat-option>
+          <ng-container
+            *ngFor="
+             let designationDataChild of filterDesignationschild;
+              trackBy: trackByFn
+            "
+          >
+            <mat-option [value]="designationDataChild.designationId">{{
+              designationDataChild.designationName
+            }}</mat-option>
+          </ng-container>
+        </mat-select>
+        <mat-error
+          *ngIf="
+            addUpdateDesignationHierachyForm
+              .get('designationChildId')
+              .hasError('required')
+          "
+        >
+          Required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label *transloco="let t" class="font-medium">{{
+          t("supervisorDesignations")
+        }}</mat-label>
+        <mat-select
+          [formControlName]="'designationParentId'"
+          [panelClass]="'custom-select-panel'"
+        >
+          <div class="px-3 py-2">
+            <mat-form-field class="w-full">
+              <input
+                matInput
+                (keyup)="filterDesignationParent($event)"
+                placeholder="Search Department..."
+                #roleSearchInput
+                [value]="''"
+                autocomplete="off"
+              />
+            </mat-form-field>
+          </div>
+          <mat-option [value]="null">Please Select</mat-option>
+          <ng-container
+            *ngFor="
+             let designationDataParent of filterDesignationsParent;
+              trackBy: trackByFn
+            "
+          >
+            <mat-option [value]="designationDataParent.designationId">{{
+              designationDataParent.designationName
+            }}</mat-option>
+          </ng-container>
+        </mat-select>
+        <mat-error
+          *ngIf="
+            addUpdateDesignationHierachyForm
+              .get('designationParentId')
+              .hasError('required')
+          "
+        >
+          Required
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div *ngIf="divisionMeta.length" class="mt-6">
+      <h2 class="text-lg font-bold mb-4">Officer Designation Details</h2>
+      <table class="min-w-full border">
+        <thead>
+          <tr>
+            <th
+              class="border px-4 py-2 bg-primary-300 dark:bg-slate-500 text-black"
+            >
+              Department
+            </th>
+            <th
+              class="border px-4 py-2 bg-primary-300 dark:bg-slate-500 text-black"
+            >
+              Division
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container
+            *ngFor="let dept of getGroupedOfficerDetails() | keyvalue"
+          >
+            <tr *ngFor="let div of dept.value; let i = index">
+              <td
+                class="border px-4 py-2"
+                *ngIf="i === 0"
+                [attr.rowspan]="dept.value.length"
+              >
+                {{ dept.key }}
+              </td>
+              <td class="border px-4 py-2">{{ div.divisionName }}</td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+    <!-- Action Buttons -->
+    <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
+      <ng-container *ngIf="!updateBool">
+        <button
+          mat-flat-button
+          class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
+          (click)="designationHierachySave()"
+          [disabled]="this.addUpdateDesignationHierachyForm.invalid"
+          *transloco="let t"
+          aria-label="{{ t('submit') }}"
+        >
+          {{ t("submit") }}
+        </button>
+      </ng-container>
+
+      <ng-container *ngIf="updateBool">
+        <button
+          mat-flat-button
+          class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
+          (click)="designationHierachyUpdate()"
+          [disabled]="this.addUpdateDesignationHierachyForm.invalid"
+          *transloco="let t"
+          aria-label="{{ t('update') }}"
+        >
+          {{ t("update") }}
+        </button>
+      </ng-container>
+
+      <button
+        mat-stroked-button
+        class="min-w-[90px] px-6 py-2 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+        (click)="onNoClose()"
+        *transloco="let t"
+        aria-label="{{ t('cancel') }}"
+      >
+        {{ t("cancel") }}
+      </button>
+    </div>
+  </form>
+</div>

@@ -116,16 +116,14 @@ export class SearchUserRoleComponent {
     columns: any[] = [
         { labelen: 'Name',labelhi:'First Name', property: 'first_name' },
         { labelen: 'Name',labelhi:'Last Name', property: 'last_name' },
-        { labelen: 'Role Name',labelhi:'Role Name', property: 'roleName' },
-        { labelen: 'Division Name',labelhi:'Division Name', property: 'divisionName' },
-        { labelen: 'Designation Name',labelhi:'Designation Name', property: 'designationName' },
         { labelen: 'KGID',labelhi:'KGID', property: 'kgid' },
-
+        { labelen: 'Roles',labelhi:'Roles', property: 'roleName' },
         { labelen: 'Action', labelhi: 'Action', property: 'action', isAction: true },
       ];
     
-      displayedColumns: string[] = ['first_name','designationName','last_name','divisionName','roleName','kgid','action'];
+      displayedColumns: string[] = ['first_name','last_name','kgid','roles','action'];
     userRoleDropdown: any;
+    activeUserData: any;
     
     /**
      * Constructor
@@ -243,10 +241,15 @@ export class SearchUserRoleComponent {
     }
 
     getUserInfo() {
-          this._searchUserService.getUserList().subscribe({
+    const divisionID = Number(sessionStorage.getItem("divisionID"));
+          this._searchUserService.getUserList(divisionID).subscribe({
             next: (response: any) => {
              console.log("response",response);
-        this.dataSource = new MatTableDataSource(response);
+             this.activeUserData = response.map(user => ({
+                ...user,
+                isExpanded: false
+            }));
+        this.dataSource = new MatTableDataSource(this.activeUserData);
 
             },
             error: (error) => {
@@ -257,7 +260,8 @@ export class SearchUserRoleComponent {
       }
 
       getUserRoleDropdown() {
-        this._searchUserService.getUserRole().subscribe({
+       const divisionID = Number(sessionStorage.getItem('divisionID'));
+        this._searchUserService.getUserRole(divisionID).subscribe({
           next: (response: any) => {
             if(response.statusCode==200){
                 this.userRoleDropdown= response.responseData;

@@ -85,13 +85,13 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
   columns: any[] = [
-    { labelen: "Designation Id", labelhi: "Designation Id", property: "designationId" },
     {
       labelen: "Designation Name",
       labelhi: "Designation Name",
       property: "designationName",
     },
-   
+    { labelen: "Department Name", labelhi: "Department Name", property: "departmentName" }, 
+  { labelen: "Division Name", labelhi: "Division Name", property: "divisionName" },    
     {
       labelen: "Action",
       labelhi: "Action",
@@ -101,10 +101,10 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
   ];
 
   displayedColumns: string[] = [
-    "designationId",
     "designationName",
-   
-    "action",
+     "departmentName",
+  "divisionName",
+    "action"
   ];
   userRoleDropdown: [];
   designationsDropdown: [];
@@ -174,7 +174,7 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
   addNewUser(data) {
     const dialogRef = this.dialog.open(AddUpdatDesignationRoleComponent, {
       data: data,
-      width: "400px",
+      width: "800px",
     });
     dialogRef.afterClosed().subscribe((result) => {
       this._changeDetectorRef.detectChanges();
@@ -196,7 +196,8 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
   }
 
   getDesignationInfo() {
-    this._searchUserService.getDesignationsInfo().subscribe({
+    const divisionId =Number(sessionStorage.getItem('divisionID'));
+    this._searchUserService.getDesignationsInfo(divisionId).subscribe({
       next: (response: any) => {
         console.log("response", response);
         this.dataSource = new MatTableDataSource(response);
@@ -212,7 +213,7 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
         duration: 3000,
         horizontalPosition: "right",
         verticalPosition: "top",
-        panelClass: ["success-snackbar"],
+        panelClass: ["green-snackbar"],
       });
       this.getDesignationInfo();
     },
@@ -226,5 +227,17 @@ export class DesignationsComponent implements OnInit, AfterViewInit {
     },
   });
 
+}
+
+getDepartmentNames(row: any): string {
+  return Array.isArray(row.department)
+    ? row.department.map(dep => dep.departmentName).join(', ')
+    : '';
+}
+
+getDivisionNames(row: any): string {
+  return Array.isArray(row.division)
+    ? row.division.map(div => div.divisionName).join(', ')
+    : '';
 }
 }

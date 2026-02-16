@@ -177,3 +177,142 @@
     /* width: 100%; */
     -webkit-overflow-scrolling: touch;
   }
+
+
+.bg-read {
+  // background-color: #d1e7dd; 
+
+    font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  color: #444;
+}
+
+.bg-unread {
+  // background-color: #f8d7da; 
+  font-family: 'Arial', sans-serif;
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+}
+
+.hover {
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
+.truncate-text {
+  display: inline-block;
+  max-width: 120px; /* Or whatever suits your layout */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Tab styles
+.notification-tabs {
+  ::ng-deep .mat-mdc-tab-group {
+    .mat-mdc-tab-header {
+      border-bottom: 2px solid #e0e0e0;
+      
+      .mat-mdc-tab-label-container {
+        .mat-mdc-tab-label {
+          min-width: 120px;
+          padding: 12px 16px;
+          font-weight: 500;
+          transition: all 0.3s ease;
+          cursor: pointer;
+          
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.04);
+          }
+          
+          &.mat-mdc-tab-label-active {
+            color: #1976d2;
+            font-weight: 600;
+          }
+          
+          // Ensure the entire tab label is clickable
+          .mat-mdc-tab-label-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+        
+        .mat-mdc-tab-label-content {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          
+          mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
+          
+          span:last-child {
+            background: #f44336;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 12px;
+            padding: 2px 8px;
+            min-width: 20px;
+            text-align: center;
+            line-height: 1.2;
+            
+            &.read-count {
+              background: #4caf50;
+            }
+          }
+        }
+      }
+      
+      .mat-mdc-ink-bar {
+        background-color: #1976d2;
+        height: 3px;
+      }
+    }
+    
+    .mat-mdc-tab-body-wrapper {
+      .mat-mdc-tab-body {
+        padding: 16px 0;
+      }
+    }
+  }
+}
+
+// Enhanced empty state styles
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+  }
+  
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #666;
+  }
+  
+  p {
+    font-size: 14px;
+    color: #999;
+    margin: 0;
+  }
+}

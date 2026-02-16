@@ -83,8 +83,13 @@
                             *ngIf="passwordField.type === 'text'"
                             [svgIcon]="'heroicons_solid:eye-slash'"></mat-icon>
                     </button>
-                    <mat-error>
+                    
+                    <mat-error *ngIf="signUpForm.get('password').hasError('required')">
                         Password is required
+                    </mat-error>
+                    <mat-error *ngIf="signUpForm.get('password').hasError('pattern')">
+                        Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one
+                        number and one special character
                     </mat-error>
                 </mat-form-field>
 

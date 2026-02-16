@@ -64,11 +64,7 @@ export class CaseStatusComponent implements OnInit {
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
   columns: any[] = [
-    { labelen: "Status Id", labelhi: "Status Id", property: "statusId" },
-    { labelen: "Status Name", labelhi: "Status Name", property: "statusName" },
-    { labelen: "Last Modified Date", labelhi: "Last Modified Date", property: "lastModifiedDate" },
-    { labelen: "Status", labelhi: "Status", property: "active" },
-    
+    { labelen: "Status Name", labelhi: "Status Name", property: "statusName" },    
     {
       labelen: "Action",
       labelhi: "Action",
@@ -78,11 +74,8 @@ export class CaseStatusComponent implements OnInit {
   ];
 
   displayedColumns: string[] = [
-    "statusId",
     "statusName",
-     "lastModifiedDate",
-    "active",
-    "action",
+    "action"
   ];
   userRoleDropdown: [];
   designationsDropdown: [];
@@ -190,7 +183,7 @@ export class CaseStatusComponent implements OnInit {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
-            panelClass: ["success-snackbar"],
+            panelClass: ["green-snackbar"],
           });
           this.getCaseStatusInfo();
         },

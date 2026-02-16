@@ -1,0 +1,183 @@
+<div class="flex flex-col w-full h-full max-w-none bg-white rounded-lg shadow-lg overflow-hidden">
+  <!-- Header -->
+  <div
+    class="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md">
+    <div class="flex-1 flex items-center">
+      <span class="text-xl font-semibold tracking-tight truncate">{{ fileName }}</span>
+    </div>
+    <button mat-icon-button (click)="onNoClose()" [tabIndex]="-1">
+      <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+    </button>
+  </div>
+
+  <!-- Preview Area -->
+  <div class="flex-1 flex flex-col items-stretch justify-stretch bg-gray-50 p-4 overflow-auto">
+    <div [ngSwitch]="fileType" class="w-full h-full flex items-center justify-center">
+      <!-- Image Preview -->
+      <img *ngSwitchCase="'image'" [src]="safeUrl" alt="Image preview"
+        class="max-w-full max-h-full object-contain mx-auto">
+
+      <!-- Video Preview -->
+      <div *ngSwitchCase="'video'" class="relative w-full max-w-full" style="padding-bottom: 56.25%; height: 0;">
+        <video [src]="safeUrl" controls class="absolute top-0 left-0 w-full h-full"
+          style="background-color: black;"></video>
+      </div>
+
+      <!-- Audio Preview -->
+      <audio *ngSwitchCase="'audio'" [src]="safeUrl" controls class="w-full"></audio>
+
+      <!-- PDF Preview with Search -->
+      <ng-container *ngSwitchCase="'pdf'">
+        <div class="flex flex-col items-center w-full h-full pdf-preview-container">
+        <!-- Search Bar - Always Visible -->
+        <div class="w-full bg-white rounded-lg shadow-md search-bar-container" 
+             style="display: block !important; visibility: visible !important; opacity: 1 !important; position: sticky !important; top: 0 !important; z-index: 1000 !important;">
+          <div class="flex flex-col md:flex-row gap-2 items-center">
+            <div class="flex-1 w-full md:w-auto">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Search in PDF</mat-label>
+                <input matInput 
+                       [(ngModel)]="searchText" 
+                       (keyup)="onSearchKeyPress($event)"
+                       placeholder="Enter text to search...">
+                <mat-icon matPrefix>search</mat-icon>
+              </mat-form-field>
+            </div>
+            <div class="flex gap-2 items-center flex-wrap w-full md:w-auto">
+              <button mat-raised-button 
+                      color="primary" 
+                      (click)="searchInPdf()"
+                      [disabled]="!searchText?.trim() || isSearching"
+                      class="search-btn">
+                <mat-icon *ngIf="!isSearching">search</mat-icon>
+                <mat-icon *ngIf="isSearching" class="animate-spin">hourglass_empty</mat-icon>
+                <span>{{ isSearching ? 'Searching...' : 'Search' }}</span>
+              </button>
+              
+              <!-- Previous Button -->
+              <button mat-raised-button 
+                      color="accent"
+                      (click)="findPrevious()"
+                      [disabled]="searchMatches.length === 0 || !pageLoaded"
+                      matTooltip="Previous match (Shift+F3)"
+                      class="nav-btn previous-btn">
+                <mat-icon>arrow_back</mat-icon>
+                <span>Previous</span>
+              </button>
+              
+              <!-- Match Counter -->
+              <div *ngIf="searchMatches.length > 0 && !isSearching" class="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg border border-blue-200">
+                <mat-icon class="text-blue-600 text-sm">check_circle</mat-icon>
+                <span class="text-xs md:text-sm font-medium text-blue-700 whitespace-nowrap">
+                  Match: <strong>{{ currentMatchIndex + 1 }}</strong> of <strong>{{ searchMatches.length }}</strong>
+                  <span *ngIf="searchMatches[currentMatchIndex]?.isOcr" class="ml-2 inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-semibold">
+                    <mat-icon class="text-xs" style="font-size: 12px; width: 12px; height: 12px;">scanner</mat-icon>
+                    OCR
+                  </span>
+                </span>
+              </div>
+              
+              <!-- No matches message -->
+              <div *ngIf="!isSearching && searchMatches.length === 0 && searchText?.trim()" 
+                   class="flex items-center gap-2 px-3 py-2 bg-yellow-50 rounded-lg border border-yellow-200">
+                <mat-icon class="text-yellow-600 text-sm">info</mat-icon>
+                <span class="text-xs md:text-sm font-medium text-yellow-700 whitespace-nowrap">
+                  No matches found
+                </span>
+              </div>
+            </div>
+            
+            <!-- OCR Status and Text Extraction Messages -->
+            <div *ngIf="ocrInProgressPages.size > 0 || textExtractionMessage" class="mt-2 w-full">
+              <div *ngIf="ocrInProgressPages.size > 0" class="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg border border-blue-200">
+                <mat-icon class="text-blue-600 text-sm animate-spin">hourglass_empty</mat-icon>
+                <span class="text-xs md:text-sm font-medium text-blue-700">
+                  Extracting text via OCR… ({{ ocrInProgressPages.size }} page{{ ocrInProgressPages.size === 1 ? '' : 's' }})
+                </span>
+              </div>
+              <div *ngIf="textExtractionMessage && ocrInProgressPages.size === 0" class="flex items-center gap-2 px-3 py-2 bg-yellow-50 rounded-lg border border-yellow-200">
+                <mat-icon class="text-yellow-600 text-sm">info</mat-icon>
+                <span class="text-xs md:text-sm font-medium text-yellow-700">
+                  {{ textExtractionMessage }}
+                </span>
+              </div>
+              
+              <!-- Next Button -->
+              <button mat-raised-button 
+                      color="accent"
+                      (click)="findNext()"
+                      [disabled]="searchMatches.length === 0 || !pageLoaded"
+                      matTooltip="Next match (F3)"
+                      class="nav-btn next-btn">
+                <span>Next</span>
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PDF Viewer Container -->
+        <div class="flex flex-col items-center w-full flex-1 pdf-viewer-wrapper">
+          <pdf-viewer
+            #pdfViewer
+            [src]="pdfSrc"
+            [render-text]="true"
+            [original-size]="false"
+            [show-all]="false"
+            [page]="currentPage"
+            [zoom]="1"
+            [zoom-scale]="'page-width'"
+            [stick-to-page]="true"
+            (after-load-complete)="afterLoadComplete($event)"
+            (page-rendered)="onPageChange($event)"
+            style="display: block; width: 100%; height: 100%; min-height: 600px;"
+            class="border border-gray-300 rounded-lg shadow-lg">
+          </pdf-viewer>
+          
+          <!-- Page Navigation -->
+          <div class="flex items-center justify-center gap-4 mt-4">
+            <button mat-icon-button 
+                    (click)="previousPage()" 
+                    [disabled]="currentPage <= 1 || !pageLoaded"
+                    matTooltip="Previous page">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <span class="text-sm text-gray-700">
+              Page {{ currentPage }} of {{ totalPages }}
+            </span>
+            <button mat-icon-button 
+                    (click)="nextPage()" 
+                    [disabled]="currentPage >= totalPages || !pageLoaded"
+                    matTooltip="Next page">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Fallback: Open in new tab link -->
+        <a *ngIf="finalUrl" [href]="finalUrl" target="_blank" rel="noopener noreferrer"
+          class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors duration-200 text-sm md:text-base font-medium shadow-sm hover:shadow-md">
+          <mat-icon class="text-lg">open_in_new</mat-icon>
+          <span>Open PDF in new tab</span>
+        </a>
+        </div>
+      </ng-container>
+
+      <!-- Unsupported file type -->
+      <div *ngSwitchDefault class="text-center">
+        <p class="text-lg text-gray-600">Preview for this file type is not available.</p>
+        <p class="text-sm text-gray-500">You can download the file to view it.</p>
+        <button mat-stroked-button (click)="downloadFile(finalUrl)" class="mt-4">
+          <mat-icon>download</mat-icon> Download
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="flex justify-end p-4 border-t">
+    <button mat-stroked-button (click)="onNoClose()">
+      <mat-icon>close</mat-icon> Close
+    </button>
+  </div>
+</div>

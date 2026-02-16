@@ -13,9 +13,15 @@ import { DOCUMENT } from "@angular/common";
       private caseSubject: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
       public caseData$: Observable<any[]> = this.caseSubject.asObservable();
 
+        private userSubject: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
+      public userData$: Observable<any[]> = this.userSubject.asObservable();
+
       
       private activeUserSubject: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
       activeUserData$: Observable<any[]> = this.activeUserSubject.asObservable();
+
+      private pendingReqSubject: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
+      pendingReqData$: Observable<any[]> = this.activeUserSubject.asObservable();
 
       private latesFileSubject: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
       latesFileData$: Observable<any[]> = this.latesFileSubject.asObservable();
@@ -32,6 +38,9 @@ import { DOCUMENT } from "@angular/common";
 
       private getFilesBoolean: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true); // Initialize with a default value
       public getfiles$: Observable<boolean> = this.getFilesBoolean.asObservable();
+
+       private setUserViewBoolean: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+      public getUserViewBoolean$: Observable<boolean> = this.setUserViewBoolean.asObservable();
     
 
       constructor(private _httpClient: HttpClient, @Inject(DOCUMENT) private document) {
@@ -89,5 +98,41 @@ import { DOCUMENT } from "@angular/common";
       setNotificationsInfo(data){
         this.notificationSubject.next(data)
       }
+
+      private pdfPreviewData: any = null;
+
+      setPdfPreviewData(data: any): void {
+        this.pdfPreviewData = data;
+      }
+
+      getPdfPreviewData(): any {
+        return this.pdfPreviewData;
+      }
+
+      clearPdfPreviewData(): void {
+        this.pdfPreviewData = null;
+      }
+
+      setPendingApprovalData(data: any[]) {
+        this.pendingReqSubject.next(data);
+      }
+
+      setUserData(data: any[]) {
+        this.userSubject.next(data);
+      }
+ 
+      getUserData(): Observable<any[]> {
+        return this.userData$; 
+      }
+
+
+       setUserBoolean(boolean) {
+        this.setUserViewBoolean.next(boolean);
+      }
+ 
+      getUserBoolean(): Observable<boolean> {
+        return this.getUserViewBoolean$; 
+      }
+
 
   }

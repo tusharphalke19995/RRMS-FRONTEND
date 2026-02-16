@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiurls } from 'app/shared/constants/api-urls.constant';
 import { ErrorResponseModel } from 'app/shared/models/error-model';
@@ -13,6 +13,12 @@ export class NotificationService
   ) {}
 
 
+  markasreadNotificationInfo(data:any) {
+    return this._httpClient
+      .post(apiurls.markasreadNotification,data)
+      .pipe(catchError(this.handleError));
+  }
+
   getFavouritesData() {
     return this._httpClient
       .get(apiurls.getFavourites,)
@@ -25,14 +31,24 @@ export class NotificationService
       .pipe(catchError(this.handleError));
   }
 
-  approveNotification(fileId: number) {
-    const url = `${apiurls.approveFiles}/${fileId}`;
-    return this.commonApiCallService.post(url, {});
+  approveNotification(data:any){
+    return this._httpClient
+    .post(apiurls.approveFiles, data,)
+    .pipe(catchError(this.handleError));
   }
 
+  getUsersData(id:any) {
+       const url = `${apiurls.getUsersData}${id}`; 
+    return this._httpClient.get(url, {
+    }).pipe(catchError(this.handleError));
+  }
 
+   sendPwdResetData(id:any){
+           const url = `${apiurls.sendPwdReset}${id}`; 
+    return this._httpClient.post(url, {
+    }).pipe(catchError(this.handleError));
+  }
 
-  
   /**
    * The error handler.
    * @param err The http error response.

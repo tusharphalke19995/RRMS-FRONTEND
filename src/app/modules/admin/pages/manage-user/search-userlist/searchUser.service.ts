@@ -25,30 +25,104 @@ export class SearchUserService {
       .pipe(catchError(this.handleError));
   }
 
-  getUserList() {
-    return this._httpClient
-      .get(apiurls.getUsers,)
+  searchUser(data){
+   return this._httpClient.post(apiurls.searchUsers,data,)
       .pipe(catchError(this.handleError));
   }
 
-  getUserRole() {
-    return this._httpClient
-      .get(apiurls.getRole,)
-      .pipe(catchError(this.handleError));
+
+  updateUserById(userId: number, data: any) {
+    const url = `${apiurls.updateUserById}${userId}`; // Construct the full URL with user ID
+    return this._httpClient.patch(url, data, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
+
+  getUserList(id:number) {
+    const url = `${apiurls.getUsers}=${id}`; 
+    return this._httpClient.get(url, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
+
+
+  getUserRole(id: number) {
+    const url = `${apiurls.getRole}=${id}`; 
+    return this._httpClient.get(url, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
   }
 
-  getUserDivision() {
+ 
+  getDivision(id:number) {
+   
+    const url = `${apiurls.getDivisionsMaster}=${id}`; 
+    return this._httpClient.get(url, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
+
+getDesignationsInfo(id:number) {
+    const url = `${apiurls.getDesignationsMaster}=${id}`; 
+    return this._httpClient.get(url, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
+
+
+  adminSetDefaultPwdInfo(userId: number, data: any) {
+    const url = `${apiurls.adminSetDefaultPwd}${userId}`; // Construct the full URL with user ID
+    return this._httpClient.post(url, data, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
+
+  userSetPasswordInfo(userId: number, data: any) {
+    const url = `${apiurls.userSetPassword}${userId}`; // Construct the full URL with user ID
+    return this._httpClient.post(url, data, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
+
+
+
+
+getallRequests() {
+    const url = `${apiurls.getallRequests}`; 
+    return this._httpClient.get(url, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
+
+ setStatusPasswordReset(data) {
     return this._httpClient
-      .get(apiurls.getDivision)
+      .post(apiurls.setStatusPasswordReset, data,)
       .pipe(catchError(this.handleError));
   }
-
-  getDesignationsInfo() {
-    return this._httpClient
-      .get(apiurls.getDesignations)
-      .pipe(catchError(this.handleError));
-  }
-
   
   /**
    * The error handler.
@@ -66,5 +140,13 @@ export class SearchUserService {
     }
     console.error(error);
     return throwError(() => error);
+  }
+
+  checkEmailExists(email: string): Observable<boolean> {
+    const url = `${apiurls.checkEmailExists}?email=${encodeURIComponent(email)}`;
+    return this._httpClient.get<{ exists: boolean }>(url).pipe(
+      switchMap(res => of(res.exists)),
+      catchError(() => of(false))
+    );
   }
 }

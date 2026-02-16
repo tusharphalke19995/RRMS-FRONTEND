@@ -1,30 +1,51 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { CommonModule, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { ReactiveFormsModule, FormsModule, UntypedFormGroup, NgForm, UntypedFormBuilder } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { RouterLink } from '@angular/router';
-import { TranslocoModule } from '@ngneat/transloco';
-import { SearchUserService } from 'app/modules/admin/pages/manage-user/search-userlist/searchUser.service';
-import { MasterService } from 'app/modules/admin/pages/Master/master.service';
-import { SearchDocService } from 'app/modules/admin/pages/search-document/searchDoc.service';
-import { InventoryVendor } from 'app/modules/admin/pages/upload-document/uploadDoc.types';
-import { SharedService } from 'app/shared/shared.service';
-import { Subject } from 'rxjs';
-import { UploadedFilesComponent } from 'app/modules/admin/pages/search-document/uploaded-files/uploaded-files.component';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  ViewChild,
+  ViewEncapsulation,
+} from "@angular/core";
+import {
+  CommonModule,
+  CurrencyPipe,
+  NgClass,
+  NgFor,
+  NgIf,
+  NgTemplateOutlet,
+} from "@angular/common";
+import {
+  ReactiveFormsModule,
+  FormsModule,
+  UntypedFormGroup,
+  NgForm,
+  UntypedFormBuilder,
+} from "@angular/forms";
+import { MatButtonModule } from "@angular/material/button";
+import { MatRippleModule } from "@angular/material/core";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatDialog } from "@angular/material/dialog";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatIconModule } from "@angular/material/icon";
+import { MatInputModule } from "@angular/material/input";
+import { MatPaginatorModule, MatPaginator } from "@angular/material/paginator";
+import { MatSelectModule } from "@angular/material/select";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatSortModule, MatSort } from "@angular/material/sort";
+import { MatTableModule, MatTableDataSource } from "@angular/material/table";
+import { RouterLink, Router } from "@angular/router";
+import { TranslocoModule } from "@ngneat/transloco";
+import { SearchUserService } from "app/modules/admin/pages/manage-user/search-userlist/searchUser.service";
+import { MasterService } from "app/modules/admin/pages/Master/master.service";
+import { SearchDocService } from "app/modules/admin/pages/search-document/searchDoc.service";
+import { InventoryVendor } from "app/modules/admin/pages/upload-document/uploadDoc.types";
+import { SharedService } from "app/shared/shared.service";
+import { Subject } from "rxjs";
+import { UploadedFilesComponent } from "app/modules/admin/pages/search-document/uploaded-files/uploaded-files.component";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @Component({
-  selector: 'app-latest-files',
+  selector: "app-latest-files",
   standalone: true,
   imports: [
     NgIf,
@@ -48,10 +69,11 @@ import { UploadedFilesComponent } from 'app/modules/admin/pages/search-document/
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    MatTooltipModule
   ],
-  templateUrl: './latest-files.component.html',
-  styleUrl: './latest-files.component.scss',
-      encapsulation: ViewEncapsulation.None,
+  templateUrl: "./latest-files.component.html",
+  styleUrl: "./latest-files.component.scss",
+  encapsulation: ViewEncapsulation.None,
 })
 export class LatestFilesComponent implements OnInit, AfterViewInit {
   searchUserListForm: UntypedFormGroup;
@@ -62,13 +84,12 @@ export class LatestFilesComponent implements OnInit, AfterViewInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   alert: { type: string; message: string };
   divisionDropdown = [];
-
+  isExpanded: boolean[] = [];
   @ViewChild("sort1") sort1: MatSort;
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
   columns: any[] = [
     { labelen: "File Name", labelhi: "File Name", property: "fileName" },
-    { labelen: "File Path", labelhi: "File Path", property: "filePath" },
     { labelen: "Hash Tag", labelhi: "Hash Tag", property: "hashTag" },
     { labelen: "Subject", labelhi: "Subject", property: "subject" },
     {
@@ -85,11 +106,10 @@ export class LatestFilesComponent implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = [
     "fileName",
-    "filePath",
     "hashTag",
     "subject",
-    "fileType",
-    "classification"
+    "filetypeName",
+    "classificationName",
   ];
   userRoleDropdown: [];
   designationsDropdown: [];
@@ -105,8 +125,9 @@ export class LatestFilesComponent implements OnInit, AfterViewInit {
     private sharedService: SharedService,
     private _masterService: MasterService,
     private _changeDetectorRef: ChangeDetectorRef,
+    private _router: Router,
     private _formBuilder: UntypedFormBuilder,
-    private _citizeninfoService: SearchDocService
+    private _searchDocService: SearchDocService
   ) {}
 
   // -----------------------------------------------------------------------------------------------------
@@ -123,7 +144,7 @@ export class LatestFilesComponent implements OnInit, AfterViewInit {
   getLatestFilesInfo() {
     this.sharedService.latesFileData$.subscribe((userInfo: any) => {
       this.latestFilesInfo = userInfo;
-      console.log(" this.latestFilesInfo ", this.latestFilesInfo);
+      // console.log(" this.latestFilesInfo ", this.latestFilesInfo);
       this.dataSource = new MatTableDataSource(this.latestFilesInfo);
     });
   }
@@ -175,13 +196,157 @@ export class LatestFilesComponent implements OnInit, AfterViewInit {
     }
   }
 
-       viewImage(data) {
-          const dialogRef = this.dialog.open(UploadedFilesComponent, {
-            data: data,
-            width: "1000px",
-          });
-          dialogRef.afterClosed().subscribe((result) => {
-            this.cdr.detectChanges();
-          });
-        }
+  // viewImage(data) {
+  //   const dialogRef = this.dialog.open(UploadedFilesComponent, {
+  //     data: data,
+  //     width: "1000px",
+  //   });
+  //   dialogRef.afterClosed().subscribe((result) => {
+  //     this.cdr.detectChanges();
+  //   });
+  // }
+
+  getHashTags(hashTagString: string): string[] {
+    if (!hashTagString) return [];
+    return hashTagString.split(" ").filter((tag) => tag.trim() !== "");
+  }
+
+  truncateText(text: string, limit: number): any {
+    if (text.length > limit) {
+      return {
+        truncatedText: text.substring(0, limit) + "...",
+        showMore: true,
+      };
+    }
+    return { truncatedText: text, showMore: false };
+  }
+
+  toggleDetails(rowIndex: number, event: Event): void {
+    event.preventDefault();
+    this.isExpanded[rowIndex] = !this.isExpanded[rowIndex];
+  }
+
+    viewImage(data) {
+  const payload = {
+    fileHash: data?.file?.fileHash || data?.fileHash,
+    requested_to: 0,
+    comments: "",
+    division_id: sessionStorage.getItem("divisionID"),
+    case_id: data?.caseInfoDetailsId,
+  };
+
+  this._searchDocService.filePreviewData(payload).subscribe({
+    next: (res: any) => {
+      if (!res) {
+        console.error("No file data received");
+        // Error message will be shown by the service's catchError
+        return;
+      }
+
+      const fileTypeRaw = res.mime_type || res.type || '';
+      const fileType = (fileTypeRaw || '').toString().toLowerCase();
+      const base64 = res.base64_content;
+      const fileName = res.file_name || "document";
+      const fileExt = (fileName || '').toString().split('.').pop()?.toLowerCase() || '';
+
+      const officeMimeTypes = [
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      ];
+
+      const officeExts = ["doc", "docx", "xls", "xlsx", "ppt", "pptx"];
+      if (officeMimeTypes.includes(fileType) || officeExts.includes(fileExt)) {
+        const blob = this.base64ToBlob(base64, fileType);
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+        return;
+      } else if (fileType === "application/pdf") {
+        // For PDFs - navigate to PDF preview page
+        const previewData = {
+          base64_content: base64,
+          mime_type: fileType,
+          type: fileType,
+          file_name: fileName,
+          fileName: fileName,
+          file: {
+            base64_content: base64,
+            mime_type: fileType,
+            type: fileType,
+            file_name: fileName,
+            fileName: fileName
+          },
+          caseInfoDetailsId: data?.caseInfoDetailsId
+        };
+
+        console.log('Navigating to PdfPreviewPageComponent for PDF');
+        this.savePdfPreviewData(previewData);
+        this._router.navigate(['/dashboard/preview-pdf-dashboard'], {
+          state: { data: previewData }
+        });
+      } else {
+        // Open UploadedFilesComponent dialog for other file types
+        const dialogRef = this.dialog.open(UploadedFilesComponent, {
+          data: data,
+          width: "850px",
+          maxWidth: "100vw",
+          height: "90vh",
+          panelClass: "custom-dialog-class",
+        });
+
+        dialogRef.afterClosed().subscribe(() => {
+          this._changeDetectorRef.detectChanges();
+        });
+      }
+    },
+    error: (error) => {
+      console.error("Error fetching file preview:", error);
+      // The service already handles errors and returns null
+    },
+  });
+}
+
+
+  base64ToBlob(base64: string, mime: string): Blob {
+    const byteCharacters = atob(base64);
+    const byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+      const slice = byteCharacters.slice(offset, offset + 512);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+
+    return new Blob(byteArrays, { type: mime });
+  }
+
+  private savePdfPreviewData(previewData: any): void {
+    this.sharedService.setPdfPreviewData(previewData);
+    try {
+      sessionStorage.setItem('pdfPreviewData', JSON.stringify(previewData));
+    } catch (error) {
+      console.warn('Failed to store pdf preview data in sessionStorage, using SharedService fallback.', error);
+      try {
+        sessionStorage.setItem('pdfPreviewData', JSON.stringify({ useShared: true }));
+      } catch (e) {
+        // ignore
+      }
+    }
+  }
+
 }

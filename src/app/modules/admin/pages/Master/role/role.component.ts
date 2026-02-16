@@ -66,7 +66,6 @@ export class RoleComponent implements OnInit {
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
   columns: any[] = [
-    { labelen: "Role Id", labelhi: "Role Id", property: "roleId" },
     { labelen: "Role Name", labelhi: "Role Name", property: "roleName" },
     {
       labelen: "Action",
@@ -77,7 +76,6 @@ export class RoleComponent implements OnInit {
   ];
 
   displayedColumns: string[] = [
-    "roleId",
     "roleName",
     "action",
   ];
@@ -171,10 +169,10 @@ export class RoleComponent implements OnInit {
   }
 
   getRolesInfo() {
-    this._masterService.getRole().subscribe({
+    const divisionID= Number(sessionStorage.getItem('divisionID'))
+    this._masterService.getRole(divisionID).subscribe({
       next: (response: any) => {
-        console.log("response", response);
-        this.dataSource = new MatTableDataSource(response);
+        this.dataSource = new MatTableDataSource(response.responseData);
       },
       error: (error) => {},
     });
@@ -187,7 +185,7 @@ export class RoleComponent implements OnInit {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
-            panelClass: ["success-snackbar"],
+            panelClass: ["green-snackbar"],
           });
           this.getRolesInfo();
         },

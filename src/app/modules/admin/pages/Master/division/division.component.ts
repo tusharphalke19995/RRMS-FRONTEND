@@ -66,8 +66,8 @@ export class DivisionComponent implements OnInit, AfterViewInit {
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
   columns: any[] = [
-    { labelen: "Division Id", labelhi: "Division Id", property: "divisionId" },
     { labelen: "Division Name", labelhi: "Division Name", property: "divisionName" },
+    { labelen: "Department Name", labelhi: "Department Name", property: "department" },
     {
       labelen: "Action",
       labelhi: "Action",
@@ -77,9 +77,9 @@ export class DivisionComponent implements OnInit, AfterViewInit {
   ];
 
   displayedColumns: string[] = [
-    "divisionId",
     "divisionName",
-    "action",
+    "department",
+    "action"
   ];
   userRoleDropdown: [];
   designationsDropdown: [];
@@ -171,7 +171,8 @@ export class DivisionComponent implements OnInit, AfterViewInit {
   }
 
   getDivisionInfo() {
-    this._masterService.getDivision().subscribe({
+    const divisionId =Number(sessionStorage.getItem('divisionID'));
+    this._masterService.getDivision(divisionId).subscribe({
       next: (response: any) => {
         console.log("response", response);
         this.dataSource = new MatTableDataSource(response);
@@ -188,7 +189,7 @@ export class DivisionComponent implements OnInit, AfterViewInit {
         duration: 3000,
         horizontalPosition: "right",
         verticalPosition: "top",
-        panelClass: ["success-snackbar"],
+        panelClass: ["green-snackbar"],
       });
       this.getDivisionInfo();
     },

@@ -1,4 +1,13 @@
 <ng-container *ngIf="show">
+    <div class="fuse-loading-overlay">
+        <div class="fuse-loading-logo-container">
+            <img src="assets/images/KSPPCW-logo.png" alt="Logo" class="fuse-loading-logo" />
+            <div class="fuse-loading-title">
+                <span class="rrms-accent">RRMS</span>
+            </div>
+            <img src="assets/images/logo/dots-loader.svg" alt="Loading..." class="fuse-loading-dots" />
+        </div>
+    </div>
     <mat-progress-bar
         [mode]="mode"
         [value]="progress"></mat-progress-bar>

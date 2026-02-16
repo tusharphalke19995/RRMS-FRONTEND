@@ -80,7 +80,7 @@ export class ActiveUserlistComponent implements OnInit, AfterViewInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   alert: { type: string; message: string };
   divisionDropdown = [];
-
+ userRoleDropdown = [];
   @ViewChild("sort1") sort1: MatSort;
   @ViewChild("paginator1") paginator1: MatPaginator;
   dataSource: MatTableDataSource<any>;
@@ -94,30 +94,20 @@ export class ActiveUserlistComponent implements OnInit, AfterViewInit {
     { labelen: "Last Name", labelhi: "Last Name", property: "last_name" },
     { labelen: "Mobile No", labelhi: "mobileno", property: "mobileno" },
     { labelen: "kgid", labelhi: "kgid", property: "kgid" },
-    { labelen: "Role Name", labelhi: "Role Name", property: "roleName" },
-    {
-      labelen: "Division Name",
-      labelhi: "Division Name",
-      property: "divisionNameme",
-    },
-    {
-      labelen: "Designation Name",
-      labelhi: "Designation Name",
-      property: "designationName",
-    },
+    { labelen: "Roles", labelhi: "Roles", property: "roles" },
+    
   ];
 
   displayedColumns: string[] = [
-    "email",
     "first_name",
     "last_name",
+    "email",
     "mobileno",
     "kgid",
-    "roleName",
-    "divisionName",
-    "designationName",
+   "role",
+   "designation"
   ];
-  userRoleDropdown: [];
+
   designationsDropdown: [];
   activeUserData: any;
   /**
@@ -143,12 +133,18 @@ export class ActiveUserlistComponent implements OnInit, AfterViewInit {
    */
   ngOnInit(): void {
     this.getActiveUserList();
+    this.getUserRoleDropdown();
   }
 
   getActiveUserList() {
     this.sharedService.activeUserData$.subscribe((userInfo: any) => {
       this.activeUserData = userInfo;
-      console.log(" this.activeUserData ", this.activeUserData);
+     
+       this.activeUserData  = userInfo.filter((n) => !n.is_active);
+      this.activeUserData = userInfo.map(user => ({
+        ...user,
+        isExpanded: false
+    }));
       this.dataSource = new MatTableDataSource(this.activeUserData);
     });
   }
@@ -189,6 +185,25 @@ export class ActiveUserlistComponent implements OnInit, AfterViewInit {
    */
   trackByFn(index: number, item: any): any {
     return item.id || index;
+  }
+
+  getUserRoleDropdown() {
+    const divisionID = Number(sessionStorage.getItem('divisionID'));
+    this._searchUserService.getUserRole(divisionID).subscribe({
+      next: (response: any) => {
+        if (response) {
+          this.userRoleDropdown = response.responseData;
+          
+        }
+      },
+      error: (error) => {},
+    });
+  }
+
+
+   getRoleName(roleId: number): string {
+    const role = this.userRoleDropdown.find(r => r.roleId === roleId);
+    return role ? role.roleName : 'Unknown Role';
   }
 
   applyFilter(event: Event) {

@@ -1,0 +1,104 @@
+<div class="flex flex-col max-w-420 md:min-w-100 max-h-screen">
+    <!-- Header with improved styling -->
+    <div class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md"
+        cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle cdkDrag>
+
+        <div class="flex items-center">
+            <span class="text-xl font-semibold tracking-tight" *ngIf="updateBool; else addRoleTemplate">
+                {{ 'updateCaseStatus' | transloco }}
+            </span>
+            <ng-template #addRoleTemplate>
+                <span class="text-xl font-semibold tracking-tight">
+                    {{ 'addCaseStatus' | transloco }}
+                </span>
+            </ng-template>
+        </div>
+        <button mat-icon-button class="rounded-full transition-colors duration-200" (click)="onNoClose()" [tabIndex]="-1">
+            <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+        </button>
+    </div>
+
+    <!-- Form Content -->
+    <form [formGroup]="SMTPSettingForm" class="flex flex-col flex-auto p-6 overflow-y-auto space-y-6">
+        <!-- First Row -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label class="font-medium">SMTP ServerName</mat-label>
+                <input matInput  [formControlName]="'smtpServerName'" placeholder="Enter SMTP Server Name">
+                <mat-error *ngIf="SMTPSettingForm.get('smtpServerName').hasError('required')">
+                    Required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label class="font-medium">Port No</mat-label>
+                <input matInput  (keypress)="allowOnlyNumbers($event)"[formControlName]="'portNo'" placeholder="Enter Port No">
+                <mat-error *ngIf="SMTPSettingForm.get('portNo').hasError('required')">
+                    Required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label class="font-medium">Encryption</mat-label>
+                <input matInput [formControlName]="'encryption'" placeholder="Enter Encryption">
+                <mat-error *ngIf="SMTPSettingForm.get('encryption').hasError('required')">
+                    Required
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <!-- Second Row -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <mat-form-field class="w-full">
+                <mat-label class="font-medium">Username</mat-label>
+                <input matInput [formControlName]="'username'" placeholder="Enter Username">
+                <mat-error *ngIf="SMTPSettingForm.get('username').hasError('required')">
+                    Required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label class="font-medium">Password</mat-label>
+                <input id="password" matInput type="password" [formControlName]="'password'" #passwordField>
+                <button mat-icon-button type="button"
+                    (click)="passwordField.type === 'password' ? passwordField.type = 'text' : passwordField.type = 'password'"
+                    matSuffix>
+                    <mat-icon class="icon-size-5" *ngIf="passwordField.type === 'password'"
+                        [svgIcon]="'heroicons_solid:eye'"></mat-icon>
+                    <mat-icon class="icon-size-5" *ngIf="passwordField.type === 'text'"
+                        [svgIcon]="'heroicons_solid:eye-slash'"></mat-icon>
+                </button>
+                <mat-error *ngIf="SMTPSettingForm.get('password').hasError('required')">
+                    Password is required
+                </mat-error>
+                <mat-error *ngIf="SMTPSettingForm.get('password').hasError('pattern')">
+                    Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one
+                    number, and one special character
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
+            <ng-container *ngIf="!updateBool">
+                <button mat-flat-button
+                    class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
+                    (click)="saveSMTPSetting()" [disabled]="this.SMTPSettingForm.invalid">
+                    Submit
+                </button>
+            </ng-container>
+
+            <ng-container *ngIf="updateBool">
+                <button mat-flat-button
+                    class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
+                    (click)="updateSMTPSetting()" [disabled]="this.SMTPSettingForm.invalid">
+                    Update
+                </button>
+            </ng-container>
+
+            <button mat-stroked-button
+                class="min-w-[90px] px-6 py-2 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                (click)="onNoClose()">
+                Cancel
+            </button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,109 @@
+<div class="flex flex-col max-w-340 md:min-w-160 max-h-screen">
+
+    
+    <!-- Header with improved styling -->
+    <div class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md"
+        cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle cdkDrag>
+        <div class="flex items-center">
+            <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('addDivision')}}</span>
+        </div>
+        <button mat-icon-button class=" rounded-full transition-colors duration-200" (click)="onNoClose()" [tabIndex]="-1">
+            <mat-icon class="text-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+        </button>
+    </div>
+
+    <!-- Form Content -->
+    <form [formGroup]="addDivisionForm" class="flex flex-col flex-auto p-6 overflow-y-auto">
+     
+       <!-- Second Row -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('role')}}</mat-label>
+                <mat-select [formControlName]="'roleId'" [panelClass]="'custom-select-panel'">
+                    <div class="px-3 py-2">
+                        <mat-form-field class="w-full">
+                            <input matInput
+                                (keyup)="filterUserRoles($event)"
+                                placeholder="Search role..."
+                                #roleSearchInput
+                                [value]="''"
+                                autocomplete="off">
+                        </mat-form-field>
+                    </div>
+                    <mat-option [value]="null">Please Select</mat-option>
+                    <ng-container *ngFor="let roleInfo of filteredUserRoles; trackBy: trackByFn">
+                        <mat-option [value]="roleInfo.roleId">{{roleInfo.roleName}}</mat-option>
+                    </ng-container>
+                </mat-select>
+                <mat-error *ngIf="addDivisionForm.get('roleId').hasError('required')">
+                      Required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('division')}}</mat-label>
+                <mat-select [formControlName]="'divisionId'" [panelClass]="'custom-select-panel'">
+                    <div class="px-3 py-2">
+                        <mat-form-field class="w-full">
+                            <input matInput
+                                (keyup)="filterDivisions($event)"
+                                placeholder="Search division..."
+                                #divisionSearchInput
+                                [value]="''"
+                                autocomplete="off">
+                        </mat-form-field>
+                    </div>
+                    <mat-option [value]="null">Please Select</mat-option>
+                    <ng-container *ngFor="let roleInfo of filteredDivisions; trackBy: trackByFn">
+                        <mat-option [value]="roleInfo.divisionId">{{roleInfo.divisionName}}</mat-option>
+                    </ng-container>
+                </mat-select>
+                <mat-error *ngIf="addDivisionForm.get('divisionId').hasError('required')">
+                      Required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-label *transloco="let t" class="font-medium">{{t('designations')}}</mat-label>
+                <mat-select [formControlName]="'designationId'" [panelClass]="'custom-select-panel'">
+                    <div class="px-3 py-2">
+                        <mat-form-field class="w-full">
+                            <input matInput
+                                (keyup)="filterDesignations($event)"
+                                placeholder="Search designation..."
+                                #designationSearchInput
+                                [value]="''"
+                                autocomplete="off">
+                        </mat-form-field>
+                    </div>
+                    <mat-option [value]="null">Please Select</mat-option>
+                    <ng-container *ngFor="let designationInfo of filteredDesignations; trackBy: trackByFn">
+                        <mat-option [value]="designationInfo.designationId">{{designationInfo.designationName}}</mat-option>
+                    </ng-container>
+                </mat-select>
+                <mat-error *ngIf="addDivisionForm.get('designationId').hasError('required')">
+                      Required
+                </mat-error>
+            </mat-form-field>
+
+          
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
+            <button mat-flat-button
+                    class="min-w-[90px] px-6 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200"
+                    (click)="addDivision()"
+                    [disabled]="this.addDivisionForm.invalid" *transloco="let t" >
+                   {{t('submit')}}
+            </button>
+            <button mat-stroked-button
+                    class="min-w-[90px] px-6 py-2 rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                    (click)="onNoClose()" *transloco="let t" >
+                
+                {{t('cancel')}}
+            </button>
+        </div>
+    </form>
+</div>

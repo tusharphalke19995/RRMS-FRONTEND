@@ -1,0 +1,240 @@
+<!-- Modern Dialog Container -->
+<div class="dialog-container">
+  <!-- Header with gradient and better spacing -->
+  <header class="dialog-header">
+    <div class="header-content">
+      <div class="header-left">
+        <mat-icon class="header-icon" aria-hidden="true">folder_open</mat-icon>
+        <h1 class="header-title" *ngIf="data.mode === 'move'">Move Files</h1>
+        <h1 class="header-title" *ngIf="data.mode === 'copy'">Copy Files</h1>
+      </div>
+      <button mat-icon-button 
+              class="close-button" 
+              (click)="close()" 
+              [tabIndex]="-1"
+              aria-label="Close dialog">
+        <mat-icon aria-hidden="true">close</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="dialog-content">
+    <!-- Files Preview Section -->
+    <section class="files-section" *ngIf="fileDetails.length > 0" aria-labelledby="files-title">
+      <div class="section-header">
+        <mat-icon class="section-icon" aria-hidden="true">description</mat-icon>
+        <h2 id="files-title" class="section-title">Selected Files ({{ fileDetails.length }})</h2>
+      </div>
+      <div class="files-grid" role="list" aria-label="Selected files">
+        <div class="file-card" 
+             *ngFor="let file of fileDetails; trackBy: trackByFileName" 
+             role="listitem">
+          <div class="file-icon-wrapper">
+            <mat-icon class="file-type-icon" aria-hidden="true">{{ getFileIcon(file.name) }}</mat-icon>
+          </div>
+          <div class="file-info">
+            <span class="file-name" 
+                  [matTooltip]="file.name"
+                  [matTooltipClass]="'custom-tooltip'"
+                  [matTooltipPosition]="'above'"
+                  [matTooltipShowDelay]="500"
+                  [matTooltipHideDelay]="0">
+              {{ file.name }}
+            </span>
+              <span class="file-size">PDF Document</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folder Selection Section -->
+    <section class="folder-section" aria-labelledby="folder-title">
+      <div class="section-header">
+        <mat-icon class="section-icon" aria-hidden="true">folder</mat-icon>
+        <h2 id="folder-title" class="section-title">Choose Destination Folder</h2>
+      </div>
+      
+      <!-- Loading State -->
+      <div class="loading-container" *ngIf="loading$ | async" aria-live="polite">
+        <div class="loading-content">
+          <mat-spinner diameter="40" aria-label="Loading folders"></mat-spinner>
+          <p class="loading-text">Loading folders...</p>
+        </div>
+      </div>
+
+      <!-- Folder Tree -->
+      <div class="folder-tree-wrapper" *ngIf="!(loading$ | async)" role="tree" aria-label="Folder structure">
+        <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="modern-tree">
+          <!-- Folder Node with Children -->
+          <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+            <div class="tree-item" 
+                 [class.selected]="isNodeSelected(node)" 
+                 [class.selectable]="node.type === 'folder' && node.level !== 'division'"
+                 [class.expanded]="treeControl.isExpanded(node)"
+                 (click)="selectNode(node)"
+                 role="treeitem"
+                 [attr.aria-expanded]="treeControl.isExpanded(node)"
+                 [attr.aria-selected]="isNodeSelected(node)">
+              
+              <div class="item-content">
+                <button mat-icon-button 
+                        class="expand-button" 
+                        (click)="toggleNode(node, $event)"
+                        [attr.aria-label]="(treeControl.isExpanded(node) ? 'Collapse' : 'Expand') + ' ' + node.name"
+                        [tabIndex]="node.type === 'folder' && node.level !== 'division' ? 0 : -1">
+                  <mat-icon [@rotateIcon]="treeControl.isExpanded(node) ? 'expanded' : 'collapsed'" aria-hidden="true">
+                    {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+                  </mat-icon>
+                </button>
+                
+                <div class="item-details">
+                  <div class="item-icon">
+                    <mat-icon [class.folder-open]="treeControl.isExpanded(node)" 
+                             [class.folder-closed]="!treeControl.isExpanded(node)"
+                             aria-hidden="true">folder</mat-icon>
+                  </div>
+                  <div class="item-text">
+                    <span class="item-name" 
+                          [title]="node.name"
+                          [matTooltip]="node.name"
+                          [matTooltipClass]="'custom-tooltip'"
+                          [matTooltipPosition]="'above'"
+                          [matTooltipShowDelay]="500"
+                          [matTooltipHideDelay]="0">
+                      {{ node.name }}
+                    </span>
+                    <span class="item-level">{{ node.level }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div [class.tree-invisible]="!treeControl.isExpanded(node)" 
+                 class="tree-children"
+                 role="group">
+              <ng-container matTreeNodeOutlet></ng-container>
+            </div>
+          </mat-nested-tree-node>
+
+          <!-- Leaf Node -->
+          <mat-tree-node *matTreeNodeDef="let node; when: isLeaf">
+            <div class="tree-item"
+                 [class.selected]="isNodeSelected(node)" 
+                 [class.selectable]="node.type === 'folder' && node.level !== 'division'"
+                 (click)="selectNode(node)"
+                 role="treeitem"
+                 [attr.aria-selected]="isNodeSelected(node)">
+              
+              <div class="item-content">
+                <div class="item-details">
+                  <div class="item-icon">
+                    <mat-icon class="folder-closed" aria-hidden="true">folder</mat-icon>
+                  </div>
+                  <div class="item-text">
+                    <span class="item-name" 
+                          [title]="node.name"
+                          [matTooltip]="node.name"
+                          [matTooltipClass]="'custom-tooltip'"
+                          [matTooltipPosition]="'above'"
+                          [matTooltipShowDelay]="500"
+                          [matTooltipHideDelay]="0">
+                      {{ node.name }}
+                    </span>
+                    <span class="item-level">{{ node.level }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-tree-node>
+        </mat-tree>
+      </div>
+    </section>
+
+    <!-- Selected Destination Preview -->
+    <section class="destination-section" *ngIf="selectedNode" aria-labelledby="destination-title">
+      <div class="section-header">
+        <mat-icon class="section-icon" aria-hidden="true">location_on</mat-icon>
+        <h2 id="destination-title" class="section-title">Destination</h2>
+      </div>
+      <div class="destination-card">
+        <div class="destination-icon">
+          <mat-icon aria-hidden="true">folder_special</mat-icon>
+        </div>
+        <div class="destination-info">
+          <span class="destination-name" 
+                [title]="selectedNode.name"
+                [matTooltip]="selectedNode.name"
+                [matTooltipClass]="'custom-tooltip'"
+                [matTooltipPosition]="'above'"
+                [matTooltipShowDelay]="500"
+                [matTooltipHideDelay]="0">
+            {{ selectedNode.name }}
+          </span>
+          <span class="destination-path">{{ selectedNode.level }}</span>
+        </div>
+        <div class="destination-badge">
+          <span class="badge-text">Selected</span>
+        </div>
+      </div>
+      
+      <!-- Debug Information -->
+      <div class="debug-info" *ngIf="navigationStack.length > 0 || items.length > 0">
+        <h4>Extracted Parameters:</h4>
+        <div class="debug-params">
+          <div class="param-item" *ngFor="let item of navigationStack">
+            <strong>{{ item.level }}:</strong> {{ item.name }} (ID: {{ item.id }})
+          </div>
+          <div class="param-item" *ngFor="let item of items">
+            <strong>{{ item.level }}:</strong> {{ item.name }} (ID: {{ item.id }})
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Action Buttons -->
+  <footer class="dialog-actions">
+    <div class="action-buttons">
+      <button mat-stroked-button 
+              class="cancel-button" 
+              (click)="close()"
+              aria-label="Cancel move operation">
+        <mat-icon aria-hidden="true">cancel</mat-icon>
+        Cancel
+      </button>
+      
+      <!-- <button mat-stroked-button 
+              class="archive-button" 
+              (click)="confirmArchive()"
+              aria-label="Archive files">
+        <mat-icon aria-hidden="true">archive</mat-icon>
+        Archive
+      </button>
+       -->
+      <button mat-raised-button 
+       *ngIf="data.mode === 'move'"
+              color="primary" 
+              class="move-button"
+              (click)="confirmMove()" 
+              [disabled]="!selectedNode || (loading$ | async)"
+              [attr.aria-label]="!selectedNode ? 'Select a destination folder first' : 'Move files to selected folder'">
+        <mat-icon *ngIf="!(loading$ | async)" aria-hidden="true">drive_file_move</mat-icon>
+        <mat-spinner diameter="20" *ngIf="loading$ | async" aria-label="Moving files"></mat-spinner>
+        Move Files
+      </button>
+
+      <button mat-raised-button 
+       *ngIf="data.mode === 'copy'"
+              color="primary" 
+              class="move-button"
+              (click)="confirmCopy()" 
+              [disabled]="!selectedNode || (loading$ | async)"
+              [attr.aria-label]="!selectedNode ? 'Select a destination folder first' : 'Move files to selected folder'">
+        <mat-icon *ngIf="!(loading$ | async)" aria-hidden="true">drive_file_move</mat-icon>
+        <mat-spinner diameter="20" *ngIf="loading$ | async" aria-label="Moving files"></mat-spinner>
+        Copy Files
+      </button>
+    </div>
+  </footer>
+</div>

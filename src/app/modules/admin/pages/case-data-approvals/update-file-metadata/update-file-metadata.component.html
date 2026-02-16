@@ -1,0 +1,117 @@
+<div class="flex flex-col max-w-250 md:min-w-150 max-h-screen">
+
+
+  <!-- Header with improved styling -->
+  <div
+    class="flex flex-0 items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md"
+    cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle cdkDrag>
+    <div class="flex items-center">
+      <span class="text-xl font-semibold tracking-tight" *transloco="let t">{{t('updateFileMetadata')}}</span>
+    </div>
+    <button mat-icon-button  (click)="onCancel()" [tabIndex]="-1">
+      <mat-icon class="icon-white" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+    </button>
+  </div>
+
+  <!-- Form Content -->
+  <form [formGroup]="metadataForm" (ngSubmit)="updateMetadata()" class="flex flex-col flex-auto p-6 overflow-y-auto">
+    <div class="space-y-4">
+      <!-- Subject Field -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Subject</mat-label>
+        <input matInput 
+               formControlName="subject" 
+               placeholder="Enter subject"
+               required />
+        <mat-error *ngIf="metadataForm.get('subject')?.hasError('required')">
+          Subject/content is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- File Stage Field -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label *transloco="let t" class="font-medium">{{t('fileStage')}}</mat-label>
+        <mat-select [formControlName]="'documentType'" 
+                   (selectionChange)="onFileTypeChange($event.value)"
+                   required>
+          <mat-option [value]="null">Please Select</mat-option>
+          <ng-container *ngFor="let fileStageData of FileTypeDropDown; trackBy: trackByFn">
+            <mat-option [value]="fileStageData.id">{{fileStageData.value}}</mat-option>
+          </ng-container>
+        </mat-select>
+        <mat-error *ngIf="metadataForm.get('documentType').hasError('required')">
+          Required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Document Type Field -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Document Type</mat-label>
+        <mat-select formControlName="fileType" 
+                   [panelClass]="'custom-select-panel'"
+                   required>
+          <mat-option [value]="null">Please Select</mat-option>
+          <ng-container *ngFor="let fileType of DocumentTypeDropDown">
+            <mat-option [value]="fileType.id">{{ fileType.value }}</mat-option>
+          </ng-container>
+        </mat-select>
+        <mat-error *ngIf="metadataForm.get('fileType').hasError('required')">
+          Required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Classification Field -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Classification</mat-label>
+        <mat-select formControlName="classification"
+                   required>
+          <mat-option [value]="null">Please Select</mat-option>
+          <ng-container *ngFor="let classification of ClassificationTypeDropDown">
+            <mat-option [value]="classification.id">{{ classification.value }}</mat-option>
+          </ng-container>
+        </mat-select>
+        <mat-error *ngIf="metadataForm.get('classification').hasError('required')">
+          Required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- HashTag Field -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>HashTag</mat-label>
+        <input matInput 
+               formControlName="hashTag" 
+               (keyup)="onHashTagKeyUp($event)"
+               placeholder="Type and press space – '#' will be auto-appended" />
+        <mat-hint class="hintHashtag">After typing, press space to auto-append #</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <!-- File Name Display -->
+    <div class="p-2 mt-4 bg-gray-50 rounded">
+      <p class="text-sm">
+        File/Document Name: 
+        <span class="font-semibold">{{ data.file?.fileName}}</span>
+      </p>
+    </div>
+
+    <!-- Dialog Actions -->
+    <div class="flex justify-end space-x-2 mt-6 pt-4 mt-6 pt-4 border-t py-4 mr-3">
+      <button mat-button 
+              type="button"
+              (click)="onCancel()"
+              class="hover:bg-gray-100">
+        Cancel
+      </button>
+
+      <button mat-raised-button 
+              type="submit"
+              color="primary" 
+              [disabled]="!metadataForm.valid || isSubmitting" 
+             (click)="updateMetadata()"
+              class="hover:bg-primary-700">
+        <mat-spinner diameter="20" *ngIf="isSubmitting" class="mr-2"></mat-spinner>
+    Update Metadata
+      </button>
+    </div>
+  </form>
+</div>

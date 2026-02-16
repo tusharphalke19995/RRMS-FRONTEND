@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiurls } from 'app/shared/constants/api-urls.constant';
 import { ErrorResponseModel } from 'app/shared/models/error-model';
@@ -13,11 +13,14 @@ export class DashbaordService
   ) {}
 
 
-  getFavouritesData() {
-    return this._httpClient
-      .get(apiurls.getFavourites,)
-      .pipe(catchError(this.handleError));
-  }
+
+  getFavouritesData(id:number) {
+    const url = `${apiurls.getFavourites}=${id}`; 
+    return this._httpClient.get(url, {
+    }).pipe(catchError(this.handleError));
+}
+
+
 
   getFilesLatestData() {
     return this._httpClient
@@ -31,16 +34,38 @@ export class DashbaordService
       .pipe(catchError(this.handleError));
   }
 
-  
-  getNotificationsCount() {
-    return this._httpClient
-      .get(apiurls.getNotifications)
-      .pipe(catchError(this.handleError));
-  }
+
+  getNotificationsCount(id:number) {
+    const url = `${apiurls.getNotifications}=${id}`; 
+    return this._httpClient.get(url, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
 
 
+  fileAccessByRequestid(fileAccessRequestid: number,data:any) {
+    const url = `${apiurls.caseDataFileApproveReq}/${fileAccessRequestid}/action`; 
+    return this._httpClient.post(url,data, {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    }).pipe(catchError(this.handleError));
+}
 
-  
+getContentManagerReqData(data:any) {
+  const url = `${apiurls.getContentManagerReq}`
+  return this._httpClient.post(url, data,{
+      headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+      })
+  }).pipe(catchError(this.handleError));
+}
+
   /**
    * The error handler.
    * @param err The http error response.

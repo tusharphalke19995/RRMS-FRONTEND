@@ -13,23 +13,45 @@
                         </div>
                         <div class="flex flex-col min-w-0 ml-4">
                             <ng-container *transloco="let t">
-                                <h3
-                                    class="text-xl md:text-2xl font-semibold tracking-tight leading-7 md:leading-snug truncate">
-                                    {{t('welcome-back')}}, {{authData.UserName}}! <span class="designation"> {{authData.DesignationName}}</span>
-                                </h3>
+                                <div class="space-y-1 md:space-y-2">
+                                    <h3
+                                        class="text-xl md:text-2xl font-semibold tracking-tight leading-7 md:leading-snug">
+                                        {{ t('welcome-back') }}, {{ authData.UserName }}!
+                                    </h3>
+                                    <div *ngIf="!showAdminBool">
+
+                                        <p class="text-md md:text-lg text-gray-600">
+                                            <strong>Role:</strong> {{ authData.Role }}
+                                        </p>
+                                        <div>
+                                            <strong>Departments:</strong>
+                                            <span *ngFor="let name of selectedDepartmentNames; let last = last">
+                                                {{ name }}<span *ngIf="!last">, </span>
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <strong>Divisions:</strong>
+                                            <span *ngFor="let name of selectedDivisionNames; let last = last">
+                                                {{ name }}<span *ngIf="!last">, </span>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
                             </ng-container>
-                            <!-- <div class="flex items-center">
-                                <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:bell'"></mat-icon>
-                                <span class="ml-1.5 leading-6 truncate text-secondary">You have 2 new messages and 15 new tasks</span>
-                            </div> -->
+
                         </div>
+                    </div>
+                    <div class="flex items-center cursor-pointer" (click)="goToDivision()" *ngIf="showChangeDivision">
+                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
+                        <span class="ml-1.1 leading-6 truncate text-primary">Click Here to Change Division</span>
                     </div>
                 </div>
             </div>
         </div>
         <div class="py-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full min-w-0">
             <!-- Active Users Card -->
-            <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden" *ngIf="authData.RoleName ==='Admin'">
+            <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden" *ngIf="showAdminBool">
                 <div class="flex items-start justify-between">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Active Users</div>
                 </div>
@@ -40,32 +62,51 @@
                     <div class="flex cursor-pointer" (click)="goToActiveUserList(currentUserData)">
                         <a class="inline-flex items-center -ml-1.5 text-blue-600 font-medium">
                             <span class="ml-1">Users</span>
-                            <mat-icon class="icon-size-5 text-blue-600" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                            <mat-icon class="icon-size-5 text-blue-600"
+                                [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Pending Approval Card -->
-            <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden">
+
+            <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden" *ngIf="!showAdminBool">
                 <div class="flex items-start justify-between">
-                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Pending Approval</div>
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Access Status</div>
                 </div>
                 <div class="flex flex-col items-center mt-2">
-                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-red-500">
-                        {{ pendingApprovalCount || 0 }} <!-- Replace with actual count -->
+                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-green-500">
+                        {{ pendingReqAccessCount || 0 }} <!-- Replace with actual count -->
                     </div>
-                    <div class="flex cursor-pointer" (click)="goToPendingApproval()">
-                        <a class="inline-flex items-center -ml-1.5 text-red-500 font-medium">
-                            <span class="ml-1">Approvals</span>
-                            <mat-icon class="icon-size-5 text-red-500" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                    <div class="flex cursor-pointer" (click)="goToPendingReqAccess()">
+                        <a class="inline-flex items-center -ml-1.5 text-green-500  font-medium">
+                            <span class="ml-1">Access Status</span>
+                            <mat-icon class="icon-size-5 text-green-500"
+                                [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Notifications Card -->
-            <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden">
+            <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden" *ngIf="!showAdminBool">
+                <div class="flex items-start justify-between">
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Upload Status</div>
+                </div>
+                <div class="flex flex-col items-center mt-2">
+                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-gray-600">
+                        {{ pendingUploadReqCount || 0 }} <!-- Replace with actual count -->
+                    </div>
+                    <div class="flex cursor-pointer" (click)="goToUploadReqAccess()">
+                        <a class="inline-flex items-center -ml-1.5 text-gray-600  font-medium">
+                            <span class="ml-1">Upload Status</span>
+                            <mat-icon class="icon-size-5 text-gray-600"
+                                [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden" *ngIf="!showAdminBool">
                 <div class="flex items-start justify-between">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Notifications</div>
                 </div>
@@ -76,13 +117,14 @@
                     <div class="flex cursor-pointer" (click)="goToNotification()">
                         <a class="inline-flex items-center -ml-1.5 text-amber-500 font-medium">
                             <span class="ml-1">Notifications</span>
-                            <mat-icon class="icon-size-5 text-amber-500" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                            <mat-icon class="icon-size-5 text-amber-500"
+                                [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="flex-auto border-t -mt-px pt-4 sm:pt-6">
             <div class="w-full max-w-screen-xl mx-auto">
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full min-w-0">
@@ -90,7 +132,7 @@
                     <div
                         class="sm:col-span-2 md:col-span-4 lg:col-span-2 flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden">
                         <div class="flex flex-col sm:flex-row items-start justify-between">
-                            <div class="text-lg font-bold tracking-tight leading-6 truncate">Recent Favorite Files
+                            <div class="text-lg font-bold tracking-tight leading-6 truncate">Favourite Files
                             </div>
                         </div>
 
@@ -100,32 +142,37 @@
                                     <div class="favorite-card py-3" [@fadeIn]>
                                         <div class="favorite-card-header">
                                             <div class="file-info">
-                                                <div class="file-name"> <mat-icon
-                                                        (click)="viewImage(favoritesItem.file)"
-                                                        class="cursor-pointer">{{ 'insert_drive_file' }}</mat-icon>
-                                                    <span class="ml-1.2">{{
-                                                        favoritesItem.file.fileName }}</span>
+                                                <div class="file-name cursor-pointer" (click)="viewImage(favoritesItem.file)">
+                                                    <mat-icon class="cursor-pointer">{{
+                                                        'insert_drive_file' }}</mat-icon>
+
+                                                    <span class="text-primary-500 hover:underline truncate-text"
+                                                        matTooltip="{{  favoritesItem.file.fileName }}">
+                                                        {{ favoritesItem.file.fileName}}
+                                                    </span>
                                                 </div>
 
                                                 <div class="added-at"> <mat-icon class="icon-size-5 text-hint"
                                                         [svgIcon]="'heroicons_solid:clock'"></mat-icon>
                                                     <span class="ml-1.2">{{ favoritesItem.added_at | date: 'medium'
                                                         }}</span>
+
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="favorite-card-body">
                                             <div class="file-details">
-                                                <div><strong>File Type:</strong> {{ favoritesItem.file.subject }}</div>
-                                                <div><strong>Subject:</strong> {{ favoritesItem.file.fileType }}</div>
+                                                <div><strong>File Type:</strong> {{ favoritesItem.file.filetypeName }}
+                                                </div>
+                                                <div><strong>Subject:</strong> {{ favoritesItem.file.subject }}</div>
                                                 <div><strong>Classification:</strong> {{
-                                                    favoritesItem.file.classification }}</div>
+                                                    favoritesItem.file.classificationName }}</div>
                                                 <div class="hash-tags my-1">
                                                     <strong>Hash Tag:</strong>
                                                     <mat-chip-list>
                                                         <mat-chip
-                                                            *ngFor="let tag of favoritesItem.file.hashTag.split(',')"
-                                                            class="py-0.5 bg-blue-400  dark:bg-blue-500 px-3 rounded-full text-sm font-semibold text-white">
+                                                            *ngFor="let tag of getHashTags(favoritesItem.file.hashTag)"
+                                                            class="py-0.5 bg-blue-400 dark:bg-blue-500 px-3 rounded-full text-sm font-semibold text-white mr-2 mb-2">
                                                             {{ tag.trim() }}
                                                         </mat-chip>
                                                     </mat-chip-list>
@@ -145,7 +192,7 @@
                         </div>
                         <ng-template #noData>
                             <!-- <p class="text-center text-gray-500">No data available</p> -->
-                            <img  class="text-center noDataImg" src="../../../../assets/images/others/Nodataavailable.svg" alt="">
+                            <img class="text-center" src="../../../../assets/images/others/nodata.jpg" alt="">
                         </ng-template>
                     </div>
 
@@ -153,7 +200,7 @@
                     <div
                         class="sm:col-span-2 md:col-span-4 lg:col-span-2 flex flex-col flex-auto p-6 bg-white shadow rounded-2xl overflow-hidden">
                         <div class="flex flex-col sm:flex-row items-start justify-between">
-                            <div class="text-lg font-bold tracking-tight leading-6 truncate">Latest Files List
+                            <div class="text-lg font-bold tracking-tight leading-6 truncate">Latest Files
                             </div>
                         </div>
 
@@ -163,31 +210,36 @@
                                     <div class="favorite-card py-3" [@fadeIn]>
                                         <div class="favorite-card-header">
                                             <div class="file-info">
-                                                <div class="file-name"> <mat-icon
-                                                        (click)="viewImageLatesFilesList(latestFileItem.fileHash)"
-                                                        class="cursor-pointer">{{ 'insert_drive_file' }}</mat-icon>
-                                                    <span class="ml-1.2">{{
-                                                        latestFileItem.fileName }}</span>
+                                                <div class="file-name cursor-pointer"
+                                                    (click)="viewImageLatesFilesList(latestFileItem)"> <mat-icon
+                                                        class="cursor-pointer">{{
+                                                        'insert_drive_file' }}</mat-icon>
+
+                                                    <span class="text-primary-500 hover:underline truncate-text"
+                                                        matTooltip="{{  latestFileItem.fileName }}">
+                                                        {{ latestFileItem.fileName}}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="favorite-card-body">
                                             <div class="file-details">
-                                                <div><strong>File Type:</strong> {{ latestFileItem.subject }}</div>
-                                                <div><strong>Subject:</strong> {{ latestFileItem.fileType }}</div>
+                                                <div><strong>File Type:</strong> {{ latestFileItem.filetypeName }}
+                                                </div>
+                                                <div><strong>Subject:</strong> {{ latestFileItem.subject }}</div>
                                                 <div><strong>Classification:</strong> {{
-                                                    latestFileItem.classification }}</div>
+                                                    latestFileItem.classificationName }}</div>
                                                 <div class="hash-tags my-1">
                                                     <strong>Hash Tag:</strong>
                                                     <mat-chip-list>
                                                         <mat-chip
-                                                            *ngFor="let tag of latestFileItem.hashTag.split(',')"
-                                                            class="py-0.5 bg-blue-400  dark:bg-blue-500 px-3 rounded-full text-sm font-semibold text-white">
+                                                            *ngFor="let tag of getHashTags(latestFileItem.hashTag)"
+                                                            class="py-0.5 bg-blue-400 dark:bg-blue-500 px-3 rounded-full text-sm font-semibold text-white mr-2 mb-2">
                                                             {{ tag.trim() }}
                                                         </mat-chip>
                                                     </mat-chip-list>
                                                 </div>
-                                                
+
                                             </div>
                                         </div>
                                     </div>

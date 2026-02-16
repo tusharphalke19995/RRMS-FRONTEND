@@ -2,6 +2,8 @@
 
     .mat-mdc-dialog-surface {
         padding: 0 !important;
+        max-width: 48rem !important;
+        border-radius: 1rem;
     }
 }
   
@@ -9,3 +11,51 @@
    width: 11rem;
    height: 14rem;
   }
+
+// Responsive styles for uploaded files dialog
+.responsive-uploaded-files {
+  max-width: 100vw;
+  height: 100vh;
+  border-radius: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .responsive-uploaded-files {
+    max-width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0.5rem !important;
+  }
+  .responsive-image,
+  .responsive-pdf,
+  .responsive-audio,
+  .responsive-video {
+    max-width: 100vw !important;
+    width: 100% !important;
+    border-radius: 0.5rem !important;
+  }
+  .mat-mdc-dialog-surface {
+    max-width: 100vw !important;
+    border-radius: 0.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .responsive-uploaded-files {
+    padding: 0 !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0.25rem !important;
+  }
+  .responsive-image,
+  .responsive-pdf,
+  .responsive-audio,
+  .responsive-video {
+    max-width: 100vw !important;
+    width: 100% !important;
+    border-radius: 0.25rem !important;
+  }
+  .mat-mdc-dialog-surface {
+    max-width: 100vw !important;
+    border-radius: 0.25rem !important;
+  }
+}

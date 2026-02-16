@@ -31,7 +31,7 @@ import { MasterService } from "../../master.service";
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    TranslocoModule,
+    TranslocoModule
   ],
   templateUrl: "./add-update-msdivision.component.html",
   styleUrl: "./add-update-msdivision.component.scss",
@@ -43,7 +43,10 @@ export class AddUpdateDivisionComponent {
   userRoleDropdown = [];
   divisionDropdown = [];
   designationsDropdown = [];
+    filteredDepartment = [];
+    departmentDropdown = [];
   updateBool:boolean=false;
+    private departmentSearchTimeout: any;
   constructor(
     private masterService: MasterService,
     private _formBuilder: UntypedFormBuilder,
@@ -53,7 +56,8 @@ export class AddUpdateDivisionComponent {
   ) {}
 
   ngOnInit(): void {
-    this.initiateForm();    
+    this.initiateForm();
+    this.getDepartmentsInfo();    
     if(this.data){
       this.updateBool = true;
       this.dataPatch();
@@ -63,6 +67,7 @@ export class AddUpdateDivisionComponent {
   initiateForm() {
     this.addUpdateDivisionForm = this._formBuilder.group({
       divisionName: ["", Validators.required],
+      departmentId:["",Validators.required]
     });
   }
 
@@ -76,6 +81,7 @@ export class AddUpdateDivisionComponent {
     if (this.addUpdateDivisionForm.valid) {
       const data = {
         divisionName: this.addUpdateDivisionForm.value.divisionName,
+        departmentId:this.addUpdateDivisionForm.value.departmentId
       };
       this.masterService.createDivision(data).subscribe({
         next: (response: any) => {
@@ -83,7 +89,7 @@ export class AddUpdateDivisionComponent {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
-            panelClass: ["success-snackbar"],
+            panelClass: ["green-snackbar"],
           });
           this.onNoClose();
         },
@@ -103,6 +109,7 @@ export class AddUpdateDivisionComponent {
     if (this.addUpdateDivisionForm.valid) {
       const data = {
         divisionName: this.addUpdateDivisionForm.value.divisionName,
+        departmentId:this.addUpdateDivisionForm.value.departmentId
       };
       this.masterService.updateDivision(this.data.divisionId,data).subscribe({
         next: (response: any) => {
@@ -110,7 +117,7 @@ export class AddUpdateDivisionComponent {
             duration: 3000,
             horizontalPosition: "right",
             verticalPosition: "top",
-            panelClass: ["success-snackbar"],
+            panelClass: ["green-snackbar"],
           });
           this.onNoClose();
         },
@@ -136,12 +143,50 @@ export class AddUpdateDivisionComponent {
     return item.id || index;
   }
 
-  dataPatch(){
-    if (this.data) {
-      const userData = this.data;
-      this.addUpdateDivisionForm.patchValue({
-        divisionName: userData.divisionName,
+  dataPatch() {
+  if (this.data) {
+    let departmentId = '';
+    if (Array.isArray(this.data.department) && this.data.department.length > 0) {
+      departmentId = this.data.department[0].departmentId;
+    } else if (this.data.departmentId) {
+      departmentId = this.data.departmentId;
+    }
+
+    this.addUpdateDivisionForm.patchValue({
+      divisionName: this.data.divisionName || '',
+      departmentId: departmentId
+    });
+  }
+}
+
+
+    filterDepartment(event: any): void {
+    const searchText = event.target.value.toLowerCase().trim();
+    
+    if (this.departmentSearchTimeout) {
+      clearTimeout(this.departmentSearchTimeout);
+    }
+
+    this.departmentSearchTimeout = setTimeout(() => {
+      if (!searchText) {
+        this.filteredDepartment = [...this.departmentDropdown];
+      } else {
+        this.filteredDepartment = this.departmentDropdown.filter(role => {
+          const roleName = (role.departmentName || '').toLowerCase();
+          return roleName.includes(searchText);
+        });
+      }
+    }, 300);
+  }
+
+   getDepartmentsInfo() {
+      this.masterService.getDepartments().subscribe({
+        next: (response: any) => {
+          console.log("response", response);
+          this.departmentDropdown = response;
+          this.filteredDepartment = [...this.departmentDropdown];
+        },
+        error: (error) => {},
       });
     }
-  }
 }

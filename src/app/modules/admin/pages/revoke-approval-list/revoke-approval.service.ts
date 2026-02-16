@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { apiurls } from 'app/shared/constants/api-urls.constant';
 import { ErrorResponseModel } from 'app/shared/models/error-model';
@@ -13,20 +13,12 @@ export class RevokeApprovalService
   ) {}
 
 
-  getFavouritesData() {
+
+  approveRevokeRequest(data) {
     return this._httpClient
-      .get(apiurls.getFavourites,)
+      .post(apiurls.casedataRevoke, data,)
       .pipe(catchError(this.handleError));
   }
-
-  getFilesLatestData() {
-    return this._httpClient
-      .get(apiurls.getFilesLatest)
-      .pipe(catchError(this.handleError));
-  }
-
-
-  
   /**
    * The error handler.
    * @param err The http error response.

@@ -1,0 +1,198 @@
+<p>archive-folder-tree works!</p>
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent">
+  <div class="folder-tree-container attractive-card">
+    <!-- Header Section -->
+    <div class="header-section attractive-header">
+      <div class="header-content">
+        <div class="header-left">
+          <h2 class="page-title">Archive Management</h2>
+          <p class="page-subtitle">Organize and manage your files and folders</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search and Actions Section -->
+    <div class="actions-section attractive-actions">
+      <div class="tree-controls">
+        <button mat-stroked-button color="primary" (click)="expandAll()" [disabled]="dataSource.data.length === 0">
+          <mat-icon>unfold_more</mat-icon>
+          Expand All
+        </button>
+        <button mat-stroked-button color="primary" (click)="collapseAll()" [disabled]="dataSource.data.length === 0">
+          <mat-icon>unfold_less</mat-icon>
+          Collapse All
+        </button>
+      </div>
+      <div class="action-buttons" *ngIf="selectedFiles.length > 0">
+        <button mat-stroked-button color="warn" (click)="selectedFilesUnArchive()"
+          [disabled]="selectedFiles.length === 0">
+          <mat-icon>unarchive</mat-icon>
+          Un-Archive
+        </button>
+      </div>
+    </div>
+
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs-section attractive-breadcrumbs" *ngIf="breadcrumbs.length > 0">
+      <div class="breadcrumbs-container">
+        <button mat-button class="breadcrumb-item home" (click)="navigateToRoot()">
+          <mat-icon>home</mat-icon>
+          Home
+        </button>
+        <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+        <ng-container *ngFor="let crumb of breadcrumbs; let last = last">
+          <button mat-button class="breadcrumb-item" [class.active]="last" (click)="navigateToFolder(crumb)">
+            <mat-icon>{{ getItemIcon(crumb) }}</mat-icon>
+            {{ crumb.name }}
+          </button>
+          <mat-icon class="breadcrumb-separator" *ngIf="!last">chevron_right</mat-icon>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="content-section attractive-content">
+      <!-- Tree View -->
+      <div class="tree-section" *ngIf="dataSource.data.length > 0" (scroll)="onScroll($event)">
+        <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="folder-tree">
+          <!-- Folder Node -->
+          <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+            <div class="tree-node attractive-folder" [class.level-0]="node.level === 0"
+              [class.level-1]="node.level === 1" [class.level-2]="node.level === 2" [class.level-3]="node.level === 3"
+              [class.level-4]="node.level === 4" [class.selected]="isItemSelected(node)"
+              [class.leaf-node]="isLeafNode(node)"
+              (click)="toggleItemSelection(node)"
+              (keydown)="onKeyDown($event, node)"
+              tabindex="0"
+              role="treeitem"
+              [attr.aria-expanded]="isExpanded(node)"
+              [attr.aria-label]="node.name + ' folder'"
+              [attr.data-node-id]="node.id">
+
+              <button mat-icon-button class="toggle-button attractive-toggle" (click)="toggleNode(node, $event)"
+                [disabled]="!hasContent(node)"
+                [attr.aria-label]="isExpanded(node) ? 'Collapse ' + node.name : 'Expand ' + node.name"
+                [matTooltip]="isExpanded(node) ? 'Collapse folder' : 'Expand folder'">
+                <mat-icon [@rotateIcon]="isExpanded(node) ? 'expanded' : 'collapsed'">
+                  {{ isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+                </mat-icon>
+              </button>
+
+              <div class="node-content attractive-node-content">
+                <div class="node-icon-container attractive-node-icon">
+                  <img class="node-icon" [class]="'folder-icon-' + node.type"
+                    src="../../../../../assets/images/others/folder.svg" alt="folder icon">
+                </div>
+                <div class="node-details attractive-node-details">
+                  <span class="node-name">{{ node.name }}</span>
+                  <div class="node-meta" *ngIf="hasContent(node)">
+                    <span class="node-count" *ngIf="node.children && node.children.length > 0">
+                      {{ node.children.length }} folder{{ node.children.length > 1 ? 's' : '' }}
+                    </span>
+                    <span class="node-count" *ngIf="node.files && node.files.length > 0">
+                      {{ node.files.length }} file{{ node.files.length > 1 ? 's' : '' }}
+                    </span>
+                  </div>
+                </div>
+                <div class="node-actions attractive-node-actions">
+                  <button mat-icon-button [matMenuTriggerFor]="folderMenu" (click)="$event.stopPropagation()"
+                    class="action-button">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #folderMenu="matMenu">
+                    <button mat-menu-item (click)="toggleNode(node, $event)">
+                      <mat-icon>{{ isExpanded(node) ? 'unfold_less' : 'unfold_more' }}</mat-icon>
+                      <span>{{ isExpanded(node) ? 'Collapse' : 'Expand' }}</span>
+                    </button>
+                    <button mat-menu-item (click)="navigateToFolder(node)">
+                      <mat-icon>open_in_new</mat-icon>
+                      <span>Open</span>
+                    </button>
+                  </mat-menu>
+                </div>
+              </div>
+            </div>
+
+            <!-- Divider between folders and files -->
+            <div class="divider attractive-divider" *ngIf="node.files && node.files.length > 0 && isExpanded(node)">
+            </div>
+
+            <!-- Files in Current Folder -->
+            <div class="files-container attractive-files" *ngIf="node.files && isExpanded(node)">
+              <div class="files-grid attractive-files-grid">
+                <div class="file-item attractive-file" *ngFor="let file of node.files"
+                  [class.selected]="isItemSelected(file)" (click)="toggleItemSelection(file)">
+                  <div class="file-content attractive-file-content">
+                    <div class="file-icon-container attractive-file-icon">
+                     
+                         <mat-icon class="file-icon" [class]="'file-icon-' + getFileExtension(file)"
+                        (click)="viewImage(file); $event.stopPropagation()" style="cursor: pointer;">
+                        {{ getFileIcon(file) }}
+                      </mat-icon>
+                    </div>
+                    <div class="file-details attractive-file-details">
+                      <span class="file-name" [matTooltip]="file.name">{{ file.name }}</span>
+                     <div class="file-meta attractive-file-meta" (click)="viewImage(file); $event.stopPropagation()">
+                        <span class="file-size" *ngIf="file.fileSize">
+                          {{ getItemSize(file) }}
+                        </span>
+                        <span class="file-type">
+                          {{ getItemType(file) }}
+                        </span>
+                      </div>
+                      <div class="file-info attractive-file-info">
+                        <span class="uploader" *ngIf="file.uploaded_by">
+                          <mat-icon>person</mat-icon>
+                          <span>{{ file.uploaded_by }}</span>
+                        </span>
+                        <span class="date" *ngIf="file.created_at">
+                          <mat-icon>calendar_today</mat-icon>
+                          <span>{{ file.created_at | date:'short' }}</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Child Nodes -->
+            <div [class.tree-invisible]="!isExpanded(node)" class="tree-node-children">
+              <ng-container matTreeNodeOutlet></ng-container>
+            </div>
+          </mat-nested-tree-node>
+        </mat-tree>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state attractive-empty" *ngIf="dataSource.data.length === 0">
+        <mat-icon>folder_open</mat-icon>
+        <h3>No Content Available</h3>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading-overlay" *ngIf="isLoading">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span>Loading archive structure...</span>
+      </div>
+
+      <!-- Scroll to Top Button -->
+      <button 
+        mat-fab 
+        color="primary" 
+        class="scroll-to-top-btn" 
+        *ngIf="showScrollToTop"
+        (click)="scrollToTop()"
+        [@fadeInOut]
+        matTooltip="Scroll to top">
+        <mat-icon>keyboard_arrow_up</mat-icon>
+      </button>
+
+      <!-- Scroll Progress Indicator -->
+      <div class="scroll-progress" *ngIf="showScrollToTop">
+        <div class="scroll-progress-bar" [style.width.%]="scrollProgress"></div>
+      </div>
+    </div>
+  </div>
+</div>
