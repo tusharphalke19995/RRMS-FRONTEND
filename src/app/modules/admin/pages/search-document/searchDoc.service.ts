@@ -168,15 +168,6 @@ export class SearchDocService {
     );
   }
 
-   createProduct() 
-   {
-    this._httpClient.post<InventoryProduct>('api/apps/ecommerce/inventory/product', {})
-   }
-
-   updateProduct()
-   {
-    this._httpClient.post<InventoryProduct>('api/apps/ecommerce/inventory/product', {})
-   }
 
       /**
        * The error handler.

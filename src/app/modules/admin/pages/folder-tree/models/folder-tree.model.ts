@@ -17,6 +17,11 @@ export interface FolderNode {
 export interface FileNode {
   file_id: number;
   name: string;
+  // Provided by folder-tree API (may vary by endpoint/version)
+  caseId?: number;
+  case_id?: number;
+  fileHash?: string;
+  file_hash?: string;
   path?: string;
   created_at?: string;
   uploaded_by?: string;

@@ -374,14 +374,29 @@ export class PdfPreviewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     
     // Store case metadata if available
-    this.caseMetaData = res.caseMetaData || res.caseInfoDetailsId || null;
+    this.caseMetaData =
+      res.caseMetaData ||
+      res.caseId ||
+      res.case_id ||
+      res.caseInfoDetailsId ||
+      res.caseInfoDetailsID ||
+      null;
     
     // Check if file has fileHash - if so, call API to get file data
-    const file_id= fileToProcess.file_id || res.file_id
+    const fileId = fileToProcess.file_id || res.file_id;
+    const caseId =
+      res.caseId ??
+      res.case_id ??
+      res.caseInfoDetailsId ??
+      res.caseInfoDetailsID ??
+      fileToProcess.caseId ??
+      fileToProcess.case_id ??
+      null;
     const fileHash = fileToProcess.fileHash || res.fileHash;
     if (fileHash) {
       console.log("File has fileHash, calling API to fetch file data");
-      this.loadPdfFromFileHash(fileToProcess, fileHash,file_id);
+      // If caseId is missing, fall back to fileId to preserve legacy behavior
+      this.loadPdfFromFileHash(fileToProcess, fileHash, caseId ?? fileId);
       return;
     }
     
@@ -490,7 +505,7 @@ export class PdfPreviewComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 0);
   }
 
-  loadPdfFromFileHash(fileToProcess: any, fileHash: string,file_id:string): void {
+  loadPdfFromFileHash(fileToProcess: any, fileHash: string, caseId: any): void {
     this.isLoadingFromApi = true;
     
     // Set file name from fileToProcess if available
@@ -502,7 +517,7 @@ export class PdfPreviewComponent implements OnInit, AfterViewInit, OnDestroy {
       requested_to: 0,
       comments: "",
       division_id: sessionStorage.getItem("divisionID"),
-      case_id: file_id,
+      case_id: caseId,
     };
 
     console.log('Calling filePreviewData API with payload:', payload);

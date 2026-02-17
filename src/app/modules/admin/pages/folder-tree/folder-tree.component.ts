@@ -931,6 +931,7 @@ export class FolderTreeComponent implements OnInit {
       // Check if file has fileHash - if so, use API call instead of direct path
       const fileHash = data.fileHash || data.file_hash;
       const filePath = data.path ? decodeURIComponent(data.path || '') : '';
+      const caseId = data.caseId ?? data.case_id ?? data.caseInfoDetailsId;
       
       // Create preview data object
       // If fileHash is available, pass it so PDF preview can call API
@@ -942,7 +943,9 @@ export class FolderTreeComponent implements OnInit {
         fileName: data.name,
         name: data.name,
         file_id: data.file_id,
-        caseInfoDetailsId: data.caseInfoDetailsId || data.case_id,
+        caseInfoDetailsId: data.caseInfoDetailsId || data.caseId || data.case_id,
+        caseId: caseId,
+        case_id: caseId,
       };
 
       // If fileHash is available, prioritize it for API call
@@ -952,6 +955,8 @@ export class FolderTreeComponent implements OnInit {
         previewData.file = {
           fileHash: fileHash,
           file_hash: fileHash,
+          caseId: caseId,
+          case_id: caseId,
           mime_type: "application/pdf",
           type: "application/pdf",
           file_name: data.name,
@@ -968,6 +973,8 @@ export class FolderTreeComponent implements OnInit {
         previewData.file = {
           path: filePath,
           file_path: filePath,
+          caseId: caseId,
+          case_id: caseId,
           mime_type: "application/pdf",
           type: "application/pdf",
           file_name: data.name,

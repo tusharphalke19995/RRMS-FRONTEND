@@ -244,66 +244,7 @@
         </pdf-viewer>
 
         <!-- Bottom pagination -->
-        <div class="bottom-pagination">
-          <button mat-icon-button
-                  (click)="scrollPdf('up')"
-                  [disabled]="!pageLoaded"
-                  matTooltip="Scroll up"
-                  type="button">
-            <mat-icon>keyboard_arrow_up</mat-icon>
-          </button>
-          <button mat-icon-button
-                  (click)="scrollPdf('down')"
-                  [disabled]="!pageLoaded"
-                  matTooltip="Scroll down"
-                  type="button">
-            <mat-icon>keyboard_arrow_down</mat-icon>
-          </button>
-
-          <span class="bottom-divider"></span>
-
-          <button mat-icon-button
-                  (click)="previousPage(); $event.stopPropagation()"
-                  [disabled]="currentPage <= 1 || !pageLoaded"
-                  matTooltip="Previous page"
-                  type="button">
-            <mat-icon>chevron_left</mat-icon>
-          </button>
-
-          <div class="bottom-page-indicator">
-            Page <strong>{{ currentPage }}</strong> / <strong>{{ totalPages || '?' }}</strong>
-          </div>
-
-          <button mat-icon-button
-                  (click)="nextPage(); $event.stopPropagation()"
-                  [disabled]="currentPage >= totalPages || !pageLoaded"
-                  matTooltip="Next page"
-                  type="button">
-            <mat-icon>chevron_right</mat-icon>
-          </button>
-
-          <span class="bottom-divider"></span>
-
-          <div class="bottom-jump-group" [class.disabled]="!pageLoaded">
-            <span class="bottom-jump-label">Go</span>
-            <input class="bottom-jump-field"
-                   type="number"
-                   [min]="1"
-                   [max]="totalPages || null"
-                   [(ngModel)]="pageJump"
-                   (keyup.enter)="applyPageJump()"
-                   [disabled]="!pageLoaded"
-                   placeholder="—" />
-            <span class="bottom-jump-total">/ {{ totalPages || '?' }}</span>
-          </div>
-          <button mat-icon-button
-                  (click)="applyPageJump()"
-                  [disabled]="!pageLoaded"
-                  matTooltip="Go to page"
-                  type="button">
-            <mat-icon>subdirectory_arrow_right</mat-icon>
-          </button>
-        </div>
+        
       </div>
     </ng-container>
 
